@@ -13,7 +13,6 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +21,6 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.pkslow.ai.AIClient
 import com.pkslow.ai.GoogleBardClient
-import com.pkslow.ai.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,7 +28,6 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ConversationAdapter
 import org.cosmicide.rewrite.chat.ChatProvider
 import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentChatBinding
 import org.cosmicide.rewrite.extension.getDip
 import java.time.Duration
@@ -38,7 +35,7 @@ import java.time.Duration
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
     private val conversationAdapter = ConversationAdapter()
-    private var model = Models.THEB
+    private var model = Models.AISERVICE
 
     // The client will expire in an hour.
     // If you were thinking of using this key, don't. It's free already, just get your own.
@@ -56,16 +53,12 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
         setupUI(view.context)
         setOnClickListeners()
         setupRecyclerView()
-        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
     private fun setupUI(context: Context) {
         initToolbar()
         initBackground(context)
-        if (model == Models.BARD && Prefs.useBardProxy) {
-            // Thanks to us-proxy.org for the free proxy.
-            NetworkUtils.setUpProxy("198.199.86.11", "8080")
-        }
+        binding.toolbar.title = model.name
     }
 
     private fun initToolbar() {
@@ -80,24 +73,29 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                     "Google Bard"
                 }
 
-                R.id.model_aichat -> {
-                    model = Models.AICHAT
-                    "Vercel"
+                R.id.model_aiservice -> {
+                    model = Models.AISERVICE
+                    "AI Service"
                 }
 
-                R.id.model_aitianhu -> {
-                    model = Models.AITIANHU
-                    "Aitianhu"
+                R.id.model_wewordle -> {
+                    model = Models.WEWORDLE
+                    "WeWordle"
                 }
 
-                R.id.model_easychat -> {
-                    model = Models.EASYCHAT
-                    "EasyChat"
+                R.id.model_falcon_40b -> {
+                    model = Models.FALCON_40B
+                    "falcon-40b"
                 }
 
-                R.id.model_h2o -> {
-                    model = Models.H2O
-                    "H2O"
+                R.id.model_falcon_7b -> {
+                    model = Models.FALCON_7B
+                    "falcon-7b"
+                }
+
+                R.id.model_llama_13b -> {
+                    model = Models.LLAMA_13B
+                    "llama-13b"
                 }
 
                 R.id.model_theb -> {
@@ -129,23 +127,28 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                 val reply = when (model) {
                     Models.BARD -> client.ask(message).markdown()
 
-                    Models.AICHAT -> ChatProvider.generate(
-                        "aichat",
+                    Models.AISERVICE -> ChatProvider.generate(
+                        "aiservice",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.AITIANHU -> ChatProvider.generate(
-                        "aitianhu",
+                    Models.WEWORDLE -> ChatProvider.generate(
+                        "wewordle",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.EASYCHAT -> ChatProvider.generate(
-                        "easychat",
+                    Models.FALCON_40B -> ChatProvider.generate(
+                        "h2o/falcon-40b",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.H2O -> ChatProvider.generate(
-                        "h2o",
+                    Models.FALCON_7B -> ChatProvider.generate(
+                        "h2o/falcon-7b",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.LLAMA_13B -> ChatProvider.generate(
+                        "h2o/llama-13b",
                         conversationAdapter.getConversations()
                     )
 
@@ -204,10 +207,11 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
 enum class Models {
     BARD,
-    AICHAT,
-    AITIANHU,
-    EASYCHAT,
-    H2O,
+    AISERVICE,
+    WEWORDLE,
+    FALCON_40B,
+    FALCON_7B,
+    LLAMA_13B,
     THEB
 }
 

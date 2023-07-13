@@ -19,7 +19,7 @@
         android:layout_height="24dp"
         android:layout_marginEnd="4dp"
         android:contentDescription="@string/bot_icon"
-        app:srcCompat="@drawable/google_bard_logo" />
+        app:srcCompat="@drawable/robot" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/message_container"

@@ -25,7 +25,6 @@
             android:layout_height="52dp"
             android:layout_marginTop="4dp"
             android:layout_marginHorizontal="12dp"
-            app:title="Ora GPT-4"
             app:titleCentered="true"
             app:menu="@menu/chat_menu" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -46,61 +45,43 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/message_text"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:orientation="horizontal">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/message_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:background="@null"
-                android:gravity="center_vertical"
-                android:hint="@string/enter_something"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/enter_something"
                 android:imeOptions="actionSend|flagNoEnterAction|flagNoExtractUi"
                 android:inputType="textAutoCorrect|textCapSentences|textMultiLine|textShortMessage"
                 android:maxHeight="280dp"
                 android:minHeight="@dimen/mtrl_min_touch_target_size"
                 android:paddingVertical="8dp" />
 
-            <LinearLayout
-                android:id="@+id/send_message_button_container"
-                android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/send_message_button_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center_vertical"
+            android:minWidth="@dimen/mtrl_min_touch_target_size"
+            android:minHeight="@dimen/mtrl_min_touch_target_size"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/send_message_button_icon"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="bottom"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:contentDescription="@string/send_message"
+                android:paddingHorizontal="6dp"
+                app:srcCompat="@drawable/ic_baseline_send_24" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:gravity="center"
-                    android:minWidth="@dimen/mtrl_min_touch_target_size"
-                    android:minHeight="@dimen/mtrl_min_touch_target_size"
-                    android:orientation="vertical"
-                    android:paddingStart="6dp"
-                    android:paddingEnd="16dp">
 
-                    <ImageView
-                        android:id="@+id/send_message_button_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/send_message"
-                        app:srcCompat="@drawable/ic_baseline_send_24" />
-
-                </LinearLayout>
-
-            </LinearLayout>
 
         </LinearLayout>
 

@@ -21,6 +21,7 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://jitpack.io")
         maven("https://maven.aliucord.com/snapshots")
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
         maven("https://www.jetbrains.com/intellij-repository/releases")
         maven("https://dl.bintray.com/jetbrains/intellij-third-party-dependencies")
     }

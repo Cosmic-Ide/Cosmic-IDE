@@ -106,7 +106,6 @@ fun getGitCommit(): String {
 
 dependencies {
     implementation("com.android.tools:r8:8.0.40")
-    implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     implementation("com.airbnb.android:lottie:6.0.1")
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
@@ -130,8 +129,9 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
 
-    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
-    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")
+    val editorVersion = "0.21.1-fb69afb-SNAPSHOT"
+    implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
+    implementation("io.github.Rosemoe.sora-editor:language-textmate:$editorVersion")
     implementation("io.github.dingyi222666:treeview:1.2.1")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 

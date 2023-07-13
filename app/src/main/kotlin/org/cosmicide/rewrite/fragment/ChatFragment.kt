@@ -13,6 +13,7 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,6 +56,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
         setupUI(view.context)
         setOnClickListeners()
         setupRecyclerView()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
     private fun setupUI(context: Context) {
@@ -85,22 +87,22 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
                 R.id.model_aitianhu -> {
                     model = Models.AITIANHU
-                    "Ora"
+                    "Aitianhu"
                 }
 
                 R.id.model_easychat -> {
                     model = Models.EASYCHAT
-                    "Yqcloud"
+                    "EasyChat"
                 }
 
                 R.id.model_h2o -> {
                     model = Models.H2O
-                    "Phind"
+                    "H2O"
                 }
 
                 R.id.model_theb -> {
                     model = Models.THEB
-                    "Theb"
+                    "TheB"
                 }
 
                 else -> return@setOnMenuItemClickListener false

@@ -7,8 +7,9 @@
 
 package org.cosmicide.rewrite.chat
 
+import android.util.Log
 import com.google.gson.Gson
-import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -33,18 +34,26 @@ object ChatProvider {
         val messagesJson = gson.toJson(jsonObject)
         println(messagesJson)
         val url = "https://gpt4free-experimental.pranavpurwar.repl.co/chat/$model"
+        Log.d("ChatProvider", "generate: $url")
 
-        val mediaType = "application/json; charset=utf-8".toMediaType()
-        val request = Request.Builder().url(url).post(messagesJson.toRequestBody(mediaType)).build()
+        val mediaType = "application/json".toMediaTypeOrNull()
+        val requestBody = messagesJson.toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
 
         val client = OkHttpClient().newBuilder().readTimeout(Duration.ofSeconds(120)).build()
         return try {
             val response = client.newCall(request).execute()
             val body = response.body.string()
+            response.close()
             body
         } catch (e: Exception) {
             e.printStackTrace()
             "Error: ${e.message}"
+        } finally {
+            client.connectionPool.evictAll()
         }
     }
 }

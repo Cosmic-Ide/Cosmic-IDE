@@ -19,19 +19,24 @@
         android:title="Google Bard" />
 
     <item
-        android:id="@+id/model_aichat"
-        android:title="AIChat GPT-3.5" />
+        android:id="@+id/model_aiservice"
+        android:title="AIService GPT-3.5" />
 
     <item
-        android:id="@+id/model_aitianhu"
-        android:title="AItianhu GPT-3.5" />
+        android:id="@+id/model_wewordle"
+        android:title="Wewordle GPT-3.5" />
 
     <item
-        android:id="@+id/model_easychat"
-        android:title="Easychat GPT-3.5" />
+        android:id="@+id/model_falcon_40b"
+        android:title="H2O falcon-40b" />
 
     <item
-        android:id="@+id/model_h2o"
+        android:id="@+id/model_falcon_7b"
+        android:title="H2O falcon-7b" />
+
+
+    <item
+        android:id="@+id/model_llama_13b"
         android:title="H2O llama-13b" />
 
     <item

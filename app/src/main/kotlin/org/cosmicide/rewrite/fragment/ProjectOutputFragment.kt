@@ -170,6 +170,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         project.buildDir.resolve("libs").listFiles()?.filter { it.extension == "dex" }?.forEach {
             loader.loadDex(makeDexReadOnlyIfNeeded(it))
         }
+
         runCatching {
             loader.loader.loadClass(className)
         }.onSuccess { clazz ->

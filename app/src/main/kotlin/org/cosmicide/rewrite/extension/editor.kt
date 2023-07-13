@@ -18,7 +18,7 @@ import org.cosmicide.rewrite.editor.completion.CustomCompletionLayout
  * Sets the font and enables highlighting of the current line for the code editor.
  */
 fun CodeEditor.setFont() {
-    typefaceText = ResourcesCompat.getFont(context, R.font.noto_sans_mono)
+    typefaceText = ResourcesCompat.getFont(context, R.font.source_pro_regular)
     isHighlightCurrentLine = true
 }
 

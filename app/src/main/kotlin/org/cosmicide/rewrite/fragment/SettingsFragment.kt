@@ -102,6 +102,9 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                    if (isResumed.not()) {
+                        return
+                    }
                     if (!preferencesAdapter.goBack()) {
                         isEnabled = false
                         parentFragmentManager.popBackStack()

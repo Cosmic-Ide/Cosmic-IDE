@@ -108,7 +108,12 @@ class EditorFragment(
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     binding.apply {
-                        editorAdapter.saveAll()
+                        val fragment =
+                            parentFragmentManager.findFragmentById(R.id.fragment_container)
+                        if (fragment !is EditorFragment) {
+                            parentFragmentManager.popBackStack()
+                            return
+                        }
                         if (drawer.isOpen) {
                             drawer.close()
                         } else {
@@ -148,7 +153,9 @@ class EditorFragment(
             }
         }
 
-        fileViewModel.updateFiles(indexedFiles.toMutableList())
+        indexedFiles.forEach { file ->
+            fileViewModel.addFile(file)
+        }
         fileViewModel.setCurrentPosition(0)
         if (fileViewModel.files.value!!.isEmpty()) {
             binding.viewContainer.displayedChild = 1

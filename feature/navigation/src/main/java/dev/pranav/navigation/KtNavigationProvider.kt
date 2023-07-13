@@ -149,7 +149,7 @@ object KtNavigationProvider {
                     navigationItems.add(
                         ClassNavigationKind(
                             name,
-                            declaration.modifierList!!.text,
+                            declaration.modifierList?.text ?: "",
                             declaration.startOffset,
                             declaration.endOffset,
                             d

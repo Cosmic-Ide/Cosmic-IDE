@@ -51,6 +51,12 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
 
     private fun setupUI() {
         val root = ProjectHandler.getProject()!!.root
+
+        binding.recyclerview.apply {
+            adapter = GitAdapter()
+            layoutManager = LinearLayoutManager(context)
+        }
+
         val git = root.resolve(".git")
         if (git.exists()) {
             repository = git.toRepository()
@@ -88,11 +94,6 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                     parentFragmentManager.popBackStack()
                 }.show()
             return
-        }
-
-        binding.recyclerview.apply {
-            adapter = GitAdapter()
-            layoutManager = LinearLayoutManager(context)
         }
 
         binding.staging.apply {

@@ -7,7 +7,6 @@
 
 package org.cosmicide.rewrite.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -47,16 +46,17 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupUI(view.context)
+        setupUI()
     }
 
-    private fun setupUI(context: Context) {
+    private fun setupUI() {
         val root = ProjectHandler.getProject()!!.root
         val git = root.resolve(".git")
         if (git.exists()) {
             repository = git.toRepository()
+            setup()
         } else {
-            MaterialAlertDialogBuilder(context).setTitle("Git repository not found")
+            MaterialAlertDialogBuilder(requireContext()).setTitle("Git repository not found")
                 .setMessage("Do you want to initialize a new repository?").setCancelable(false)
                 .setPositiveButton("Yes") { _, _ ->
                     lifecycleScope.launch(Dispatchers.IO) {
@@ -65,15 +65,18 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                         lifecycleScope.launch(Dispatchers.Main) {
                             (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())
                             Snackbar.make(binding.root, "Committed", Snackbar.LENGTH_SHORT).show()
+                            setup()
                         }
                     }
                 }.setNegativeButton("No") { _, _ ->
                     parentFragmentManager.popBackStack()
                 }.show()
         }
+    }
 
+    fun setup() {
         if (Prefs.gitUsername.isEmpty() || Prefs.gitEmail.isEmpty()) {
-            MaterialAlertDialogBuilder(context).setTitle("Git username or email not set")
+            MaterialAlertDialogBuilder(requireContext()).setTitle("Git username or email not set")
                 .setMessage("Do you want to set it now?").setCancelable(false)
                 .setPositiveButton("Yes") { _, _ ->
                     parentFragmentManager.popBackStack()
@@ -96,9 +99,6 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
             adapter = StagingAdapter(ProjectHandler.getProject()!!.root.absolutePath)
             layoutManager = LinearLayoutManager(context)
         }
-        if (!::repository.isInitialized) {
-            return
-        }
 
         catchException {
             val commits = repository.getCommitList()
@@ -114,13 +114,11 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
             (binding.staging.adapter as StagingAdapter).updateStatus(repository.git.status())
         }
 
-        if (::repository.isInitialized) {
-            catchException {
-                val remotes = repository.git.remoteList()
-                Log.d("remotes", remotes.toString())
-                if (remotes.isNotEmpty() && remotes[0].pushURIs.isNotEmpty()) {
-                    binding.remote.setText(remotes[0].pushURIs[0].toString())
-                }
+        catchException {
+            val remotes = repository.git.remoteList()
+            Log.d("remotes", remotes.toString())
+            if (remotes.isNotEmpty() && remotes[0].pushURIs.isNotEmpty()) {
+                binding.remote.setText(remotes[0].pushURIs[0].toString())
             }
         }
 
@@ -173,8 +171,7 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
             }
             catchException {
                 repository.commit(
-                    getAuthor(),
-                    binding.commitMessage.text.toString()
+                    getAuthor(), binding.commitMessage.text.toString()
                 )
                 withContext(Dispatchers.Main) {
                     (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())

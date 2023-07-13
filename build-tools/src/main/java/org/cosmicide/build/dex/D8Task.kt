@@ -11,16 +11,15 @@ import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.project.Project
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.copyTo
 import kotlin.io.path.name
+import kotlin.io.path.nameWithoutExtension
 
 /**
  * Task to compile the class files of a project to a Dalvik Executable (Dex) file using D8.
@@ -66,9 +65,7 @@ class D8Task(val project: Project) : Task {
                 if (!outDex.exists()) lib.toPath() else null
             }?.forEach { jarFile ->
                 reporter.reportInfo("Compiling library ${jarFile.name}")
-                CoroutineScope(Dispatchers.IO).launch {
-                    compileJar(jarFile, libDexDir.toPath(), reporter)
-                }
+                compileJar(jarFile, libDexDir.toPath(), reporter)
             }
         }
     }
@@ -91,6 +88,8 @@ class D8Task(val project: Project) : Task {
                     .setOutput(outputDir, OutputMode.DexIndexed)
                     .build()
             )
+            outputDir.resolve("classes.dex")
+                .copyTo(outputDir.resolve(jarFile.nameWithoutExtension + ".dex"))
         } catch (e: Throwable) {
             reporter.reportError(e.stackTraceToString())
         }

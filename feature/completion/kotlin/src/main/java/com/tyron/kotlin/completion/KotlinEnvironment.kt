@@ -154,7 +154,9 @@ data class KotlinEnvironment(
         var completionText = name
         val position = completionText.indexOf('(')
         if (position != -1) {
-            completionText = completionText.substring(0, position) + "()"
+            completionText = StringBuilder(completionText).apply {
+                replace(position, completionText.length, "()")
+            }.toString()
         }
 
         val colonPosition = completionText.indexOf(":")

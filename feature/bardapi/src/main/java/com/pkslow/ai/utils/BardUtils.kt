@@ -140,6 +140,7 @@ object BardUtils {
 
             // somehow get the other drafts
             // ???
+            println("chatData: $chatData")
             choiceId = ((chatData[4] as JsonArray)[0] as JsonArray)[0].asString
 
             val images = mutableListOf<Image>()

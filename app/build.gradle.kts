@@ -114,7 +114,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
-    implementation("com.google.firebase:firebase-perf-ktx:20.3.3")
+    implementation("com.google.firebase:firebase-perf-ktx:20.4.0")
     implementation("com.google.gms:google-services:4.3.15")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 
@@ -129,7 +129,7 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
 
-    val editorVersion = "0.21.1-fb69afb-SNAPSHOT"
+    val editorVersion = "0.21.1-a50ba9c-SNAPSHOT"
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:$editorVersion")
     implementation("io.github.dingyi222666:treeview:1.2.1")
@@ -139,12 +139,12 @@ dependencies {
     implementation("com.github.sya-ri:kgit:1.0.5")
 
     // markwon
-    val markwon_version = "4.6.2"
-    implementation("io.noties.markwon:core:$markwon_version")
-    implementation("io.noties.markwon:html:$markwon_version")
-    implementation("io.noties.markwon:image:$markwon_version")
-    implementation("io.noties.markwon:image-glide:$markwon_version")
-    implementation("io.noties.markwon:linkify:$markwon_version")
+    val markwonVersion = "4.6.2"
+    implementation("io.noties.markwon:core:$markwonVersion")
+    implementation("io.noties.markwon:html:$markwonVersion")
+    implementation("io.noties.markwon:image:$markwonVersion")
+    implementation("io.noties.markwon:image-glide:$markwonVersion")
+    implementation("io.noties.markwon:linkify:$markwonVersion")
 
     implementation("com.aliucord:Aliuhook:main-SNAPSHOT")
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")

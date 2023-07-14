@@ -71,6 +71,7 @@ class EditorFragment(
         binding.pager.apply {
             editorAdapter = EditorAdapter(this@EditorFragment, fileViewModel)
             adapter = editorAdapter
+            isUserInputEnabled = false
         }
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -79,7 +80,7 @@ class EditorFragment(
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-
+                binding.pager.currentItem = tab!!.position
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -228,7 +229,7 @@ class EditorFragment(
 
 
     fun getCurrentFragment(): EditorAdapter.CodeEditorFragment? {
-        return editorAdapter.getItem(binding.tabLayout.selectedTabPosition)
+        return editorAdapter.getItem(binding.pager.currentItem)
     }
 
     private fun configureToolbar() {
@@ -448,9 +449,7 @@ class EditorFragment(
     }
 
     private fun navigateToCompileInfoFragment() {
-        for (i in 0 until editorAdapter.itemCount) {
-            editorAdapter.getItem(i)?.save()
-        }
+        editorAdapter.saveAll()
         parentFragmentManager.beginTransaction().apply {
             add(R.id.fragment_container, CompileInfoFragment())
             addToBackStack(null)
@@ -490,7 +489,7 @@ class EditorFragment(
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.close_tab -> {
-                    fileViewModel.removeFile(fileViewModel.files.value!![position])
+                    fileViewModel.removeFile(position)
                 }
 
                 R.id.close_all_tab -> fileViewModel.removeAll()

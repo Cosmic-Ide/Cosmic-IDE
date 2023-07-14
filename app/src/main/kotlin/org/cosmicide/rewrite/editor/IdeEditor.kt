@@ -14,6 +14,8 @@ import com.google.common.collect.ImmutableSet
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.extension.setCompletionLayout
 import org.cosmicide.rewrite.extension.setFont
@@ -32,11 +34,13 @@ class IdeEditor @JvmOverloads constructor(
     init {
         colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
         setCompletionLayout()
+        setTooltipImprovements()
         setFont()
         inputType = createInputFlags()
         updateNonPrintablePaintingFlags()
         updateTextSize()
         updateTabSize()
+        setInterceptParentHorizontalScrollIfNeeded(true)
         isLigatureEnabled = Prefs.useLigatures
         isWordwrap = Prefs.wordWrap
         setScrollBarEnabled(Prefs.scrollbarEnabled)
@@ -92,5 +96,12 @@ class IdeEditor @JvmOverloads constructor(
                 EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or
                 EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS or
                 EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+    }
+
+    private fun setTooltipImprovements() {
+        getComponent(EditorDiagnosticTooltipWindow::class.java).apply {
+            setSize(500, 100)
+            parentView.setBackgroundColor(colorScheme.getColor(EditorColorScheme.WHOLE_BACKGROUND))
+        }
     }
 }

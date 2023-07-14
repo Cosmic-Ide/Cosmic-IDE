@@ -14,10 +14,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import io.github.rosemoe.sora.event.ContentChangeEvent
+import io.github.rosemoe.sora.event.SubscriptionReceipt
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.widget.subscribeEvent
 import org.cosmicide.build.Javap
 import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
 import org.cosmicide.rewrite.editor.IdeEditor
@@ -70,16 +73,11 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
         fragments.forEach { it.save() }
     }
 
-    fun destroyAll() {
-        fragments.forEach { fg ->
-            fg.editor.release()
-            fragment.childFragmentManager.beginTransaction().remove(fg).commit()
-        }
-    }
-
     class CodeEditorFragment(val file: File) : Fragment() {
 
         lateinit var editor: IdeEditor
+        private lateinit var eventReceiver: SubscriptionReceipt<ContentChangeEvent>
+
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -91,28 +89,25 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
+            setText()
             setEditorLanguage()
             setColorScheme()
-            setText()
         }
 
         private fun setEditorLanguage() {
+            val project = ProjectHandler.getProject() ?: return
             when (file.extension) {
                 "java" -> {
                     if (editor.editorLanguage is JavaLanguage) return
                     editor.setEditorLanguage(
                         JavaLanguage(
                             editor,
-                            ProjectHandler.getProject()!!,
+                            project,
                             file
                         )
                     )
-                    editor.text.addContentListener(EditorDiagnosticsMarker.INSTANCE)
-                    EditorDiagnosticsMarker.INSTANCE.init(
-                        editor,
-                        file,
-                        ProjectHandler.getProject()!!
-                    )
+                    eventReceiver =
+                        editor.subscribeEvent(EditorDiagnosticsMarker(editor, file, project))
                 }
 
                 "kt" -> {
@@ -120,7 +115,7 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
                     editor.setEditorLanguage(
                         KotlinLanguage(
                             editor,
-                            ProjectHandler.getProject()!!,
+                            project,
                             file
                         )
                     )
@@ -133,10 +128,6 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
                 else -> {
                     editor.setEditorLanguage(EmptyLanguage())
                 }
-            }
-
-            if (file.extension != "java") {
-                editor.text.removeContentListener(EditorDiagnosticsMarker.INSTANCE)
             }
 
             editor.setFont()
@@ -154,6 +145,9 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
                 return
             }
 
+            println("Reading file: ${file.absolutePath}")
+            println("File exists: ${file.exists()}")
+            println("Contents: ${file.readText()}")
             editor.setText(file.readText())
         }
 
@@ -165,6 +159,11 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
         override fun onConfigurationChanged(newConfig: Configuration) {
             super.onConfigurationChanged(newConfig)
             setColorScheme()
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            editor.release()
         }
     }
 }

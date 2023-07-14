@@ -30,6 +30,7 @@ import com.intellij.psi.JavaTokenType
 import com.intellij.psi.PsiAssignmentExpression
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiElementFinder
 import com.intellij.psi.PsiExpressionStatement
 import com.intellij.psi.PsiField
@@ -138,31 +139,56 @@ class CompletionProvider {
 
         @Suppress("DEPRECATION")
         fun registerExtensions(extensionArea: ExtensionsAreaImpl) {
-            extensionArea.registerExtensionPoint(
-                "com.intellij.virtualFileManagerListener",
-                VirtualFileManagerImpl::class.java.name,
-                ExtensionPoint.Kind.INTERFACE
-            )
-            Extensions.getRootArea().registerExtensionPoint(
-                "com.intellij.treeCopyHandler",
-                TreeCopyHandler::class.java.name,
-                ExtensionPoint.Kind.INTERFACE
-            )
-            Extensions.getRootArea().registerExtensionPoint(
-                "com.intellij.lang.psiAugmentProvider",
-                PsiAugmentProvider::class.java.name,
-                ExtensionPoint.Kind.INTERFACE
-            )
-            extensionArea.registerExtensionPoint(
-                "com.intellij.java.elementFinder",
-                PsiElementFinder::class.java.name,
-                ExtensionPoint.Kind.INTERFACE
-            )
-            Extensions.getRootArea().registerExtensionPoint(
-                "com.intellij.java.elementFinder",
-                PsiElementFinder::class.java.name,
-                ExtensionPoint.Kind.INTERFACE
-            )
+            if (extensionArea.hasExtensionPoint("com.intellij.virtualFileManagerListener").not()) {
+                extensionArea.registerExtensionPoint(
+                    "com.intellij.virtualFileManagerListener",
+                    VirtualFileManagerImpl::class.java.name,
+                    ExtensionPoint.Kind.INTERFACE
+                )
+            }
+            if (extensionArea.hasExtensionPoint("com.intellij.java.elementFinder").not()) {
+                extensionArea.registerExtensionPoint(
+                    "com.intellij.java.elementFinder",
+                    PsiElementFinder::class.java.name,
+                    ExtensionPoint.Kind.INTERFACE
+                )
+            }
+            val rootArea = Extensions.getRootArea()
+            if (rootArea.hasExtensionPoint("com.intellij.treeCopyHandler").not()) {
+                rootArea.registerExtensionPoint(
+                    "com.intellij.treeCopyHandler",
+                    TreeCopyHandler::class.java.name,
+                    ExtensionPoint.Kind.INTERFACE
+                )
+            }
+            if (rootArea.hasExtensionPoint("com.intellij.codeStyleManager").not()) {
+                rootArea.registerExtensionPoint(
+                    "com.intellij.codeStyleManager",
+                    CodeStyleManager::class.java.name,
+                    ExtensionPoint.Kind.INTERFACE
+                )
+            }
+            if (rootArea.hasExtensionPoint("com.intellij.psiElementFactory").not()) {
+                rootArea.registerExtensionPoint(
+                    "com.intellij.psiElementFactory",
+                    PsiElementFactory::class.java.name,
+                    ExtensionPoint.Kind.INTERFACE
+                )
+            }
+            if (rootArea.hasExtensionPoint("com.intellij.lang.psiAugmentProvider").not()) {
+                rootArea.registerExtensionPoint(
+                    "com.intellij.lang.psiAugmentProvider",
+                    PsiAugmentProvider::class.java.name,
+                    ExtensionPoint.Kind.INTERFACE
+                )
+            }
+            if (rootArea.hasExtensionPoint("com.intellij.psiElementFinder").not()) {
+                rootArea.registerExtensionPoint(
+                    "com.intellij.psiElementFinder",
+                    PsiElementFinder::class.java.name,
+                    ExtensionPoint.Kind.INTERFACE
+                )
+            }
         }
     }
 

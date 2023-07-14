@@ -25,8 +25,7 @@ import javax.tools.StandardLocation
 
 class JavaAnalyzer(
     val editor: CodeEditor,
-    val project: Project,
-    val currentFile: File
+    val project: Project
 ) {
     private val args by lazy {
         listOf(

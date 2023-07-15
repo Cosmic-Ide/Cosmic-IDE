@@ -32,8 +32,6 @@ import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentGitBinding
 import org.cosmicide.rewrite.databinding.GitCommandBinding
 import org.cosmicide.rewrite.util.ProjectHandler
-import org.eclipse.jgit.lib.Config
-import org.eclipse.jgit.transport.URIish
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.io.PrintStream
@@ -68,6 +66,10 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                     lifecycleScope.launch(Dispatchers.IO) {
                         repository =
                             root.createRepository(Author(Prefs.gitUsername, Prefs.gitEmail))
+                        repository.git.repository.config.apply {
+                            setString("remote", "origin", "password", Prefs.gitApiKey)
+                            save()
+                        }
                         lifecycleScope.launch(Dispatchers.Main) {
                             (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())
                             Snackbar.make(binding.root, "Committed", Snackbar.LENGTH_SHORT).show()
@@ -116,10 +118,10 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
         }
 
         catchException {
-            val remotes = repository.git.remoteList()
-            Log.d("remotes", remotes.toString())
-            if (remotes.isNotEmpty() && remotes[0].pushURIs.isNotEmpty()) {
-                binding.remote.setText(remotes[0].pushURIs[0].toString())
+            repository.git.repository.config.getString("remote", "origin", "url")?.let {
+                withContext(Dispatchers.Main) {
+                    binding.remote.setText(it)
+                }
             }
         }
 
@@ -137,14 +139,9 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                 val remote = binding.remote.text.toString()
                 if (remote.isNotEmpty()) {
                     catchException {
-                        Config().apply {
-                            setString("user", null, "name", Prefs.gitUsername)
-                            setString("user", null, "email", Prefs.gitEmail)
+                        repository.git.repository.config.apply {
                             setString("remote", "origin", "url", remote)
-                        }
-                        repository.git.remoteAdd {
-                            setName("origin")
-                            setUri(URIish(remote))
+                            save()
                         }
                     }
                 }
@@ -153,11 +150,9 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
 
         binding.pull.setOnClickListener {
             catchException {
-                repository.git.remoteAdd {
-                    setName("origin")
-                    setUri(URIish(binding.remote.text.toString()))
-                }
-                repository.pull(OutputStreamWriter(System.out), binding.rebase.isChecked)
+                repository.pull(
+                    OutputStreamWriter(System.out), binding.rebase.isChecked, getAuthor()
+                )
                 withContext(Dispatchers.Main) {
                     (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())
                     Snackbar.make(binding.root, "Pulled", Snackbar.LENGTH_SHORT).show()
@@ -182,19 +177,12 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
         }
 
         binding.push.setOnClickListener {
-            binding.remote.text.toString().let { remote ->
-                catchException {
-                    repository.git.remoteAdd {
-                        setName("origin")
-                        setUri(URIish(remote))
-                    }
-                    repository.push(
-                        OutputStreamWriter(System.out),
-                        Credentials(Prefs.gitUsername, Prefs.gitApiKey)
-                    )
-                    withContext(Dispatchers.Main) {
-                        Snackbar.make(binding.root, "Pushed", Snackbar.LENGTH_SHORT).show()
-                    }
+            catchException {
+                repository.push(
+                    OutputStreamWriter(System.out), Credentials(Prefs.gitUsername, Prefs.gitApiKey)
+                )
+                withContext(Dispatchers.Main) {
+                    Snackbar.make(binding.root, "Pushed", Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -236,6 +224,7 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
             try {
                 code()
             } catch (e: Exception) {
+                Log.e("GitFragment", e.message, e)
                 withContext(Dispatchers.Main) {
                     Snackbar.make(binding.root, e.message.toString(), Snackbar.LENGTH_SHORT).show()
                 }

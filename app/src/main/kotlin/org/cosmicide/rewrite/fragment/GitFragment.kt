@@ -151,7 +151,9 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
         binding.pull.setOnClickListener {
             catchException {
                 repository.pull(
-                    OutputStreamWriter(System.out), binding.rebase.isChecked, getAuthor()
+                    OutputStreamWriter(System.out),
+                    binding.rebase.isChecked,
+                    Credentials(Prefs.gitUsername, Prefs.gitApiKey)
                 )
                 withContext(Dispatchers.Main) {
                     (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())

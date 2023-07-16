@@ -106,7 +106,7 @@ fun File.cloneRepository(url: String, writer: Writer): Repository {
     println("Cloning repository from $url to ${file.absolutePath}")
     val git = KGit.cloneRepository {
         setURI(url)
-        setGitDir(file)
+        setDirectory(file)
         setProgressMonitor(TextProgressMonitor(writer))
     }
     println("Cloned repository from $url to ${file.absolutePath}")

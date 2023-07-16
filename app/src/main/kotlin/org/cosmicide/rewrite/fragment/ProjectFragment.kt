@@ -13,6 +13,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,8 +27,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import dev.pranav.jgit.tasks.cloneRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
@@ -36,8 +40,11 @@ import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
+import org.cosmicide.rewrite.util.CommonUtils
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.unzip
+import java.io.OutputStream
+import java.io.PrintWriter
 
 class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
     ProjectAdapter.OnProjectEventListener {
@@ -121,12 +128,14 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         binding.fabs.importButton.visibility = View.GONE
         binding.fabs.fabNewProject.visibility = View.GONE
         binding.fabs.cancelText.visibility = View.GONE
+        binding.fabs.gitClone.visibility = View.GONE
 
         binding.fabs.cancel.setOnClickListener {
             if (!binding.fabs.importButton.isVisible) {
                 binding.fabs.importButton.visibility = View.VISIBLE
                 binding.fabs.fabNewProject.visibility = View.VISIBLE
                 binding.fabs.cancelText.visibility = View.VISIBLE
+                binding.fabs.gitClone.visibility = View.VISIBLE
                 binding.fabs.cancelFab.setImageDrawable(
                     ResourcesCompat.getDrawable(
                         resources,
@@ -145,10 +154,14 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                 binding.fabs.fabNewProject.setOnClickListener {
                     navigateToNewProjectFragment()
                 }
+                binding.fabs.gitClone.setOnClickListener {
+                    gitClone()
+                }
             } else {
                 binding.fabs.importButton.visibility = View.GONE
                 binding.fabs.fabNewProject.visibility = View.GONE
                 binding.fabs.cancelText.visibility = View.GONE
+                binding.fabs.gitClone.visibility = View.GONE
 
                 binding.fabs.cancelFab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.sharp_add_24, activity?.theme)
@@ -196,6 +209,75 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
             }
             .show()
         return true
+    }
+
+    fun gitClone() {
+        val editText = EditText(requireContext()).apply {
+            hint = "Enter git url"
+        }
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(editText)
+            setTitle("Git Clone")
+            setPositiveButton("Clone") { _, _ ->
+                val url = editText.text.toString()
+                var repoName = url.substringAfterLast("/")
+                if (repoName.endsWith(".git")) {
+                    repoName = repoName.substringBefore(".git")
+                }
+                val folder = FileUtil.projectDir.resolve(repoName)
+                if (folder.exists()) {
+                    Snackbar.make(requireView(), "Project already exists", Snackbar.LENGTH_LONG)
+                        .show()
+                    return@setPositiveButton
+                }
+                val textView = TextView(requireContext()).apply {
+                    text = "Cloning..."
+                    setPadding(32, 32, 32, 32)
+                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+                }
+                val sheet = BottomSheetDialog(requireContext()).apply {
+                    setContentView(textView)
+                    setCancelable(false)
+                    show()
+                }
+                binding.fabs.cancel.performClick()
+
+                try {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        folder.cloneRepository(url,
+                            PrintWriter(
+                                object : OutputStream() {
+                                    override fun write(p0: Int) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            textView.append(p0.toChar().toString())
+                                        }
+                                    }
+
+                                    override fun write(b: ByteArray?) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            textView.append("\n" + b?.toString(Charsets.UTF_8))
+                                        }
+                                    }
+                                }
+                            ))
+                        viewModel.loadProjects()
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            sheet.dismiss()
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    sheet.dismiss()
+                    lifecycleScope.launch {
+                        CommonUtils.showSnackbarError(
+                            requireView(),
+                            e.message ?: "Unknown error",
+                            e
+                        )
+                    }
+                }
+            }
+        }.show()
     }
 
     private fun askForAnalyticsPermission() {

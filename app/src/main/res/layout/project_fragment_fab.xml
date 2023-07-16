@@ -12,9 +12,36 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/git_clone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:gravity="end|center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/clone_from_git"
+            android:textSize="16sp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:contentDescription="@string/clone_from_git"
+            android:elevation="0dp"
+            android:src="@drawable/github"
+            app:elevation="0dp"
+            app:rippleColor="?colorPrimaryDark" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/import_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:clickable="true"
         android:gravity="end|center_vertical"
         android:orientation="horizontal">

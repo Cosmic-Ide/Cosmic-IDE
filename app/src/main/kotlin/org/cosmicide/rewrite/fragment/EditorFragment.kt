@@ -397,6 +397,11 @@ class EditorFragment(
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        editorAdapter.saveAll()
+    }
+
     private fun formatCodeAsync() {
         val fragment = getCurrentFragment()
         if (fragment == null) {

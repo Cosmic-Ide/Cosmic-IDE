@@ -42,6 +42,7 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
         val compilerSettings = CompilerSettings(requireActivity())
         val pluginsSettings = PluginsSettings(requireActivity())
         val gitSettings = GitSettings()
+        val aboutSettings = AboutSettings(requireActivity())
 
         val screen = screen(requireContext()) {
             subScreen {
@@ -63,13 +64,11 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
                 compilerSettings.provideSettings(this)
             }
             subScreen {
-                collapseIcon = true
                 title = "Formatter"
                 summary = "Adjust code formatting preferences"
                 formatterSettings.provideSettings(this)
             }
             subScreen {
-                collapseIcon = true
                 title = "Plugins"
                 summary = "Explore and install plugins to extend the functionality of the IDE"
                 pluginsSettings.provideSettings(this)
@@ -79,6 +78,12 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
                 title = "Git"
                 summary = "Configure Git integration"
                 gitSettings.provideSettings(this)
+            }
+            subScreen {
+                collapseIcon = true
+                title = "About"
+                summary = "Learn more about Cosmic IDE"
+                aboutSettings.provideSettings(this)
             }
         }
 

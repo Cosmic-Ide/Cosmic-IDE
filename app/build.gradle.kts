@@ -108,6 +108,7 @@ dependencies {
     implementation("com.android.tools:r8:8.0.40")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     implementation("com.airbnb.android:lottie:6.0.1")
+    //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
     implementation("com.github.xxdark:ssvm:df30743")
     implementation("com.google.android.material:material:1.9.0")
@@ -129,11 +130,14 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
 
-    val editorVersion = "0.21.1-a50ba9c-SNAPSHOT"
+    val editorVersion = "0.21.1-f243159-SNAPSHOT"
+    //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
+    //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:language-textmate:$editorVersion")
     implementation("io.github.dingyi222666:treeview:1.2.1")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
+    implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r")
     implementation("com.github.sya-ri:kgit:1.0.5")

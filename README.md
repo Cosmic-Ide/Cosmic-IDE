@@ -11,7 +11,7 @@ developers who want to build high-quality, bug-free applications.
 ## Installation
 
 Currently Cosmic IDE Rewrite is in beta stage, and there is no stable release yet. You can download
-the app from [here](
+the app from [here](https://nightly.link/Cosmic-Ide/rewrite/workflows/android/main/apk-debug.zip).
 
 ## Features
 

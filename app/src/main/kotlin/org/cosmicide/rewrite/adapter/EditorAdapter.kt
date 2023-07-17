@@ -146,8 +146,6 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
             }
 
             println("Reading file: ${file.absolutePath}")
-            println("File exists: ${file.exists()}")
-            println("Contents: ${file.readText()}")
             editor.setText(file.readText())
         }
 

@@ -46,6 +46,12 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 defaultValue = false
             }
 
+            switch(PreferenceKeys.STICKY_SCROLL) {
+                title = "Sticky scroll"
+                summary = "Enables sticky scroll in the editor"
+                defaultValue = true
+            }
+
             switch(PreferenceKeys.EDITOR_USE_SPACES) {
                 title = "Use spaces instead of tabs"
                 summary = "Choose whether to use spaces instead of tab character"

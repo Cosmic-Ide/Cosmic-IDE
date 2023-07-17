@@ -32,6 +32,9 @@ object Prefs {
     val useFastJarFs: Boolean
         get() = prefs.getBoolean("use_fastjarfs", true)
 
+    val stickyScroll: Boolean
+        get() = prefs.getBoolean("sticky_scroll", false)
+
     val useK2: Boolean
         get() = prefs.getBoolean("use_k2", true)
 

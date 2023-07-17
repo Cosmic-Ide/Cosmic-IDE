@@ -34,6 +34,7 @@ object PreferenceKeys {
     const val EDITOR_EXP_JAVA_COMPLETION = "experimental_java_completion"
     const val BRACKET_PAIR_AUTOCOMPLETE = "bracket_pair_autocomplete"
     const val QUICK_DELETE = "quick_delete"
+    const val STICKY_SCROLL = "sticky_scroll"
 
     // Formatter
     const val FORMATTER_KTFMT_STYLE = "ktfmt_style"

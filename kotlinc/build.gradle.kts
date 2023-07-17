@@ -30,6 +30,7 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
+        apiVersion = "1.9"
     }
 }
 

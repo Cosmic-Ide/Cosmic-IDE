@@ -13,13 +13,10 @@
 #}
 -adaptclassstrings
 -adaptresourcefilecontents
--dontobfuscate
--dontnote *
 -ignorewarnings
 -dontoptimize
--dontpreverify
--dontshrink''
 -keepattributes SourceFile,LineNumberTable
+-optimizationpasses 5
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.

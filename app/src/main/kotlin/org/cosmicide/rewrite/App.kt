@@ -80,7 +80,6 @@ class App : Application() {
         if (BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder().apply {
-                    detectLeakedClosableObjects()
                     detectLeakedRegistrationObjects()
                     detectActivityLeaks()
                     detectContentUriWithoutPermission()

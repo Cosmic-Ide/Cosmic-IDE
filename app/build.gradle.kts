@@ -49,11 +49,14 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+
+        isCoreLibraryDesugaringEnabled = true
     }
 
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
+        apiVersion = "1.9"
     }
 
     viewBinding {
@@ -172,5 +175,7 @@ dependencies {
     implementation(projects.util)
     implementation(projects.jgit)
 
+    //jgit uses some methods like `transferTo` are only available from Android 13 onwards
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")
     testImplementation("junit:junit:4.13.2")
 }

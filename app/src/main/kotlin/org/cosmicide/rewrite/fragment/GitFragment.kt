@@ -218,7 +218,7 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        repository.git.close()
+        if (this::repository.isInitialized) repository.git.close()
     }
 
     fun catchException(code: suspend () -> Unit) {

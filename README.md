@@ -8,6 +8,11 @@ Cosmic IDE is a powerful and feature-rich IDE for JVM development on Android. It
 the latest technologies, and offers a wide range of features that make it the perfect tool for
 developers who want to build high-quality, bug-free applications.
 
+## Installation
+
+Currently Cosmic IDE Rewrite is in beta stage, and there is no stable release yet. You can download
+the app from [here](
+
 ## Features
 
 * Supports Java 17 and Kotlin 2.1

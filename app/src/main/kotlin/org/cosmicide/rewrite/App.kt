@@ -14,7 +14,10 @@ import android.os.Build
 import android.os.StrictMode
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import com.developer.crashx.CrashActivity
+import com.developer.crashx.config.CrashConfig
 import com.google.android.material.color.DynamicColors
+import com.google.firebase.FirebaseApp
 import com.itsaky.androidide.config.JavacConfigProvider
 import de.robv.android.xposed.XC_MethodHook
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
@@ -57,6 +60,26 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = WeakReference(this)
+
+        CrashConfig.Builder.create()
+            .showRestartButton(true)
+            .trackActivities(true)
+            .eventListener(object : CrashActivity.EventListener {
+                override fun onLaunchErrorActivity() {
+                    FirebaseApp.initializeApp(this@App)
+                }
+
+                override fun onRestartAppFromErrorActivity() {
+
+                }
+
+                override fun onCloseAppFromErrorActivity() {
+
+                }
+
+            })
+            .apply()
+
         val externalStorage = getExternalFilesDir(null)!!
 
         Prefs.init(applicationContext)

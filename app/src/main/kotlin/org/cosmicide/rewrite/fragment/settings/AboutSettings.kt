@@ -64,10 +64,12 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 onClick {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         try {
-                            val intent = Intent()
-                            intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                            intent.setData(Uri.parse("package:" + activity.packageName))
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            activity.startActivity(
+                                Intent(
+                                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                    Uri.parse("package:" + activity.packageName)
+                                )
+                            )
                         } catch (e: Exception) {
                             val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                             activity.startActivity(intent)
@@ -87,6 +89,13 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         Toast.LENGTH_LONG
                     ).show()
                     true
+                }
+            }
+
+            pref("force_crash") {
+                title = "Force crash"
+                onClick {
+                    throw RuntimeException("Forced crash")
                 }
             }
         }

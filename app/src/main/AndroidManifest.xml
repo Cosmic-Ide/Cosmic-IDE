@@ -68,6 +68,11 @@
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/Theme.CosmicIDERewrite" />
+
+        <activity
+            android:name="com.developer.crashx.activity.DefaultErrorActivity"
+            android:process=":error_activity"
+            android:theme="@style/Theme.CosmicIDERewrite" />
     </application>
 
 </manifest>

@@ -177,6 +177,7 @@ dependencies {
     implementation(projects.kotlinc)
     implementation(projects.util)
     implementation(projects.jgit)
+    implementation(projects.feature.treeView)
 
     //jgit uses some methods like `transferTo` are only available from Android 13 onwards
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")

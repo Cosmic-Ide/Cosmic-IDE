@@ -17,14 +17,15 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.widget.treeview.OnItemClickListener
+import com.widget.treeview.TreeViewAdapter
 import dev.pranav.navigation.KtNavigationProvider
 import dev.pranav.navigation.NavigationProvider
-import io.github.dingyi222666.view.treeview.Tree
-import io.github.dingyi222666.view.treeview.TreeView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmic.ide.dependency.resolver.getArtifact
@@ -41,8 +42,6 @@ import org.cosmicide.rewrite.editor.formatter.GoogleJavaFormat
 import org.cosmicide.rewrite.editor.formatter.ktfmtFormatter
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.treeview.FileSet
-import org.cosmicide.rewrite.treeview.FileTreeNodeGenerator
-import org.cosmicide.rewrite.treeview.ViewBinder
 import org.cosmicide.rewrite.util.FileFactoryProvider
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
@@ -92,14 +91,7 @@ class EditorFragment(
             setOnRefreshListener {
                 isRefreshing = true
                 lifecycleScope.launch {
-                    binding.included.treeview.tree.apply {
-                        generator = FileTreeNodeGenerator(
-                            FileSet(
-                                project.root, traverseDirectory(project.root) as MutableSet<FileSet>
-                            )
-                        )
-                        initTree()
-                    }
+                    initTreeView()
                 }
                 isRefreshing = false
             }
@@ -163,38 +155,28 @@ class EditorFragment(
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun initTreeView() {
-        val treeview = binding.included.treeview as TreeView<FileSet>
-        val binder = ViewBinder(
-            lifecycleScope,
-            layoutInflater,
-            fileViewModel,
-            treeview)
+        binding.included.recycler.apply {
+            val nodes = TreeViewAdapter.merge(project.root)
+            layoutManager = LinearLayoutManager(context)
+            adapter = TreeViewAdapter(context, nodes).apply {
+                setOnItemClickListener(object : OnItemClickListener {
+                    override fun onItemClick(v: View, position: Int) {
+                        val file = nodes[position].value
+                        if (file.exists().not() || file.isDirectory) return
+                        if (file.isFile) {
+                            fileViewModel.addFile(file)
+                        }
+                    }
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            val rootItem = FileSet(
-                project.root, traverseDirectory(project.root) as MutableSet<FileSet>
-            )
-
-            val generator = FileTreeNodeGenerator(rootItem)
-
-            val tree = Tree.createTree<FileSet>().apply {
-                this.generator = generator
-                initTree()
-            }
-
-            lifecycleScope.launch(Dispatchers.Main) {
-                binding.included.treeview.apply {
-                    bindCoroutineScope(lifecycleScope)
-                    this.tree = tree
-                    this.binder = binder
-                    nodeEventListener = binder
-                    lifecycleScope.launch { refresh() }
-                }
+                    override fun onItemLongClick(v: View, position: Int) {
+                        showMenu(v, R.menu.treeview_menu, position)
+                    }
+                })
             }
         }
     }
+
 
     private fun handleFilesUpdate(files: List<File>) {
         binding.apply {

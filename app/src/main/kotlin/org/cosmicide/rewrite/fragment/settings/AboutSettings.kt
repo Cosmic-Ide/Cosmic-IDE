@@ -64,12 +64,10 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 onClick {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         try {
-                            activity.startActivity(
-                                Intent(
-                                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                    Uri.parse("package:" + activity.packageName)
-                                )
-                            )
+                            val intent = Intent()
+                            intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                            intent.setData(Uri.parse("package:" + activity.packageName))
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         } catch (e: Exception) {
                             val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                             activity.startActivity(intent)

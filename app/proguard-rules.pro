@@ -13,6 +13,8 @@
 #}
 -adaptclassstrings
 -adaptresourcefilecontents
+-dontobfuscate
+-dontshrink
 -ignorewarnings
 -dontoptimize
 -keepattributes SourceFile,LineNumberTable

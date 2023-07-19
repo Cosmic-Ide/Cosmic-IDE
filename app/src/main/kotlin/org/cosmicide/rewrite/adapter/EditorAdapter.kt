@@ -23,6 +23,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.subscribeEvent
 import org.cosmicide.build.Javap
 import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
+import org.cosmicide.rewrite.databinding.EditorFragmentBinding
 import org.cosmicide.rewrite.editor.IdeEditor
 import org.cosmicide.rewrite.editor.language.JavaLanguage
 import org.cosmicide.rewrite.editor.language.KotlinLanguage
@@ -39,7 +40,7 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
 
     init {
         fileViewModel.files.observe(fragment.viewLifecycleOwner) { files ->
-            notifyDataSetChanged()
+            notifyItemRangeChanged(0, itemCount)
             fragments.clear()
             ids = files.map { it.hashCode().toLong() }
         }
@@ -75,23 +76,58 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
 
     class CodeEditorFragment(val file: File) : Fragment() {
 
-        lateinit var editor: IdeEditor
         private lateinit var eventReceiver: SubscriptionReceipt<ContentChangeEvent>
+        private lateinit var binding: EditorFragmentBinding
+        lateinit var editor: IdeEditor
 
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View {
-            editor = IdeEditor(requireContext())
-            return editor
+            binding = EditorFragmentBinding.inflate(inflater, container, false)
+            editor = binding.editor
+            return binding.root
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
+            setupSymbols()
             setText()
             setEditorLanguage()
             setColorScheme()
+        }
+
+        private fun setupSymbols() {
+            binding.apply {
+                symbolView.bindEditor(editor)
+                symbolView.addSymbols(
+                    arrayOf(
+                        "→",
+                        "(",
+                        ")",
+                        "{",
+                        "}",
+                        "[",
+                        "]",
+                        ";",
+                        ",",
+                        ".",
+                    ),
+                    arrayOf(
+                        "\t",
+                        "(",
+                        ")",
+                        "{",
+                        "}",
+                        "[",
+                        "]",
+                        ";",
+                        ",",
+                        ".",
+                    )
+                )
+            }
         }
 
         private fun setEditorLanguage() {

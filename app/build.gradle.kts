@@ -120,6 +120,9 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-perf-ktx:20.4.0")
     implementation("com.google.gms:google-services:4.3.15")
+
+    implementation("com.github.TutorialsAndroid:crashx:v6.0.19")
+
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 
     implementation("androidx.appcompat:appcompat:1.6.1")

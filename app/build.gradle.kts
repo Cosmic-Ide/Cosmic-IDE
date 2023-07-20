@@ -9,7 +9,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
     id("com.google.android.gms.oss-licenses-plugin")
 }
@@ -117,7 +116,6 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-perf-ktx:20.4.0")
     implementation("com.google.gms:google-services:4.3.15")
 

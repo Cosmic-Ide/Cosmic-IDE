@@ -17,20 +17,32 @@ object Analytics {
 
     @JvmStatic
     fun logEvent(event: String, bundle: Bundle) {
-        analytics.logEvent(event, bundle)
+        try {
+            analytics.logEvent(event, bundle)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     @JvmStatic
     fun logEvent(event: String, vararg pairs: Pair<String, String>) {
-        val bundle = Bundle()
-        for (pair in pairs) {
-            bundle.putString(pair.first, pair.second)
+        try {
+            val bundle = Bundle()
+            for (pair in pairs) {
+                bundle.putString(pair.first, pair.second)
+            }
+            logEvent(event, bundle)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        logEvent(event, bundle)
     }
 
     @JvmStatic
     fun setAnalyticsCollectionEnabled(enabled: Boolean) {
-        analytics.setAnalyticsCollectionEnabled(enabled)
+        try {
+            analytics.setAnalyticsCollectionEnabled(enabled)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

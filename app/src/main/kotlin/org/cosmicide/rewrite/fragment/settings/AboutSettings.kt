@@ -16,11 +16,20 @@ import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.onClick
 import de.Maxr1998.modernpreferences.helpers.pref
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.BuildConfig
+import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.fragment.InstallResourcesFragment
+import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.rewrite.util.ResourceUtil
 
 class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
     override fun provideSettings(builder: PreferenceScreen.Builder) {
@@ -88,6 +97,25 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         "Please enable the manage storage permission for Cosmic IDE",
                         Toast.LENGTH_LONG
                     ).show()
+                    true
+                }
+            }
+
+            pref("clear_cache") {
+                title = "Clear cache"
+                onClick {
+                    activity.lifecycleScope.launch(Dispatchers.IO) {
+                        ResourceUtil.resources.forEach {
+                            FileUtil.dataDir.resolve(it).delete()
+                        }
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(activity, "Cache cleared", Toast.LENGTH_LONG).show()
+                            activity.supportFragmentManager.beginTransaction().apply {
+                                add(R.id.fragment_container, InstallResourcesFragment())
+                                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                            }.commit()
+                        }
+                    }
                     true
                 }
             }

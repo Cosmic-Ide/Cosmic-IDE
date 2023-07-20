@@ -9,13 +9,14 @@ package org.cosmicide.project
 
 import org.cosmicide.project.templates.javaClass
 import org.cosmicide.project.templates.kotlinClass
+import java.io.Serializable
 
 /**
  * A sealed class representing a programming language.
  *
  * @property extension the file extension associated with the language
  */
-sealed class Language(val extension: String) : java.io.Serializable {
+sealed class Language(val extension: String) : Serializable {
 
     /**
      * Generates the content of a class file for the language.

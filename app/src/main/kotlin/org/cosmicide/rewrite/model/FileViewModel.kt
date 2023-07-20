@@ -54,12 +54,15 @@ class FileViewModel : ViewModel() {
      * Removes the given file from the list of files.
      */
     fun removeFile(pos: Int) {
-        files.value = files.value?.toMutableList()?.apply { removeAt(pos + 1) }
+        files.value = files.value!!.toMutableList().apply { removeAt(pos) }
 
-        if (files.value!!.isEmpty()) {
-            setCurrentPosition(-1)
-        } else {
-            setCurrentPosition(pos - 1)
+        if (currentPosition.value == pos) {
+            if (files.value!!.isEmpty()) {
+                setCurrentPosition(-1)
+            }
+        }
+        if (currentPosition.value!! > pos) {
+            setCurrentPosition(currentPosition.value!! - 1)
         }
     }
 

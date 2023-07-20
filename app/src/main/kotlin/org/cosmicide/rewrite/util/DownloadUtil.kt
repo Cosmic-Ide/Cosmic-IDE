@@ -19,7 +19,6 @@ class Download(val url: String, val callback: (percent: Int) -> Unit) {
 
     fun start(file: File) {
         val connection = URL(url).openConnection() as HttpURLConnection
-        connection.setRequestProperty("Accept-Encoding", "gzip")
         connection.requestMethod = "GET"
         totalBytes = connection.contentLengthLong
 

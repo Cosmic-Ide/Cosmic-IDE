@@ -8,6 +8,7 @@
 package org.cosmicide.project
 
 import java.io.File
+import java.io.Serializable
 
 /**
  * Represents a project.
@@ -18,7 +19,7 @@ import java.io.File
 data class Project(
     val root: File,
     val language: Language
-) {
+) : Serializable {
 
     /**
      * The name of the project, derived from the root directory.

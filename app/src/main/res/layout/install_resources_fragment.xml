@@ -5,59 +5,66 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?colorSurface"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:background="?colorSurface">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/anonymous_pro_regular"
-        android:text="@string/install_required_resources"
-        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-        android:textStyle="bold" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="16dp"
-        android:fontFamily="@font/karla_bold"
-        android:gravity="center"
-        android:text="Cosmic IDE requires some resources to actually build and run your projects. Press the button below to download and configure them."
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/install_resources_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="This will download and configure the following resources: \n- android.jar (Required for compilation)\n- rt.jar (Required for SSVM)\n- index.json (Required for java code completion)" />
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/install_resources_progress"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp" />
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/install_resources_progress_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Percent" />
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/anonymous_pro_regular"
+            android:text="@string/install_required_resources"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:fontFamily="@font/karla_bold"
+            android:gravity="center"
+            android:text="Cosmic IDE requires some resources to build and run your projects. Press the button below to download and configure them."
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/install_resources_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="This will download and configure the following resources: \n- android.jar (Required for compilation)\n- rt.jar (Required for SSVM)\n- index.json (Required for java code completion)" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/install_resources_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="32dp" />
+
+        <TextView
+            android:id="@+id/install_resources_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            tools:text="Progress" />
 
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/install_resources_button"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp"
-        android:text="Install" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/install_resources_button"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="32dp"
+            android:text="Install" />
 
-</LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

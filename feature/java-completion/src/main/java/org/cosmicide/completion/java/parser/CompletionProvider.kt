@@ -72,8 +72,10 @@ class CompletionProvider {
         val environment =
             JavaCoreProjectEnvironment({ logger.info("JavaCoreProjectEnvironment disposed") },
                 JavaCoreApplicationEnvironment { logger.info("JavaCoreApplicationEnvironment disposed") })
-        val symbolCacher = SymbolCacher(FileUtil.classpathDir.resolve("android.jar")).apply {
-            loadClassesFromJar()
+        val symbolCacher by lazy {
+            SymbolCacher(FileUtil.classpathDir.resolve("android.jar")).apply {
+                loadClassesFromJar()
+            }
         }
 
         val fileFactory by lazy {

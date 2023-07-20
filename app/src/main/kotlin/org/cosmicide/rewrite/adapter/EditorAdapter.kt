@@ -51,7 +51,11 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
     }
 
     override fun createFragment(position: Int): Fragment {
-        val fragment = CodeEditorFragment(fileViewModel.files.value!![position])
+        val fragment = CodeEditorFragment().apply {
+            arguments = Bundle().apply {
+                putSerializable("file", fileViewModel.files.value!![position])
+            }
+        }
         fragments.add(fragment)
         return fragment
     }
@@ -74,11 +78,12 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
         fragments.forEach { it.save() }
     }
 
-    class CodeEditorFragment(val file: File) : Fragment() {
+    class CodeEditorFragment : Fragment() {
 
         private lateinit var eventReceiver: SubscriptionReceipt<ContentChangeEvent>
         private lateinit var binding: EditorFragmentBinding
         lateinit var editor: IdeEditor
+        val file by lazy { requireArguments().getSerializable("file") as File }
 
         override fun onCreateView(
             inflater: LayoutInflater,

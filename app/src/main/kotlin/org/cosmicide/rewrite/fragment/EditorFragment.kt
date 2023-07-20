@@ -19,6 +19,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -31,6 +32,7 @@ import kotlinx.coroutines.launch
 import org.cosmic.ide.dependency.resolver.getArtifact
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.FileProvider.openFileWithExternalApp
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.EditorAdapter
 import org.cosmicide.rewrite.adapter.NavAdapter
@@ -38,22 +40,21 @@ import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.databinding.NavigationElementsBinding
 import org.cosmicide.rewrite.databinding.NewDependencyBinding
+import org.cosmicide.rewrite.databinding.TreeviewContextActionDialogItemBinding
 import org.cosmicide.rewrite.editor.formatter.GoogleJavaFormat
 import org.cosmicide.rewrite.editor.formatter.ktfmtFormatter
 import org.cosmicide.rewrite.model.FileViewModel
-import org.cosmicide.rewrite.treeview.FileSet
 import org.cosmicide.rewrite.util.FileFactoryProvider
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 
-class EditorFragment(
-    private val project: Project
-) : BaseBindingFragment<FragmentEditorBinding>() {
+class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private lateinit var fileIndex: FileIndex
     private val fileViewModel by activityViewModels<FileViewModel>()
     private lateinit var editorAdapter: EditorAdapter
+    private val project by lazy { requireArguments().getSerializable("project") as Project }
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 
@@ -97,34 +98,31 @@ class EditorFragment(
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    binding.apply {
-                        val fragment =
-                            parentFragmentManager.findFragmentById(R.id.fragment_container)
-                        if (fragment !is EditorFragment) {
-                            parentFragmentManager.popBackStack()
-                            return
-                        }
-                        if (drawer.isOpen) {
-                            drawer.close()
-                        } else {
-                            editorAdapter.saveAll()
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                binding.apply {
+                    val fragment = parentFragmentManager.findFragmentById(R.id.fragment_container)
+                    if (fragment !is EditorFragment) {
+                        parentFragmentManager.popBackStack()
+                        return
+                    }
+                    if (drawer.isOpen) {
+                        drawer.close()
+                    } else {
+                        editorAdapter.saveAll()
 
-                            fileIndex.putFiles(
-                                binding.pager.currentItem,
-                                fileViewModel.files.value!!
-                            )
+                        fileIndex.putFiles(
+                            binding.pager.currentItem, fileViewModel.files.value!!
+                        )
 
-                            fileViewModel.removeAll()
-                            fileViewModel.files.removeObservers(viewLifecycleOwner)
+                        fileViewModel.removeAll()
+                        fileViewModel.files.removeObservers(viewLifecycleOwner)
 
-                            parentFragmentManager.popBackStack()
-                        }
+                        parentFragmentManager.popBackStack()
                     }
                 }
-            })
+            }
+        })
 
         TabLayoutMediator(binding.tabLayout, binding.pager, true, true) { tab, position ->
             tab.text = fileViewModel.files.value!![position].name
@@ -170,7 +168,7 @@ class EditorFragment(
                     }
 
                     override fun onItemLongClick(v: View, position: Int) {
-                        showMenu(v, R.menu.treeview_menu, position)
+                        showTreeViewMenu(v, nodes.get(position).value)
                     }
                 })
             }
@@ -337,11 +335,11 @@ class EditorFragment(
             }
         }
 
-        val psiFile =
-            if (language == Language.Kotlin)
-                FileFactoryProvider.getKtPsiFile(editor.file.name, editor.editor.text.toString())
-            else
-                FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
+        val psiFile = if (language == Language.Kotlin) FileFactoryProvider.getKtPsiFile(
+            editor.file.name,
+            editor.editor.text.toString()
+        )
+        else FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
 
         val classes = psiFile.classes
         if (classes.isEmpty() && language == Language.Java) {
@@ -452,23 +450,6 @@ class EditorFragment(
         }.commit()
     }
 
-    private fun traverseDirectory(dir: File): Set<FileSet> {
-        val set = mutableSetOf<FileSet>()
-        val files = dir.listFiles() ?: return set
-        for (file in files) {
-            when {
-                file.isFile -> set.add(FileSet(file))
-                file.isDirectory -> {
-                    val tempSet = mutableSetOf<FileSet>().apply {
-                        addAll(traverseDirectory(file))
-                    }
-                    set.add(FileSet(file, tempSet))
-                }
-            }
-        }
-        return set
-    }
-
     private fun showMenu(v: View, @MenuRes menuRes: Int, position: Int) {
         val popup = PopupMenu(requireContext(), v)
         popup.menuInflater.inflate(menuRes, popup.menu)
@@ -477,12 +458,115 @@ class EditorFragment(
             when (it.itemId) {
                 R.id.close_tab -> {
                     fileViewModel.removeFile(position)
+
                 }
 
                 R.id.close_all_tab -> fileViewModel.removeAll()
-                R.id.close_left_tab -> fileViewModel.removeLeft(position)
-                R.id.close_right_tab -> fileViewModel.removeRight(position)
+                R.id.close_left_tab -> fileViewModel.removeLeft(position - 1)
+                R.id.close_right_tab -> fileViewModel.removeRight(position - 1)
                 R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.currentFile!!)
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun showTreeViewMenu(v: View, file: File) {
+        val popup = PopupMenu(v.context, v)
+        popup.menuInflater.inflate(R.menu.treeview_menu, popup.menu)
+
+        if (file.isDirectory) {
+            popup.menu.removeItem(R.id.open_external)
+        } else {
+            popup.menu.removeItem(R.id.create_kotlin_class)
+            popup.menu.removeItem(R.id.create_java_class)
+            popup.menu.removeItem(R.id.create_folder)
+        }
+
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.create_kotlin_class -> {
+                    val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.textInputLayout.suffixText = ".kt"
+                    MaterialAlertDialogBuilder(v.context).setTitle("Create kotlin class")
+                        .setView(binding.root).setPositiveButton("Create") { _, _ ->
+                            var name = binding.edittext.text.toString()
+                            name = name.replace("\\.", "")
+                            file.resolve("$name.kt").createNewFile()
+                            initTreeView()
+                        }.setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }.show()
+                }
+
+                R.id.create_java_class -> {
+                    val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.textInputLayout.suffixText = ".java"
+                    MaterialAlertDialogBuilder(v.context).setTitle("Create java class")
+                        .setView(binding.root).setPositiveButton("Create") { _, _ ->
+                            var name = binding.edittext.text.toString()
+                            name = name.replace("\\.", "")
+                            file.resolve("$name.java").createNewFile()
+                            initTreeView()
+                        }.setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }.show()
+                }
+
+                R.id.create_folder -> {
+                    val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    MaterialAlertDialogBuilder(v.context).setTitle("Create folder")
+                        .setView(binding.root).setPositiveButton("Create") { _, _ ->
+                            var name = binding.edittext.text.toString()
+                            name = name.replace("\\.", "")
+                            file.resolve(name).mkdirs()
+                            initTreeView()
+                        }.setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }.show()
+                }
+
+                R.id.create_file -> {
+                    val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    MaterialAlertDialogBuilder(v.context).setTitle("Create file")
+                        .setView(binding.root).setPositiveButton("Create") { _, _ ->
+                            var name = binding.edittext.text.toString()
+                            name = name.replace("\\.", "")
+                            file.resolve(name).createNewFile()
+                            initTreeView()
+                        }.setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }.show()
+                }
+
+                R.id.rename -> {
+                    val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.edittext.setText(file.name)
+                    MaterialAlertDialogBuilder(v.context).setTitle("Rename").setView(binding.root)
+                        .setPositiveButton("Create") { _, _ ->
+                            var name = binding.edittext.text.toString()
+                            name = name.replace("\\.", "")
+                            file.renameTo(file.parentFile!!.resolve(name))
+                            initTreeView()
+                        }.setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }.show()
+                }
+
+                R.id.delete -> {
+                    MaterialAlertDialogBuilder(v.context).setTitle("Delete")
+                        .setMessage("Are you sure you want to delete this file")
+                        .setPositiveButton("Create") { _, _ ->
+                            file.deleteRecursively()
+                            initTreeView()
+                        }.setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }.show()
+                }
+
+                R.id.open_external -> {
+                    openFileWithExternalApp(v.context, file)
+                }
             }
             true
         }

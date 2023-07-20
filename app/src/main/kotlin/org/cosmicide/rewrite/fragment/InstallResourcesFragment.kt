@@ -7,11 +7,13 @@
 
 package org.cosmicide.rewrite.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.InstallResourcesFragmentBinding
@@ -24,20 +26,25 @@ class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBin
     val rawUrl = "https://github.com/Cosmic-Ide/binaries/raw/main/"
     override fun getViewBinding() = InstallResourcesFragmentBinding.inflate(layoutInflater)
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.installResourcesButton.setOnClickListener {
+            binding.installResourcesButton.visibility = View.GONE
+
             lifecycleScope.launch(Dispatchers.IO) {
                 for (res in ResourceUtil.missingResources()) {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        binding.installResourcesText.text = "Preparing resource $res"
+                    withContext(Dispatchers.Main) {
+                        binding.installResourcesText.text = "Preparing to download resource $res"
                     }
-                    installResource(res)
-                    lifecycleScope.launch(Dispatchers.Main) {
+                    if (installResource(res).not()) {
+                        return@launch
+                    }
+                    withContext(Dispatchers.Main) {
                         binding.installResourcesText.text = "Downloaded resource $res"
                     }
                 }
-                lifecycleScope.launch(Dispatchers.Main) {
+                withContext(Dispatchers.Main) {
                     parentFragmentManager.beginTransaction().apply {
                         replace(R.id.fragment_container, ProjectFragment())
                         setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -47,16 +54,28 @@ class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBin
         }
     }
 
-    fun installResource(res: String) {
-        val url = rawUrl + res.substringAfterLast('/')
-        val file = FileUtil.dataDir.resolve(res)
-        file.parentFile!!.mkdirs()
-        file.createNewFile()
-        Download(url) {
-            lifecycleScope.launch(Dispatchers.Main) {
-                binding.installResourcesProgressText.text = "$it%"
-                binding.installResourcesProgress.progress = it
+    @SuppressLint("SetTextI18n")
+    suspend fun installResource(res: String): Boolean {
+        try {
+            val url = rawUrl + res.substringAfterLast('/')
+            val file = FileUtil.dataDir.resolve(res)
+            file.parentFile!!.mkdirs()
+            file.createNewFile()
+            Download(url) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    binding.installResourcesProgressText.text = "$it%"
+                    binding.installResourcesProgress.progress = it
+                }
+            }.start(file)
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                binding.installResourcesText.text =
+                    "Failed to download resource $res: ${e.stackTraceToString()}"
+                binding.installResourcesButton.visibility = View.VISIBLE
             }
-        }.start(file)
+            return false
+        }
     }
 }

@@ -99,10 +99,11 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 binding.infoEditor.setText("classes.jar not found")
                 return
             }
-            JarFile(jar).use {
-                val mainClass = it.entries().asSequence().firstOrNull { entry ->
-                    entry.name == "Main.class"
-                }
+            JarFile(jar).use { file ->
+                val sequence = file.entries().asSequence()
+                val mainClass = sequence.firstOrNull { entry ->
+                    entry.name.endsWith("Main.class")
+                } ?: sequence.firstOrNull()
                 if (mainClass == null) {
                     binding.infoEditor.setText("No entrypoint Main class found")
                     return
@@ -212,6 +213,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
     }
 
     private fun initVM() {
+        println("[VM] Initializing...")
         val time = System.currentTimeMillis()
 
         catchVMException {
@@ -224,10 +226,11 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             // init VM
             ssvm.initVM()
 
-            // add test JAR
+            // add classpath JAR
             FileUtil.classpathDir.walk().filter { it.extension == "jar" }.forEach {
                 ssvm.addURL(it)
             }
+            // add libs
             project.libDir.walk().filter { it.extension == "jar" }.forEach {
                 ssvm.addURL(it)
             }
@@ -240,7 +243,9 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
     private fun invoke(className: String) {
         catchVMException {
+            println("[VM] Invoking $className")
             ssvm.invokeMainMethod(className)
+            println("[VM] VM exited")
         }
     }
 

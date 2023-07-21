@@ -458,7 +458,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             when (it.itemId) {
                 R.id.close_tab -> {
                     fileViewModel.removeFile(position)
-
                 }
 
                 R.id.close_all_tab -> fileViewModel.removeAll()

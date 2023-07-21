@@ -61,6 +61,8 @@ used in Cosmic IDE:
   licensed under GNU GPL-v3
 * [NB Javac Android](https://github.com/AndroidIDEOfficial/nb-javac-android) licensed under GNU
   GPL-v2
+* [Android Tree Sitter](https://github.com/AndroidIDEOfficial/android-tree-sitter) licensed under
+  LGPL-v2.1
 * [SSVM](https://github.com/xxDark/SSVM) licensed under the MIT License
 * [ModernAndroidPreferences](https://github.com/Maxr1998/ModernAndroidPreferences) licensed under
   the Apache License 2.0

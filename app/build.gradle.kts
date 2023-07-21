@@ -109,7 +109,6 @@ fun getGitCommit(): String {
 dependencies {
     implementation("com.android.tools:r8:8.0.40")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
-    implementation("com.airbnb.android:lottie:6.0.1")
     //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
     implementation("com.github.xxdark:ssvm:df30743")
@@ -139,7 +138,12 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:language-textmate:$editorVersion")
-    implementation("io.github.dingyi222666:treeview:1.2.1")
+    //noinspection GradleDependency
+    implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion") {
+        isTransitive = false
+    }
+    implementation("com.itsaky.androidide:android-tree-sitter:3.2.0")
+    implementation("com.itsaky.androidide:tree-sitter-java:3.2.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
 
@@ -177,7 +181,7 @@ dependencies {
     implementation(projects.jgit)
     implementation(projects.feature.treeView)
 
-    //jgit uses some methods like `transferTo` are only available from Android 13 onwards
+    // jgit uses some methods like `transferTo` are only available from Android 13 onwards
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")
     testImplementation("junit:junit:4.13.2")
 }

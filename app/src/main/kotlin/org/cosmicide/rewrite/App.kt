@@ -14,6 +14,8 @@ import android.os.Build
 import android.os.StrictMode
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.developer.crashx.config.CrashConfig
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
@@ -80,6 +82,27 @@ class App : Application() {
         ) {
             override fun before(param: XC_MethodHook.MethodHookParam) {
                 System.err.println("System.exit() called!")
+                param.result = null
+            }
+        })
+
+        // Fix crash in ViewPager2
+        HookManager.registerHook(object : Hook(
+            method = "onLayoutChildren",
+            argTypes = arrayOf(RecyclerView.Recycler::class.java, RecyclerView.State::class.java),
+            type = LinearLayoutManager::class.java
+        ) {
+            override fun before(param: XC_MethodHook.MethodHookParam) {
+                try {
+                    HookManager.invokeOriginal(
+                        param.method,
+                        param.thisObject,
+                        param.args[0],
+                        param.args[1]
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
                 param.result = null
             }
         })

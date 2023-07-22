@@ -101,8 +101,8 @@ class FileViewModel : ViewModel() {
     fun removeLeft(pos: Int) {
         val currentPos = currentPosition.value ?: return
         if (pos == 0) return
-        files.value = files.value?.toMutableList()?.apply { removeAt(pos - 1) }
         setCurrentPosition(currentPos - 1)
+        files.value = files.value?.toMutableList()?.apply { removeAt(pos - 1) }
     }
 
     /**

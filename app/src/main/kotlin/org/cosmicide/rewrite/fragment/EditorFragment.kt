@@ -80,7 +80,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                binding.pager.currentItem = tab!!.position
+
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -455,6 +455,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         popup.menuInflater.inflate(menuRes, popup.menu)
 
         popup.setOnMenuItemClickListener {
+            popup.dismiss()
             when (it.itemId) {
                 R.id.close_tab -> {
                     fileViewModel.removeFile(position)

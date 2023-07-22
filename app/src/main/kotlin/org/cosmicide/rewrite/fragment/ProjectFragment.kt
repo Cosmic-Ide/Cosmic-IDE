@@ -311,7 +311,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         parentFragmentManager.commit {
             add(R.id.fragment_container, NewProjectFragment())
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 

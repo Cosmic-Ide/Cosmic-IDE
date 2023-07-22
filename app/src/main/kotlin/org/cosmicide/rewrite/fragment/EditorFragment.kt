@@ -573,4 +573,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
         popup.show()
     }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(project: Project) = EditorFragment().apply {
+            arguments = Bundle().apply {
+                putSerializable("project", project)
+            }
+        }
+    }
 }

@@ -16,6 +16,7 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -287,20 +288,20 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
 
                     R.id.action_chat -> {
-                        parentFragmentManager.beginTransaction().apply {
+                        parentFragmentManager.commit {
                             add(R.id.fragment_container, ChatFragment())
                             addToBackStack(null)
                             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        }.commit()
+                        }
                         true
                     }
 
                     R.id.action_git -> {
-                        parentFragmentManager.beginTransaction().apply {
+                        parentFragmentManager.commit {
                             add(R.id.fragment_container, GitFragment())
                             addToBackStack(null)
                             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        }.commit()
+                        }
                         true
                     }
 
@@ -435,19 +436,19 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun navigateToCompileInfoFragment() {
         editorAdapter.saveAll()
-        parentFragmentManager.beginTransaction().apply {
+        parentFragmentManager.commit {
             add(R.id.fragment_container, CompileInfoFragment())
             addToBackStack(null)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        }.commit()
+        }
     }
 
     private fun navigateToSettingsFragment() {
-        parentFragmentManager.beginTransaction().apply {
+        parentFragmentManager.commit {
             add(R.id.fragment_container, SettingsFragment())
             addToBackStack(null)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        }.commit()
+        }
     }
 
     private fun showMenu(v: View, @MenuRes menuRes: Int, position: Int) {

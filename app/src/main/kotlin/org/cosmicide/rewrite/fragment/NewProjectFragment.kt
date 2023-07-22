@@ -10,6 +10,7 @@ package org.cosmicide.rewrite.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
 import com.google.android.material.snackbar.Snackbar
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
@@ -61,10 +62,10 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             val success = createProject(language, projectName, packageName)
 
             if (success) {
-                parentFragmentManager.beginTransaction().apply {
+                parentFragmentManager.commit {
                     remove(this@NewProjectFragment)
                     setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                }.commit()
+                }
             }
         }
     }
@@ -95,7 +96,7 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
     }
 
     private fun navigateToEditorFragment(project: Project) {
-        parentFragmentManager.beginTransaction().apply {
+        parentFragmentManager.commit {
             add(R.id.fragment_container, EditorFragment().apply {
                 arguments = Bundle().apply {
                     putSerializable("project", project)
@@ -103,7 +104,7 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             })
             addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        }.commit()
+        }
     }
 
     private fun File.createMainFile(language: Language, packageName: String) {

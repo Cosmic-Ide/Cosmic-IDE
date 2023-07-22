@@ -10,6 +10,7 @@ package org.cosmicide.rewrite.fragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,10 +46,10 @@ class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBin
                     }
                 }
                 withContext(Dispatchers.Main) {
-                    parentFragmentManager.beginTransaction().apply {
+                    parentFragmentManager.commit {
                         replace(R.id.fragment_container, ProjectFragment())
                         setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    }.commit()
+                    }
                 }
             }
         }

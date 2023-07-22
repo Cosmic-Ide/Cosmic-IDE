@@ -24,6 +24,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -101,11 +102,11 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         binding.toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_settings -> {
-                    parentFragmentManager.beginTransaction().apply {
+                    parentFragmentManager.commit {
                         replace(R.id.fragment_container, SettingsFragment())
                         addToBackStack(null)
                         setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    }.commit()
+                    }
                     true
                 }
                 else -> false
@@ -307,15 +308,15 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     private fun navigateToNewProjectFragment() {
         setOnClickListeners()
-        parentFragmentManager.beginTransaction().apply {
+        parentFragmentManager.commit {
             add(R.id.fragment_container, NewProjectFragment())
             addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        }.commit()
+        }
     }
 
     private fun navigateToEditorFragment(project: Project) {
-        parentFragmentManager.beginTransaction().apply {
+        parentFragmentManager.commit {
             add(R.id.fragment_container, EditorFragment().apply {
                 arguments = Bundle().apply {
                     putSerializable("project", project)
@@ -323,6 +324,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
             })
             addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        }.commit()
+        }
     }
 }

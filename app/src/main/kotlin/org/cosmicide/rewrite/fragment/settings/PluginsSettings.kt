@@ -9,6 +9,7 @@ package org.cosmicide.rewrite.fragment.settings
 
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.editText
 import de.Maxr1998.modernpreferences.helpers.onClick
@@ -36,11 +37,11 @@ class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider
                 title = "Available plugins"
                 summary = "View available plugins"
                 onClick {
-                    activity.supportFragmentManager.beginTransaction().apply {
+                    activity.supportFragmentManager.commit {
                         add(R.id.fragment_container, PluginListFragment())
                         addToBackStack(null)
                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    }.commit()
+                    }
                     true
                 }
             }
@@ -49,11 +50,11 @@ class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider
                 title = "Installed plugins"
                 summary = "View installed plugins"
                 onClick {
-                    activity.supportFragmentManager.beginTransaction().apply {
+                    activity.supportFragmentManager.commit {
                         add(R.id.fragment_container, PluginsFragment())
                         addToBackStack(null)
                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    }.commit()
+                    }
                     true
                 }
             }

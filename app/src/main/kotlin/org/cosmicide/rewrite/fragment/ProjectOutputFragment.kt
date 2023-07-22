@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
@@ -47,15 +48,13 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.inflateMenu(R.menu.output_menu)
         binding.toolbar.setOnMenuItemClickListener {
-            val transaction = parentFragmentManager.beginTransaction()
             when (it.itemId) {
                 R.id.reload -> {
                     val text = binding.infoEditor.text
                     if (isRunning) {
-                        transaction.apply {
+                        parentFragmentManager.commit {
                             replace(R.id.fragment_container, ProjectOutputFragment())
                             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                            commit()
                         }
                     }
                     text.insert(text.cursor.rightLine, text.cursor.rightColumn, "--- Stopped ---\n")
@@ -64,10 +63,10 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 }
 
                 R.id.cancel -> {
-                    transaction.apply {
+                    parentFragmentManager.commit {
                         remove(this@ProjectOutputFragment)
                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                    }.commit()
+                    }
                     true
                 }
 
@@ -82,10 +81,10 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
         binding.toolbar.title = "Running ${project.name}"
         binding.toolbar.setNavigationOnClickListener {
-            parentFragmentManager.beginTransaction().apply {
+            parentFragmentManager.commit {
                 remove(this@ProjectOutputFragment)
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-            }.commit()
+            }
         }
         lifecycleScope.launch {
             checkClasses()

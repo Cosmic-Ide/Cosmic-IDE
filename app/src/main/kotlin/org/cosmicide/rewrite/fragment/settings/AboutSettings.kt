@@ -17,6 +17,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
@@ -110,10 +111,11 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         }
                         withContext(Dispatchers.Main) {
                             Toast.makeText(activity, "Cache cleared", Toast.LENGTH_LONG).show()
-                            activity.supportFragmentManager.beginTransaction().apply {
+
+                            activity.supportFragmentManager.commit {
                                 add(R.id.fragment_container, InstallResourcesFragment())
                                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                            }.commit()
+                            }
                         }
                     }
                     true

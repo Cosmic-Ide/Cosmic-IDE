@@ -10,6 +10,7 @@ package org.cosmicide.rewrite.fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -88,10 +89,10 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                 .setMessage("Do you want to set it now?").setCancelable(false)
                 .setPositiveButton("Yes") { _, _ ->
                     parentFragmentManager.popBackStack()
-                    parentFragmentManager.beginTransaction().apply {
+                    parentFragmentManager.commit {
                         replace(R.id.fragment_container, SettingsFragment()).addToBackStack(null)
                         setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    }.commit()
+                    }
                 }.setNegativeButton("No") { _, _ ->
                     parentFragmentManager.popBackStack()
                 }.show()

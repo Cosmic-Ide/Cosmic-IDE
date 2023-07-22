@@ -9,6 +9,7 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import kotlinx.coroutines.Dispatchers
@@ -89,10 +90,10 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     }
 
     private fun navigateToProjectOutputFragment() {
-        parentFragmentManager.beginTransaction().apply {
+        parentFragmentManager.commit {
             add(R.id.fragment_container, ProjectOutputFragment())
             addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        }.commit()
+        }
     }
 }

@@ -34,7 +34,11 @@ class MainActivity : AppCompatActivity() {
         context: Context,
         attrs: AttributeSet
     ): View? {
-        setTheme(Prefs.appAccent.toInt())
+        try {
+            setTheme(Prefs.appAccent.toInt())
+        } catch (e: Exception) {
+            e.printStackTrace();
+        }
         return super.onCreateView(parent, name, context, attrs)
     }
 

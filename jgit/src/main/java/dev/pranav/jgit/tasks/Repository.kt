@@ -51,6 +51,7 @@ class Repository(val git: KGit) {
     fun commit(author: Author, commit: String) {
         git.commit {
             setAuthor(author.name, author.email)
+            setCommitter(author.name, author.email)
             message = commit
         }
     }

@@ -11,6 +11,7 @@ import com.google.googlejavaformat.java.Main
 import org.cosmicide.rewrite.common.Prefs
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.createTempFile
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.readText
@@ -21,19 +22,20 @@ object GoogleJavaFormat {
         val file = createTempFile("file", ".java")
         file.writeText(code)
         println("Formatting code...")
+        println("Formatting with options: ${Prefs.googleJavaFormatOptions}, style: ${Prefs.googleJavaFormatStyle}")
 
         val args = mutableListOf<String>().apply {
-            addAll(Prefs.googleJavaFormatOptions ?: emptyList())
             if (Prefs.googleJavaFormatStyle == "aosp") {
-                add("--aosp")
+                add("-a")
             }
-            add("--replace")
-            add(file.toAbsolutePath().toString())
+            addAll(Prefs.googleJavaFormatOptions ?: emptyList())
+            add("-r")
+            add(file.absolutePathString())
         }
 
         Main(
             PrintWriter(OutputStreamWriter(System.out)),
-            PrintWriter(OutputStreamWriter(System.err)),
+            PrintWriter(OutputStreamWriter(System.out)),
             System.`in`
         ).format(*args.toTypedArray())
 

@@ -13,13 +13,13 @@ import org.eclipse.jgit.lib.TextProgressMonitor
 import org.eclipse.jgit.pgm.Main
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
+import org.eclipse.jgit.transport.HttpTransport
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
 import java.io.PrintStream
 import java.io.Writer
 
 class Repository(val git: KGit) {
-
 
     fun getBranches(): List<String> {
         return git.branchList().map {
@@ -70,6 +70,7 @@ class Repository(val git: KGit) {
                 )
             )
         }
+
         git.pull {
             setCredentialsProvider(
                 UsernamePasswordCredentialsProvider(
@@ -101,13 +102,20 @@ fun File.toRepository(): Repository {
     return Repository(git)
 }
 
-fun File.cloneRepository(url: String, writer: Writer): Repository {
+fun File.cloneRepository(url: String, writer: Writer, creds: Credentials): Repository {
     val file = this
     println("Cloning repository from $url to ${file.absolutePath}")
     val git = KGit.cloneRepository {
         setURI(url)
         setDirectory(file)
         setProgressMonitor(TextProgressMonitor(writer))
+        setTransportConfigCallback { transport ->
+            if (transport is HttpTransport) {
+                transport.credentialsProvider = UsernamePasswordCredentialsProvider(
+                    creds.username, creds.password
+                )
+            }
+        }
     }
     println("Cloned repository from $url to ${file.absolutePath}")
     return Repository(git)

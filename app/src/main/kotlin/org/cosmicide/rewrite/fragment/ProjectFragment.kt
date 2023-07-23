@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import dev.pranav.jgit.tasks.Credentials
 import dev.pranav.jgit.tasks.cloneRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,6 +40,7 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ProjectAdapter
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.CommonUtils
@@ -260,7 +262,8 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                                         }
                                     }
                                 }
-                            ))
+                            ),
+                            Credentials(Prefs.gitUsername, Prefs.gitApiKey))
                         viewModel.loadProjects()
                         lifecycleScope.launch(Dispatchers.Main) {
                             sheet.dismiss()

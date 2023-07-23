@@ -119,6 +119,12 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
             })
     }
 
+    fun onBackPressed() {
+        if (!preferencesAdapter.goBack()) {
+            parentFragmentManager.popBackStack()
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable("adapter", preferencesAdapter.getSavedState())

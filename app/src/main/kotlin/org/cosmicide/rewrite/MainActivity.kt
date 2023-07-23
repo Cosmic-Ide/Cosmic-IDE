@@ -20,6 +20,7 @@ import androidx.fragment.app.commit
 import org.cosmicide.rewrite.databinding.ActivityMainBinding
 import org.cosmicide.rewrite.fragment.InstallResourcesFragment
 import org.cosmicide.rewrite.fragment.ProjectFragment
+import org.cosmicide.rewrite.fragment.SettingsFragment
 import org.cosmicide.rewrite.util.ResourceUtil
 
 class MainActivity : AppCompatActivity() {
@@ -59,5 +60,20 @@ class MainActivity : AppCompatActivity() {
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             }
         }
+    }
+
+    @Deprecated(
+        "Only applies to API 29 and below",
+        replaceWith = ReplaceWith("OnBackPressedDispatcher.addCallback(owner, callback)")
+    )
+    override fun onBackPressed() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        if (fragment is SettingsFragment) {
+            fragment.onBackPressed()
+            return
+        }
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+        } else super.onBackPressed()
     }
 }

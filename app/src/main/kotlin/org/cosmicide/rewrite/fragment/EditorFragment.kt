@@ -162,7 +162,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
 
                     override fun onItemLongClick(v: View, position: Int) {
-                        showTreeViewMenu(v, nodes.get(position).value)
+                        showTreeViewMenu(v, nodes[position].value)
                     }
                 })
             }
@@ -203,7 +203,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
 
     fun getCurrentFragment(): EditorAdapter.CodeEditorFragment? {
-        return editorAdapter.getItem(binding.pager.currentItem)
+        val currentItemId = binding.pager.currentItem
+        val fragments = editorAdapter.fragments
+        if (currentItemId >= fragments.size) return null
+        return fragments[currentItemId]
     }
 
     private fun configureToolbar() {
@@ -336,9 +339,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         else FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
 
         val classes = psiFile.classes
-        if (classes.isEmpty() && language == Language.Java) {
+        if (classes.isEmpty()) {
             Snackbar.make(
-                binding.root, "No classes found", Snackbar.LENGTH_SHORT
+                binding.root, "No navigation symbols found", Snackbar.LENGTH_SHORT
             ).show()
             return
         }
@@ -390,19 +393,22 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             try {
                 val formatted = when (fileViewModel.currentFile?.extension) {
                     "java" -> {
+                        Log.i("MainActivity", "Formatting java code")
                         GoogleJavaFormat.formatCode(text)
                     }
 
                     "kt" -> {
+                        Log.i("MainActivity", "Formatting kotlin code")
                         ktfmtFormatter.formatCode(text)
                     }
 
                     else -> {
+                        Log.i("MainActivity", "Unsupported language")
                         ""
                     }
                 }
 
-                if (formatted.isNotEmpty()) {
+                if (formatted.isNotEmpty() && formatted != text) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         content.replace(0, content.length, formatted)
                     }

@@ -43,7 +43,7 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
     FragmentStateAdapter(fragment) {
 
     private var ids = fileViewModel.files.value!!.map { it.hashCode().toLong() }
-    private val fragments = mutableListOf<CodeEditorFragment>()
+    val fragments = mutableListOf<CodeEditorFragment>()
 
     init {
         fileViewModel.files.observe(fragment.viewLifecycleOwner) { files ->

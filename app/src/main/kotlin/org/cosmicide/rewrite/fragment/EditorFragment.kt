@@ -102,11 +102,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 binding.apply {
-                    val fragment = parentFragmentManager.findFragmentById(R.id.fragment_container)
-                    if (fragment !is EditorFragment) {
-                        parentFragmentManager.popBackStack()
-                        return
-                    }
                     if (drawer.isOpen) {
                         drawer.close()
                     } else {
@@ -118,8 +113,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
                         fileViewModel.removeAll()
                         fileViewModel.files.removeObservers(viewLifecycleOwner)
-
-                        parentFragmentManager.popBackStack()
                     }
                 }
             }

@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -21,6 +22,7 @@ import com.google.android.material.transition.MaterialSharedAxis
  */
 abstract class BaseBindingFragment<T : ViewBinding> : Fragment() {
     protected open lateinit var binding: T
+    open var isBackHandled = false
 
     abstract fun getViewBinding(): T
 
@@ -28,6 +30,12 @@ abstract class BaseBindingFragment<T : ViewBinding> : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         applyTransitions()
+
+        if (isBackHandled.not()) {
+            requireActivity().onBackPressedDispatcher.addCallback(this) {
+                parentFragmentManager.popBackStack()
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

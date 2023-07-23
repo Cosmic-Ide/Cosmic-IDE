@@ -25,6 +25,7 @@ import org.cosmicide.rewrite.fragment.settings.*
  */
 class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
     private lateinit var preferencesAdapter: PreferencesAdapter
+    override var isBackHandled = true
 
     override fun getViewBinding() = FragmentSettingsBinding.inflate(layoutInflater)
 

@@ -57,10 +57,10 @@ object Prefs {
         get() = prefs.getString("ktfmt_style", "google") ?: "google"
 
     val googleJavaFormatOptions: Set<String>?
-        get() = prefs.getStringSet("gjf_options", setOf())
+        get() = prefs.getStringSet("google_java_formatter_options", setOf())
 
     val googleJavaFormatStyle: String
-        get() = prefs.getString("gjf_style", "aosp") ?: "aosp"
+        get() = prefs.getString("google_java_formatter_style", "aosp") ?: "aosp"
     val lineNumbers: Boolean
         get() = prefs.getBoolean("line_numbers", true)
 

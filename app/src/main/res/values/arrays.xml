@@ -21,7 +21,7 @@
 
     <string-array name="gjf_options">
         <item>--fix-imports-only</item>
-        <item>--skip-sorting-import</item>
+        <item>--skip-sorting-imports</item>
         <item>--skip-removing-unused-imports</item>
         <item>--skip-reflowing-long-strings</item>
         <item>--skip-javadoc-formatting</item>

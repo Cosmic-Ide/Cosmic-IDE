@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/TreeView" />
             <option value="$PROJECT_DIR$/feature/bardapi" />
+            <option value="$PROJECT_DIR$/feature/code-navigation" />
             <option value="$PROJECT_DIR$/feature/completion" />
             <option value="$PROJECT_DIR$/feature/completion/java" />
             <option value="$PROJECT_DIR$/feature/completion/kotlin" />
@@ -22,7 +23,6 @@
             <option value="$PROJECT_DIR$/feature/formatter/google-java-format" />
             <option value="$PROJECT_DIR$/feature/formatter/ktfmt" />
             <option value="$PROJECT_DIR$/feature/java-completion" />
-            <option value="$PROJECT_DIR$/feature/navigation" />
             <option value="$PROJECT_DIR$/feature/project" />
             <option value="$PROJECT_DIR$/jgit" />
             <option value="$PROJECT_DIR$/kotlinc" />

@@ -175,7 +175,7 @@ dependencies {
     implementation(projects.feature.formatter.ktfmt)
     implementation(projects.feature.javaCompletion)
     implementation(projects.feature.project)
-    implementation(projects.feature.navigation)
+    implementation(projects.feature.codeNavigation)
     implementation(projects.kotlinc)
     implementation(projects.util)
     implementation(projects.jgit)

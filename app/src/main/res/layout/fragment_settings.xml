@@ -11,7 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:transitionGroup="true"
-    android:background="?colorSurface"
+    android:background="?android:attr/colorBackground"
     tools:context=".fragment.SettingsFragment">
 
     <com.google.android.material.appbar.AppBarLayout

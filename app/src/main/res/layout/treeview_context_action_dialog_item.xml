@@ -16,14 +16,14 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="16dp"
-        android:layout_marginRight="16dp">
+        android:layout_marginEnd="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:digits="qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890"
-            android:hint="Class name"
+            android:hint="@string/class_name"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

@@ -10,8 +10,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
     android:orientation="vertical"
+    android:background="?android:attr/colorBackground"
     tools:context=".fragment.PluginsFragment">
 
     <com.google.android.material.appbar.AppBarLayout

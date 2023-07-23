@@ -198,6 +198,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     override fun onDestroyView() {
         editorAdapter.saveAll()
+
+        fileIndex.putFiles(
+            binding.pager.currentItem, fileViewModel.files.value!!
+        )
+
+        fileViewModel.files.removeObservers(viewLifecycleOwner)
         super.onDestroyView()
     }
 

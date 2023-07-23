@@ -33,7 +33,11 @@ abstract class BaseBindingFragment<T : ViewBinding> : Fragment() {
 
         if (isBackHandled.not()) {
             requireActivity().onBackPressedDispatcher.addCallback(this) {
-                parentFragmentManager.popBackStack()
+                if (parentFragmentManager.backStackEntryCount > 0) {
+                    parentFragmentManager.popBackStack()
+                } else {
+                    isEnabled = false
+                }
             }
         }
     }

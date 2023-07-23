@@ -6,6 +6,7 @@
   -->
 
 <resources>
+
     <style name="Theme.CosmicIde.Base" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:fontFamily">@font/inter</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -15,7 +16,16 @@
     </style>
 
     <style name="Theme.CosmicIde" parent="Theme.CosmicIde.Base" />
+
     <style name="Theme.CosmicIde.Pyro" parent="Theme.CosmicIde.Pyro.Light" />
+
+    <style name="Theme.CosmicIde.Indigo" parent="Theme.CosmicIde.Indigo.Light" />
+
+    <style name="Theme.CosmicIde.Flamingo" parent="Theme.CosmicIde.Flamingo.Light" />
+
+    <style name="Theme.CosmicIde.Mint" parent="Theme.CosmicIde.Mint.Light" />
+
+    <style name="Theme.CosmicIde.Emerald" parent="Theme.CosmicIde.Emerald.Light" />
 
     <style name="Theme.CosmicIde.Start" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/logo_background</item>

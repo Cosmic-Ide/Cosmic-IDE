@@ -38,7 +38,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CosmicIde.Pyro"
+        android:theme="@style/Theme.CosmicIde.Start"
         tools:targetApi="33">
 
         <provider
@@ -53,8 +53,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.CosmicIde.Start">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -65,16 +64,16 @@
 
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-            android:theme="@style/Theme.CosmicIde.Pyro" />
+            android:theme="@style/Theme.CosmicIde.Flamingo" />
 
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-            android:theme="@style/Theme.CosmicIde.Pyro" />
+            android:theme="@style/Theme.CosmicIde.Flamingo" />
 
         <activity
             android:name="com.developer.crashx.activity.DefaultErrorActivity"
             android:process=":error_activity"
-            android:theme="@style/Theme.CosmicIde.Pyro" />
+            android:theme="@style/Theme.CosmicIde.Flamingo" />
     </application>
 
 </manifest>

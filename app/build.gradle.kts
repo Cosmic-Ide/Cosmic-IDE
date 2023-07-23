@@ -11,6 +11,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.firebase-perf")
     id("com.google.android.gms.oss-licenses-plugin")
+    id("dev.rikka.tools.materialthemebuilder")
 }
 
 android {
@@ -103,6 +104,22 @@ fun getGitCommit(): String {
         commit
     } catch (e: Exception) {
         ""
+    }
+}
+
+materialThemeBuilder {
+    themes {
+        for ((name, color) in listOf(
+            "Pyro" to "#EF7A35"
+        )) {
+            create(name) {
+                primaryColor = color
+                lightThemeFormat = "Theme.CosmicIde.%s.Light"
+                lightThemeParent = "Theme.CosmicIde"
+                darkThemeFormat = "Theme.CosmicIde.%s.Dark"
+                darkThemeParent = "Theme.CosmicIde"
+            }
+        }
     }
 }
 

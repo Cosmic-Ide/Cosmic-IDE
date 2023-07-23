@@ -25,8 +25,4 @@
         <item name="shapeAppearance">?attr/shapeAppearanceCornerLarge</item>
     </style>
 
-    <style name="Widget.CosmicIde.AppBarLayout" parent="Widget.Material3.AppBarLayout">
-        <item name="android:background">?android:attr/colorBackground</item>
-    </style>
-
 </resources>

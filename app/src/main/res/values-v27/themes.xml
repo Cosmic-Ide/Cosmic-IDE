@@ -5,13 +5,12 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <style name="Base.V27.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite">
+<resources>
+    <style name="Theme.CosmicIde.BaseV27" parent="Theme.CosmicIde.Base">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
-        <item tools:ignore="NewApi" name="android:enforceNavigationBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 
-    <style name="Theme.CosmicIDERewrite" parent="Base.V27.CosmicIDERewrite" />
+    <style name="Theme.CosmicIde" parent="Theme.CosmicIde.BaseV27" />
 </resources>

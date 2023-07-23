@@ -106,12 +106,6 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 summary = "If enabled, shows editor line numbers"
                 defaultValue = false
             }
-
-            switch(PreferenceKeys.EDITOR_DOUBLE_CLICK_CLOSE) {
-                title = "Close file on double click"
-                summary = "Close file on double click on the editor tab. Doesn't work for now."
-                defaultValue = false
-            }
         }
     }
 }

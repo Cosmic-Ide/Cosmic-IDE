@@ -85,6 +85,7 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
                         val pluginFolder = FileUtil.pluginDir.resolve(plugin.name)
                         pluginFolder.mkdirs()
                         pluginFolder.resolve(plugin.name).resolve("config.json").apply {
+                            parentFile?.mkdirs()
                             createNewFile()
                             writeText(plugin.raw)
                         }

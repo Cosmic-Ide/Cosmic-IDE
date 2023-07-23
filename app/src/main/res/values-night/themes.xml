@@ -7,42 +7,13 @@
 
 <resources>
 
-    <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="android:colorBackground">@color/dark_colorBackground</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+    <style name="Theme.CosmicIde.Pyro" parent="Theme.CosmicIde.Pyro.Dark" />
 
-        <item name="appBarLayoutStyle">@style/Widget.CosmicIde.AppBarLayout</item>
-        <item name="fontFamily">@font/inter</item>
-        <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
+    <style name="Theme.CosmicIde.Indigo" parent="Theme.CosmicIde.Indigo.Dark" />
 
-        <!-- Colors -->
-        <item name="colorPrimary">@color/dark_colorPrimary</item>
-        <item name="colorOnPrimary">@color/dark_colorOnPrimary</item>
-        <item name="colorPrimaryContainer">@color/dark_colorPrimaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/dark_colorOnPrimaryContainer</item>
-        <item name="colorSecondary">@color/dark_colorSecondary</item>
-        <item name="colorOnSecondary">@color/dark_colorOnSecondary</item>
-        <item name="colorSecondaryContainer">@color/dark_colorSecondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/dark_colorOnSecondaryContainer</item>
-        <item name="colorTertiary">@color/dark_colorTertiary</item>
-        <item name="colorOnTertiary">@color/dark_colorOnTertiary</item>
-        <item name="colorTertiaryContainer">@color/dark_colorTertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/dark_colorOnTertiaryContainer</item>
-        <item name="colorError">@color/dark_colorError</item>
-        <item name="colorErrorContainer">@color/dark_colorErrorContainer</item>
-        <item name="colorOnError">@color/dark_colorOnError</item>
-        <item name="colorOnErrorContainer">@color/dark_colorOnErrorContainer</item>
-        <item name="colorOnBackground">@color/dark_colorOnBackground</item>
-        <item name="colorOutline">@color/dark_colorOutline</item>
-        <item name="colorOnSurfaceInverse">@color/dark_colorInverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/dark_colorInverseSurface</item>
-        <item name="colorSurface">@color/dark_colorSurface</item>
-        <item name="colorOnSurface">@color/dark_colorOnSurface</item>
-        <item name="colorSurfaceVariant">@color/dark_colorSurfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/dark_colorOnSurfaceVariant</item>
-        <item name="colorPrimaryInverse">@color/dark_colorInversePrimary</item>
-    </style>
+    <style name="Theme.CosmicIde.Flamingo" parent="Theme.CosmicIde.Flamingo.Dark" />
 
-    <style name="Theme.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite" />
+    <style name="Theme.CosmicIde.Mint" parent="Theme.CosmicIde.Mint.Dark" />
+
+    <style name="Theme.CosmicIde.Emerald" parent="Theme.CosmicIde.Emerald.Dark" />
 </resources>

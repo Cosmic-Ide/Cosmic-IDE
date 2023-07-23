@@ -136,7 +136,7 @@ class App : Application() {
             HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")
         }
 
-       DynamicColors.applyToActivitiesIfAvailable(this)
+        DynamicColors.applyToActivitiesIfAvailable(this)
 
 
         extractFiles()
@@ -219,6 +219,7 @@ class App : Application() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         applyThemeBasedOnConfiguration()
+        setTheme(Prefs.appAccent.toInt())
     }
 
     fun applyThemeBasedOnConfiguration() {

@@ -7,7 +7,10 @@
 
 package org.cosmicide.rewrite
 
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -17,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.ActivityMainBinding
 import org.cosmicide.rewrite.fragment.InstallResourcesFragment
 import org.cosmicide.rewrite.fragment.ProjectFragment
@@ -25,9 +29,19 @@ import org.cosmicide.rewrite.util.ResourceUtil
 
 class MainActivity : AppCompatActivity() {
 
+    override fun onCreateView(
+        parent: View?,
+        name: String,
+        context: Context,
+        attrs: AttributeSet
+    ): View? {
+        setTheme(Prefs.appAccent.toInt())
+        return super.onCreateView(parent, name, context, attrs)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)

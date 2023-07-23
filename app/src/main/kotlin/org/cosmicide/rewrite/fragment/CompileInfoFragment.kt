@@ -58,7 +58,6 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
 
         binding.toolbar.apply {
             title = "Compiling ${project.name}"
-            setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
             setNavigationOnClickListener {
                 parentFragmentManager.popBackStack()
             }
@@ -93,7 +92,7 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
         parentFragmentManager.commit {
             add(R.id.fragment_container, ProjectOutputFragment())
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 }

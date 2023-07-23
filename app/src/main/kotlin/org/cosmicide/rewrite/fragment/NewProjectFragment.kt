@@ -30,9 +30,13 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
         binding.btnCreate.setOnClickListener {
-            val projectName = binding.projectName.text.toString()
-            val packageName = binding.packageName.text.toString()
+            val projectName = binding.projectName.editText?.text.toString()
+            val packageName = binding.packageName.editText?.text.toString()
 
             if (projectName.isEmpty()) {
                 binding.projectName.error = "Project name cannot be empty"
@@ -99,7 +103,7 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
         parentFragmentManager.commit {
             add(R.id.fragment_container, EditorFragment.newInstance(project))
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 

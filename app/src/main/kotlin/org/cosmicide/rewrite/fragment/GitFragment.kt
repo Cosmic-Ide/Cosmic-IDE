@@ -51,6 +51,10 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
     private fun setupUI() {
         val root = ProjectHandler.getProject()!!.root
 
+        binding.toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
         binding.recyclerview.apply {
             adapter = GitAdapter()
             layoutManager = LinearLayoutManager(context)
@@ -91,7 +95,7 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                     parentFragmentManager.popBackStack()
                     parentFragmentManager.commit {
                         replace(R.id.fragment_container, SettingsFragment()).addToBackStack(null)
-                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                 }.setNegativeButton("No") { _, _ ->
                     parentFragmentManager.popBackStack()
@@ -113,7 +117,6 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
 
         if (repository.isClean()) {
             binding.commit.isEnabled = false
-            binding.commit.alpha = 0.5f
         } else {
             (binding.staging.adapter as StagingAdapter).updateStatus(repository.git.status())
         }
@@ -196,10 +199,11 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                 BottomSheetDialog(requireContext()).apply {
                     setContentView(binding.root)
                     binding.execute.setOnClickListener {
+                        binding.gitOutput.visibility = View.VISIBLE
                         binding.gitOutput.text = ""
                         lifecycleScope.launch(Dispatchers.IO) {
                             ProjectHandler.getProject()!!.root.execGit(
-                                binding.gitCommand.text.toString().split(" ").toMutableList(),
+                                binding.gitCommand.editText?.text.toString().split(" ").toMutableList(),
                                 PrintStream(object : OutputStream() {
                                     override fun write(b: Int) {
                                         lifecycleScope.launch(Dispatchers.Main) {

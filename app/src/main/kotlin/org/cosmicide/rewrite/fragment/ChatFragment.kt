@@ -62,7 +62,6 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
     }
 
     private fun initToolbar() {
-        binding.toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
         binding.toolbar.setNavigationOnClickListener {
             parentFragmentManager.popBackStack()
         }

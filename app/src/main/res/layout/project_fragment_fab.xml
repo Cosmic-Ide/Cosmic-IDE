@@ -91,7 +91,6 @@
             app:srcCompat="@drawable/sharp_add_24" />
     </LinearLayout>
 
-
     <LinearLayout
         android:id="@+id/cancel"
         android:layout_width="match_parent"

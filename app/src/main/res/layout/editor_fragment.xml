@@ -21,7 +21,8 @@
     <io.github.rosemoe.sora.widget.SymbolInputView
         android:id="@+id/symbol_view"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
+        android:backgroundTint="?attr/colorSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editor" />
 

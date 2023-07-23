@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingVertical="8dp">
 
     <ImageView
         android:id="@+id/expand"
@@ -25,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:textAppearance="?attr/textAppearanceListItem"
+        android:textSize="14sp"
         tools:text="Main.kt" />
 
 </LinearLayout>

@@ -7,9 +7,9 @@
 
 <resources>
     <style name="Theme.CosmicIde.BaseV27" parent="Theme.CosmicIde.Base">
+        <item name="android:enforceNavigationBarContrast">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
-        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 
     <style name="Theme.CosmicIde" parent="Theme.CosmicIde.BaseV27" />

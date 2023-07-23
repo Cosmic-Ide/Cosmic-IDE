@@ -40,7 +40,7 @@ class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider
                     activity.supportFragmentManager.commit {
                         add(R.id.fragment_container, PluginListFragment())
                         addToBackStack(null)
-                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                     true
                 }
@@ -53,7 +53,7 @@ class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider
                     activity.supportFragmentManager.commit {
                         add(R.id.fragment_container, PluginsFragment())
                         addToBackStack(null)
-                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                     true
                 }

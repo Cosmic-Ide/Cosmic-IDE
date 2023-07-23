@@ -18,7 +18,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.ActivityMainBinding
@@ -65,13 +64,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         if (ResourceUtil.missingResources().isNotEmpty()) {
             supportFragmentManager.commit {
-                add(binding.fragmentContainer.id, InstallResourcesFragment())
-                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                replace(binding.fragmentContainer.id, InstallResourcesFragment())
             }
         } else {
             supportFragmentManager.commit {
-                add(binding.fragmentContainer.id, ProjectFragment())
-                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                replace(binding.fragmentContainer.id, ProjectFragment())
             }
         }
     }

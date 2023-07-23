@@ -113,8 +113,8 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                             Toast.makeText(activity, "Cache cleared", Toast.LENGTH_LONG).show()
 
                             activity.supportFragmentManager.commit {
-                                add(R.id.fragment_container, InstallResourcesFragment())
-                                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                                replace(R.id.fragment_container, InstallResourcesFragment())
+                                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                             }
                         }
                     }

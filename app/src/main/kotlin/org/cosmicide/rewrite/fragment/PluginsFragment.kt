@@ -9,7 +9,6 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
@@ -63,7 +62,6 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                 }
             })
             (adapter as PluginAdapter).submitList(getPlugins())
-            layoutManager = LinearLayoutManager(requireContext())
         }
     }
 

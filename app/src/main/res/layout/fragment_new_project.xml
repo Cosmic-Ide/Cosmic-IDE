@@ -28,8 +28,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/baseline_arrow_back_24"
                 app:title="@string/new_project" />
-
         </com.google.android.material.appbar.AppBarLayout>
 
         <LinearLayout
@@ -41,32 +41,31 @@
             android:transitionGroup="true">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/project_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_project_name">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/project_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/enter_project_name"
                     android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/package_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="20dp"
+                android:hint="@string/enter_package_name">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/package_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/enter_package_name"
                     android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.materialswitch.MaterialSwitch
-                style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
                 android:id="@+id/use_kotlin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -76,14 +75,12 @@
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3.Button.OutlinedButton"
             android:id="@+id/btn_create"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
             android:text="@string/create_project" />
-
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

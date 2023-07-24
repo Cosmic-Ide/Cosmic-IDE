@@ -22,7 +22,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8sp"
+        android:layout_marginHorizontal="8sp"
         android:orientation="vertical">
 
         <TextView
@@ -30,8 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/noto_sans_mono"
-            android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             tools:text="Completion result title" />
 
         <TextView
@@ -39,9 +39,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/noto_sans_mono"
-            android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceLabelMedium"
-            android:textColor="?attr/colorSecondaryVariant"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceBodySmall"
             tools:text="Identifier" />
     </LinearLayout>
 

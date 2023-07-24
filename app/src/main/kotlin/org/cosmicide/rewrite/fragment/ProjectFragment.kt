@@ -95,10 +95,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         askForAnalyticsPermission()
 
         setOnClickListeners()
-        setUpProjectList()
-
-        val activity = requireActivity() as AppCompatActivity
-        activity.setSupportActionBar(binding.toolbar)
+        binding.projectList.adapter = projectAdapter
 
         observeViewModelProjects()
         binding.toolbar.setOnMenuItemClickListener {
@@ -107,7 +104,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                     parentFragmentManager.commit {
                         replace(R.id.fragment_container, SettingsFragment())
                         addToBackStack(null)
-                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                     true
                 }
@@ -121,10 +118,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
         viewModel.loadProjects()
         setOnClickListeners()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.projects_menu, menu)
     }
 
     private fun setOnClickListeners() {
@@ -170,13 +163,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                     ResourcesCompat.getDrawable(resources, R.drawable.sharp_add_24, activity?.theme)
                 )
             }
-        }
-    }
-
-    private fun setUpProjectList() {
-        binding.projectList.apply {
-            adapter = projectAdapter
-            layoutManager = LinearLayoutManager(requireContext())
         }
     }
 
@@ -326,7 +312,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                 }
             })
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 }

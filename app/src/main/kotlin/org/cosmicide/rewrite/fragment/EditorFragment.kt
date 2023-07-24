@@ -259,7 +259,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         val binding = NewDependencyBinding.inflate(layoutInflater)
                         binding.apply {
                             download.setOnClickListener {
-                                var dependency = dependency.text.toString()
+                                var dependency = dependency.editText?.text.toString()
                                 if (dependency.isNotEmpty()) {
                                     dependency =
                                         dependency.replace("implementation", "").replace("'", "")
@@ -293,7 +293,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         parentFragmentManager.commit {
                             add(R.id.fragment_container, ChatFragment())
                             addToBackStack(null)
-                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         }
                         true
                     }
@@ -302,7 +302,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         parentFragmentManager.commit {
                             add(R.id.fragment_container, GitFragment())
                             addToBackStack(null)
-                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         }
                         true
                     }
@@ -496,7 +496,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     binding.textInputLayout.suffixText = ".kt"
                     MaterialAlertDialogBuilder(v.context).setTitle("Create kotlin class")
                         .setView(binding.root).setPositiveButton("Create") { _, _ ->
-                            var name = binding.edittext.text.toString()
+                            var name = binding.textInputLayout.editText?.text.toString()
                             name = name.replace("\\.", "")
                             file.resolve("$name.kt").createNewFile()
                             initTreeView()
@@ -510,7 +510,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     binding.textInputLayout.suffixText = ".java"
                     MaterialAlertDialogBuilder(v.context).setTitle("Create java class")
                         .setView(binding.root).setPositiveButton("Create") { _, _ ->
-                            var name = binding.edittext.text.toString()
+                            var name = binding.textInputLayout.editText?.text.toString()
                             name = name.replace("\\.", "")
                             file.resolve("$name.java").createNewFile()
                             initTreeView()
@@ -523,7 +523,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     MaterialAlertDialogBuilder(v.context).setTitle("Create folder")
                         .setView(binding.root).setPositiveButton("Create") { _, _ ->
-                            var name = binding.edittext.text.toString()
+                            var name = binding.textInputLayout.editText?.text.toString()
                             name = name.replace("\\.", "")
                             file.resolve(name).mkdirs()
                             initTreeView()
@@ -536,7 +536,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     MaterialAlertDialogBuilder(v.context).setTitle("Create file")
                         .setView(binding.root).setPositiveButton("Create") { _, _ ->
-                            var name = binding.edittext.text.toString()
+                            var name = binding.textInputLayout.editText?.text.toString()
                             name = name.replace("\\.", "")
                             file.resolve(name).createNewFile()
                             initTreeView()
@@ -547,10 +547,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
                 R.id.rename -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
-                    binding.edittext.setText(file.name)
+                    binding.textInputLayout.editText?.setText(file.name)
                     MaterialAlertDialogBuilder(v.context).setTitle("Rename").setView(binding.root)
                         .setPositiveButton("Create") { _, _ ->
-                            var name = binding.edittext.text.toString()
+                            var name = binding.textInputLayout.editText?.text.toString()
                             name = name.replace("\\.", "")
                             file.renameTo(file.parentFile!!.resolve(name))
                             initTreeView()

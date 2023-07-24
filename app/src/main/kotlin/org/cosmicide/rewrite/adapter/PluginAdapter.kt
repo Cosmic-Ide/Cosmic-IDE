@@ -82,7 +82,7 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
         override fun bind(data: Plugin) {
             val title = "${data.name} v${data.version}"
             binding.apply {
-                switch1.text = title
+                name.text = title
                 author.text = data.author
                 root.setOnClickListener { listener.onPluginClicked(data) }
                 root.setOnLongClickListener {

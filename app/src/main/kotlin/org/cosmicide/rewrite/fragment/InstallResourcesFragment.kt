@@ -31,7 +31,9 @@ class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.installResourcesButton.setOnClickListener {
-            binding.installResourcesButton.visibility = View.GONE
+            binding.installResourcesButton.isEnabled = false
+            binding.installResourcesProgress.visibility = View.VISIBLE
+            binding.installResourcesProgressText.visibility = View.VISIBLE
 
             lifecycleScope.launch(Dispatchers.IO) {
                 for (res in ResourceUtil.missingResources()) {
@@ -48,7 +50,7 @@ class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBin
                 withContext(Dispatchers.Main) {
                     parentFragmentManager.commit {
                         replace(R.id.fragment_container, ProjectFragment())
-                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                 }
             }
@@ -74,7 +76,9 @@ class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBin
             withContext(Dispatchers.Main) {
                 binding.installResourcesText.text =
                     "Failed to download resource $res: ${e.stackTraceToString()}"
-                binding.installResourcesButton.visibility = View.VISIBLE
+                binding.installResourcesButton.isEnabled = true
+                binding.installResourcesProgress.visibility = View.GONE
+                binding.installResourcesProgressText.visibility = View.GONE
             }
             return false
         }

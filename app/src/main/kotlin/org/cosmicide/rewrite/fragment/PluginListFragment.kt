@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -120,7 +119,6 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
             lifecycleScope.launch {
                 (adapter as AvailablePluginAdapter).submitList(getPlugins())
             }
-            layoutManager = LinearLayoutManager(requireContext())
         }
     }
 

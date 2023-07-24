@@ -37,12 +37,12 @@
                 android:text="@string/enter_dependency" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dependency"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/format_group_artifact_version">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/dependency"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
@@ -51,7 +51,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.TonalButton"
                 android:id="@+id/download"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,5 +66,4 @@
         </LinearLayout>
 
     </ScrollView>
-
 </LinearLayout>

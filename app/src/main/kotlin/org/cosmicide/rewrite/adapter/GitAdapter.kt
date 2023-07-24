@@ -44,7 +44,6 @@ class GitAdapter : RecyclerView.Adapter<GitAdapter.ViewHolder>() {
     ) : RecyclerView.ViewHolder(textView) {
 
         fun bind(commit: RevCommit) {
-            textView.setTextColor(Color.WHITE)
             textView.textSize = 16f
             textView.text = commit.authorIdent.name + " - " + commit.shortMessage
         }

@@ -6,14 +6,13 @@
   -->
 
 <resources>
+    <style name="Theme.CosmicIde.Pyro" parent="Theme.CosmicIde.Pyro.Light" />
 
-    <style name="Theme.CosmicIde.Pyro" parent="Theme.CosmicIde.Pyro.Dark" />
+    <style name="Theme.CosmicIde.Indigo" parent="Theme.CosmicIde.Indigo.Light" />
 
-    <style name="Theme.CosmicIde.Indigo" parent="Theme.CosmicIde.Indigo.Dark" />
+    <style name="Theme.CosmicIde.Flamingo" parent="Theme.CosmicIde.Flamingo.Light" />
 
-    <style name="Theme.CosmicIde.Flamingo" parent="Theme.CosmicIde.Flamingo.Dark" />
+    <style name="Theme.CosmicIde.Mint" parent="Theme.CosmicIde.Mint.Light" />
 
-    <style name="Theme.CosmicIde.Mint" parent="Theme.CosmicIde.Mint.Dark" />
-
-    <style name="Theme.CosmicIde.Emerald" parent="Theme.CosmicIde.Emerald.Dark" />
+    <style name="Theme.CosmicIde.Emerald" parent="Theme.CosmicIde.Emerald.Light" />
 </resources>

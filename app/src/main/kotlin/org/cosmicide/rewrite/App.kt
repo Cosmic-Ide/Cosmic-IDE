@@ -138,7 +138,6 @@ class App : Application() {
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 
-
         extractFiles()
         disableModules()
 

@@ -10,15 +10,11 @@ package org.cosmicide.rewrite.fragment
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
@@ -27,7 +23,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -54,7 +49,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     private val projectAdapter = ProjectAdapter(this)
     private val viewModel by activityViewModels<ProjectViewModel>()
-    private val documentPickerLauncher: ActivityResultLauncher<Intent> =
+    private val documentPickerLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result: ActivityResult ->
@@ -86,7 +81,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                     }
                 }
             }
-        }.also { documentPickerLauncher = it }
+        }
 
     override fun getViewBinding() = FragmentProjectBinding.inflate(layoutInflater)
 
@@ -204,6 +199,20 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         val editText = EditText(requireContext()).apply {
             hint = "Enter git url"
         }
+        if (Prefs.gitUsername.isEmpty() || Prefs.gitApiKey.isEmpty()) {
+            MaterialAlertDialogBuilder(requireContext()).apply {
+                setTitle("Git Clone")
+                setMessage("Please enter your git username and api key in settings")
+                setPositiveButton("Ok") { _, _ ->
+                    parentFragmentManager.commit {
+                        replace(R.id.fragment_container, SettingsFragment())
+                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    }
+                }
+                show()
+            }
+            return
+        }
         MaterialAlertDialogBuilder(requireContext()).apply {
             setView(editText)
             setTitle("Git Clone")
@@ -220,7 +229,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                     return@setPositiveButton
                 }
                 val textView = TextView(requireContext()).apply {
-                    text = "Cloning..."
+                    text = getString(R.string.clone)
                     setPadding(32, 32, 32, 32)
                     setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
                 }

@@ -22,7 +22,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 
 dependencies {
-    implementation("org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r")
+    implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
     implementation("org.eclipse.jgit:org.eclipse.jgit.pgm:6.6.0.202305301015-r") {
         exclude("net.java.dev.jna", "jna-platform")
         exclude("net.java.dev.jna", "jna")

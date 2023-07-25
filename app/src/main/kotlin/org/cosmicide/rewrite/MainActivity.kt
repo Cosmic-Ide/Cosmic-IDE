@@ -34,10 +34,9 @@ class MainActivity : AppCompatActivity() {
         context: Context,
         attrs: AttributeSet
     ): View? {
-        try {
-            setTheme(Prefs.appAccent.toInt())
-        } catch (e: Exception) {
-            e.printStackTrace();
+        val accent = Prefs.appAccent
+        if (accent != "default") {
+            setTheme(accent.toInt())
         }
         return super.onCreateView(parent, name, context, attrs)
     }

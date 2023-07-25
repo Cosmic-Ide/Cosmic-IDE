@@ -100,4 +100,5 @@
     <string name="install_required_resources">Install required resources</string>
     <string name="clone_from_git">Clone from Git</string>
     <string name="class_name">Class name</string>
+    <string name="no_projects_found_create_one_now">No projects found. Create one now!</string>
 </resources>

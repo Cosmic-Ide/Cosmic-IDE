@@ -163,18 +163,12 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     private fun observeViewModelProjects() {
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
-            showSnackBarIfNoProjects(projects)
+            if (projects.isEmpty() && binding.switcher.currentView != binding.noProjects) {
+                binding.switcher.showNext()
+            } else if (binding.switcher.currentView != binding.projectList) {
+                binding.switcher.showPrevious()
+            }
             projectAdapter.submitList(projects)
-        }
-    }
-
-    private fun showSnackBarIfNoProjects(projects: List<Project>) {
-        if (projects.isEmpty()) {
-            Snackbar.make(
-                requireView(),
-                "No projects found",
-                Snackbar.LENGTH_LONG
-            ).show()
         }
     }
 

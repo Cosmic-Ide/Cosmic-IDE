@@ -132,7 +132,13 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
         binding.addAll.setOnClickListener {
             catchException {
                 for (file in (binding.staging.adapter as StagingAdapter).files) {
-                    repository.add(file.path)
+                    when (file.status) {
+                        StagingAdapter.FileStatus.REMOVED -> repository.git.rm {
+                            addFilepattern(file.path)
+                        }
+
+                        else -> repository.add(file.path)
+                    }
                 }
                 (binding.staging.adapter as StagingAdapter).updateStatus(repository.git.status())
             }
@@ -161,7 +167,8 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                 )
                 withContext(Dispatchers.Main) {
                     (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())
-                    Snackbar.make(binding.root, "Pulled", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, "Pulled changes from remote", Snackbar.LENGTH_SHORT)
+                        .show()
                 }
             }
         }

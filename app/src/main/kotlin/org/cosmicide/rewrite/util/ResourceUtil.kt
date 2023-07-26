@@ -16,7 +16,8 @@ package org.cosmicide.rewrite.util
 
 object ResourceUtil {
 
-    val resources = arrayOf("classpath/android.jar", "rt.jar", "index.json")
+    val resources =
+        arrayOf("classpath/android.jar", "rt.jar", "index.json", "classpath/core-lambda-stubs.jar")
 
     fun missingResources(): List<String> {
         val missing = mutableListOf<String>()

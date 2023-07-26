@@ -127,6 +127,9 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        if (::preferencesAdapter.isInitialized.not()) {
+            return
+        }
         outState.putParcelable("adapter", preferencesAdapter.getSavedState())
     }
 }

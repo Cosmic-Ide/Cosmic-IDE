@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.util
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -43,9 +44,10 @@ class FileIndex(private val project: Project) {
             throw IndexOutOfBoundsException("Invalid current index: $currentIndex")
         }
 
-        val filePaths = files.distinctBy { it.absolutePath }
-            .toMutableList()
-            .apply { add(0, removeAt(currentIndex)) }
+        val filePaths =
+            files.toMutableList()
+                .apply { add(0, removeAt(currentIndex)) }
+                .map { it.absolutePath }
 
         if (project.cacheDir.exists().not()) {
             project.cacheDir.mkdir()
@@ -63,7 +65,7 @@ class FileIndex(private val project: Project) {
      */
     fun getFiles(): List<File> {
         if (filePath.exists().not()) {
-            return emptyList()
+            return listOf()
         }
 
         val json = filePath.readText()
@@ -72,14 +74,14 @@ class FileIndex(private val project: Project) {
         try {
             filePaths = Gson().fromJson(json, object : TypeToken<List<String>>() {}.type)
         } catch (e: JsonSyntaxException) {
-            return emptyList()
+            Log.e("FileIndex", "Failed to parse file index: $json", e)
+            return listOf()
         }
 
         if (filePaths.isNullOrEmpty()) {
-            return emptyList()
+            return listOf()
         }
 
         return filePaths.map { File(it) }
-            .filter(File::exists)
     }
 }

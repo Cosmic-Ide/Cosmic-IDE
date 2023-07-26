@@ -56,6 +56,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private val fileViewModel by activityViewModels<FileViewModel>()
     private lateinit var editorAdapter: EditorAdapter
     private val project by lazy { requireArguments().getSerializable("project") as Project }
+    override var isBackHandled = true
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 
@@ -89,6 +90,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         })
 
+        fileViewModel.updateFiles(fileIndex.getFiles())
+
         binding.included.refresher.apply {
             setOnRefreshListener {
                 isRefreshing = true
@@ -99,21 +102,24 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                binding.apply {
-                    if (drawer.isOpen) {
-                        drawer.close()
-                    } else {
-                        editorAdapter.saveAll()
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    binding.apply {
+                        if (drawer.isOpen) {
+                            drawer.close()
+                        } else {
+                            editorAdapter.saveAll()
 
-                        fileIndex.putFiles(
-                            binding.pager.currentItem, fileViewModel.files.value!!
-                        )
+                            fileIndex.putFiles(
+                                binding.pager.currentItem, fileViewModel.files.value!!
+                            )
 
-                        fileViewModel.removeAll()
-                        fileViewModel.files.removeObservers(viewLifecycleOwner)
-                    }
+                            fileViewModel.files.removeObservers(viewLifecycleOwner)
+                            fileViewModel.removeAll()
+                            parentFragmentManager.popBackStack()
+                        }
                 }
             }
         })
@@ -124,8 +130,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun initViewModelListeners() {
-        val indexedFiles = fileIndex.getFiles()
-
         fileViewModel.files.observe(viewLifecycleOwner) { files ->
             handleFilesUpdate(files)
         }
@@ -136,10 +140,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             if (binding.tabLayout.selectedTabPosition != pos) {
                 binding.tabLayout.getTabAt(pos)?.select()
             }
-        }
-
-        indexedFiles.forEach { file ->
-            fileViewModel.addFile(file)
         }
         fileViewModel.setCurrentPosition(0)
         if (fileViewModel.files.value!!.isEmpty()) {

@@ -101,4 +101,6 @@
     <string name="clone_from_git">Clone from Git</string>
     <string name="class_name">Class name</string>
     <string name="no_projects_found_create_one_now">No projects found. Create one now!</string>
+    <string name="install_resource_description">Cosmic IDE requires certain resources to build and run your projects. Press the button below to initiate the download process and configure them.</string>
+    <string name="resource_description">This will download and configure the following resources: \n• android.jar (Required for compilation)\n• core-lambdas-stubs.jar (Required for using lambdas in java)\n• rt.jar (Required for SSVM)\n• index.json (Required for Java code completion)</string>
 </resources>

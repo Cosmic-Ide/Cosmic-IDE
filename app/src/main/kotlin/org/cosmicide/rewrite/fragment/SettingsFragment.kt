@@ -106,6 +106,7 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (isResumed.not()) {
@@ -117,12 +118,6 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
                     }
                 }
             })
-    }
-
-    fun onBackPressed() {
-        if (!preferencesAdapter.goBack()) {
-            parentFragmentManager.popBackStack()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

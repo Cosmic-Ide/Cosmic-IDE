@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.common
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +38,10 @@ abstract class BaseBindingFragment<T : ViewBinding> : Fragment() {
                     parentFragmentManager.popBackStack()
                 } else {
                     isEnabled = false
+                    startActivity(
+                        Intent(Intent.ACTION_MAIN).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            .addCategory(Intent.CATEGORY_HOME)
+                    )
                 }
             }
         }

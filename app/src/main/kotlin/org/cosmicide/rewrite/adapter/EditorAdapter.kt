@@ -14,26 +14,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.itsaky.androidide.treesitter.java.TSLanguageJava
-import io.github.rosemoe.sora.editor.ts.LocalsCaptureSpec
-import io.github.rosemoe.sora.editor.ts.TsLanguage
-import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
-import io.github.rosemoe.sora.editor.ts.predicate.builtin.MatchPredicate
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SubscriptionReceipt
 import io.github.rosemoe.sora.lang.EmptyLanguage
-import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import io.github.rosemoe.sora.widget.subscribeEvent
 import org.cosmicide.build.Javap
 import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
-import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.EditorFragmentBinding
 import org.cosmicide.rewrite.editor.IdeEditor
 import org.cosmicide.rewrite.editor.language.KotlinLanguage
+import org.cosmicide.rewrite.editor.language.TsLanguageJava
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.ProjectHandler
@@ -52,7 +45,6 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
             ids = files.map { it.hashCode().toLong() }
         }
         System.loadLibrary("android-tree-sitter")
-        System.loadLibrary("tree-sitter-java")
     }
 
     override fun getItemCount(): Int {
@@ -148,89 +140,13 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
             val project = ProjectHandler.getProject() ?: return
             when (file.extension) {
                 "java" -> {
-                    val lang = TSLanguageJava.getInstance()
                     editor.setEditorLanguage(
-                        TsLanguage(
-                            TsLanguageSpec(
-                                language = lang,
-                                highlightScmSource = requireContext().assets.open("tree-sitter-queries/java/highlights.scm")
-                                    .reader().readText(),
-                                codeBlocksScmSource = requireContext().assets.open("tree-sitter-queries/java/blocks.scm")
-                                    .reader().readText(),
-                                bracketsScmSource = requireContext().assets.open("tree-sitter-queries/java/brackets.scm")
-                                    .reader().readText(),
-                                localsScmSource = requireContext().assets.open("tree-sitter-queries/java/locals.scm")
-                                    .reader().readText(),
-                                localsCaptureSpec = object : LocalsCaptureSpec() {
-                                    override fun isScopeCapture(captureName: String): Boolean {
-                                        return captureName == "scope"
-                                    }
-
-                                    override fun isReferenceCapture(captureName: String): Boolean {
-                                        return captureName == "reference"
-                                    }
-
-                                    override fun isDefinitionCapture(captureName: String): Boolean {
-                                        return captureName == "definition.var" || captureName == "definition.field"
-                                    }
-
-                                    override fun isMembersScopeCapture(captureName: String): Boolean {
-                                        return captureName == "scope.members"
-                                    }
-                                },
-                                predicates = listOf(
-                                    MatchPredicate
-                                )
-                            ),
-                            tab = Prefs.useSpaces.not(),
-                            themeDescription = {
-                                TextStyle.makeStyle(
-                                    EditorColorScheme.COMMENT,
-                                    0,
-                                    false,
-                                    true,
-                                    false
-                                ) applyTo "comment"
-                                TextStyle.makeStyle(
-                                    EditorColorScheme.KEYWORD,
-                                    0,
-                                    true,
-                                    false,
-                                    false
-                                ) applyTo "keyword"
-                                TextStyle.makeStyle(EditorColorScheme.LITERAL) applyTo arrayOf(
-                                    "constant.builtin",
-                                    "string",
-                                    "number"
-                                )
-                                TextStyle.makeStyle(EditorColorScheme.IDENTIFIER_VAR) applyTo arrayOf(
-                                    "variable.builtin",
-                                    "variable",
-                                    "constant"
-                                )
-                                TextStyle.makeStyle(EditorColorScheme.IDENTIFIER_NAME) applyTo arrayOf(
-                                    "type.builtin",
-                                    "type",
-                                    "attribute"
-                                )
-                                TextStyle.makeStyle(EditorColorScheme.FUNCTION_NAME) applyTo arrayOf(
-                                    "function.method",
-                                    "function.builtin",
-                                    "variable.field"
-                                )
-                                TextStyle.makeStyle(EditorColorScheme.OPERATOR) applyTo arrayOf("operator")
-                            }
-                        )
-                    )
-                    /*if (editor.editorLanguage is JavaLanguage) return
-                    editor.setEditorLanguage(
-                        JavaLanguage(
+                        TsLanguageJava.getInstance(
                             editor,
                             project,
                             file
                         )
                     )
-                     */
                     eventReceiver =
                         editor.subscribeEvent(EditorDiagnosticsMarker(editor, file, project))
                 }

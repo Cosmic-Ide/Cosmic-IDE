@@ -36,12 +36,18 @@ class NavAdapter(
             NavItemBinding.bind(it)
         } ?: NavItemBinding.inflate(LayoutInflater.from(context), parent, false)
         val item = items[position]
-        val pos = indexer.getCharPosition(item.startPosition)
-        val startLine = pos.line + 1
-        val startColumn = pos.column + 1
         binding.navItemTitle.text = item.name
-        binding.description.text =
-            "${item.modifiers} ($startLine:$startColumn)"
+        try {
+            val pos = indexer.getCharPosition(item.startPosition)
+            val startLine = pos.line + 1
+            val startColumn = pos.column + 1
+
+            binding.description.text =
+                "${item.modifiers} ($startLine:$startColumn)"
+        } catch (e: IndexOutOfBoundsException) {
+            binding.navItemTitle.text = item.name
+            binding.description.text = item.modifiers
+        }
 
         binding.navItemTitle.typeface = ResourcesCompat.getFont(context, R.font.noto_sans_mono)
         binding.description.typeface = ResourcesCompat.getFont(context, R.font.noto_sans_mono)
@@ -49,7 +55,8 @@ class NavAdapter(
         val type = when (item) {
             is NavigationProvider.MethodNavigationItem -> CompletionItemKind.Method
             is NavigationProvider.FieldNavigationItem -> CompletionItemKind.Field
-            else -> CompletionItemKind.Class
+            is NavigationProvider.ClassNavigationKind -> CompletionItemKind.Class
+            else -> CompletionItemKind.Identifier
         }
         binding.space.layoutParams.width = item.depth * 30
         binding.navItemIcon

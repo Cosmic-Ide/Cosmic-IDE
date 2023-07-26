@@ -1,23 +1,19 @@
-/*
- * This file is part of Cosmic IDE.
- * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package org.cosmicide.rewrite.editor.language
 
 import android.os.Bundle
 import android.util.Log
+import com.itsaky.androidide.treesitter.TSParser
+import com.itsaky.androidide.treesitter.java.TSLanguageJava
 import com.tyron.javacompletion.JavaCompletions
 import com.tyron.javacompletion.completion.CompletionCandidate
 import com.tyron.javacompletion.options.JavaCompletionOptionsImpl
+import io.github.rosemoe.sora.editor.ts.TsAnalyzeManager
+import io.github.rosemoe.sora.editor.ts.TsLanguage
+import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
+import io.github.rosemoe.sora.editor.ts.TsThemeBuilder
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
-import io.github.rosemoe.sora.langs.textmate.IdeLanguage
-import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
-import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -32,23 +28,14 @@ import java.io.File
 import java.net.URI
 import java.util.logging.Level
 
-/**
- * A custom implementation of an IDE language for Java.
- *
- * @property editor A reference to the [CodeEditor] instance for this language.
- * @property project The [Project] instance for this language.
- * @property file The [File] instance for this language.
- */
-class JavaLanguage(
+class TsLanguageJava(
+    languageSpec: TsLanguageSpec,
+    themeDescription: (TsThemeBuilder) -> Unit,
     val editor: CodeEditor,
     val project: Project,
     val file: File
-) : IdeLanguage(
-    grammarRegistry.findGrammar("source.java"),
-    grammarRegistry.findLanguageConfiguration("source.java"),
-    grammarRegistry,
-    themeRegistry
-) {
+) : TsLanguage(languageSpec, Prefs.useSpaces.not(), themeDescription) {
+
     private lateinit var completionProvider: CompletionProvider
 
     private val completions by lazy { JavaCompletions() }
@@ -59,16 +46,19 @@ class JavaLanguage(
             CoroutineScope(Dispatchers.IO).launch {
                 completionProvider = CompletionProvider()
             }
+        } else {
+            val options = JavaCompletionOptionsImpl(
+                "${project.binDir.absolutePath}/autocomplete.log",
+                Level.ALL,
+                emptyList(),
+                emptyList()
+            )
+            completions.initialize(URI("file://" + project.root.absolutePath), options)
+            completions.openFile(path, editor.text.toString())
         }
-        val options = JavaCompletionOptionsImpl(
-            "${project.binDir.absolutePath}/autocomplete.log",
-            Level.ALL,
-            emptyList(),
-            emptyList()
-        )
-        completions.initialize(URI("file://" + project.root.absolutePath), options)
-        completions.openFile(file.toPath(), editor.text.toString())
+
     }
+
 
     override fun requireAutoComplete(
         content: ContentReference,
@@ -80,7 +70,7 @@ class JavaLanguage(
 
         try {
             val text = editor.text.toString()
-            if (Prefs.experimentalJavaCompletion) {
+            if (::completionProvider.isInitialized) {
                 val items = completionProvider.complete(text, "Main.java", position.index)
                 publisher.setComparator(Comparator<CompletionItem> { o1, o2 ->
                     // if the first letter of the label is lowercase, then its most likely a module/package
@@ -125,15 +115,39 @@ class JavaLanguage(
             }
         } catch (e: Throwable) {
             if (e !is InterruptedException) {
-                Log.e(TAG, "Failed to fetch code completions", e)
+                Log.e("TsLanguageJava", "Failed to fetch code completions", e)
             }
         }
     }
 
 
+    override val analyzer: TsAnalyzeManager
+        get() = super.analyzer
+
+    fun getTree() = analyzer.thread?.tree
+
     companion object {
-        private const val TAG = "JavaLanguage"
-        private val grammarRegistry = GrammarRegistry.getInstance()
-        private val themeRegistry = ThemeRegistry.getInstance()
+        private val TS_LANGUAGE_JAVA = TSLanguageJava.getInstance()
+        private val parser: TSParser = TSParser()
+
+        init {
+            parser.language = TS_LANGUAGE_JAVA
+        }
+
+        fun getInstance(
+            editor: CodeEditor,
+            project: Project,
+            file: File
+        ) = TsLanguageJava(
+            Util.createLanguageSpec(
+                TS_LANGUAGE_JAVA,
+                editor.context.assets,
+                "java"
+            ),
+            { Util.applyTheme(it) },
+            editor,
+            project,
+            file
+        )
     }
 }

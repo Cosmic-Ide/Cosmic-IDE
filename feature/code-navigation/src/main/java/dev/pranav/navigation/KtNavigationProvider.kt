@@ -94,6 +94,7 @@ object KtNavigationProvider {
                 }
 
                 else -> {
+                    /*
                     navigationItems.add(
                         object : NavigationItem {
                             override val name: String
@@ -110,6 +111,7 @@ object KtNavigationProvider {
                                 get() = d
                         }
                     )
+                     */
                 }
             }
         }

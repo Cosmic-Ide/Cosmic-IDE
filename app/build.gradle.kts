@@ -123,9 +123,13 @@ materialThemeBuilder {
                 lightThemeParent = "Theme.CosmicIde"
                 darkThemeFormat = "Theme.CosmicIde.%s.Dark"
                 darkThemeParent = "Theme.CosmicIde"
+
+                isDynamicColors = false
             }
         }
     }
+
+    generatePaletteAttributes = true
 }
 
 dependencies {

@@ -12,15 +12,15 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.defaultOnSelectionChange
 import de.Maxr1998.modernpreferences.helpers.singleChoice
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
+import org.cosmicide.rewrite.MainActivity
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.util.PreferenceKeys
 
-class AppearanceSettings(private val activity: FragmentActivity) : SettingsProvider {
+class AppearanceSettings(private val activity: MainActivity) : SettingsProvider {
 
     private val themeValues: Array<String>
         get() = activity.resources.getStringArray(R.array.app_theme_entry_values)
@@ -68,10 +68,12 @@ class AppearanceSettings(private val activity: FragmentActivity) : SettingsProvi
             }
 
             singleChoice(PreferenceKeys.APP_ACCENT, accentItems) {
-                initialSelection = "default"
+                initialSelection = R.style.Theme_CosmicIde.toString()
                 title = "Choose Accent Color"
                 defaultOnSelectionChange {
-                    activity.recreate()
+                    if (activity.themeInt != it.toInt()) {
+                        activity.recreate()
+                    }
                 }
             }
         }

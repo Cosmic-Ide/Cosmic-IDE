@@ -8,13 +8,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature
-        android:name="android.software.leanback"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.touchscreen"
-        android:required="false" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
@@ -30,16 +23,14 @@
         android:allowBackup="true"
         android:allowClearUserData="false"
         android:appCategory="productivity"
-        android:banner="@drawable/banner"
-        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:banner="@drawable/ic_launcher_foreground"
         android:enableOnBackInvokedCallback="true"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CosmicIde.Start"
-        tools:targetApi="33">
+        tools:targetApi="34">
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -56,9 +47,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
 

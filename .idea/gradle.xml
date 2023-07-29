@@ -26,6 +26,7 @@
             <option value="$PROJECT_DIR$/feature/project" />
             <option value="$PROJECT_DIR$/jgit" />
             <option value="$PROJECT_DIR$/kotlinc" />
+            <option value="$PROJECT_DIR$/mylibrary" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>

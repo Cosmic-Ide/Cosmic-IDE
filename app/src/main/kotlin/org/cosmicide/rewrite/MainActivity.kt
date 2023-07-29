@@ -27,6 +27,8 @@ import org.cosmicide.rewrite.util.ResourceUtil
 
 class MainActivity : AppCompatActivity() {
 
+    var themeInt = Prefs.appAccent.toInt()
+
     override fun onCreateView(
         parent: View?,
         name: String,
@@ -35,7 +37,8 @@ class MainActivity : AppCompatActivity() {
     ): View? {
         val accent = Prefs.appAccent
         if (accent != "default") {
-            setTheme(accent.toInt())
+            themeInt = accent.toInt()
+            setTheme(themeInt)
         }
         return super.onCreateView(parent, name, context, attrs)
     }

@@ -6,13 +6,29 @@
   -->
 
 <resources>
-    <style name="Theme.CosmicIde.Pyro" parent="Theme.CosmicIde.Pyro.Dark" />
 
-    <style name="Theme.CosmicIde.Indigo" parent="Theme.CosmicIde.Indigo.Dark" />
+    <style name="Theme.CosmicIde.Pyro" parent="Theme.CosmicIde.Pyro.Dark">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
 
-    <style name="Theme.CosmicIde.Flamingo" parent="Theme.CosmicIde.Flamingo.Dark" />
+    <style name="Theme.CosmicIde.Indigo" parent="Theme.CosmicIde.Indigo.Dark">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
 
-    <style name="Theme.CosmicIde.Mint" parent="Theme.CosmicIde.Mint.Dark" />
+    <style name="Theme.CosmicIde.Flamingo" parent="Theme.CosmicIde.Flamingo.Dark">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
 
-    <style name="Theme.CosmicIde.Emerald" parent="Theme.CosmicIde.Emerald.Dark" />
+    <style name="Theme.CosmicIde.Mint" parent="Theme.CosmicIde.Mint.Dark">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
+
+    <style name="Theme.CosmicIde.Emerald" parent="Theme.CosmicIde.Emerald.Dark">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
 </resources>

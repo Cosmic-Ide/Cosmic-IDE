@@ -9,16 +9,14 @@
     <style name="Theme.CosmicIde.BaseV31" parent="Theme.CosmicIde.BaseV27">
         <item name="android:overScrollMode">always</item>
         <item name="android:windowSplashScreenBackground">@color/logo_background</item>
-        <item name="android:windowSplashScreenBrandingImage">@drawable/banner</item>
     </style>
 
     <style name="Theme.CosmicIde" parent="Theme.CosmicIde.BaseV31" />
 
     <style name="Theme.CosmicIde.Start" parent="Theme.SplashScreen">
-        <item name="android:windowSplashScreenAnimationDuration">2147483647</item>
-
         <item name="windowSplashScreenBackground">@color/logo_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_animated</item>
+        <item name="android:splashScreenTheme">@style/Theme.CosmicIde.Flamingo</item>
+        <item name="windowSplashScreenIconBackgroundColor">?attr/colorSurface</item>
         <item name="postSplashScreenTheme">@style/Theme.CosmicIde.Pyro</item>
     </style>
 </resources>

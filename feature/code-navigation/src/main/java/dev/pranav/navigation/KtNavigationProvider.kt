@@ -4,6 +4,9 @@ import dev.pranav.navigation.NavigationProvider.ClassNavigationKind
 import dev.pranav.navigation.NavigationProvider.FieldNavigationItem
 import dev.pranav.navigation.NavigationProvider.MethodNavigationItem
 import dev.pranav.navigation.NavigationProvider.NavigationItem
+import org.jetbrains.kotlin.descriptors.explicitParameters
+import org.jetbrains.kotlin.descriptors.impl.PropertyDescriptorImpl
+import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -11,8 +14,61 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtSuperTypeEntry
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.resolve.TopDownAnalysisContext
 
 object KtNavigationProvider {
+
+    fun parseAnalysisContext(context: TopDownAnalysisContext): List<NavigationItem> {
+        val navigationItems = mutableListOf<NavigationItem>()
+
+        for (file in context.allClasses) {
+            println("Parsing ${file.name}")
+            file.declaredCallableMembers.forEach { callableMember ->
+                println("Parsing ${callableMember.name}, ${callableMember::class.java.name}")
+                when (callableMember) {
+                    is SimpleFunctionDescriptorImpl -> {
+                        val returnType = callableMember.returnType.toString()
+
+                        val name = buildString {
+                            append(
+                                "fun ${callableMember.name}(${
+                                    callableMember.explicitParameters.toMutableList()
+                                        .joinToString(", ") {
+                                            it.name.asString() + ": " + it.type.toString()
+                                        }
+                                }"
+                            )
+                            append(": $returnType")
+                        }
+                        navigationItems.add(
+                            MethodNavigationItem(
+                                name,
+                                callableMember.visibility.name,
+                                0,
+                                0,
+                                0
+                            )
+                        )
+                    }
+
+                    is PropertyDescriptorImpl -> {
+                        val type = callableMember.type.toString()
+                        val name = callableMember.name.asString()
+                        navigationItems.add(
+                            FieldNavigationItem(
+                                "$name: $type",
+                                callableMember.visibility.name,
+                                0,
+                                0,
+                                0
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        return navigationItems
+    }
 
     fun parseKtFile(psiFile: KtFile, depth: Int = 0): List<NavigationItem> {
         var d = depth

@@ -60,7 +60,7 @@ class JavaAnalyzer(
     init {
         standardFileManager.setLocation(
             StandardLocation.PLATFORM_CLASS_PATH,
-            FileUtil.classpathDir.walk().filter { it.extension == "jar" }.toList()
+            FileUtil.classpathDir.walk().toList()
         )
         if (!project.binDir.exists()) {
             project.binDir.mkdirs()
@@ -85,21 +85,18 @@ class JavaAnalyzer(
             add(version.toString())
         }
 
-        /*val borrow =
-            reusableCompiler.getTask(
-                standardFileManager,
-                diagnostics,
-                args,
-                null,
-                toCompile
-            )*/
-        tool.getTask(null, standardFileManager, diagnostics, copy, null, toCompile).apply {
-            parse()
-            analyze()
-            if (diagnostics.diagnostics.isEmpty()) {
-                generate().forEach(Cache::saveCache)
+        tool.getTask(System.out.writer(), standardFileManager, diagnostics, copy, null, toCompile)
+            .apply {
+                parse()
+                analyze()
+                if (diagnostics.diagnostics.isEmpty()) {
+                    try {
+                        generate().forEach(Cache::saveCache)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
-        }
     }
 
 

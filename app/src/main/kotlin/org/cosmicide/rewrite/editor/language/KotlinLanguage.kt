@@ -11,13 +11,20 @@ import android.os.Bundle
 import android.util.Log
 import com.tyron.kotlin.completion.KotlinEnvironment
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticDetail
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
 import io.github.rosemoe.sora.langs.textmate.IdeLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
 import io.github.rosemoe.sora.widget.CodeEditor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
+import org.jetbrains.kotlin.diagnostics.Severity
 import java.io.File
 
 /**
@@ -37,7 +44,7 @@ class KotlinLanguage(
     grammarRegistry,
     themeRegistry
 ) {
-    val kotlinEnvironment: KotlinEnvironment by lazy { KotlinEnvironment.get(project) }
+    val kotlinEnvironment: KotlinEnvironment = KotlinEnvironment.get(project)
     private var fileName: String = file.name
 
     init {
@@ -47,6 +54,33 @@ class KotlinLanguage(
             fileName = ktFile.name
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update Kotlin file", e)
+        }
+        editor.post {
+            editor.diagnostics = DiagnosticsContainer()
+        }
+        kotlinEnvironment.addIssueListener {
+            if (it == null) return@addIssueListener
+            val severity = when (it.severity) {
+                Severity.ERROR -> DiagnosticRegion.SEVERITY_ERROR
+                Severity.WARNING -> DiagnosticRegion.SEVERITY_WARNING
+                else -> return@addIssueListener
+            }
+            editor.post {
+                editor.diagnostics?.addDiagnostic(
+                    DiagnosticRegion(
+                        it.startOffset,
+                        it.endOffset,
+                        severity,
+                        0,
+                        DiagnosticDetail(it.message)
+                    )
+                )
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            kotlinEnvironment.analysisOf(kotlinEnvironment.kotlinFiles.map {
+                it.value.kotlinFile
+            }, kotlinEnvironment.kotlinFiles[fileName]!!.kotlinFile)
         }
     }
 
@@ -59,6 +93,9 @@ class KotlinLanguage(
         super.requireAutoComplete(content, position, publisher, extraArguments)
 
         try {
+            editor.post {
+                editor.diagnostics = DiagnosticsContainer()
+            }
             val text = editor.text.toString()
             val ktFile = kotlinEnvironment.updateKotlinFile(fileName, text)
             val itemList = ktFile.let {

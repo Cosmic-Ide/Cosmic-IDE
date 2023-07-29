@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SubscriptionReceipt
@@ -21,6 +22,8 @@ import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.subscribeEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.cosmicide.build.Javap
 import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
 import org.cosmicide.rewrite.databinding.EditorFragmentBinding
@@ -100,8 +103,11 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
             super.onViewCreated(view, savedInstanceState)
             setupSymbols()
             setText()
+            editor.setFont()
             setColorScheme()
-            setEditorLanguage()
+            lifecycleScope.launch(Dispatchers.IO) {
+                setEditorLanguage()
+            }
         }
 
         private fun setupSymbols() {
@@ -170,8 +176,6 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
                     editor.setEditorLanguage(EmptyLanguage())
                 }
             }
-
-            editor.setFont()
         }
 
         private fun setColorScheme() {
@@ -202,7 +206,8 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
 
         override fun onDestroy() {
             super.onDestroy()
-            editor.release()
+            if (::eventReceiver.isInitialized) eventReceiver.unsubscribe()
+            if (::editor.isInitialized) editor.release()
         }
     }
 }

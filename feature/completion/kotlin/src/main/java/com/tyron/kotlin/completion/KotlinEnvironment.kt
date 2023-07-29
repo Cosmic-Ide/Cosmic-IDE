@@ -37,6 +37,10 @@ import org.cosmicide.rewrite.util.FileUtil
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
+import org.jetbrains.kotlin.cli.common.messages.AnalyzerWithCompilerReport
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.jvm.compiler.CliBindingTrace
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
@@ -51,6 +55,7 @@ import org.jetbrains.kotlin.config.JVMConfigurationKeys
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
+import org.jetbrains.kotlin.container.ComponentProvider
 import org.jetbrains.kotlin.container.getService
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
@@ -62,6 +67,7 @@ import org.jetbrains.kotlin.descriptors.PackageViewDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
 import org.jetbrains.kotlin.descriptors.VariableDescriptor
+import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.idea.FrontendInternals
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -74,6 +80,7 @@ import org.jetbrains.kotlin.renderer.ParameterNameRenderingPolicy
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.LazyTopDownAnalyzer
+import org.jetbrains.kotlin.resolve.TopDownAnalysisContext
 import org.jetbrains.kotlin.resolve.TopDownAnalysisMode
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.jetbrains.kotlin.resolve.lazy.declarations.FileBasedDeclarationProviderFactory
@@ -106,6 +113,53 @@ data class KotlinEnvironment(
             parameterNameRenderingPolicy = ParameterNameRenderingPolicy.NONE
             typeNormalizer = { if (it.isFlexible()) it.asFlexibleType().upperBound else it }
         }
+
+    private val bindingTrace = CliBindingTrace()
+
+    data class CodeIssue(
+        val startOffset: Int,
+        val endOffset: Int,
+        val message: String,
+        val severity: Severity
+    )
+
+    private var issueListener = { _: CodeIssue? -> }
+
+    fun addIssueListener(listener: (issue: CodeIssue?) -> Unit) {
+        issueListener = listener
+    }
+
+    private val messageCollector = object : MessageCollector {
+        private var hasError = false
+        override fun clear() {}
+
+        override fun hasErrors() = hasError
+
+        override fun report(
+            severity: CompilerMessageSeverity,
+            message: String,
+            location: CompilerMessageSourceLocation?
+        ) {
+            if (location == null) {
+                println("$severity: $message")
+                return
+            }
+            // get offset from line and column
+            println("$severity: $message")
+            if (severity.isError) {
+                hasError = true
+            }
+        }
+    }
+
+    var analysis: TopDownAnalysisContext? = null
+
+    init {
+        kotlinEnvironment.configuration.put(
+            CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+            messageCollector
+        )
+    }
 
     private fun getPrefix(element: PsiElement): String {
         var text = (element as? KtSimpleNameExpression)?.text
@@ -223,33 +277,64 @@ data class KotlinEnvironment(
         }
     }
 
-    private fun analysisOf(files: List<KtFile>, current: KtFile): Analysis {
-        val trace = CliBindingTrace()
+    private val analyzerWithCompilerReport =
+        AnalyzerWithCompilerReport(kotlinEnvironment.configuration)
+
+
+    fun analysisOf(files: List<KtFile>, current: KtFile): Analysis {
         val project = files.first().project
-        val componentProvider =
-            TopDownAnalyzerFacadeForJVM.createContainer(
-                kotlinEnvironment.project,
-                emptyList(),
-                trace,
-                kotlinEnvironment.configuration,
-                kotlinEnvironment::createPackagePartProvider,
-                { storageManager, _ ->
-                    FileBasedDeclarationProviderFactory(storageManager, files)
-                }
-            )
-        return logTime("analysis") {
-            componentProvider
-                .getService(LazyTopDownAnalyzer::class.java)
-                .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files)
-            val moduleDescriptor = componentProvider.getService(ModuleDescriptor::class.java)
-            AnalysisHandlerExtension.getInstances(project).find {
-                it.analysisCompleted(project, moduleDescriptor, trace, listOf(current)) != null
+        var componentProvider: ComponentProvider? = null
+        analyzerWithCompilerReport.analyzeAndReport(files) {
+            componentProvider = logTime("componentProvider") {
+                TopDownAnalyzerFacadeForJVM.createContainer(
+                    project,
+                    files,
+                    bindingTrace,
+                    kotlinEnvironment.configuration,
+                    kotlinEnvironment::createPackagePartProvider,
+                    { storageManager, _ ->
+                        FileBasedDeclarationProviderFactory(
+                            storageManager,
+                            files
+                        )
+                    }
+                )
             }
-            return@logTime Analysis(
-                componentProvider,
-                AnalysisResult.success(trace.bindingContext, moduleDescriptor)
+            logTime("analyzeDeclarations") {
+                analysis = componentProvider!!
+                    .getService(LazyTopDownAnalyzer::class.java)
+                    .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files)
+            }
+
+            val moduleDescriptor = componentProvider!!.getService(ModuleDescriptor::class.java)
+            AnalysisHandlerExtension.getInstances(project).find {
+                it.analysisCompleted(
+                    project,
+                    moduleDescriptor,
+                    bindingTrace,
+                    listOf(current)
+                ) != null
+            }
+            bindingTrace.bindingContext.diagnostics.forEach { diagnostic ->
+                val range = diagnostic.textRanges.first()
+                val issue = CodeIssue(
+                    range.startOffset,
+                    range.endOffset,
+                    diagnostic.factory.name,
+                    diagnostic.severity
+                )
+                issueListener(issue)
+            }
+
+            return@analyzeAndReport AnalysisResult.success(
+                bindingTrace.bindingContext,
+                componentProvider!!.getService(ModuleDescriptor::class.java)
             )
         }
+        return Analysis(
+            componentProvider!!,
+            analyzerWithCompilerReport.analysisResult
+        )
     }
 
     @OptIn(FrontendInternals::class)
@@ -386,10 +471,6 @@ data class KotlinEnvironment(
                         logTime("compilerConfig") {
                             addJvmClasspathRoots(
                                 classpath
-                            )
-                            put(
-                                CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-                                LoggingMessageCollector
                             )
                             put(JVMConfigurationKeys.NO_JDK, true)
                             put(JVMConfigurationKeys.NO_REFLECT, true)

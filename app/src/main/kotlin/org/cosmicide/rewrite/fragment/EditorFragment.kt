@@ -42,14 +42,16 @@ import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.databinding.NavigationElementsBinding
 import org.cosmicide.rewrite.databinding.NewDependencyBinding
 import org.cosmicide.rewrite.databinding.TreeviewContextActionDialogItemBinding
+import org.cosmicide.rewrite.editor.IdeEditor
 import org.cosmicide.rewrite.editor.formatter.GoogleJavaFormat
 import org.cosmicide.rewrite.editor.formatter.ktfmtFormatter
+import org.cosmicide.rewrite.editor.language.KotlinLanguage
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.FileFactoryProvider
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
-import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
+
 
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private lateinit var fileIndex: FileIndex
@@ -77,16 +79,18 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                binding.pager.currentItem = tab!!.position
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                binding.pager.currentItem = tab.position
             }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            override fun onTabUnselected(tab: TabLayout.Tab) {
 
             }
 
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                binding.pager.currentItem = tab?.position ?: 0
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                if (binding.pager.currentItem != tab.position) {
+                    binding.pager.currentItem = tab.position
+                }
             }
         })
 
@@ -220,8 +224,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             title = project.name
             setNavigationOnClickListener {
                 Log.d("EditorFragment", "Saving files")
-                Log.d("EditorFragment", "Adapter count: ${editorAdapter.itemCount}")
-                Log.d("EditorFragment", "Tab count: ${binding.tabLayout.tabCount}")
                 editorAdapter.saveAll()
                 binding.drawer.open()
             }
@@ -341,21 +343,26 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         val psiFile = if (language == Language.Kotlin) FileFactoryProvider.getKtPsiFile(
             editor.file.name,
             editor.editor.text.toString()
-        )
-        else FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
+        ) else FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
 
-        val classes = psiFile.classes
-        if (classes.isEmpty()) {
+        val children = psiFile.children
+        Log.d("EditorFragment", "Children: $children")
+        if (children.isEmpty()) {
             Snackbar.make(
                 binding.root, "No navigation symbols found", Snackbar.LENGTH_SHORT
             ).show()
             return
         }
 
-        val navItems = when (language) {
-            is Language.Java -> NavigationProvider.extractMethodsAndFields(classes[0])
-            is Language.Kotlin -> KtNavigationProvider.parseKtFile(psiFile as KtFile)
+        val ktEnv = (editor.editor.editorLanguage as KotlinLanguage).kotlinEnvironment
+        val analysis = ktEnv.analysis
+        if (analysis == null) {
+            Snackbar.make(
+                binding.root, "No navigation symbols found", Snackbar.LENGTH_SHORT
+            ).show()
+            return
         }
+        val navItems = KtNavigationProvider.parseAnalysisContext(analysis)
 
         if (navItems.isEmpty()) {
             Snackbar.make(
@@ -363,14 +370,18 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             ).show()
             return
         }
+        showSymbols(navItems, editor.editor)
+    }
+
+    private fun showSymbols(navItems: List<NavigationProvider.NavigationItem>, editor: IdeEditor) {
         val binding = NavigationElementsBinding.inflate(layoutInflater)
         binding.elementList.adapter =
-            NavAdapter(requireContext(), navItems, editor.editor.text.indexer)
+            NavAdapter(requireContext(), navItems, editor.text.indexer)
         val bottomSheet = BottomSheetDialog(requireContext())
         binding.elementList.setOnItemClickListener { _, _, position, _ ->
             val item = navItems[position]
-            val pos = editor.editor.text.indexer.getCharPosition(item.startPosition)
-            editor.editor.cursor.set(pos.line, pos.column)
+            val pos = editor.text.indexer.getCharPosition(item.startPosition)
+            editor.cursor.set(pos.line, pos.column)
             bottomSheet.dismiss()
         }
 

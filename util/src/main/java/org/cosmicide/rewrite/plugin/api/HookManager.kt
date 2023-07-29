@@ -7,11 +7,17 @@
 
 package org.cosmicide.rewrite.plugin.api
 
+import android.content.Context
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
+import java.lang.ref.WeakReference
 import java.lang.reflect.Member
 
 object HookManager {
+
+    @JvmStatic
+    lateinit var context: WeakReference<Context>
+
     @JvmStatic
     fun registerHook(hook: Hook) {
         XposedBridge.hookMethod(

@@ -7,24 +7,23 @@
 
 package org.cosmicide.rewrite.fragment.settings
 
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import de.Maxr1998.modernpreferences.PreferenceScreen
+import de.Maxr1998.modernpreferences.helpers.categoryHeader
 import de.Maxr1998.modernpreferences.helpers.editText
 import de.Maxr1998.modernpreferences.helpers.onClick
 import de.Maxr1998.modernpreferences.helpers.pref
-import de.Maxr1998.modernpreferences.Preference
-import de.Maxr1998.modernpreferences.helpers.categoryHeader
-import de.Maxr1998.modernpreferences.helpers.subScreen
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.Prefs
-import org.cosmicide.rewrite.fragment.PluginsFragment
 import org.cosmicide.rewrite.fragment.PluginListFragment
+import org.cosmicide.rewrite.fragment.PluginsFragment
+import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.PreferenceKeys
-import androidx.core.content.res.ResourcesCompat
 
-class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider {
+class PluginSettingsProvider(private val activity: FragmentActivity) : SettingsProvider {
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
@@ -68,18 +67,9 @@ class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider
             categoryHeader(PreferenceKeys.PLUGIN_SETTINGS) {
                 title = "Plugin settings"
             }
-            for (pref in prefs) {
+            for (pref in PluginLoader.preferences) {
                 addPreferenceItem(pref)
             }
-        }
-    }
-
-    companion object {
-        val prefs = mutableListOf<Preference>()
-
-        @JvmStatic
-        fun addPref(pref: Preference) {
-            prefs.add(pref)
         }
     }
 }

@@ -16,9 +16,16 @@ import de.Maxr1998.modernpreferences.Preference
 import de.Maxr1998.modernpreferences.PreferencesAdapter
 import de.Maxr1998.modernpreferences.helpers.screen
 import de.Maxr1998.modernpreferences.helpers.subScreen
+import org.cosmicide.rewrite.MainActivity
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentSettingsBinding
-import org.cosmicide.rewrite.fragment.settings.*
+import org.cosmicide.rewrite.fragment.settings.AboutSettings
+import org.cosmicide.rewrite.fragment.settings.AppearanceSettings
+import org.cosmicide.rewrite.fragment.settings.CompilerSettings
+import org.cosmicide.rewrite.fragment.settings.EditorSettings
+import org.cosmicide.rewrite.fragment.settings.FormatterSettings
+import org.cosmicide.rewrite.fragment.settings.GitSettings
+import org.cosmicide.rewrite.fragment.settings.PluginSettingsProvider
 
 /**
  * Fragment for displaying settings screen.
@@ -37,11 +44,11 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val appearanceSettings = AppearanceSettings(requireActivity())
+        val appearanceSettings = AppearanceSettings(requireActivity() as MainActivity)
         val editorSettings = EditorSettings(requireActivity())
         val formatterSettings = FormatterSettings(requireActivity())
         val compilerSettings = CompilerSettings(requireActivity())
-        val pluginsSettings = PluginsSettings(requireActivity())
+        val pluginsSettings = PluginSettingsProvider(requireActivity())
         val gitSettings = GitSettings()
         val aboutSettings = AboutSettings(requireActivity())
 

@@ -77,11 +77,11 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                             object : TypeToken<Map<String, String>>() {}.type
                         )
                     plugins.add(Plugin(
-                            name = data.getValue("name"),
-                            version = data.getValue("version"),
-                            author = data.getValue("author"),
-                            description =  data.getValue("description"),
-                            source = data.getValue("source"),
+                        name = data.getOrDefault("name", file.name),
+                        version = data.getOrDefault("version", "1.0.0"),
+                        author = data.getOrDefault("author", "Unknown"),
+                        description = data.getOrDefault("description", ""),
+                        source = data.getOrDefault("source", "Unknown")
                     ))
                 }
             }

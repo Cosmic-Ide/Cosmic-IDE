@@ -9,6 +9,7 @@ package org.cosmicide.rewrite
 
 import android.app.Application
 import android.app.UiModeManager
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.StrictMode
@@ -30,6 +31,7 @@ import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
 import org.cosmicide.rewrite.plugin.api.Hook
 import org.cosmicide.rewrite.plugin.api.HookManager
+import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.eclipse.tm4e.core.registry.IThemeSource
@@ -37,7 +39,6 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
-import java.lang.reflect.Modifier
 import java.time.ZonedDateTime
 import java.util.concurrent.Executors
 
@@ -60,6 +61,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = WeakReference(this)
+        HookManager.context = instance as WeakReference<Context>
 
         CrashConfig.Builder.create()
             .showRestartButton(true)
@@ -239,34 +241,7 @@ class App : Application() {
     fun loadPlugins() {
         PluginsFragment.getPlugins().forEach { plugin ->
             val dir = FileUtil.pluginDir.resolve(plugin.name)
-            val pluginFile =
-                dir.resolve("classes.dex")
-            if (dir.resolve("config.json").exists().not()) {
-                Log.e("Plugin", "Plugin ${plugin.name} is missing config.json")
-                return@forEach
-            }
-            if (pluginFile.exists().not()) {
-                Log.e("Plugin", "Plugin ${plugin.name} is missing classes.dex")
-                return@forEach
-            }
-            runCatching {
-                loader.loadDex(pluginFile)
-                val className = plugin.name.lowercase() + ".Main"
-                val clazz = loader.loader.loadClass(className)
-                val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
-                if (Modifier.isStatic(method.modifiers)) {
-                    method.invoke(null, arrayOf<String>())
-                } else {
-                    method.invoke(
-                        clazz.getDeclaredConstructor().newInstance(),
-                        arrayOf<String>()
-                    )
-                }
-            }.onSuccess {
-                Log.d("Plugin", "Loaded plugin ${plugin.name}")
-            }.onFailure {
-                Log.e("Plugin", "Failed to load plugin ${plugin.name}", it)
-            }
+            PluginLoader.loadPlugin(dir, plugin)
         }
     }
 

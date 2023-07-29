@@ -77,7 +77,7 @@ private fun chooseMoreSpecific(type1: KotlinType, type2: KotlinType): KotlinType
             return when {
                 flexible1 != null && flexible2 == null -> type2
                 flexible2 != null && flexible1 == null -> type1
-                else -> null //TODO?
+                else -> null // TODO?
             }
         }
     }

@@ -24,6 +24,7 @@ dependencyResolutionManagement {
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
         maven("https://www.jetbrains.com/intellij-repository/releases")
         maven("https://dl.bintray.com/jetbrains/intellij-third-party-dependencies")
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-ide-plugin-dependencies")
     }
 }
 

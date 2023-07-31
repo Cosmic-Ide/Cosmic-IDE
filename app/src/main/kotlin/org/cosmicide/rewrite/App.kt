@@ -9,7 +9,6 @@ package org.cosmicide.rewrite
 
 import android.app.Application
 import android.app.UiModeManager
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.StrictMode
@@ -33,8 +32,9 @@ import org.cosmicide.rewrite.plugin.api.Hook
 import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.FileUtil
-import org.cosmicide.rewrite.util.MultipleDexClassLoader
+import org.cosmicide.rewrite.util.then
 import org.eclipse.tm4e.core.registry.IThemeSource
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 import java.io.FileNotFoundException
@@ -50,18 +50,12 @@ class App : Application() {
          */
         @JvmStatic
         lateinit var instance: WeakReference<App>
-
-        /**
-         * The class loader used to load plugins.
-         */
-        @JvmStatic
-        val loader = MultipleDexClassLoader.INSTANCE
     }
 
     override fun onCreate() {
         super.onCreate()
         instance = WeakReference(this)
-        HookManager.context = instance as WeakReference<Context>
+        HookManager.context = WeakReference(this)
 
         CrashConfig.Builder.create()
             .showRestartButton(true)
@@ -73,43 +67,10 @@ class App : Application() {
         Prefs.init(applicationContext)
         FileUtil.init(externalStorage)
 
+        setupHooks()
         loadPlugins()
 
-        // Some libraries may call System.exit() to exit the app, which crashes the app.
-        // Currently, only JGit does this.
-        HookManager.registerHook(object : Hook(
-            method = "exit",
-            argTypes = arrayOf(Int::class.java),
-            type = System::class.java
-        ) {
-            override fun before(param: XC_MethodHook.MethodHookParam) {
-                System.err.println("System.exit() called!")
-                param.result = null
-            }
-        })
-
-        // Fix crash in ViewPager2
-        HookManager.registerHook(object : Hook(
-            method = "onLayoutChildren",
-            argTypes = arrayOf(RecyclerView.Recycler::class.java, RecyclerView.State::class.java),
-            type = LinearLayoutManager::class.java
-        ) {
-            override fun before(param: XC_MethodHook.MethodHookParam) {
-                try {
-                    HookManager.invokeOriginal(
-                        param.method,
-                        param.thisObject,
-                        param.args[0],
-                        param.args[1]
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                param.result = null
-            }
-        })
-
-        if (BuildConfig.DEBUG) {
+        BuildConfig.DEBUG.then {
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder().apply {
                     detectLeakedRegistrationObjects()
@@ -134,9 +95,8 @@ class App : Application() {
             )
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")
-        }
+        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            .then(HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;"))
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 
@@ -160,9 +120,8 @@ class App : Application() {
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
         val theme = getTheme(Prefs.appTheme)
         val uiModeManager = getSystemService(UiModeManager::class.java)
-        if (uiModeManager.nightMode == theme) {
-            return
-        }
+        if (uiModeManager.nightMode == theme) return
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             uiModeManager.setApplicationNightMode(theme)
         } else {
@@ -178,17 +137,25 @@ class App : Application() {
         }
     }
 
+    /**
+     * Extracts kotlin stdlib and stdlib-common from assets.
+     */
     fun extractFiles() {
+        FileUtil.classpathDir.resolve("kotlin-stdlib-1.8.0.jar").apply {
+            exists().then { delete() }
+        }
         extractAsset(
-            "kotlin-stdlib-1.8.0.jar",
-            FileUtil.classpathDir.resolve("kotlin-stdlib-1.8.0.jar")
+            "kotlin-stdlib-1.9.0.jar",
+            FileUtil.classpathDir.resolve("kotlin-stdlib-1.9.0.jar")
+        )
+        extractAsset(
+            "kotlin-stdlib-common-1.9.0.jar",
+            FileUtil.classpathDir.resolve("kotlin-stdlib-common-1.9.0.jar")
         )
     }
 
     fun extractAsset(assetName: String, targetFile: File) {
-        if (targetFile.exists()) {
-            return
-        }
+        targetFile.exists().ifTrue { return }
         try {
             assets.open(assetName).use { inputStream ->
                 targetFile.outputStream().use { outputStream ->
@@ -217,10 +184,52 @@ class App : Application() {
         applyThemeBasedOnConfiguration()
     }
 
+    private fun setupHooks() {
+
+        // Some libraries may call System.exit() to exit the app, which crashes the app.
+        // Currently, only JGit does this.
+        HookManager.registerHook(object : Hook(
+            method = "exit",
+            argTypes = arrayOf(Int::class.java),
+            type = System::class.java
+        ) {
+            override fun before(param: XC_MethodHook.MethodHookParam) {
+                System.err.println("System.exit() called!")
+                // Setting result to null bypasses the original method call.
+                param.result = null
+            }
+        })
+
+        // Fix crash in ViewPager2
+        HookManager.registerHook(object : Hook(
+            method = "onLayoutChildren",
+            argTypes = arrayOf(RecyclerView.Recycler::class.java, RecyclerView.State::class.java),
+            type = LinearLayoutManager::class.java
+        ) {
+            override fun before(param: XC_MethodHook.MethodHookParam) {
+                try {
+                    // Call the original method.
+                    HookManager.invokeOriginal(
+                        param.method,
+                        param.thisObject,
+                        param.args[0],
+                        param.args[1]
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                // Bypass method call as we have already called the original method.
+                param.result = null
+            }
+        })
+
+
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        applyThemeBasedOnConfiguration()
         setTheme(Prefs.appAccent.toInt())
+        applyThemeBasedOnConfiguration()
     }
 
     fun applyThemeBasedOnConfiguration() {

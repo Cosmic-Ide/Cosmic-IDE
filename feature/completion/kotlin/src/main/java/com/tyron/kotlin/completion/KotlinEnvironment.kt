@@ -18,6 +18,7 @@
 
 package com.tyron.kotlin.completion
 
+import android.util.Log
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import com.tyron.kotlin.completion.codeInsight.ReferenceVariantsHelper
@@ -36,6 +37,7 @@ import org.cosmicide.rewrite.editor.EditorCompletionItem
 import org.cosmicide.rewrite.util.FileUtil
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
+import org.jetbrains.kotlin.cli.common.CommonCompilerPerformanceManager
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.common.messages.AnalyzerWithCompilerReport
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
@@ -46,6 +48,7 @@ import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM
 import org.jetbrains.kotlin.cli.jvm.compiler.setupIdeaStandaloneExecution
+import org.jetbrains.kotlin.cli.jvm.config.JvmClasspathRoot
 import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
 import org.jetbrains.kotlin.config.AnalysisFlags
 import org.jetbrains.kotlin.config.ApiVersion
@@ -67,13 +70,15 @@ import org.jetbrains.kotlin.descriptors.PackageViewDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
 import org.jetbrains.kotlin.descriptors.VariableDescriptor
-import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.idea.FrontendInternals
+import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
 import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtQualifiedExpression
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression
 import org.jetbrains.kotlin.renderer.ClassifierNamePolicy
 import org.jetbrains.kotlin.renderer.ParameterNameRenderingPolicy
@@ -85,13 +90,13 @@ import org.jetbrains.kotlin.resolve.TopDownAnalysisMode
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.jetbrains.kotlin.resolve.lazy.declarations.FileBasedDeclarationProviderFactory
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
+import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.types.asFlexibleType
 import org.jetbrains.kotlin.types.isFlexible
 import java.io.File
 import kotlin.collections.set
 
 data class KotlinEnvironment(
-    val classpath: List<File>,
     val kotlinEnvironment: KotlinCoreEnvironment
 ) {
     val kotlinFiles = mutableMapOf<String, KotlinFile>()
@@ -103,6 +108,7 @@ data class KotlinEnvironment(
     }
 
     private data class DescriptorInfo(
+        val isTipsManagerCompletion: Boolean,
         val descriptors: List<DeclarationDescriptor>
     )
 
@@ -114,13 +120,12 @@ data class KotlinEnvironment(
             typeNormalizer = { if (it.isFlexible()) it.asFlexibleType().upperBound else it }
         }
 
-    private val bindingTrace = CliBindingTrace()
 
     data class CodeIssue(
         val startOffset: Int,
         val endOffset: Int,
         val message: String,
-        val severity: Severity
+        val severity: CompilerMessageSeverity
     )
 
     private var issueListener = { _: CodeIssue? -> }
@@ -141,14 +146,25 @@ data class KotlinEnvironment(
             location: CompilerMessageSourceLocation?
         ) {
             if (location == null) {
-                println("$severity: $message")
+                println(message)
                 return
             }
-            // get offset from line and column
-            println("$severity: $message")
             if (severity.isError) {
                 hasError = true
             }
+            val kotlinFile = kotlinFiles[location.path.substring(1)]
+            if (kotlinFile == null) {
+                println("no kotlin file for ${location.path}")
+                return
+            }
+            val issue = CodeIssue(
+                kotlinFile.offsetFor(location.line - 1, location.column - 1),
+                kotlinFile.offsetFor(location.lineEnd - 1, location.columnEnd - 1),
+                message,
+                severity
+            )
+            println("issue: $issue")
+            issueListener(issue)
         }
     }
 
@@ -177,13 +193,27 @@ data class KotlinEnvironment(
         }
     }
 
-    fun complete(file: KotlinFile, line: Int, character: Int) =
-        with(file.insert(COMPLETION_SUFFIX, line, character)) {
-            kotlinFiles[file.name] = this
+    var currentItemCount = 0
 
-            elementAt(line, character)?.let { element ->
+    fun complete(file: KotlinFile, line: Int, character: Int): List<CompletionItem> {
+        currentItemCount = 0
+        var list: List<CompletionItem>
+
+        var prefix: String
+        var position: PsiElement?
+        with(file.insert(COMPLETION_SUFFIX, line, character)) {
+            position = elementAt(line, character)
+            prefix = position?.let { getPrefix(it) } ?: ""
+        }
+        with(file) {
+            kotlinFiles[file.name] = this
+            println("prefix: $prefix")
+
+            val reference = (position?.parent as? KtSimpleNameExpression)?.mainReference
+            println("reference: $reference")
+
+            list = position?.let { element ->
                 val descriptorInfo = descriptorsFrom(element, file.kotlinFile)
-                val prefix = getPrefix(element)
                 val items = descriptorInfo.descriptors
                     .sortedWith { a, b ->
                         val x = a.name.toString()
@@ -198,6 +228,8 @@ data class KotlinEnvironment(
             }
                 ?: emptyList()
         }
+        return list
+    }
 
     private fun completionVariantFor(
         prefix: String,
@@ -272,7 +304,43 @@ data class KotlinEnvironment(
         val analysis = analysisOf(files, current)
         return with(analysis) {
             logTime("referenceVariants") {
-                DescriptorInfo(referenceVariantsFrom(element))
+                (referenceVariantsFrom(element)
+                    ?: referenceVariantsFrom(element.parent))?.let { descriptors ->
+                    DescriptorInfo(true, descriptors)
+                } ?: element.parent.let { parent ->
+                    DescriptorInfo(
+                        isTipsManagerCompletion = false,
+                        descriptors = when (parent) {
+                            is KtQualifiedExpression -> {
+                                analysisResult.bindingContext.get(
+                                    BindingContext.EXPRESSION_TYPE_INFO,
+                                    parent.receiverExpression
+                                )?.type?.let { expressionType ->
+                                    analysisResult.bindingContext.get(
+                                        BindingContext.LEXICAL_SCOPE,
+                                        parent.receiverExpression
+                                    )?.let {
+                                        expressionType.memberScope.getContributedDescriptors(
+                                            DescriptorKindFilter.ALL,
+                                            MemberScope.ALL_NAME_FILTER
+                                        )
+                                    }
+                                }?.toList() ?: emptyList()
+                            }
+
+                            else -> analysisResult.bindingContext.get(
+                                BindingContext.LEXICAL_SCOPE,
+                                element as KtExpression
+                            )
+                                ?.getContributedDescriptors(
+                                    DescriptorKindFilter.ALL,
+                                    MemberScope.ALL_NAME_FILTER
+                                )
+                                ?.toList() ?: emptyList()
+                        }
+                    )
+                }
+
             }
         }
     }
@@ -282,13 +350,15 @@ data class KotlinEnvironment(
 
 
     fun analysisOf(files: List<KtFile>, current: KtFile): Analysis {
+        val bindingTrace = CliBindingTrace()
         val project = files.first().project
         var componentProvider: ComponentProvider? = null
         analyzerWithCompilerReport.analyzeAndReport(files) {
+            issueListener(null)
             componentProvider = logTime("componentProvider") {
                 TopDownAnalyzerFacadeForJVM.createContainer(
-                    project,
-                    files,
+                    kotlinEnvironment.project,
+                    listOf(),
                     bindingTrace,
                     kotlinEnvironment.configuration,
                     kotlinEnvironment::createPackagePartProvider,
@@ -315,16 +385,6 @@ data class KotlinEnvironment(
                     listOf(current)
                 ) != null
             }
-            bindingTrace.bindingContext.diagnostics.forEach { diagnostic ->
-                val range = diagnostic.textRanges.first()
-                val issue = CodeIssue(
-                    range.startOffset,
-                    range.endOffset,
-                    diagnostic.factory.name,
-                    diagnostic.severity
-                )
-                issueListener(issue)
-            }
 
             return@analyzeAndReport AnalysisResult.success(
                 bindingTrace.bindingContext,
@@ -338,7 +398,7 @@ data class KotlinEnvironment(
     }
 
     @OptIn(FrontendInternals::class)
-    private fun Analysis.referenceVariantsFrom(element: PsiElement): List<DeclarationDescriptor> {
+    private fun Analysis.referenceVariantsFrom(element: PsiElement): List<DeclarationDescriptor>? {
         val prefix = getPrefix(element)
         val elementKt = element as? KtElement ?: return emptyList()
         val bindingContext = analysisResult.bindingContext
@@ -380,7 +440,7 @@ data class KotlinEnvironment(
                     )
                     .toList()
 
-            else -> emptyList()
+            else -> null
         }
     }
 
@@ -462,30 +522,40 @@ data class KotlinEnvironment(
             setIdeaIoUseFallback()
             setupIdeaStandaloneExecution()
             return KotlinEnvironment(
-                classpath,
                 KotlinCoreEnvironment.createForProduction(
                     parentDisposable = {},
                     configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
                     configuration =
                     CompilerConfiguration().apply {
                         logTime("compilerConfig") {
-                            addJvmClasspathRoots(
-                                classpath
-                            )
                             put(JVMConfigurationKeys.NO_JDK, true)
                             put(JVMConfigurationKeys.NO_REFLECT, true)
+                            put(
+                                CLIConfigurationKeys.PERF_MANAGER,
+                                object : CommonCompilerPerformanceManager("Profiling") {
+                                    override fun notifyAnalysisStarted() {
+                                        Log.i("Profiling", "Analysis started")
+                                    }
+
+                                    override fun notifyAnalysisFinished() {
+                                        Log.i("Profiling", "Analysis started")
+                                    }
+                                })
                             put(
                                 CommonConfigurationKeys.MODULE_NAME,
                                 JvmProtoBufUtil.DEFAULT_MODULE_NAME
                             )
-                            put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
-                            put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, Prefs.useFastJarFs)
-                            put(CommonConfigurationKeys.USE_FIR, true)
                             put(JVMConfigurationKeys.USE_PSI_CLASS_FILES_READING, false)
                             put(JVMConfigurationKeys.VALIDATE_IR, false)
                             put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, true)
                             put(JVMConfigurationKeys.DISABLE_PARAM_ASSERTIONS, true)
                             put(JVMConfigurationKeys.DISABLE_RECEIVER_ASSERTIONS, true)
+                            put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
+                            put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, Prefs.useFastJarFs)
+                            put(CommonConfigurationKeys.USE_FIR, true)
+                            put(CommonConfigurationKeys.USE_LIGHT_TREE, true)
+                            put(CommonConfigurationKeys.PARALLEL_BACKEND_THREADS, 10)
+                            put(CommonConfigurationKeys.USE_FIR_EXTENDED_CHECKERS, false)
 
                             // enable all language features
                             val langFeatures =
@@ -494,9 +564,11 @@ data class KotlinEnvironment(
                                 langFeatures[langFeature] = LanguageFeature.State.ENABLED
                             }
 
+                            val languageVersion =
+                                LanguageVersion.fromVersionString(Prefs.kotlinVersion)!!
                             val languageVersionSettings = LanguageVersionSettingsImpl(
-                                LanguageVersion.fromVersionString(Prefs.kotlinVersion)!!,
-                                ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
+                                languageVersion,
+                                ApiVersion.createByLanguageVersion(languageVersion),
                                 mapOf(
                                     AnalysisFlags.extendedCompilerChecks to false,
                                     AnalysisFlags.ideMode to true,
@@ -509,6 +581,9 @@ data class KotlinEnvironment(
                                 CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS,
                                 languageVersionSettings
                             )
+                            addJvmClasspathRoots(
+                                classpath
+                            )
                         }
                     }
                 )
@@ -517,10 +592,12 @@ data class KotlinEnvironment(
 
         fun get(module: Project): KotlinEnvironment {
             val jars = module.libDir.walk().filter { it.extension == "jar" }.toMutableList()
-            jars.add(File(FileUtil.classpathDir, "android.jar"))
-            jars.add(File(FileUtil.classpathDir, "kotlin-stdlib-1.8.0.jar"))
-            jars.add(File(FileUtil.classpathDir, "kotlin-stdlib-common-1.8.0.jar"))
+            jars.addAll(FileUtil.classpathDir.walk().filter { it.extension == "jar" })
             val environment = with(jars)
+            println(jars)
+            environment.kotlinEnvironment.updateClasspath(
+                jars.map { JvmClasspathRoot(it) }
+            )
             module.srcDir.walk()
                 .filter { it.extension == "kt" }
                 .forEach {

@@ -24,7 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
-import org.jetbrains.kotlin.diagnostics.Severity
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import java.io.File
 
 /**
@@ -45,24 +45,16 @@ class KotlinLanguage(
     themeRegistry
 ) {
     val kotlinEnvironment: KotlinEnvironment = KotlinEnvironment.get(project)
-    private var fileName: String = file.name
 
     init {
-        try {
-            val ktFile =
-                kotlinEnvironment.updateKotlinFile(file.absolutePath, editor.text.toString())
-            fileName = ktFile.name
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to update Kotlin file", e)
-        }
         editor.post {
             editor.diagnostics = DiagnosticsContainer()
         }
         kotlinEnvironment.addIssueListener {
             if (it == null) return@addIssueListener
             val severity = when (it.severity) {
-                Severity.ERROR -> DiagnosticRegion.SEVERITY_ERROR
-                Severity.WARNING -> DiagnosticRegion.SEVERITY_WARNING
+                CompilerMessageSeverity.ERROR -> DiagnosticRegion.SEVERITY_ERROR
+                CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> DiagnosticRegion.SEVERITY_WARNING
                 else -> return@addIssueListener
             }
             editor.post {
@@ -80,7 +72,7 @@ class KotlinLanguage(
         CoroutineScope(Dispatchers.IO).launch {
             kotlinEnvironment.analysisOf(kotlinEnvironment.kotlinFiles.map {
                 it.value.kotlinFile
-            }, kotlinEnvironment.kotlinFiles[fileName]!!.kotlinFile)
+            }, kotlinEnvironment.kotlinFiles[file.absolutePath]!!.kotlinFile)
         }
     }
 
@@ -97,7 +89,7 @@ class KotlinLanguage(
                 editor.diagnostics = DiagnosticsContainer()
             }
             val text = editor.text.toString()
-            val ktFile = kotlinEnvironment.updateKotlinFile(fileName, text)
+            val ktFile = kotlinEnvironment.updateKotlinFile(file.absolutePath, text)
             val itemList = ktFile.let {
                 kotlinEnvironment.complete(
                     it, position.line, position.column

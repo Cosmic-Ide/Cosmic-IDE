@@ -27,7 +27,7 @@ import org.cosmicide.rewrite.util.ResourceUtil
 
 class MainActivity : AppCompatActivity() {
 
-    var themeInt = Prefs.appAccent.toInt()
+    private lateinit var themeInt: Int
 
     override fun onCreateView(
         parent: View?,

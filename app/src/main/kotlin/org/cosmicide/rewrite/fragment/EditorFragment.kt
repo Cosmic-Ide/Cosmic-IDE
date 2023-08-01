@@ -231,6 +231,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 getCurrentFragment()?.save()
                 when (it.itemId) {
                     R.id.action_compile -> {
+                        editorAdapter.fragments.forEach { fragment -> fragment.save() }
                         navigateToCompileInfoFragment()
                         true
                     }

@@ -31,6 +31,9 @@ import com.tyron.kotlin.completion.util.logTime
 import com.tyron.kotlin_completion.util.PsiUtils
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.editor.EditorCompletionItem
@@ -170,13 +173,6 @@ data class KotlinEnvironment(
 
     var analysis: TopDownAnalysisContext? = null
 
-    init {
-        kotlinEnvironment.configuration.put(
-            CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            messageCollector
-        )
-    }
-
     private fun getPrefix(element: PsiElement): String {
         var text = (element as? KtSimpleNameExpression)?.text
         if (text == null) {
@@ -198,15 +194,15 @@ data class KotlinEnvironment(
     fun complete(file: KotlinFile, line: Int, character: Int): List<CompletionItem> {
         currentItemCount = 0
         var list: List<CompletionItem>
-
-        var prefix: String
-        var position: PsiElement?
-        with(file.insert(COMPLETION_SUFFIX, line, character)) {
-            position = elementAt(line, character)
-            prefix = position?.let { getPrefix(it) } ?: ""
+        val originalFile = file.kotlinFile
+        CoroutineScope(Dispatchers.IO).launch {
+            analysisOf(kotlinFiles.values.map { it.kotlinFile }, file.kotlinFile)
         }
-        with(file) {
-            kotlinFiles[file.name] = this
+
+        with(file.insert(COMPLETION_SUFFIX, line, character)) {
+            kotlinFiles[originalFile.name] = this
+            val position = elementAt(line, character)
+            val prefix = position?.let { getPrefix(it) } ?: ""
             println("prefix: $prefix")
 
             val reference = (position?.parent as? KtSimpleNameExpression)?.mainReference
@@ -349,12 +345,23 @@ data class KotlinEnvironment(
         AnalyzerWithCompilerReport(kotlinEnvironment.configuration)
 
 
-    fun analysisOf(files: List<KtFile>, current: KtFile): Analysis {
+    fun analysisOf(files: List<KtFile>, current: KtFile, publish: Boolean = false): Analysis {
         val bindingTrace = CliBindingTrace()
         val project = files.first().project
         var componentProvider: ComponentProvider? = null
         analyzerWithCompilerReport.analyzeAndReport(files) {
             issueListener(null)
+            if (publish.not()) {
+                kotlinEnvironment.configuration.put(
+                    CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+                    MessageCollector.NONE
+                )
+            } else {
+                kotlinEnvironment.configuration.put(
+                    CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+                    messageCollector
+                )
+            }
             componentProvider = logTime("componentProvider") {
                 TopDownAnalyzerFacadeForJVM.createContainer(
                     kotlinEnvironment.project,

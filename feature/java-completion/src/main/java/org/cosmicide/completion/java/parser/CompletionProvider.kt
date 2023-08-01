@@ -236,7 +236,7 @@ class CompletionProvider {
 
         println("Element is ${getElementType(element)}")
         val isImported = isImportedClass(element)
-        println("Imported already $isImported")
+        println("Imported already ${isImported.first}")
         if (isImportStatementContext(element)) {
             println("Import statement context")
             val packageName =
@@ -290,12 +290,12 @@ class CompletionProvider {
                     // probably something like System.out.
                     if (element is PsiReferenceExpression) {
                         val className = element.text.substringBefore('.')
+                        println("Class name: $className")
                         // check if it is imported
-                        var qualified = getQualifiedNameIfImported(psiFile, className)
-                        if (qualified.isEmpty()) {
-                            qualified = "java.lang.$className"
-                        }
+                        val qualified =
+                            if (isImported.first) isImported.second else "java.lang.$className"
                         println("Qualified: $qualified")
+
                         val ctClass = symbolCacher.getClass(qualified)
                         if (ctClass == null) {
                             println("Class not found '$qualified' with element ${element.text}")
@@ -303,21 +303,29 @@ class CompletionProvider {
                         }
 
                         val field = element.text.substringAfter("$className.").substringBefore('.')
-                        val fieldType = ctClass.getField(field).type.name
-                        if (fieldType == null) {
-                            println("Field not found '$field' with element ${element.text}")
-                            return completionItems
+                        if (element.text.endsWith(").")) {
+                            val methodName =
+                                element.text.substringAfter("$className.").substringBefore('(')
+                            val params =
+                                element.text.substringAfter("$className.").substringAfter('(')
+                                    .substringBefore(')')
+                            ctClass.methods.find { it.name == methodName }?.let {
+                                println("Method found: $it")
+                                // for now, we don't check the parameters
+                                addAllFieldAndMethods(it.returnType, completionItems)
+                            }
                         }
-                        val clazz = symbolCacher.getClass(fieldType)
-                        if (clazz == null) {
-                            println("Class not found '$fieldType' with element ${element.text}")
-                            return completionItems
+                        ctClass.fields.find { it.name == field }?.let {
+                            println("Field found: $it")
+                            addAllFieldAndMethods(it.type, completionItems)
                         }
-                        addAllFieldAndMethods(clazz, completionItems)
                     }
                 }
                 val className = element.text.substring(0, element.text.length - 1)
-                val qualified = getQualifiedNameIfImported(psiFile, className)
+                // check if it is imported
+                val qualified = if (isImported.first) isImported.second else "java.lang.$className"
+                println("prob static, qualified: $qualified")
+
                 if (qualified.isEmpty()) {
                     val ctClass = symbolCacher.getClass("java.lang.$className")
                     if (ctClass == null) {
@@ -325,14 +333,15 @@ class CompletionProvider {
                         return completionItems
                     }
 
-                    addAllFieldAndMethods(ctClass, completionItems)
+                    addAllFieldAndMethods(ctClass, completionItems, true)
+                    return completionItems
                 }
-                val clazz = symbolCacher.getClass(className)
+                val clazz = symbolCacher.getClass(qualified)
                 if (clazz == null) {
                     println("Class not found '$className' with element ${element.text}")
                     return completionItems
                 }
-                addAllFieldAndMethods(clazz, completionItems)
+                addAllFieldAndMethods(clazz, completionItems, true)
             } else {
                 val packageName = element.text.substringBeforeLast('.')
                 if (packageName.isEmpty()) {
@@ -377,7 +386,7 @@ class CompletionProvider {
                 completionItems.add(
                     EditorCompletionItem(
                         keyword,
-                        "KEYWORD",
+                        "Keyword",
                         element.textLength,
                         keyword
                     ).kind(CompletionItemKind.Keyword)
@@ -389,11 +398,12 @@ class CompletionProvider {
 
     private fun addAllFieldAndMethods(
         ctClass: CtClass,
-        completionItems: MutableList<EditorCompletionItem>
+        completionItems: MutableList<EditorCompletionItem>,
+        isStatic: Boolean = false
     ) {
         val fields = ctClass.fields
         for (field in fields) {
-            if (Modifier.isPublic(field.modifiers) || Modifier.isStatic(field.modifiers)) {
+            if (Modifier.isStatic(field.modifiers) || (isStatic.not() && Modifier.isPublic(field.modifiers))) {
                 completionItems.add(
                     EditorCompletionItem(
                         field.name,
@@ -407,7 +417,7 @@ class CompletionProvider {
         val methods = ctClass.methods
         for (method in methods) {
             // if modifier is public/static, then add it
-            if (Modifier.isPublic(method.modifiers) || Modifier.isStatic(method.modifiers)) {
+            if ((isStatic.not() && Modifier.isPublic(method.modifiers)) || Modifier.isStatic(method.modifiers)) {
                 completionItems.add(
                     EditorCompletionItem(
                         method.name + method.parameterTypes.joinToString(", ", "(", ")") {
@@ -423,7 +433,7 @@ class CompletionProvider {
     }
 
 
-    private fun isImportedClass(element: PsiElement): Boolean {
+    private fun isImportedClass(element: PsiElement): Pair<Boolean, String> {
         val psiFile = element.containingFile
         if (psiFile is PsiJavaFile) {
             val importList = psiFile.importList
@@ -433,13 +443,13 @@ class CompletionProvider {
                 for (importStatement in importStatements) {
                     val importedClassName = importStatement.qualifiedName
                     println("Imported class: $importedClassName")
-                    if (importedClassName?.substringAfterLast('.') == className) {
-                        return true
+                    if (importedClassName?.substringAfterLast('.') == className.substringBefore('.')) {
+                        return Pair(true, importedClassName)
                     }
                 }
             }
         }
-        return false
+        return Pair(false, "")
     }
 
     private fun isImportedClass(psiFile: PsiFile, className: String): Boolean {

@@ -58,6 +58,9 @@ class KotlinCompiler(val project: Project) : Task {
             pluginClasspaths = enabledPlugins
             useFastJarFileSystem = Prefs.useFastJarFs
             languageVersion = Prefs.kotlinVersion
+            apiVersion = Prefs.kotlinVersion
+            jvmTarget = Prefs.compilerJavaVersion.toString()
+            script = false
         }
 
         val collector = createMessageCollector(reporter)

@@ -5,31 +5,37 @@ A new and improved version of Cosmic IDE, a next-gen IDE for JVM development on 
 ## Description
 
 Cosmic IDE is a powerful and feature-rich IDE for JVM development on Android. It is built on top of
-the latest technologies, and offers a wide range of features that make it the perfect tool for
-developers who want to build high-quality, bug-free applications.
+the latest tools, and offers a wide range of features that make it the perfect tool for
+developers who want to build high-quality, bug-free applications without needing a computer.
 
 ## Installation
 
 Currently Cosmic IDE Rewrite is in beta stage, and there is no stable release yet. You can download
-the app from [here](https://nightly.link/Cosmic-Ide/rewrite/workflows/android/main/apk-debug.zip).
+the latest debug app build
+from [here](https://nightly.link/Cosmic-Ide/rewrite/workflows/android/main/apk-debug.zip).
+
+If you find any bugs, please report them on our [discord server](https://discord.gg/8Gu6YCq2eS) or
+open an issue on GitHub.
 
 ## Features
 
-* Supports Java 17 and Kotlin 2.1
+* Supports Java 17 and Kotlin 2.1 (K2 compiler)
 * Fast incremental compilation
 * Integrated dependency management
-* Accurate code completion
+* Accurate code completion for Java and Kotlin
 * Syntax highlighting
-* Error and warning markers
-* Sandboxed program execution with SSVM
+* Error and warning highlighting directly in editor
+* Sand-boxed program execution with SSVM
 * Execution of programs
 * Google Java Format and ktfmt integration
 * Support for plugins
 * Highly customizable
 * High performance code editor (sora editor)
+* Code navigation
 * Bytecode Disassembler
 * Chat with AI assistants for help with programming
 * Material You Design
+* Modern UI with prebuilt themes
 
 ## Benefits
 
@@ -67,6 +73,8 @@ used in Cosmic IDE:
 * [ModernAndroidPreferences](https://github.com/Maxr1998/ModernAndroidPreferences) licensed under
   the Apache License 2.0
 * [TreeView](https://github.com/lzhiyong/TreeView) licensed under the Apache License 2.0
+
+and many more.
 
 ## Contributions
 

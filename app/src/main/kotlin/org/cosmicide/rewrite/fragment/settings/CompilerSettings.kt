@@ -62,7 +62,7 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
 
             switch(PreferenceKeys.COMPILER_USE_SSVM) {
                 title = activity.getString(R.string.ssvm)
-                summary = activity.getString(R.string.experimental_caution)
+                summary = "Runs code on a sand-boxed VM with limited supported features"
                 defaultValue = false
             }
 

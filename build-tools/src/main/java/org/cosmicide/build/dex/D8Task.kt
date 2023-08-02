@@ -7,6 +7,7 @@
 
 package org.cosmicide.build.dex
 
+import android.os.Build
 import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
@@ -16,9 +17,8 @@ import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.project.Project
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.copyTo
-import kotlin.io.path.name
 import kotlin.io.path.nameWithoutExtension
 
 /**
@@ -29,7 +29,7 @@ import kotlin.io.path.nameWithoutExtension
 class D8Task(val project: Project) : Task {
 
     companion object {
-        const val MIN_API_LEVEL = 26
+        const val MIN_API_LEVEL = Build.VERSION_CODES.O
 
         @JvmStatic
         val COMPILATION_MODE = CompilationMode.DEBUG
@@ -60,12 +60,11 @@ class D8Task(val project: Project) : Task {
         val libDir = project.libDir
         if (libDir.exists() && libDir.isDirectory) {
             val libDexDir = project.buildDir.resolve("libs").apply { mkdirs() }
-            libDir.listFiles { file -> file.extension == "jar" }?.mapNotNull { lib ->
-                val outDex = libDexDir.resolve(lib.nameWithoutExtension + ".dex")
-                if (!outDex.exists()) lib.toPath() else null
+            libDir.listFiles { file -> file.extension == "jar" }?.filter { lib ->
+                libDexDir.resolve(lib.nameWithoutExtension + ".dex").exists().not()
             }?.forEach { jarFile ->
                 reporter.reportInfo("Compiling library ${jarFile.name}")
-                compileJar(jarFile, libDexDir.toPath(), reporter)
+                compileJar(jarFile.toPath(), libDexDir.toPath(), reporter)
             }
         }
     }
@@ -88,8 +87,10 @@ class D8Task(val project: Project) : Task {
                     .setOutput(outputDir, OutputMode.DexIndexed)
                     .build()
             )
-            outputDir.resolve("classes.dex")
-                .copyTo(outputDir.resolve(jarFile.nameWithoutExtension + ".dex"))
+            Files.move(
+                outputDir.resolve("classes.dex"),
+                outputDir.resolve(jarFile.nameWithoutExtension + ".dex")
+            )
         } catch (e: Throwable) {
             reporter.reportError(e.stackTraceToString())
         }

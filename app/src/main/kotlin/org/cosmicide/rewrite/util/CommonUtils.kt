@@ -50,6 +50,10 @@ object CommonUtils {
         }.show()
     }
 
+    fun showSnackBar(view: View, text: String) {
+        Snackbar.make(view, text, Snackbar.LENGTH_LONG).show()
+    }
+
     fun getMarkwon() = Markwon
         .builder(App.instance.get()!!.applicationContext)
         .usePlugin(CorePlugin.create())

@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.widget.treeview.OnItemClickListener
 import com.widget.treeview.TreeViewAdapter
@@ -47,6 +46,7 @@ import org.cosmicide.rewrite.editor.formatter.GoogleJavaFormat
 import org.cosmicide.rewrite.editor.formatter.ktfmtFormatter
 import org.cosmicide.rewrite.editor.language.KotlinLanguage
 import org.cosmicide.rewrite.model.FileViewModel
+import org.cosmicide.rewrite.util.CommonUtils
 import org.cosmicide.rewrite.util.FileFactoryProvider
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
@@ -58,6 +58,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private val fileViewModel by activityViewModels<FileViewModel>()
     private lateinit var editorAdapter: EditorAdapter
     private val project by lazy { requireArguments().getSerializable("project") as Project }
+
     override var isBackHandled = true
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
@@ -76,23 +77,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             editorAdapter = EditorAdapter(this@EditorFragment, fileViewModel)
             adapter = editorAdapter
             isUserInputEnabled = false
+            isSaveEnabled = true
         }
-
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                binding.pager.currentItem = tab.position
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {
-
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab) {
-                if (binding.pager.currentItem != tab.position) {
-                    binding.pager.currentItem = tab.position
-                }
-            }
-        })
 
         fileViewModel.updateFiles(fileIndex.getFiles())
 
@@ -141,9 +127,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         fileViewModel.currentPosition.observe(viewLifecycleOwner) { pos ->
             if (pos == -1) return@observe
             if (binding.drawer.isOpen) binding.drawer.close()
-            if (binding.tabLayout.selectedTabPosition != pos) {
-                binding.tabLayout.getTabAt(pos)?.select()
-            }
+            binding.tabLayout.getTabAt(pos)?.select()
+            binding.pager.currentItem = pos
         }
         fileViewModel.setCurrentPosition(0)
         if (fileViewModel.files.value!!.isEmpty()) {
@@ -192,7 +177,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
                     setOnClickListener {
-                        tab.select()
+                        fileViewModel.setCurrentPosition(tab.position)
                     }
                 }
                 tabLayout.addTab(tab, false)
@@ -474,15 +459,22 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         popup.setOnMenuItemClickListener {
             popup.dismiss()
+            val pos = position - 1
+
             when (it.itemId) {
                 R.id.close_tab -> {
-                    fileViewModel.removeFile(position)
+                    Log.d("EditorFragment", "Closing tab at $position")
+                    editorAdapter.saveAll()
+                    fileViewModel.removeFile(pos)
+                    if (pos > fileViewModel.currentPosition.value!!) {
+                        fileViewModel.setCurrentPosition(pos - 1)
+                    }
                 }
 
                 R.id.close_all_tab -> fileViewModel.removeAll()
-                R.id.close_left_tab -> fileViewModel.removeLeft(position - 1)
-                R.id.close_right_tab -> fileViewModel.removeRight(position - 1)
-                R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.currentFile!!)
+                R.id.close_left_tab -> fileViewModel.removeLeft(pos - 1)
+                R.id.close_right_tab -> fileViewModel.removeRight(pos + 1)
+                R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.files.value!![pos])
             }
             true
         }

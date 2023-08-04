@@ -9,11 +9,13 @@ package org.cosmicide.rewrite.adapter
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SubscriptionReceipt
@@ -34,27 +36,45 @@ import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
+import kotlin.properties.Delegates
 
 class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
     FragmentStateAdapter(fragment) {
 
-    private var ids = fileViewModel.files.value!!.map { it.hashCode().toLong() }
     val fragments = mutableListOf<CodeEditorFragment>()
+    private var ids: List<Long> by Delegates.observable(emptyList()) { _, old, new ->
+        DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int {
+                return old.size
+            }
+
+            override fun getNewListSize(): Int {
+                return new.size
+            }
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return old[oldItemPosition].hashCode() == new[newItemPosition].hashCode()
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return old[oldItemPosition] == new[newItemPosition]
+            }
+        }).dispatchUpdatesTo(this)
+    }
 
     init {
         fileViewModel.files.observe(fragment.viewLifecycleOwner) { files ->
-            notifyItemRangeChanged(0, itemCount)
-            fragments.clear()
             ids = files.map { it.hashCode().toLong() }
         }
         System.loadLibrary("android-tree-sitter")
     }
 
     override fun getItemCount(): Int {
-        return fileViewModel.files.value!!.size
+        return ids.size
     }
 
     override fun createFragment(position: Int): Fragment {
+        Log.d("EditorAdapter", "createFragment: $position")
         val fragment = CodeEditorFragment().apply {
             arguments = Bundle().apply {
                 putSerializable("file", fileViewModel.files.value!![position])
@@ -70,12 +90,23 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
         return fragments[position]
     }
 
+    fun removeItem(position: Int) {
+        if (fragments.size <= position) {
+            Log.e("EditorAdapter", "removeItem: $position out of bounds")
+            return
+        }
+        fragments.removeAt(position).apply {
+            editor.release()
+            parentFragmentManager.beginTransaction().remove(this).commit()
+        }
+    }
+
     override fun getItemId(position: Int): Long {
-        return fileViewModel.files.value!![position].hashCode().toLong()
+        return ids[position]
     }
 
     override fun containsItem(itemId: Long): Boolean {
-        return ids.contains(itemId)
+        return fragments.any { it.getHashCode() == itemId }
     }
 
     fun saveAll() {
@@ -140,6 +171,10 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
                     )
                 )
             }
+        }
+
+        fun getHashCode(): Long {
+            return file.hashCode().toLong()
         }
 
         private fun setEditorLanguage() {

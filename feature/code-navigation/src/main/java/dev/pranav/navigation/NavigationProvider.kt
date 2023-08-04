@@ -41,7 +41,7 @@ object NavigationProvider {
                 is PsiMethod -> {
                     val modifiers = child.modifierList
                     val parameters = child.parameterList
-                    var returnType = child.returnTypeElement?.text ?: "void"
+                    val returnType = child.returnTypeElement?.text ?: "void"
 
                     val methodName = child.name + "(" + parameters.parameters.joinToString(", ") {
                         it.typeElement?.text ?: "void"

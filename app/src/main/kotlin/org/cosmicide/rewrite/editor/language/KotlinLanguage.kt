@@ -44,32 +44,32 @@ class KotlinLanguage(
     grammarRegistry,
     themeRegistry
 ) {
-    val kotlinEnvironment: KotlinEnvironment = KotlinEnvironment.get(project)
+    val kotlinEnvironment = KotlinEnvironment.get(project)
 
     init {
         editor.post {
             editor.diagnostics = DiagnosticsContainer()
         }
-        kotlinEnvironment.addIssueListener {
-            if (it == null) return@addIssueListener
-            val severity = when (it.severity) {
-                CompilerMessageSeverity.ERROR -> DiagnosticRegion.SEVERITY_ERROR
-                CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> DiagnosticRegion.SEVERITY_WARNING
-                else -> return@addIssueListener
-            }
-            editor.post {
-                editor.diagnostics?.addDiagnostic(
-                    DiagnosticRegion(
-                        it.startOffset,
-                        it.endOffset,
-                        severity,
-                        0,
-                        DiagnosticDetail(it.message)
-                    )
-                )
-            }
-        }
         CoroutineScope(Dispatchers.IO).launch {
+            kotlinEnvironment.addIssueListener {
+                if (it == null) return@addIssueListener
+                val severity = when (it.severity) {
+                    CompilerMessageSeverity.ERROR -> DiagnosticRegion.SEVERITY_ERROR
+                    CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> DiagnosticRegion.SEVERITY_WARNING
+                    else -> return@addIssueListener
+                }
+                editor.post {
+                    editor.diagnostics?.addDiagnostic(
+                        DiagnosticRegion(
+                            it.startOffset,
+                            it.endOffset,
+                            severity,
+                            0,
+                            DiagnosticDetail(it.message)
+                        )
+                    )
+                }
+            }
             kotlinEnvironment.analysisOf(kotlinEnvironment.kotlinFiles.map {
                 it.value.kotlinFile
             }, kotlinEnvironment.kotlinFiles[file.absolutePath]!!.kotlinFile)

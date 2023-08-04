@@ -324,54 +324,56 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private fun showNavigationElements() {
         val editor = getCurrentFragment()
         if (editor == null) {
-            Snackbar.make(
-                binding.root, "Open a file first", Snackbar.LENGTH_SHORT
-            ).show()
+            CommonUtils.showSnackBar(binding.root, "Open a file first")
             return
         }
 
         val language = when (editor.file.extension) {
-            "java" -> Language.Java
+            "java", "jav" -> Language.Java
             "kt" -> Language.Kotlin
             else -> {
-                Snackbar.make(
-                    binding.root, "Unsupported language", Snackbar.LENGTH_SHORT
-                ).show()
+                CommonUtils.showSnackBar(binding.root, "Unsupported file format")
                 return
             }
         }
 
-        val psiFile = if (language == Language.Kotlin) FileFactoryProvider.getKtPsiFile(
-            editor.file.name,
-            editor.editor.text.toString()
-        ) else FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
+        var symbols = mutableListOf<NavigationProvider.NavigationItem>()
 
-        val children = psiFile.children
-        Log.d("EditorFragment", "Children: $children")
-        if (children.isEmpty()) {
-            Snackbar.make(
-                binding.root, "No navigation symbols found", Snackbar.LENGTH_SHORT
-            ).show()
-            return
-        }
+        when (language) {
+            is Language.Java -> {
+                val psiJavaFile = FileFactoryProvider.getPsiJavaFile(
+                    editor.file.name,
+                    editor.editor.text.toString()
+                )
 
-        val ktEnv = (editor.editor.editorLanguage as KotlinLanguage).kotlinEnvironment
-        val analysis = ktEnv.analysis
-        if (analysis == null) {
-            Snackbar.make(
-                binding.root, "No navigation symbols found", Snackbar.LENGTH_SHORT
-            ).show()
-            return
-        }
-        val navItems = KtNavigationProvider.parseAnalysisContext(analysis)
+                if (psiJavaFile.classes.isEmpty()) {
+                    CommonUtils.showSnackBar(binding.root, "No navigation symbols found")
+                    return
+                }
 
-        if (navItems.isEmpty()) {
-            Snackbar.make(
-                binding.root, "No methods or fields found", Snackbar.LENGTH_SHORT
-            ).show()
-            return
+                psiJavaFile.classes.forEach { psiClass ->
+                    Log.d("EditorFragment", psiClass.name!!)
+                    symbols.addAll(NavigationProvider.extractMethodsAndFields(psiClass))
+                }
+            }
+
+            is Language.Kotlin -> {
+                val ktEnv = (editor.editor.editorLanguage as KotlinLanguage).kotlinEnvironment
+
+                val analysis = ktEnv.analysis
+                if (analysis == null) {
+                    CommonUtils.showSnackBar(binding.root, "File analysis not completed yet")
+                    return
+                }
+                symbols = KtNavigationProvider.parseAnalysisContext(analysis)
+
+                if (symbols.isEmpty()) {
+                    CommonUtils.showSnackBar(binding.root, "No navigation symbols found")
+                    return
+                }
+            }
         }
-        showSymbols(navItems, editor.editor)
+        showSymbols(symbols, editor.editor)
     }
 
     private fun showSymbols(navItems: List<NavigationProvider.NavigationItem>, editor: IdeEditor) {
@@ -400,9 +402,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private fun formatCodeAsync() {
         val fragment = getCurrentFragment()
         if (fragment == null) {
-            Snackbar.make(
-                binding.root, "No file selected", Snackbar.LENGTH_SHORT
-            ).show()
+            CommonUtils.showSnackBar(binding.root, "No file selected")
             return
         }
         val content = fragment.editor.text

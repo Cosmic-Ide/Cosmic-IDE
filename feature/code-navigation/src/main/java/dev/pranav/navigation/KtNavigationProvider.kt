@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.resolve.TopDownAnalysisContext
 
 object KtNavigationProvider {
 
-    fun parseAnalysisContext(context: TopDownAnalysisContext): List<NavigationItem> {
+    fun parseAnalysisContext(context: TopDownAnalysisContext): MutableList<NavigationItem> {
         val navigationItems = mutableListOf<NavigationItem>()
 
         for (file in context.allClasses) {

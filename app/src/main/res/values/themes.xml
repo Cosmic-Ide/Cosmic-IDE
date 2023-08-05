@@ -19,8 +19,7 @@
     <style name="Theme.CosmicIde" parent="Theme.CosmicIde.Base" />
 
     <style name="Theme.CosmicIde.Start" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/logo_background</item>
-        <item name="windowSplashScreenIconBackgroundColor">?attr/colorSurface</item>
         <item name="postSplashScreenTheme">@style/Theme.CosmicIde.Pyro</item>
+        <item name="windowSplashScreenBackground">@color/logo_background</item>
     </style>
 </resources>

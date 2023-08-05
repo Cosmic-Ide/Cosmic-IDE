@@ -45,6 +45,7 @@ import java.util.concurrent.Executors
 class App : Application() {
 
     companion object {
+
         /**
          * The application instance.
          */

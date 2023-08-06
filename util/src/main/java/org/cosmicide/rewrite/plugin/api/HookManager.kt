@@ -19,7 +19,7 @@ object HookManager {
     lateinit var context: WeakReference<Context>
 
     @JvmStatic
-    fun registerHook(hook: Hook) {
+    fun registerHook(hook: Hook) =
         XposedBridge.hookMethod(
             hook.type.getDeclaredMethod(hook.method, *hook.argTypes),
             object : XC_MethodHook() {
@@ -31,25 +31,27 @@ object HookManager {
                     hook.after(param)
                 }
             })
-    }
 
     @JvmStatic
-    fun invokeOriginal(method: Member, obj: Any?, vararg args: Any?): Any? {
-        return XposedBridge.invokeOriginalMethod(method, obj, args)
-    }
+    fun invokeOriginal(method: Member, obj: Any?, vararg args: Any?) =
+        XposedBridge.invokeOriginalMethod(method, obj, args)
 
     @JvmStatic
-    fun isHooked(method: Member): Boolean {
-        return XposedBridge.isHooked(method)
-    }
+    fun isHooked(method: Member) = XposedBridge.isHooked(method)
 
     @JvmStatic
-    fun hookAllConstructors(clazz: Class<*>, callback: XC_MethodHook) {
+    fun hookAllConstructors(clazz: Class<*>, callback: XC_MethodHook) =
         XposedBridge.hookAllConstructors(clazz, callback)
-    }
 
     @JvmStatic
-    fun hookAllMethods(clazz: Class<*>, methodName: String, callback: XC_MethodHook) {
+    fun hookAllMethods(clazz: Class<*>, methodName: String, callback: XC_MethodHook) =
         XposedBridge.hookAllMethods(clazz, methodName, callback)
-    }
+
+    fun deoptimizeMethod(member: Member) = XposedBridge.deoptimizeMethod(member)
+
+    fun disableHiddenApiRestrictions() = XposedBridge.disableHiddenApiRestrictions()
+
+    fun disableProfileSaver() = XposedBridge.disableProfileSaver()
+
+    fun makeClassInheritable(clazz: Class<*>) = XposedBridge.makeClassInheritable(clazz)
 }

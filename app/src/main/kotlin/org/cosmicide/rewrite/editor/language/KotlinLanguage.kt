@@ -9,6 +9,7 @@ package org.cosmicide.rewrite.editor.language
 
 import android.os.Bundle
 import android.util.Log
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.tyron.kotlin.completion.KotlinEnvironment
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticDetail
@@ -97,7 +98,7 @@ class KotlinLanguage(
             }
             publisher.addItems(itemList)
         } catch (e: Throwable) {
-            if (e !is InterruptedException) {
+            if (e !is InterruptedException && e !is ProcessCanceledException) {
                 Log.e(TAG, "Failed to fetch code completions", e)
             }
         }

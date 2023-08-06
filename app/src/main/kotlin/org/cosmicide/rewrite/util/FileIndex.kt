@@ -9,7 +9,6 @@ package org.cosmicide.rewrite.util
 
 import android.util.Log
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import org.cosmicide.project.Project
 import java.io.File
@@ -73,7 +72,7 @@ class FileIndex(private val project: Project) {
         val filePaths: List<String>
         try {
             filePaths = Gson().fromJson(json, object : TypeToken<List<String>>() {}.type)
-        } catch (e: JsonSyntaxException) {
+        } catch (e: Exception) {
             Log.e("FileIndex", "Failed to parse file index: $json", e)
             return listOf()
         }

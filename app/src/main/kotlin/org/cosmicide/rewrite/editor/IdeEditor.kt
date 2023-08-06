@@ -47,6 +47,7 @@ class IdeEditor @JvmOverloads constructor(
         isHardwareAcceleratedDrawAllowed = Prefs.hardwareAcceleration
         isLineNumberEnabled = Prefs.lineNumbers
         props.deleteEmptyLineFast = Prefs.quickDelete
+        props.stickyScroll = Prefs.stickyScroll
     }
 
     override fun commitText(text: CharSequence?, applyAutoIndent: Boolean) {

@@ -8,7 +8,7 @@ java {
 }
 
 dependencies {
-    implementation("com.google.guava:guava:32.0.1-jre")
+    implementation("com.google.guava:guava:32.1.2-jre")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     api(files("libs/google-java-format-HEAD-20221027.232252-92.jar"))
 }

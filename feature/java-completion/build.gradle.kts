@@ -33,10 +33,8 @@ android {
     }
 }
 dependencies {
-    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.21.0")
-
-    implementation("com.github.javaparser:javaparser-core:3.25.3")
-    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.3")
+    implementation("com.github.javaparser:javaparser-core:3.25.4")
+    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.4")
     implementation("org.javassist:javassist:3.29.2-GA")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation(projects.feature.project)

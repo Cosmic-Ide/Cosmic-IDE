@@ -40,12 +40,12 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx") {
         exclude(group = "javax.inject", module = "javax.inject")
     }
-    implementation("androidx.databinding:viewbinding:8.0.2")
+    implementation("androidx.databinding:viewbinding:8.1.0")
     api("androidx.preference:preference-ktx:1.2.0")
 
     implementation("com.google.android.material:material:1.9.0")
 
-    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.1"))
+    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.22.0"))
     api("io.github.Rosemoe.sora-editor:editor")
     api("io.github.Rosemoe.sora-editor:language-textmate")
 }

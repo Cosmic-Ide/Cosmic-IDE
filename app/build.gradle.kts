@@ -133,7 +133,7 @@ materialThemeBuilder {
 }
 
 dependencies {
-    implementation("com.android.tools:r8:8.0.40")
+    implementation("com.android.tools:r8:8.1.56")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
@@ -153,13 +153,13 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
-    implementation("androidx.fragment:fragment-ktx:1.6.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
 
-    val editorVersion = "0.21.1-f243159-SNAPSHOT"
+    val editorVersion = "0.22.0"
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     //noinspection GradleDependency
@@ -187,7 +187,7 @@ dependencies {
     implementation("com.aliucord:Aliuhook:main-SNAPSHOT")
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.0.7")
     implementation(platform("com.google.firebase:firebase-bom:32.1.0"))

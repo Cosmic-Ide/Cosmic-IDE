@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.widget.treeview.OnItemClickListener
 import com.widget.treeview.TreeViewAdapter
@@ -37,6 +38,7 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.EditorAdapter
 import org.cosmicide.rewrite.adapter.NavAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.databinding.NavigationElementsBinding
 import org.cosmicide.rewrite.databinding.NewDependencyBinding
@@ -82,6 +84,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         fileViewModel.updateFiles(fileIndex.getFiles())
 
+        binding.tabLayout.isSmoothScrollingEnabled = false
+
         binding.included.refresher.apply {
             setOnRefreshListener {
                 isRefreshing = true
@@ -91,6 +95,23 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 isRefreshing = false
             }
         }
+
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                fileViewModel.setCurrentPosition(tab.position)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                editorAdapter.saveAll()
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                editorAdapter.saveAll()
+                if (Prefs.doubleClickClose && fileViewModel.currentPosition.value == tab.position) {
+                    fileViewModel.removeFile(tab.position)
+                }
+            }
+        })
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -114,21 +135,27 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         })
 
-        TabLayoutMediator(binding.tabLayout, binding.pager, true, true) { tab, position ->
+        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.text = fileViewModel.files.value!![position].name
+            tab.view.setOnLongClickListener {
+                Log.d("EditorFragment", "onLongClick: $position")
+                showMenu(it, R.menu.tab_menu, position)
+                true
+            }
         }.attach()
     }
 
     private fun initViewModelListeners() {
-        fileViewModel.files.observe(viewLifecycleOwner) { files ->
-            handleFilesUpdate(files)
-        }
+        fileViewModel.files.observe(viewLifecycleOwner, ::handleFilesUpdate)
 
         fileViewModel.currentPosition.observe(viewLifecycleOwner) { pos ->
             if (pos == -1) return@observe
             if (binding.drawer.isOpen) binding.drawer.close()
-            binding.tabLayout.getTabAt(pos)?.select()
-            binding.pager.currentItem = pos
+            val tab = binding.tabLayout.getTabAt(pos)
+            if (tab != null && tab.isSelected.not()) {
+                tab.select()
+                binding.pager.currentItem = pos
+            }
         }
         fileViewModel.setCurrentPosition(0)
         if (fileViewModel.files.value!!.isEmpty()) {
@@ -170,17 +197,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
             tabLayout.removeAllTabs()
             files.forEach { file ->
-                val tab = tabLayout.newTab().setText(file.name)
-                tab.view.apply {
-                    setOnLongClickListener {
-                        showMenu(it, R.menu.tab_menu, tab.position)
-                        true
-                    }
-                    setOnClickListener {
-                        fileViewModel.setCurrentPosition(tab.position)
-                    }
-                }
-                tabLayout.addTab(tab, false)
+                val newTab = tabLayout.newTab()
+                newTab.text = file.name
+                tabLayout.addTab(newTab, false)
             }
         }
     }
@@ -193,6 +212,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         )
 
         fileViewModel.files.removeObservers(viewLifecycleOwner)
+        fileViewModel.currentPosition.removeObservers(viewLifecycleOwner)
         super.onDestroyView()
     }
 
@@ -208,7 +228,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.toolbar.apply {
             title = project.name
             setNavigationOnClickListener {
-                Log.d("EditorFragment", "Saving files")
                 editorAdapter.saveAll()
                 binding.drawer.open()
             }
@@ -337,7 +356,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 psiJavaFile.classes.forEach { psiClass ->
-                    Log.d("EditorFragment", psiClass.name!!)
                     symbols.addAll(NavigationProvider.extractMethodsAndFields(psiClass))
                 }
             }
@@ -357,6 +375,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     return
                 }
             }
+
+            else -> {}
         }
         showSymbols(symbols, editor.editor)
     }
@@ -465,9 +485,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 R.id.close_tab -> {
                     Log.d("EditorFragment", "Closing tab at $position")
                     editorAdapter.saveAll()
-                    fileViewModel.removeFile(pos)
+                    fileViewModel.removeFile(position)
                     if (pos > fileViewModel.currentPosition.value!!) {
-                        fileViewModel.setCurrentPosition(pos - 1)
+                        fileViewModel.setCurrentPosition(pos)
                     }
                 }
 

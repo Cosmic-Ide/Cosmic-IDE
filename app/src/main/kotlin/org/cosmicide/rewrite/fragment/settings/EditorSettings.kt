@@ -106,6 +106,12 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 summary = "If enabled, shows editor line numbers"
                 defaultValue = false
             }
+
+            switch(PreferenceKeys.EDITOR_DOUBLE_CLICK_CLOSE) {
+                title = "Double click to close"
+                summary = "If enabled, double clicking on an opened tab will close it"
+                defaultValue = false
+            }
         }
     }
 }

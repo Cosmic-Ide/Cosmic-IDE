@@ -39,6 +39,7 @@ dependencies {
     implementation(projects.feature.project)
     implementation(projects.kotlinc)
     implementation(projects.util)
+    implementation(projects.feature.javaCompletion)
     /* D8 cannot handle scala3 compiler rn (https://issuetracker.google.com/issues/285036373)
     implementation("org.scala-lang:scala3-compiler_3:3.3.1-RC1") {
         exclude(group = "org.jline", module = "jline-terminal")
@@ -50,4 +51,5 @@ dependencies {
     implementation("com.google.guava:guava:32.1.2-android")
     implementation("com.android.tools:r8:8.1.56")
     implementation("io.github.Rosemoe.sora-editor:editor:0.22.0")
+
 }

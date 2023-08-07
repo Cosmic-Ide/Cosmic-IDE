@@ -102,7 +102,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                editorAdapter.saveAll()
+                editorAdapter.fragments[tab.position].let {
+                    it.save()
+                    it.hideWindows()
+                }
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {
@@ -122,6 +125,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                             drawer.close()
                         } else {
                             editorAdapter.saveAll()
+                            editorAdapter.releaseAll()
 
                             fileIndex.putFiles(
                                 binding.pager.currentItem, fileViewModel.files.value!!

@@ -113,6 +113,10 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
         fragments.forEach { it.save() }
     }
 
+    fun releaseAll() {
+        fragments.forEach { it.editor.release() }
+    }
+
     class CodeEditorFragment : Fragment() {
 
         private lateinit var eventReceiver: SubscriptionReceipt<ContentChangeEvent>
@@ -241,8 +245,18 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
 
         override fun onDestroy() {
             super.onDestroy()
+            release()
+        }
+
+        fun release() {
+            hideWindows()
             if (::eventReceiver.isInitialized) eventReceiver.unsubscribe()
             if (::editor.isInitialized) editor.release()
+        }
+
+        fun hideWindows() {
+            editor.hideEditorWindows()
+            editor.hideAutoCompleteWindow()
         }
     }
 }

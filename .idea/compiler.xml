@@ -12,6 +12,7 @@
       <module name="CosmicIDE-Rewrite.java-completion.main" target="17" />
       <module name="CosmicIDE-Rewrite.java-completion.test" target="17" />
       <module name="CosmicIDE-Rewrite.lynx" target="17" />
+      <module name="CosmicIDE-Rewrite.mylibrary" target="20" />
       <module name="CosmicIDE-Rewrite.plugin" target="17" />
       <module name="CosmicIDE-Rewrite.plugin.main" target="17" />
       <module name="CosmicIDE-Rewrite.plugin.test" target="17" />

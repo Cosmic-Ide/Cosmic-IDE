@@ -131,9 +131,9 @@ data class KotlinEnvironment(
         val severity: CompilerMessageSeverity
     )
 
-    private var issueListener = { _: CodeIssue? -> }
+    private var issueListener = { _: CodeIssue -> }
 
-    fun addIssueListener(listener: (issue: CodeIssue?) -> Unit) {
+    fun addIssueListener(listener: (issue: CodeIssue) -> Unit) {
         issueListener = listener
     }
 
@@ -169,6 +169,14 @@ data class KotlinEnvironment(
             println("issue: $issue")
             issueListener(issue)
         }
+    }
+
+    init {
+        Log.d("KotlinEnvironment", "set collector")
+        kotlinEnvironment.configuration.put(
+            CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+            messageCollector
+        )
     }
 
     var analysis: TopDownAnalysisContext? = null
@@ -345,23 +353,11 @@ data class KotlinEnvironment(
         AnalyzerWithCompilerReport(kotlinEnvironment.configuration)
 
 
-    fun analysisOf(files: List<KtFile>, current: KtFile, publish: Boolean = false): Analysis {
+    fun analysisOf(files: List<KtFile>, current: KtFile): Analysis {
         val bindingTrace = CliBindingTrace()
         val project = files.first().project
         var componentProvider: ComponentProvider? = null
         analyzerWithCompilerReport.analyzeAndReport(files) {
-            issueListener(null)
-            if (publish.not()) {
-                kotlinEnvironment.configuration.put(
-                    CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-                    MessageCollector.NONE
-                )
-            } else {
-                kotlinEnvironment.configuration.put(
-                    CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-                    messageCollector
-                )
-            }
             componentProvider = logTime("componentProvider") {
                 TopDownAnalyzerFacadeForJVM.createContainer(
                     kotlinEnvironment.project,

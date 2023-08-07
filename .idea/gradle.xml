@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/build-tools" />
             <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/datadir" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/TreeView" />
             <option value="$PROJECT_DIR$/feature/bardapi" />
@@ -26,7 +27,6 @@
             <option value="$PROJECT_DIR$/feature/project" />
             <option value="$PROJECT_DIR$/jgit" />
             <option value="$PROJECT_DIR$/kotlinc" />
-            <option value="$PROJECT_DIR$/mylibrary" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>

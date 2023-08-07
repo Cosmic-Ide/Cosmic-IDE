@@ -46,21 +46,19 @@ class KotlinLanguage(
     themeRegistry
 ) {
     val kotlinEnvironment = KotlinEnvironment.get(project)
+    val container = DiagnosticsContainer()
 
     init {
-        editor.post {
-            editor.diagnostics = DiagnosticsContainer()
-        }
         CoroutineScope(Dispatchers.IO).launch {
             kotlinEnvironment.addIssueListener {
-                if (it == null) return@addIssueListener
                 val severity = when (it.severity) {
                     CompilerMessageSeverity.ERROR -> DiagnosticRegion.SEVERITY_ERROR
                     CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> DiagnosticRegion.SEVERITY_WARNING
                     else -> return@addIssueListener
                 }
                 editor.post {
-                    editor.diagnostics?.addDiagnostic(
+                    Log.d(TAG, "Diagnostic: $it")
+                    container.addDiagnostic(
                         DiagnosticRegion(
                             it.startOffset,
                             it.endOffset,
@@ -74,6 +72,10 @@ class KotlinLanguage(
             kotlinEnvironment.analysisOf(kotlinEnvironment.kotlinFiles.map {
                 it.value.kotlinFile
             }, kotlinEnvironment.kotlinFiles[file.absolutePath]!!.kotlinFile)
+
+            editor.post {
+                editor.diagnostics = container
+            }
         }
     }
 
@@ -85,17 +87,21 @@ class KotlinLanguage(
     ) {
         super.requireAutoComplete(content, position, publisher, extraArguments)
 
+
         try {
-            editor.post {
-                editor.diagnostics = DiagnosticsContainer()
-            }
             val text = editor.text.toString()
             val ktFile = kotlinEnvironment.updateKotlinFile(file.absolutePath, text)
+            container.reset()
+
             val itemList = ktFile.let {
                 kotlinEnvironment.complete(
                     it, position.line, position.column
                 )
             }
+            editor.post {
+                editor.diagnostics = container
+            }
+
             publisher.addItems(itemList)
         } catch (e: Throwable) {
             if (e !is InterruptedException && e !is ProcessCanceledException) {

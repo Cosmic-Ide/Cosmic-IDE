@@ -69,9 +69,10 @@ class KotlinLanguage(
                     )
                 }
             }
+            val ktFile = kotlinEnvironment.kotlinFiles[file.absolutePath]?.kotlinFile ?: return@launch
             kotlinEnvironment.analysisOf(kotlinEnvironment.kotlinFiles.map {
                 it.value.kotlinFile
-            }, kotlinEnvironment.kotlinFiles[file.absolutePath]!!.kotlinFile)
+            }, ktFile)
 
             editor.post {
                 editor.diagnostics = container

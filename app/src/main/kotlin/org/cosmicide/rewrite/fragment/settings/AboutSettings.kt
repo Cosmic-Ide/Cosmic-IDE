@@ -7,19 +7,19 @@
 
 package org.cosmicide.rewrite.fragment.settings
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
+import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.onClick
 import de.Maxr1998.modernpreferences.helpers.pref
@@ -30,8 +30,11 @@ import org.cosmicide.rewrite.BuildConfig
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.extension.copyToClipboard
 import org.cosmicide.rewrite.fragment.InstallResourcesFragment
+import org.cosmicide.rewrite.util.CommonUtils.isShizukuGranted
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ResourceUtil
+import rikka.shizuku.Shizuku
+import rikka.shizuku.ShizukuRemoteProcess
 
 class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
     override fun provideSettings(builder: PreferenceScreen.Builder) {
@@ -104,6 +107,47 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 }
             }
 
+            val isShizukuGranted = activity.isShizukuGranted()
+
+            pref("rish") {
+                title = "Rish"
+                summary =
+                    if (isShizukuGranted) "Execute privileged commands with rish" else "Make sure you have Shizuku installed and running. And have authorized the app to use it"
+                enabled = isShizukuGranted
+
+                onClick {
+                    val inflated = activity.layoutInflater.inflate(
+                        androidx.preference.R.layout.preference_dialog_edittext,
+                        null
+                    )
+                    MaterialAlertDialogBuilder(activity)
+                        .setTitle("Rish")
+                        .setMessage("Rish is a tool that allows you to execute privileged commands. It is not recommended to use this tool unless you know what you are doing.")
+                        .setView(inflated)
+                        .setPositiveButton("Execute") { _, _ ->
+                            val editText = inflated.findViewById<EditText>(android.R.id.edit)
+                            val command = editText.text.toString()
+                            activity.lifecycleScope.launch(Dispatchers.IO) {
+                                val output = exec(command)
+                                withContext(Dispatchers.Main) {
+                                    MaterialAlertDialogBuilder(activity)
+                                        .setTitle("Output")
+                                        .setMessage(output.joinToString("\n"))
+                                        .setPositiveButton("Copy") { _, _ ->
+                                            activity.copyToClipboard(output.joinToString("\n"))
+                                        }
+                                        .setNegativeButton("Close") { _, _ -> }
+                                        .show()
+                                }
+                            }
+                        }
+                        .setNegativeButton("Cancel") { _, _ -> }
+                        .show()
+
+                    true
+                }
+            }
+
             pref("clear_cache") {
                 title = "Clear cache"
                 onClick {
@@ -131,5 +175,32 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 }
             }
         }
+    }
+
+    fun exec(vararg command: String): List<String> {
+        val output = mutableListOf<String>()
+        if (Shizuku.pingBinder()) {
+            Log.i("ShizukuPermissionHandler", "Shizuku is running")
+        }
+        val m = Shizuku::class.java.getDeclaredMethod(
+            "newProcess",
+            Array<String>::class.java,
+            Array<String>::class.java,
+            String::class.java
+        )
+        m.isAccessible = true
+        val process =
+            m.invoke(null, arrayOf("sh", "-c", *command), null, "/") as ShizukuRemoteProcess
+        process.apply {
+            waitFor()
+            Log.i("ShizukuPermissionHandler", "Process exited with code ${exitValue()}")
+            inputStream.bufferedReader().use {
+                output.addAll(it.readLines())
+            }
+            errorStream.bufferedReader().use {
+                output.addAll(it.readLines().map { "error: it" })
+            }
+        }
+        return output
     }
 }

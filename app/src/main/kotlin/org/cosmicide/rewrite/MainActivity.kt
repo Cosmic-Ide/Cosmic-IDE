@@ -8,6 +8,7 @@
 package org.cosmicide.rewrite
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
@@ -23,11 +24,17 @@ import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.ActivityMainBinding
 import org.cosmicide.rewrite.fragment.InstallResourcesFragment
 import org.cosmicide.rewrite.fragment.ProjectFragment
+import org.cosmicide.rewrite.util.CommonUtils
 import org.cosmicide.rewrite.util.ResourceUtil
+import rikka.shizuku.Shizuku
+import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
+import rikka.shizuku.ShizukuProvider
 
 class MainActivity : AppCompatActivity() {
 
     var themeInt = 0
+    private lateinit var binding: ActivityMainBinding
+    val shizukuPermissionCode = 1
 
     override fun onCreateView(
         parent: View?,
@@ -48,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
 
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
             val imeInset =
@@ -76,5 +83,35 @@ class MainActivity : AppCompatActivity() {
                 replace(binding.fragmentContainer.id, ProjectFragment())
             }
         }
+        Shizuku.addRequestPermissionResultListener(listener)
+
+        if (Shizuku.shouldShowRequestPermissionRationale()) {
+            requestPermission()
+        }
+    }
+
+    private val listener =
+        OnRequestPermissionResultListener { _, grantResult ->
+            val granted = grantResult == PackageManager.PERMISSION_GRANTED
+            // Do stuff based on the result and the request code
+            if (granted) {
+                CommonUtils.showSnackBar(binding.root, "Permission Granted")
+            } else {
+                CommonUtils.showSnackBar(binding.root, "Permission Denied")
+
+            }
+        }
+
+    fun requestPermission() {
+        if (Shizuku.isPreV11() || Shizuku.getVersion() < 11) {
+            requestPermissions(arrayOf(ShizukuProvider.PERMISSION), shizukuPermissionCode)
+        } else {
+            Shizuku.requestPermission(shizukuPermissionCode)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Shizuku.removeRequestPermissionResultListener(listener)
     }
 }

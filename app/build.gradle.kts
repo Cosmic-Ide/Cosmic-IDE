@@ -193,6 +193,12 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.7")
     implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
 
+    val shizuku_version = "13.1.4"
+    implementation("dev.rikka.shizuku:api:$shizuku_version")
+
+    // Add this line if you want to support Shizuku
+    implementation("dev.rikka.shizuku:provider:$shizuku_version")
+
     implementation(projects.buildTools)
     implementation(projects.common)
     implementation(projects.feature.bardapi)

@@ -36,6 +36,7 @@ import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import org.lsposed.hiddenapibypass.HiddenApiBypass
+import rikka.sui.Sui
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
@@ -51,10 +52,14 @@ class App : Application() {
          */
         @JvmStatic
         lateinit var instance: WeakReference<App>
+
+        @JvmStatic
+        var isShizukuAvailable = false
     }
 
     override fun onCreate() {
         super.onCreate()
+        Sui.init(packageName)
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
 

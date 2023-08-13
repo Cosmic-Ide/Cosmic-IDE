@@ -18,6 +18,6 @@ plugins {
     id("com.android.library") version "8.1.0" apply false
     id("org.jetbrains.kotlin.android") version "1.9.0" apply false
     id("org.jetbrains.kotlin.jvm") version "1.9.0" apply false
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.8.22" apply false
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.0" apply false
     id("dev.rikka.tools.materialthemebuilder") version "1.3.3" apply false
 }

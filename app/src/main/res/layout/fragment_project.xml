@@ -41,32 +41,39 @@
             android:visibility="gone" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ViewSwitcher
-        android:id="@+id/switcher"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:transitionGroup="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/project_list"
+        <ViewSwitcher
+            android:id="@+id/switcher"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:transitionGroup="true"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:transitionGroup="true">
 
-        <TextView
-            android:id="@+id/no_projects"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/no_projects_found_create_one_now"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            android:transitionGroup="true"
-            android:visibility="gone" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/project_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:transitionGroup="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    </ViewSwitcher>
+            <TextView
+                android:id="@+id/no_projects"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/no_projects_found_create_one_now"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:transitionGroup="true"
+                android:visibility="gone" />
+
+        </ViewSwitcher>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     <include
         android:id="@+id/fabs"

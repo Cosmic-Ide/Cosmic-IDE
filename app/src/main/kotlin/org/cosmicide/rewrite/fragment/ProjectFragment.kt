@@ -159,6 +159,11 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                 )
             }
         }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.loadProjects()
+            binding.swipeRefresh.isRefreshing = false
+        }
     }
 
     private fun observeViewModelProjects() {

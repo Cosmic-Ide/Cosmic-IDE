@@ -41,7 +41,7 @@ dependencies {
         exclude(group = "javax.inject", module = "javax.inject")
     }
     implementation("androidx.databinding:viewbinding:8.1.0")
-    api("androidx.preference:preference-ktx:1.2.0")
+    api("androidx.preference:preference-ktx:1.2.1")
 
     implementation("com.google.android.material:material:1.9.0")
 

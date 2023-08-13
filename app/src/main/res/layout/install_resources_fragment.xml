@@ -14,7 +14,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/logo"
@@ -24,6 +24,7 @@
             android:layout_marginStart="12dp"
             app:srcCompat="@drawable/ic_download"
             app:tint="?attr/colorPrimary"
+            android:contentDescription="@string/install_required_resources"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -63,6 +64,7 @@
             android:textColor="?android:attr/textColorSecondary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/install_resources_progress"
             app:layout_constraintTop_toBottomOf="@id/summary" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -94,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="24dp"
-            android:text="Install"
+            android:text="@string/install"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />

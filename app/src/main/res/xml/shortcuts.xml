@@ -5,22 +5,19 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<shortcuts>
 
-    <item
-        android:id="@+id/view_drafts"
-        android:icon="@drawable/baseline_arrow_forward_24"
-        android:title="@string/view_drafts">
-        <menu>
-            <item
-                android:id="@+id/view_draft_1"
-                android:title="@string/draft_1" />
-            <item
-                android:id="@+id/view_draft_2"
-                android:title="@string/draft_2" />
-            <item
-                android:id="@+id/view_draft_3"
-                android:title="@string/draft_3" />
-        </menu>
-    </item>
-</menu>
+    <!--
+    <shortcut
+        android:shortcutId="debug_mode"
+        android:enabled="true"
+        android:icon="@drawable/crash_ic_bug_report"
+        android:shortcutShortLabel="@string/open_debug_tools">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="org.cosmicide.rewrite"
+            android:targetClass="com.krishna.debug_tools.activity.ActivityDebugTools" />
+        <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
+    </shortcut>
+    -->
+</shortcuts>

@@ -11,7 +11,7 @@
         <item name="android:fontFamily">@font/inter</item>
         <item name="android:overScrollMode">never</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+        <item name="android:windowLightStatusBar">true</item>
 
         <item name="fontFamily">@font/inter</item>
     </style>

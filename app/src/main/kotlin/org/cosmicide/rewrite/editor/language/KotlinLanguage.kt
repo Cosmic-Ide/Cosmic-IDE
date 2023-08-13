@@ -69,13 +69,21 @@ class KotlinLanguage(
                     )
                 }
             }
-            val ktFile = kotlinEnvironment.kotlinFiles[file.absolutePath]?.kotlinFile ?: return@launch
-            kotlinEnvironment.analysisOf(kotlinEnvironment.kotlinFiles.map {
-                it.value.kotlinFile
-            }, ktFile)
+            val ktFile =
+                kotlinEnvironment.kotlinFiles[file.absolutePath]?.kotlinFile ?: return@launch
+            try {
+                kotlinEnvironment.analysisOf(kotlinEnvironment.kotlinFiles.map {
+                    it.value.kotlinFile
+                }, ktFile)
 
-            editor.post {
-                editor.diagnostics = container
+
+                editor.post {
+                    editor.diagnostics = container
+                }
+            } catch (e: Throwable) {
+                if (e !is InterruptedException && e !is ProcessCanceledException) {
+                    Log.e(TAG, "Failed to analyze file", e)
+                }
             }
         }
     }

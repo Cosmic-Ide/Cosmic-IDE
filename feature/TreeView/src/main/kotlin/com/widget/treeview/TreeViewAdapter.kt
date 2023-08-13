@@ -133,7 +133,7 @@ class TreeViewAdapter(
                     notifyItemRangeInserted(position + 1, count)
                 } else {
                     child = TreeView.getChildren(parent)
-                    data.removeAll(child)
+                    data.removeAll(child.toSet())
                     TreeView.remove(parent, parent.child)
                     // refresh data
                     notifyItemRangeRemoved(position + 1, child.size)

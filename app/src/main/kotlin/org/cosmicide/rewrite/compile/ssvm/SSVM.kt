@@ -81,8 +81,6 @@ class SSVM(
     }
 
     private var initialized: Boolean = false
-    val isInitialized: Boolean
-        get() = initialized
 
     fun initVM() {
         initialized = try {
@@ -210,6 +208,7 @@ class SSVM(
         try {
             rtJar.close()
         } catch (e: Throwable) {
+            e.printStackTrace()
         }
     }
 

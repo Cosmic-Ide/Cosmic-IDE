@@ -71,7 +71,7 @@ class JavaCompileTask(val project: Project) : Task {
                 version,
                 "-target",
                 version
-            ) + if (flags.isNotEmpty()) flags.split(" ").toList() else listOf<String>()
+            ) + if (flags.isNotEmpty()) flags.split(" ").toList() else listOf()
 
             val task = tool.getTask(
                 object : Writer() {

@@ -563,7 +563,7 @@ data class KotlinEnvironment(
                             // enable all language features
                             val langFeatures =
                                 mutableMapOf<LanguageFeature, LanguageFeature.State>()
-                            for (langFeature in LanguageFeature.values()) {
+                            for (langFeature in LanguageFeature.entries) {
                                 langFeatures[langFeature] = LanguageFeature.State.ENABLED
                             }
 

@@ -28,7 +28,7 @@ class JavacLogger(
         fun preRegister(context: Context, messageCollector: MessageCollector) {
             context.put(
                 logKey,
-                Context.Factory<Log> {
+                Context.Factory {
                     JavacLogger(
                         it,
                         PrintWriter(

@@ -13,6 +13,3 @@ fun Boolean.then(block: () -> Unit) {
     this.ifTrue(block)
 }
 
-fun Boolean.then(smth: Any) {
-    this.ifTrue { smth }
-}

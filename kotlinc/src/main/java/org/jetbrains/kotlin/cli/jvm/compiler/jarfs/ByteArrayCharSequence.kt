@@ -32,7 +32,7 @@ class ByteArrayCharSequence(
     override fun toString(): String {
         val chars = CharArray(length)
 
-        for (i in 0 until length) {
+        for (i in indices) {
             chars[i] = bytes[i + start].toInt().toChar()
         }
 

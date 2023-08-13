@@ -30,7 +30,7 @@ import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
 import org.jetbrains.kotlin.psi.KtFile
 
 object FileFactoryProvider {
-    private val TAG = "FileFactoryProvider"
+    const val TAG = "FileFactoryProvider"
 
     val env = JavaCoreProjectEnvironment(
         {

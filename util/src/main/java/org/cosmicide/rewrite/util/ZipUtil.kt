@@ -11,12 +11,6 @@ import java.io.File
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
-object ZipUtil {
-    fun unzip(inputStream: InputStream, targetDir: File) {
-        inputStream.unzip(targetDir)
-    }
-}
-
 fun InputStream.unzip(targetDir: File) {
     ZipInputStream(this).use { zipIn ->
         var ze = zipIn.nextEntry

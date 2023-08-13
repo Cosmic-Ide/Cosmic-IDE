@@ -8,6 +8,7 @@
       <module name="CosmicIDE-Rewrite.bardapi.test" target="17" />
       <module name="CosmicIDE-Rewrite.completion.java" target="17" />
       <module name="CosmicIDE-Rewrite.completion.kotlin" target="17" />
+      <module name="CosmicIDE-Rewrite.feature.rish" target="20" />
       <module name="CosmicIDE-Rewrite.java-completion" target="17" />
       <module name="CosmicIDE-Rewrite.java-completion.main" target="17" />
       <module name="CosmicIDE-Rewrite.java-completion.test" target="17" />

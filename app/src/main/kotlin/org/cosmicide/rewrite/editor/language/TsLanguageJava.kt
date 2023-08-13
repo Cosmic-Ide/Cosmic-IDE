@@ -124,8 +124,6 @@ class TsLanguageJava(
     override val analyzer: TsAnalyzeManager
         get() = super.analyzer
 
-    fun getTree() = analyzer.thread?.tree
-
     companion object {
         private val TS_LANGUAGE_JAVA = TSLanguageJava.getInstance()
         private val parser: TSParser = TSParser()

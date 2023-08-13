@@ -34,12 +34,6 @@ class Download(val url: String, val callback: (percent: Int) -> Unit) {
                     bytesRead = input.read(buffer)
 
                     val progress = ((downloadedBytes.toDouble() / totalBytes) * 100).toInt()
-                    val downloadedMB = downloadedBytes / (1024 * 1024)
-                    val totalMB = totalBytes / (1024 * 1024)
-                    Log.d(
-                        "Download",
-                        "downloadedMB: $downloadedMB MB, totalMB: $totalMB MB, progress: $progress%"
-                    )
                     callback(progress)
                 }
             }

@@ -32,10 +32,6 @@
         <item>google</item>
     </string-array>
 
-    <string-array name="empty">
-
-    </string-array>
-
     <string-array name="ktfmt_styles">
         <item>dropbox</item>
         <item>google</item>

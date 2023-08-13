@@ -32,11 +32,6 @@ class GoogleBardClient : AIClient {
         httpClient = okHttpClientWithTimeout(timeout)
     }
 
-    constructor(token: String, httpClient: OkHttpClient) {
-        this.token = token
-        this.httpClient = httpClient
-    }
-
     override fun ask(question: String): Answer {
         val answer: Answer
         try {

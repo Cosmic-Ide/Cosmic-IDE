@@ -23,15 +23,11 @@
  */
 package com.tyron.kotlin.completion.resolve.lazy
 
-import org.jetbrains.kotlin.resolve.BindingTraceFilter
-
-enum class BodyResolveMode(
-    private val bindingTraceFilter: BindingTraceFilter
-) {
+enum class BodyResolveMode {
     // All body statements are analyzed, diagnostics included
-    FULL(BindingTraceFilter.ACCEPT_ALL),
+    FULL,
 
     // Analyzes only dependent statements, including only used declaration statements, does not perform control flow analysis
-    PARTIAL(BindingTraceFilter.NO_DIAGNOSTICS),
+    PARTIAL,
 
 }

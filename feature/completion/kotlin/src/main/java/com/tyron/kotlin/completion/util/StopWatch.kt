@@ -23,10 +23,8 @@
  */
 package com.tyron.kotlin.completion.util
 
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
-@OptIn(ExperimentalTime::class)
 fun <T> logTime(name: String, block: () -> T): T {
     var value: T
     val duration = measureTime { value = block() }

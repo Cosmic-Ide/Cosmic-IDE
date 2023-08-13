@@ -8,7 +8,7 @@
 package org.cosmicide.rewrite.plugin.api
 
 import android.util.Log
-import de.Maxr1998.modernpreferences.Preference
+import de.Maxr1998.modernpreferences.PreferenceScreen
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import java.io.File
 import java.lang.reflect.Modifier
@@ -18,7 +18,10 @@ object PluginLoader {
     val loader = MultipleDexClassLoader.INSTANCE
 
     @JvmStatic
-    val preferences = mutableListOf<Preference>()
+    val plugins = mutableListOf<Class<*>>()
+
+    @JvmStatic
+    val prefsMethods = mutableListOf<PreferenceScreen.Builder.() -> Unit>()
 
     @JvmStatic
     fun loadPlugin(path: File, plugin: Plugin) {
@@ -39,21 +42,33 @@ object PluginLoader {
             val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
             if (Modifier.isStatic(method.modifiers)) {
                 method.invoke(null, arrayOf<String>())
-            } else {
+            } else if (Modifier.isPublic(method.modifiers)) {
                 method.invoke(
                     clazz.getDeclaredConstructor().newInstance(),
                     arrayOf<String>()
                 )
+            }
+
+            if (clazz.declaredMethods.any { it.name == "registerPreferences" }) {
+                val prefMethod = clazz.getDeclaredMethod(
+                    "registerPreferences",
+                    PreferenceScreen.Builder::class.java
+                )
+                if (Modifier.isStatic(method.modifiers)) {
+                    Log.d("Plugin", "Registering preferences for plugin ${plugin.name}")
+                    prefsMethods.add {
+                        prefMethod.invoke(null, this)
+                    }
+                } else {
+                    Log.e("Plugin", "registerPreferences method is not static")
+                }
+            } else {
+                Log.d("Plugin", "Plugin ${plugin.name} does not have a registerPreferences method")
             }
         }.onSuccess {
             Log.d("Plugin", "Loaded plugin ${plugin.name}")
         }.onFailure {
             Log.e("Plugin", "Failed to load plugin ${plugin.name}", it)
         }
-    }
-
-    @JvmStatic
-    fun registerPreferences(pref: Preference) {
-        preferences.add(pref)
     }
 }

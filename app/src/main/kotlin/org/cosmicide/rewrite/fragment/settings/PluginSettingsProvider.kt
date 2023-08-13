@@ -67,8 +67,8 @@ class PluginSettingsProvider(private val activity: FragmentActivity) : SettingsP
             categoryHeader(PreferenceKeys.PLUGIN_SETTINGS) {
                 title = "Plugin settings"
             }
-            for (pref in PluginLoader.preferences) {
-                addPreferenceItem(pref)
+            PluginLoader.prefsMethods.forEach {
+                it.invoke(this)
             }
         }
     }

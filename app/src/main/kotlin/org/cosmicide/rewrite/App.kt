@@ -71,7 +71,7 @@ class App : Application() {
         setupHooks()
         loadPlugins()
 
-        BuildConfig.DEBUG.then {
+        if (BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder().apply {
                     detectLeakedRegistrationObjects()
@@ -96,8 +96,9 @@ class App : Application() {
             )
         }
 
-        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-            .then(HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;"))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            HiddenApiBypass.addHiddenApiExemptions("L")
+        }
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 
@@ -143,7 +144,7 @@ class App : Application() {
      */
     fun extractFiles() {
         FileUtil.classpathDir.resolve("kotlin-stdlib-1.8.0.jar").apply {
-            exists().then { delete() }
+            if (exists()) delete()
         }
         extractAsset(
             "kotlin-stdlib-1.9.0.jar",

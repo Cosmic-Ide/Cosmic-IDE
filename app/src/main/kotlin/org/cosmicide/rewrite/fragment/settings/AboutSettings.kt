@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.BuildConfig
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.extension.copyToClipboard
 import org.cosmicide.rewrite.fragment.InstallResourcesFragment
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ResourceUtil
@@ -40,10 +41,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 summary =
                     BuildConfig.VERSION_NAME + if (BuildConfig.DEBUG) " (${BuildConfig.GIT_COMMIT})" else ""
                 onClick {
-                    val clipboard =
-                        activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("version", title)
-                    clipboard.setPrimaryClip(clip)
+                    activity.copyToClipboard(summary.toString())
                     true
                 }
             }
@@ -51,7 +49,11 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
             pref("license") {
                 title = "License"
                 onClick {
-                    activity.startActivity(Intent(activity, OssLicensesMenuActivity::class.java))
+                    activity.startActivity(
+                        Intent(activity, OssLicensesMenuActivity::class.java).setAction(
+                            Intent.ACTION_VIEW
+                        )
+                    )
                     true
                 }
             }

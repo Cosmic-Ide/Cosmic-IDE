@@ -8,49 +8,100 @@
 
 package changedatadirectory
 
+import android.os.Build
+import android.util.Log
 import android.widget.Toast
-import de.Maxr1998.modernpreferences.helpers.onClick
+import de.Maxr1998.modernpreferences.PreferenceScreen
+import de.Maxr1998.modernpreferences.helpers.editText
 import de.Maxr1998.modernpreferences.preferences.EditTextPreference
 import org.cosmicide.rewrite.plugin.api.HookManager
-import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.rewrite.util.PermissionUtils
 import java.io.File
 
 object Main {
+
+    private val pref = HookManager.context.get()!!.getSharedPreferences("datadir", 0)
+
     @JvmStatic
     fun main(args: Array<String>) {
-        PluginLoader.registerPreferences(EditTextPreference("data_directory").apply {
-            title = "Data directory"
-            summary = "The directory where Cosmic IDE stores its data"
-            onClick {
-                val dir = File(currentInput.toString())
-                if (currentInput.isNullOrBlank()) {
-                    Toast.makeText(
-                        HookManager.context.get(),
-                        "Please provide a proper directory",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@onClick false
-                }
-                if (dir.exists().not()) {
-                    Toast.makeText(
-                        HookManager.context.get(),
-                        "The specified directory does not exist",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@onClick false
-                }
-                updateDirectory(dir)
-                true
-            }
-        })
-
+        val context = HookManager.context.get()!!
+        val isGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            PermissionUtils.hasPermission(android.Manifest.permission.MANAGE_EXTERNAL_STORAGE)
+        } else {
+            PermissionUtils.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+        if (isGranted.not()) {
+            Toast.makeText(
+                context,
+                "Couldn't change data dir due to missing storage permission, check settings to grant it.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+        val dataDir = pref.getString("data_directory", null)
+        if (dataDir != null && File(dataDir).exists()) {
+            Log.d("Plugin", "Data directory already set to $dataDir")
+            updateDirectory(File(dataDir))
+        }
+        Log.d("Plugin", "Loaded plugin ChangeDataDirectory")
     }
 
     private fun updateDirectory(dir: File) {
-        if (dir.exists().not()) {
-            dir.mkdirs()
+        val oldDir = FileUtil.dataDir
+        Log.d("Plugin", "Updating data directory to $dir")
+        dir.mkdirs()
+        FileUtil.init(dir)
+        // Copy plugins from old directory
+        Toast.makeText(
+            HookManager.context.get(),
+            "Copying data from old directory...",
+            Toast.LENGTH_SHORT
+        ).show()
+        oldDir.listFiles()?.forEach { file ->
+            if (file.isFile) {
+                file.copyTo(FileUtil.dataDir.resolve(file.name), overwrite = true)
+            } else {
+                file.copyRecursively(FileUtil.dataDir.resolve(file.name), overwrite = true)
+            }
         }
-        FileUtil.dataDir = dir
+        Log.d(
+            "Plugin",
+            "dataDir: ${FileUtil.dataDir.exists()} classpath: ${FileUtil.classpathDir.exists()} project: ${FileUtil.projectDir.exists()}"
+        )
+    }
+
+    @JvmStatic
+    fun registerPreferences(builder: PreferenceScreen.Builder) {
+        val context = HookManager.context.get()!!
+
+        builder.apply {
+            editText("data_directory") {
+                title = "Data directory"
+                summary = "Current: ${FileUtil.dataDir}"
+                defaultValue = FileUtil.dataDir.absolutePath
+
+                textChangeListener = EditTextPreference.OnTextChangeListener { _, text ->
+                    val dir = text.toString()
+                    val file = File(dir)
+                    if (file.isFile) {
+                        Toast.makeText(
+                            context,
+                            "Data directory must be a directory",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@OnTextChangeListener false
+                    }
+                    if (file.mkdirs().not()) {
+                        Toast.makeText(context, "Couldn't create directory", Toast.LENGTH_SHORT)
+                            .show()
+                        return@OnTextChangeListener false
+                    }
+                    pref.edit().putString("data_directory", text.toString()).apply()
+                    updateDirectory(file)
+                    true
+                }
+            }
+        }
     }
 }

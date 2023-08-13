@@ -8,6 +8,7 @@
 package org.cosmicide.rewrite.fragment.settings
 
 import android.app.UiModeManager
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat.getSystemService
@@ -18,7 +19,9 @@ import de.Maxr1998.modernpreferences.helpers.singleChoice
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
 import org.cosmicide.rewrite.MainActivity
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.util.CommonUtils
 import org.cosmicide.rewrite.util.PreferenceKeys
+
 
 class AppearanceSettings(private val activity: MainActivity) : SettingsProvider {
 
@@ -30,12 +33,12 @@ class AppearanceSettings(private val activity: MainActivity) : SettingsProvider 
         get() = themeValues.zip(themeOptions).map { SelectionItem(it.first, it.second, null) }
 
     private val accentItems = listOf(
-        SelectionItem(R.style.Theme_CosmicIde.toString(), "default", null),
-        SelectionItem(R.style.Theme_CosmicIde_Pyro.toString(), "pyro", null),
-        SelectionItem(R.style.Theme_CosmicIde_Indigo.toString(), "indigo", null),
-        SelectionItem(R.style.Theme_CosmicIde_Flamingo.toString(), "flamingo", null),
-        SelectionItem(R.style.Theme_CosmicIde_Mint.toString(), "mint", null),
-        SelectionItem(R.style.Theme_CosmicIde_Emerald.toString(), "emerald", null),
+        SelectionItem("default", "default", null),
+        SelectionItem("pyro", "pyro", null),
+        SelectionItem("indigo", "indigo", null),
+        SelectionItem("flamingo", "flamingo", null),
+        SelectionItem("mint", "mint", null),
+        SelectionItem("emerald", "emerald", null),
     )
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
@@ -68,11 +71,18 @@ class AppearanceSettings(private val activity: MainActivity) : SettingsProvider 
             }
 
             singleChoice(PreferenceKeys.APP_ACCENT, accentItems) {
-                initialSelection = R.style.Theme_CosmicIde.toString()
+                initialSelection = accentItems.first().key
                 title = "Choose Accent Color"
                 defaultOnSelectionChange {
-                    if (activity.themeInt != it.toInt()) {
-                        activity.recreate()
+                    if (activity.themeInt != CommonUtils.getAccent(it)) {
+                        val intent = Intent(
+                            activity,
+                            MainActivity::class.java
+                        ).apply {
+                            action = Intent.ACTION_VIEW
+                        }
+                        activity.finishAffinity()
+                        activity.startActivity(intent)
                     }
                 }
             }

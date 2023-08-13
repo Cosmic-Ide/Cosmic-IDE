@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     ): View? {
         val accent = Prefs.appAccent
         if (accent != "default") {
-            themeInt = accent.toInt()
+            themeInt = CommonUtils.getAccent(accent)
             setTheme(themeInt)
         }
         enableEdgeToEdge()
@@ -47,7 +47,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
 

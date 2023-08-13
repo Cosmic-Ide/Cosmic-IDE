@@ -31,8 +31,8 @@ import org.cosmicide.rewrite.fragment.PluginsFragment
 import org.cosmicide.rewrite.plugin.api.Hook
 import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.plugin.api.PluginLoader
+import org.cosmicide.rewrite.util.CommonUtils
 import org.cosmicide.rewrite.util.FileUtil
-import org.cosmicide.rewrite.util.then
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import org.lsposed.hiddenapibypass.HiddenApiBypass
@@ -230,7 +230,7 @@ class App : Application() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        setTheme(Prefs.appAccent.toInt())
+        setTheme(CommonUtils.getAccent(Prefs.appTheme))
         applyThemeBasedOnConfiguration()
     }
 

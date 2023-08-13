@@ -168,12 +168,13 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     private fun observeViewModelProjects() {
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
+            projectAdapter.submitList(projects)
+
             if (projects.isEmpty() && binding.switcher.currentView != binding.noProjects) {
                 binding.switcher.showNext()
-            } else if (binding.switcher.currentView != binding.projectList) {
+            } else if (projects.isNotEmpty() && binding.switcher.currentView != binding.projectList) {
                 binding.switcher.showPrevious()
             }
-            projectAdapter.submitList(projects)
         }
     }
 

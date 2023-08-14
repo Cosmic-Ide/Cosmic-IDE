@@ -89,6 +89,10 @@ class MainActivity : AppCompatActivity() {
         Shizuku.addRequestPermissionResultListener(listener)
 
         if (isShizukuInstalled()) {
+            lifecycleScope.launch {
+                awaitBinderReceived()
+                CommonUtils.showSnackBar(binding.root, "Shizuku is ready")
+            }
             if (Shizuku.shouldShowRequestPermissionRationale()) {
                 requestPermission()
             } else {

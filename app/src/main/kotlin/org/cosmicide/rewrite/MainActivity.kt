@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             if (Shizuku.shouldShowRequestPermissionRationale()) {
                 requestPermission()
             }
-        } catch (Throwable e) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }

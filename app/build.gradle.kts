@@ -63,7 +63,6 @@ android {
         enable = true
     }
 
-
     configurations.configureEach {
         exclude(group = "javax.inject", module = "javax.inject")
         exclude(group = "org.jetbrains", module = "annotations-java5")

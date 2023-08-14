@@ -20,6 +20,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
+import com.kieronquinn.app.darq.utils.extensions.awaitBinderReceived
+import com.kieronquinn.app.darq.utils.extensions.isShizukuInstalled
+import kotlinx.coroutines.launch
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.ActivityMainBinding
 import org.cosmicide.rewrite.fragment.InstallResourcesFragment
@@ -43,10 +47,8 @@ class MainActivity : AppCompatActivity() {
         attrs: AttributeSet
     ): View? {
         val accent = Prefs.appAccent
-        if (accent != "default") {
             themeInt = CommonUtils.getAccent(accent)
             setTheme(themeInt)
-        }
         enableEdgeToEdge()
         return super.onCreateView(parent, name, context, attrs)
     }
@@ -83,14 +85,20 @@ class MainActivity : AppCompatActivity() {
                 replace(binding.fragmentContainer.id, ProjectFragment())
             }
         }
+
         Shizuku.addRequestPermissionResultListener(listener)
 
-        try {
+        if (isShizukuInstalled()) {
             if (Shizuku.shouldShowRequestPermissionRationale()) {
                 requestPermission()
+            } else {
+                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+                    lifecycleScope.launch {
+                        awaitBinderReceived()
+                        CommonUtils.showSnackBar(binding.root, "Shizuku is ready")
+                    }
+                }
             }
-        } catch (e: Throwable) {
-            e.printStackTrace()
         }
     }
 
@@ -102,12 +110,17 @@ class MainActivity : AppCompatActivity() {
                 CommonUtils.showSnackBar(binding.root, "Permission Granted")
             } else {
                 CommonUtils.showSnackBar(binding.root, "Permission Denied")
-
+                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+                    lifecycleScope.launch {
+                        awaitBinderReceived()
+                        CommonUtils.showSnackBar(binding.root, "Shizuku is ready")
+                    }
+                }
             }
         }
 
     fun requestPermission() {
-        if (Shizuku.isPreV11() || Shizuku.getVersion() < 11) {
+        if (Shizuku.isPreV11()) {
             requestPermissions(arrayOf(ShizukuProvider.PERMISSION), shizukuPermissionCode)
         } else {
             Shizuku.requestPermission(shizukuPermissionCode)

@@ -10,6 +10,7 @@ package org.cosmicide.rewrite.util
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -82,7 +83,11 @@ object CommonUtils {
     }
 
     fun Activity.isShizukuGranted(): Boolean {
-        return if (Shizuku.isPreV11() || Shizuku.getVersion() < 11) {
+        if (Shizuku.pingBinder().not()) {
+            Log.d("Shizuku", "Shizuku not installed")
+            return false
+        }
+        return if (Shizuku.isPreV11()) {
             checkSelfPermission(ShizukuProvider.PERMISSION) == PackageManager.PERMISSION_GRANTED
         } else {
             Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED

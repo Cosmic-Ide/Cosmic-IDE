@@ -85,8 +85,12 @@ class MainActivity : AppCompatActivity() {
         }
         Shizuku.addRequestPermissionResultListener(listener)
 
-        if (Shizuku.shouldShowRequestPermissionRationale()) {
-            requestPermission()
+        try {
+            if (Shizuku.shouldShowRequestPermissionRationale()) {
+                requestPermission()
+            }
+        } catch (Throwable e) {
+            e.printStackTrace()
         }
     }
 

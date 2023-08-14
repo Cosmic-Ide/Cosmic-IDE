@@ -88,20 +88,10 @@ class MainActivity : AppCompatActivity() {
 
         Shizuku.addRequestPermissionResultListener(listener)
 
-        if (isShizukuInstalled()) {
-            lifecycleScope.launch {
-                awaitBinderReceived()
-                CommonUtils.showSnackBar(binding.root, "Shizuku is ready")
-            }
-            if (Shizuku.shouldShowRequestPermissionRationale()) {
+        lifecycleScope.launch {
+            awaitBinderReceived()
+            if (isShizukuInstalled() && Shizuku.shouldShowRequestPermissionRationale()) {
                 requestPermission()
-            } else {
-                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-                    lifecycleScope.launch {
-                        awaitBinderReceived()
-                        CommonUtils.showSnackBar(binding.root, "Shizuku is ready")
-                    }
-                }
             }
         }
     }

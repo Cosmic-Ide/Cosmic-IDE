@@ -9,6 +9,7 @@
 package changedatadirectory
 
 import android.os.Build
+import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import de.Maxr1998.modernpreferences.PreferenceScreen
@@ -27,7 +28,7 @@ object Main {
     fun main(args: Array<String>) {
         val context = HookManager.context.get()!!
         val isGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            PermissionUtils.hasPermission(android.Manifest.permission.MANAGE_EXTERNAL_STORAGE)
+            Environment.isExternalStorageManager()
         } else {
             PermissionUtils.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }

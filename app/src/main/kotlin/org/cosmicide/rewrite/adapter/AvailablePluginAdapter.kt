@@ -53,7 +53,7 @@ class AvailablePluginAdapter(private val listener: OnPluginEventListener) :
 
         fun onPluginLongClicked(plugin: Plugin)
 
-        fun onPluginSelected(plugin: Plugin)
+        fun onPluginInstall(plugin: Plugin)
     }
 
     /**
@@ -93,7 +93,7 @@ class AvailablePluginAdapter(private val listener: OnPluginEventListener) :
             binding.apply {
                 name.text = title
                 author.text = data.author
-                button.setOnClickListener { listener.onPluginSelected(data) }
+                button.setOnClickListener { listener.onPluginInstall(data) }
                 root.setOnClickListener { listener.onPluginClicked(data) }
                 root.setOnLongClickListener {
                     listener.onPluginLongClicked(data)

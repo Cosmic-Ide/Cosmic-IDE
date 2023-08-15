@@ -18,6 +18,7 @@ import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentPluginsBinding
 import org.cosmicide.rewrite.databinding.PluginInfoBinding
 import org.cosmicide.rewrite.plugin.api.Plugin
+import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.CommonUtils
 import org.cosmicide.rewrite.util.FileUtil
 
@@ -60,6 +61,26 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                         .setNegativeButton("No") { _, _ -> }
                         .show()
                 }
+
+                override fun onEnablePlugin(plugin: Plugin, enabled: Boolean) {
+                    val config = FileUtil.pluginDir.resolve(plugin.name).resolve("config.json")
+                    val data = Gson().fromJson<MutableMap<String, String>>(
+                        config.readText(),
+                        object : TypeToken<Map<String, String>>() {}.type
+                    )
+                    data["enabled"] = enabled.toString()
+                    config.writeText(Gson().toJson(data))
+
+                    if (enabled) {
+                        CommonUtils.showSnackBar(binding.root, "Loading ${plugin.name}...")
+                        PluginLoader.loadPlugin(FileUtil.pluginDir.resolve(plugin.name), plugin)
+                    } else {
+                        CommonUtils.showSnackBar(
+                            binding.root,
+                            "Please restart the app to disable ${plugin.name}"
+                        )
+                    }
+                }
             })
             (adapter as PluginAdapter).submitList(getPlugins())
         }
@@ -81,7 +102,8 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                         version = data.getOrDefault("version", "1.0.0"),
                         author = data.getOrDefault("author", "Unknown"),
                         description = data.getOrDefault("description", ""),
-                        source = data.getOrDefault("source", "Unknown")
+                        source = data.getOrDefault("source", "Unknown"),
+                        isEnabled = data.getOrDefault("enabled", "false").toBoolean()
                     ))
                 }
             }

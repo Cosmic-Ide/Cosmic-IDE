@@ -74,7 +74,8 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
                         .show()
                 }
 
-                override fun onPluginSelected(plugin: Plugin) {
+                override fun onPluginInstall(plugin: Plugin) {
+                    binding.progressBar.visibility = View.VISIBLE
                     Snackbar.make(
                         binding.root,
                         "Installing ${plugin.name}...",
@@ -83,15 +84,11 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
                     lifecycleScope.launch(Dispatchers.IO) {
                         val pluginFolder = FileUtil.pluginDir.resolve(plugin.name)
                         pluginFolder.mkdirs()
-                        pluginFolder.resolve(plugin.name).resolve("config.json").apply {
-                            parentFile?.mkdirs()
-                            createNewFile()
+                        pluginFolder.resolve("config.json").apply {
+                            Log.d("PluginListFragment", "Writing ${plugin.raw} to $this")
                             writeText(plugin.raw)
                         }
                         pluginFolder.resolve("classes.dex").apply {
-                            if (!exists()) {
-                                createNewFile()
-                            }
                             runCatching {
                                 writeBytes(URL("${plugin.source}/releases/download/${plugin.version}/classes.dex").readBytes())
                             }.onFailure {
@@ -112,6 +109,7 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
                                 "${plugin.name} installed",
                                 Snackbar.LENGTH_SHORT
                             ).show()
+                            binding.progressBar.visibility = View.INVISIBLE
                         }
                     }
                 }

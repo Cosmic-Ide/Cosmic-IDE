@@ -257,6 +257,14 @@ class App : Application() {
     fun loadPlugins() {
         PluginsFragment.getPlugins().forEach { plugin ->
             val dir = FileUtil.pluginDir.resolve(plugin.name)
+
+            if (plugin.isEnabled) {
+                Log.i("App", "Loading plugin: ${plugin.name}")
+            } else {
+                Log.i("App", "Plugin ${plugin.name} is disabled")
+                return@forEach
+            }
+
             PluginLoader.loadPlugin(dir, plugin)
         }
     }

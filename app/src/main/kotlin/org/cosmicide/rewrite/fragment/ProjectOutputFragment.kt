@@ -29,7 +29,6 @@ import org.cosmicide.rewrite.editor.EditorInputStream
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.rewrite.util.ProjectHandler
-import org.cosmicide.rewrite.util.makeDexReadOnlyIfNeeded
 import java.io.OutputStream
 import java.io.PrintStream
 import java.lang.reflect.Modifier
@@ -164,10 +163,10 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
         val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
 
-        loader.loadDex(makeDexReadOnlyIfNeeded(project.binDir.resolve("classes.dex")))
+        loader.loadDex(project.binDir.resolve("classes.dex").apply { setReadOnly() })
 
         project.buildDir.resolve("libs").listFiles()?.filter { it.extension == "dex" }?.forEach {
-            loader.loadDex(makeDexReadOnlyIfNeeded(it))
+            loader.loadDex(it.apply { setReadOnly() })
         }
 
         runCatching {

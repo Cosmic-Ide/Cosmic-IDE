@@ -45,6 +45,8 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
         fun onPluginClicked(plugin: Plugin)
 
         fun onPluginLongClicked(plugin: Plugin)
+
+        fun onEnablePlugin(plugin: Plugin, enabled: Boolean)
     }
 
     /**
@@ -88,6 +90,10 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
                 root.setOnLongClickListener {
                     listener.onPluginLongClicked(data)
                     true
+                }
+                materialSwitch.isChecked = data.isEnabled
+                materialSwitch.setOnCheckedChangeListener { _, isChecked ->
+                    listener.onEnablePlugin(data, isChecked)
                 }
             }
         }

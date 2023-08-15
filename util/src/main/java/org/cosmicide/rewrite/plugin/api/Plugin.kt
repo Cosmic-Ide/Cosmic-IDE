@@ -13,7 +13,11 @@ data class Plugin(
     val author: String,
     val description: String,
     val source: String,
-    var raw: String = """
+
+    var isEnabled: Boolean = false
+) {
+    val raw: String
+        get() = """
         {
             "name": "$name",
             "version": "$version",
@@ -21,5 +25,5 @@ data class Plugin(
             "description": "$description",
             "source": "$source"
         }
-    """.trimIndent()
-)
+    """.trimMargin()
+}

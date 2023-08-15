@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.plugin.api
 
+import android.os.Build
 import android.util.Log
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
@@ -27,6 +28,11 @@ object PluginLoader {
     fun loadPlugin(path: File, plugin: Plugin) {
         val pluginFile =
             path.resolve("classes.dex")
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            pluginFile.setReadOnly()
+        }
+
         if (path.resolve("config.json").exists().not()) {
             Log.e("Plugin", "Plugin ${plugin.name} is missing config.json")
             return

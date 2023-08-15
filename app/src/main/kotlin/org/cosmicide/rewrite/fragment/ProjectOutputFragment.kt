@@ -7,7 +7,6 @@
 
 package org.cosmicide.rewrite.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentTransaction
@@ -30,7 +29,7 @@ import org.cosmicide.rewrite.editor.EditorInputStream
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.rewrite.util.ProjectHandler
-import java.io.File
+import org.cosmicide.rewrite.util.makeDexReadOnlyIfNeeded
 import java.io.OutputStream
 import java.io.PrintStream
 import java.lang.reflect.Modifier
@@ -264,25 +263,9 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         }
     }
 
-    // Android 14+ doesn't allow loading writable dex files: https://developer.android.com/about/versions/14/behavior-changes-14#safer-dynamic-code-loading
-    private fun makeDexReadOnlyIfNeeded(dexFile: File): File {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            return dexFile
-        }
-        val target = requireContext().cacheDir.resolve(dexFile.name)
-        if (target.exists()) {
-            target.delete()
-        }
-        target.createNewFile()
-        dexFile.inputStream().buffered().use {
-            target.writeBytes(it.readBytes())
-        }
-        target.setReadOnly() // This is required for Android 14+
-        return target
-    }
-
     override fun onDestroy() {
         ssvm.release()
         super.onDestroy()
     }
 }
+

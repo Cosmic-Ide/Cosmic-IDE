@@ -13,6 +13,7 @@ import de.Maxr1998.modernpreferences.PreferenceScreen
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import java.io.File
 import java.lang.reflect.Modifier
+import java.lang.reflect.InvocationTargetException
 
 object PluginLoader {
     @JvmStatic
@@ -62,8 +63,13 @@ object PluginLoader {
                 )
                 if (Modifier.isStatic(method.modifiers)) {
                     Log.d("Plugin", "Registering preferences for plugin ${plugin.name}")
-                    prefsMethods.add {
-                        prefMethod.invoke(null, this)
+                    try {
+                        prefsMethods.add {
+                            prefMethod.invoke(null, this)
+                        }
+                    } catch (e: InvocationTargetException) {
+                        // usually occurs when prefs is already registered. For more info, see #96)
+                        e.printStackTrace()
                     }
                 } else {
                     Log.e("Plugin", "registerPreferences method is not static")

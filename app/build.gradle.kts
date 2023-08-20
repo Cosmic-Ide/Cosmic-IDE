@@ -143,7 +143,7 @@ dependencies {
     implementation("com.google.firebase:firebase-perf-ktx:20.4.0")
     implementation("com.google.gms:google-services:4.3.15")
 
-    implementation("com.github.TutorialsAndroid:crashx:v6.0.19")
+    implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
 
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 

@@ -16,7 +16,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.developer.crashx.config.CrashConfig
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
 import de.robv.android.xposed.XC_MethodHook
@@ -62,11 +61,6 @@ class App : Application() {
         Sui.init(packageName)
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
-
-        CrashConfig.Builder.create()
-            .showRestartButton(true)
-            .trackActivities(true)
-            .apply()
 
         val externalStorage = getExternalFilesDir(null)!!
 

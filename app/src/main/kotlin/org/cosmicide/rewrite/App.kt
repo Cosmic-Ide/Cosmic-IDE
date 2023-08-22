@@ -11,7 +11,6 @@ import android.app.Application
 import android.app.UiModeManager
 import android.content.res.Configuration
 import android.os.Build
-import android.os.StrictMode
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,10 +36,13 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import rikka.sui.Sui
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.io.InputStream
 import java.lang.ref.WeakReference
+import java.math.BigInteger
+import java.security.MessageDigest
 import java.time.ZonedDateTime
-import java.util.concurrent.Executors
 
 class App : Application() {
 
@@ -62,38 +64,8 @@ class App : Application() {
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
 
-        val externalStorage = getExternalFilesDir(null)!!
-
-        Prefs.init(applicationContext)
-        FileUtil.init(externalStorage)
-
         setupHooks()
         loadPlugins()
-
-        if (BuildConfig.DEBUG) {
-            StrictMode.setVmPolicy(
-                StrictMode.VmPolicy.Builder().apply {
-                    detectLeakedRegistrationObjects()
-                    detectActivityLeaks()
-                    detectContentUriWithoutPermission()
-                    detectFileUriExposure()
-                    detectCleartextNetwork()
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                        penaltyLog()
-                        return@apply
-                    }
-                    permitNonSdkApiUsage()
-                    penaltyListener(Executors.newSingleThreadExecutor()) { violation ->
-                        Log.e("StrictMode", "VM violation", violation)
-                        violation.printStackTrace()
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        detectIncorrectContextUse()
-                        detectUnsafeIntentLaunch()
-                    }
-                }.build()
-            )
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             HiddenApiBypass.addHiddenApiExemptions("L")
@@ -142,9 +114,6 @@ class App : Application() {
      * Extracts kotlin stdlib and stdlib-common from assets.
      */
     fun extractFiles() {
-        FileUtil.classpathDir.resolve("kotlin-stdlib-1.8.0.jar").apply {
-            if (exists()) delete()
-        }
         extractAsset(
             "kotlin-stdlib-1.9.0.jar",
             FileUtil.classpathDir.resolve("kotlin-stdlib-1.9.0.jar")
@@ -156,7 +125,10 @@ class App : Application() {
     }
 
     fun extractAsset(assetName: String, targetFile: File) {
-        targetFile.exists().ifTrue { return }
+        if (targetFile.exists() && assetNeedsUpdate(assetName, targetFile)) {
+            targetFile.delete()
+        }
+
         try {
             assets.open(assetName).use { inputStream ->
                 targetFile.outputStream().use { outputStream ->
@@ -166,6 +138,25 @@ class App : Application() {
         } catch (e: FileNotFoundException) {
             Log.e("App", "Failed to extract asset: $assetName", e)
         }
+    }
+
+    fun assetNeedsUpdate(assetName: String, targetFile: File): Boolean {
+        val assetInputStream = assets.open(assetName)
+        val targetFileInputStream = FileInputStream(targetFile)
+        val assetChecksum = calculateChecksum(assetInputStream)
+        val targetFileChecksum = calculateChecksum(targetFileInputStream)
+        return assetChecksum != targetFileChecksum
+    }
+
+    fun calculateChecksum(inputStream: InputStream): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        val buffer = ByteArray(8192)
+        var bytesRead: Int
+        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+            md.update(buffer, 0, bytesRead)
+        }
+        val digest = md.digest()
+        return BigInteger(1, digest).toString(16)
     }
 
     fun disableModules() {
@@ -186,7 +177,6 @@ class App : Application() {
     }
 
     private fun setupHooks() {
-
         // Some libraries may call System.exit() to exit the app, which crashes the app.
         // Currently, only JGit does this.
         HookManager.registerHook(object : Hook(
@@ -223,8 +213,6 @@ class App : Application() {
                 param.result = null
             }
         })
-
-
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

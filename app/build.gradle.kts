@@ -158,6 +158,7 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
     implementation("androidx.activity:activity-ktx:1.8.0-alpha06")
+    implementation("androidx.startup:startup-runtime:1.1.1")
 
     val editorVersion = "0.22.0"
     //noinspection GradleDependency

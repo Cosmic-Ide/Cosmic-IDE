@@ -57,7 +57,7 @@
                 android:layout_marginTop="10sp"
                 android:text="@string/download" />
 
-            <org.cosmicide.rewrite.editor.IdeEditor
+            <org.cosmicide.editor.IdeEditor
                 android:id="@+id/editor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

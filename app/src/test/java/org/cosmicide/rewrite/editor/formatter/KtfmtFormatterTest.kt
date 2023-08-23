@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.editor.formatter
 
+import org.cosmicide.editor.formatter.ktfmtFormatter
 import org.junit.Test
 
 class ktfmtFormatterTest {

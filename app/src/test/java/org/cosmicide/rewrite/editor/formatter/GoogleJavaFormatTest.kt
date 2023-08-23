@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.editor.formatter
 
+import org.cosmicide.editor.formatter.GoogleJavaFormat
 import org.hamcrest.MatcherAssert
 import org.junit.Test
 

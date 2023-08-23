@@ -31,7 +31,7 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name=".App"
+        android:name="org.cosmicide.App"
         android:allowBackup="true"
         android:allowClearUserData="false"
         android:appCategory="productivity"
@@ -60,7 +60,7 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="org.cosmicide.rewrite.startup.MainInitializer"
+                android:name="org.cosmicide.startup.MainInitializer"
                 android:value="androidx.startup" />
         </provider>
 

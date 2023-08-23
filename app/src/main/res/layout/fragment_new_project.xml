@@ -12,7 +12,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="?android:attr/colorBackground"
-    tools:context=".fragment.NewProjectFragment">
+    tools:context="org.cosmicide.fragment.NewProjectFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

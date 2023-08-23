@@ -12,7 +12,7 @@
     android:layout_height="match_parent"
     android:transitionGroup="true"
     android:background="?android:attr/colorBackground"
-    tools:context=".fragment.ProjectFragment">
+    tools:context="org.cosmicide.fragment.ProjectFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"

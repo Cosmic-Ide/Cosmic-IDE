@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:542725065106:android:39543c54d9a91b43d6594b",
+        "android_client_info": {
+          "package_name": "org.cosmicide"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCiJcjNDBlSXJoECELMBQ7WtZwOYPYvP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:542725065106:android:174f153f22bc54d0d6594b",
         "android_client_info": {
           "package_name": "org.cosmicide.rewrite"

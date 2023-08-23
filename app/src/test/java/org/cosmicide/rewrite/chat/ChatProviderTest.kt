@@ -7,7 +7,8 @@
 
 package org.cosmicide.rewrite.chat
 
-import org.cosmicide.rewrite.fragment.Models
+import org.cosmicide.chat.ChatProvider
+import org.cosmicide.fragment.Models
 import org.junit.Test
 
 class ChatProviderTest {

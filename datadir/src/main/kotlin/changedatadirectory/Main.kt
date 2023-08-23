@@ -8,8 +8,6 @@
 
 package changedatadirectory
 
-import android.os.Build
-import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import de.Maxr1998.modernpreferences.PreferenceScreen
@@ -17,7 +15,6 @@ import de.Maxr1998.modernpreferences.helpers.editText
 import de.Maxr1998.modernpreferences.preferences.EditTextPreference
 import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.util.FileUtil
-import org.cosmicide.rewrite.util.PermissionUtils
 import java.io.File
 
 object Main {
@@ -27,11 +24,17 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         val context = HookManager.context.get()!!
-        val isGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            PermissionUtils.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val dataDir = pref.getString("data_directory", null)
+
+        if (dataDir == null) {
+            Log.d("Plugin", "Data directory not set")
+            return
         }
+
+        val dir = File(dataDir)
+
+        val isGranted = dir.canWrite()
+
         if (isGranted.not()) {
             Toast.makeText(
                 context,
@@ -40,10 +43,10 @@ object Main {
             ).show()
             return
         }
-        val dataDir = pref.getString("data_directory", null)
-        if (dataDir != null && File(dataDir).exists()) {
+
+        if (dir.exists()) {
             Log.d("Plugin", "Data directory already set to $dataDir")
-            updateDirectory(File(dataDir))
+            updateDirectory(dir)
         }
         Log.d("Plugin", "Loaded plugin ChangeDataDirectory")
     }

@@ -10,6 +10,7 @@ package org.cosmicide.rewrite.fragment.settings
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
+import de.Maxr1998.modernpreferences.helpers.editText
 import de.Maxr1998.modernpreferences.helpers.seekBar
 import de.Maxr1998.modernpreferences.helpers.switch
 import org.cosmicide.rewrite.R
@@ -37,6 +38,7 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 summary = "Set the tab size for the editor"
                 max = 14
                 min = 2
+                default = 4
                 showTickMarks = true
             }
 
@@ -44,6 +46,19 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 title = "Experimental Java code completion"
                 summary = "Uses an experimental Java Completion Engine"
                 defaultValue = false
+            }
+
+            switch(PreferenceKeys.KOTLIN_REALTIME_ERRORS) {
+                title = "Enable Kotlin real-time errors"
+                summary =
+                    "Enables real-time error checking for Kotlin files. This is a slow process and may cause lag. Recommended to turn off on complex projects."
+                defaultValue = false
+            }
+
+            editText(PreferenceKeys.EDITOR_FONT) {
+                title = "Editor font"
+                summary = "Enter the font path for editor"
+                defaultValue = ""
             }
 
             switch(PreferenceKeys.STICKY_SCROLL) {

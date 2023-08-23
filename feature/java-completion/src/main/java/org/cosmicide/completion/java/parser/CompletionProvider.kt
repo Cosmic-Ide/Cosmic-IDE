@@ -141,7 +141,7 @@ class CompletionProvider {
 
         @Suppress("DEPRECATION")
         fun registerExtensions(extensionArea: ExtensionsAreaImpl) {
-            if (extensionArea.hasExtensionPoint("com.intellij.virtualFileManagerListener").not()) {
+            if (!extensionArea.hasExtensionPoint("com.intellij.virtualFileManagerListener")) {
                 extensionArea.registerExtensionPoint(
                     "com.intellij.virtualFileManagerListener",
                     VirtualFileManagerImpl::class.java.name,

@@ -106,6 +106,13 @@ object Prefs {
     val gitApiKey: String
         get() = prefs.getString("git_api_key", "") ?: ""
 
+    val kotlinRealtimeErrors: Boolean
+        get() = prefs.getBoolean("kotlin_realtime_errors", false)
+
+
+    val editorFont: String
+        get() = prefs.getString("editor_font", "") ?: ""
+
     val pluginRepository: String
         get() = prefs.getString(
             "plugin_repository",

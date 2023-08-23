@@ -7,10 +7,12 @@
 
 package org.cosmicide.rewrite.extension
 
+import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.editor.completion.CustomCompletionItemAdapter
 import org.cosmicide.rewrite.editor.completion.CustomCompletionLayout
 
@@ -18,7 +20,11 @@ import org.cosmicide.rewrite.editor.completion.CustomCompletionLayout
  * Sets the font and enables highlighting of the current line for the code editor.
  */
 fun CodeEditor.setFont() {
-    typefaceText = ResourcesCompat.getFont(context, R.font.source_pro_regular)
+    typefaceText = if (Prefs.editorFont.isNotEmpty()) {
+        Typeface.createFromFile(Prefs.editorFont)
+    } else {
+        ResourcesCompat.getFont(context, R.font.source_pro_regular)
+    }
     isHighlightCurrentLine = true
 }
 

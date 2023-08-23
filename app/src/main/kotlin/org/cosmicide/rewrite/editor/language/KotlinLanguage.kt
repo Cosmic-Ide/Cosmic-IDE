@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.common.Prefs
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import java.io.File
 
@@ -50,23 +51,25 @@ class KotlinLanguage(
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            kotlinEnvironment.addIssueListener {
-                val severity = when (it.severity) {
-                    CompilerMessageSeverity.ERROR -> DiagnosticRegion.SEVERITY_ERROR
-                    CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> DiagnosticRegion.SEVERITY_WARNING
-                    else -> return@addIssueListener
-                }
-                editor.post {
-                    Log.d(TAG, "Diagnostic: $it")
-                    container.addDiagnostic(
-                        DiagnosticRegion(
-                            it.startOffset,
-                            it.endOffset,
-                            severity,
-                            0,
-                            DiagnosticDetail(it.message)
+            if (Prefs.kotlinRealtimeErrors) {
+                kotlinEnvironment.addIssueListener {
+                    val severity = when (it.severity) {
+                        CompilerMessageSeverity.ERROR -> DiagnosticRegion.SEVERITY_ERROR
+                        CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> DiagnosticRegion.SEVERITY_WARNING
+                        else -> return@addIssueListener
+                    }
+                    editor.post {
+                        Log.d(TAG, "Diagnostic: $it")
+                        container.addDiagnostic(
+                            DiagnosticRegion(
+                                it.startOffset,
+                                it.endOffset,
+                                severity,
+                                0,
+                                DiagnosticDetail(it.message)
+                            )
                         )
-                    )
+                    }
                 }
             }
             val ktFile =

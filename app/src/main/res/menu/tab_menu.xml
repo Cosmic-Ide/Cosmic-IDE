@@ -9,17 +9,17 @@
 
     <item
         android:id="@+id/close_tab"
-        android:title="Close Tab" />
+        android:title="@string/close_tab" />
     <item
         android:id="@+id/close_left_tab"
-        android:title="Close Left Tab" />
+        android:title="@string/close_left_tab" />
     <item
         android:id="@+id/close_right_tab"
-        android:title="Close Right Tab" />
+        android:title="@string/close_right_tab" />
     <item
         android:id="@+id/close_other_tab"
-        android:title="Close Other Tabs" />
+        android:title="@string/close_other_tabs" />
     <item
         android:id="@+id/close_all_tab"
-        android:title="Close All Tabs" />
+        android:title="@string/close_all_tabs" />
 </menu>

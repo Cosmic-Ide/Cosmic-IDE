@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.color.DynamicColors
 import com.kieronquinn.app.darq.utils.extensions.awaitBinderReceived
 import com.kieronquinn.app.darq.utils.extensions.isShizukuInstalled
 import kotlinx.coroutines.launch
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         val accent = Prefs.appAccent
             themeInt = CommonUtils.getAccent(accent)
             setTheme(themeInt)
+        DynamicColors.applyToActivityIfAvailable(this)
         enableEdgeToEdge()
         return super.onCreateView(parent, name, context, attrs)
     }

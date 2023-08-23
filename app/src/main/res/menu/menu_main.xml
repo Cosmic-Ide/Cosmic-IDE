@@ -6,12 +6,13 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/nav_items"
         android:icon="@drawable/nav_icon"
-        android:title="Navigation Elements"
+        android:title="@string/navigation_elements"
         app:showAsAction="always" />
 
     <item
@@ -30,7 +31,8 @@
         android:id="@+id/redo"
         android:icon="@drawable/baseline_redo_24"
         android:title="@string/redo"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
 
 
     <item
@@ -40,7 +42,7 @@
 
     <item
         android:id="@+id/action_format"
-        android:title="Format"
+        android:title="@string/format"
         app:showAsAction="never" />
 
     <item
@@ -53,6 +55,6 @@
 
     <item
         android:id="@+id/action_git"
-        android:title="Git" />
+        android:title="@string/git" />
 
 </menu>

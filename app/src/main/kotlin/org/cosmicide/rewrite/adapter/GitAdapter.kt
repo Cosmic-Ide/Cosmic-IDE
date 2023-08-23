@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.adapter
 
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -42,9 +43,10 @@ class GitAdapter : RecyclerView.Adapter<GitAdapter.ViewHolder>() {
         val textView: TextView
     ) : RecyclerView.ViewHolder(textView) {
 
+        @SuppressLint("SetTextI18n")
         fun bind(commit: RevCommit) {
             textView.textSize = 16f
-            textView.text = commit.authorIdent.name + " - " + commit.shortMessage
+            textView.text = "${commit.authorIdent.name}-${commit.shortMessage}"
         }
     }
 }

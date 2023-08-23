@@ -34,7 +34,9 @@ android {
 }
 dependencies {
     implementation("com.github.javaparser:javaparser-core:3.25.4")
-    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.4")
+    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.4") {
+        exclude(group = "com.google.guava", module = "guava")
+    }
     implementation("org.javassist:javassist:3.29.2-GA")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation(projects.feature.project)

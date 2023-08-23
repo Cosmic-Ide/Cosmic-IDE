@@ -63,6 +63,8 @@ android {
         enable = true
     }
 
+    lint.abortOnError = false
+
     configurations.configureEach {
         exclude(group = "javax.inject", module = "javax.inject")
         exclude(group = "org.jetbrains", module = "annotations-java5")

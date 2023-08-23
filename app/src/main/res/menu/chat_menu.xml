@@ -11,7 +11,7 @@
     <item
         android:id="@+id/clear"
         android:icon="@drawable/baseline_close_24"
-        android:title="Clear"
+        android:title="@string/clear"
         app:showAsAction="always" />
 
     <item

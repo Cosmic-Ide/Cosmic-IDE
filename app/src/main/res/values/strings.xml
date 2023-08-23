@@ -5,12 +5,10 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">Cosmic IDE Rewrite</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="next">Next</string>
-
     <string name="import_project">Import Project</string>
     <string name="app_theme">App theme</string>
 
@@ -18,15 +16,10 @@
     <string name="new_project">New Project</string>
     <string name="use_kotlin_template">Use Kotlin Template</string>
     <string name="enter_project_name">Enter project name</string>
-    <string name="project_name">Project Name</string>
-    <string name="editor">Editor</string>
     <string name="enter_package_name">Enter package name</string>
 
     <string name="create_project">Create project</string>
-    <string name="project_path">Project path</string>
     <string name="action_compile">Compile</string>
-    <string name="compile_info">Compile info</string>
-    <string name="project_output">Project output</string>
     <string name="reload">Reload</string>
     <string name="cancel">Cancel</string>
     <string name="analytics_permission_title">Improve Your Experience</string>
@@ -38,17 +31,9 @@
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
     <string name="dependency_manager">Dependency Manager</string>
-    <string name="expand_collapse">Expand/Collapse</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
-    <string name="type_a_message">Type a message</string>
-    <string name="send">Send</string>
     <string name="action_chat">Chat with AI</string>
-    <string name="author">author</string>
-    <string name="view_drafts">View Drafts</string>
-    <string name="draft_1">Draft 1</string>
-    <string name="draft_3">Draft 3</string>
-    <string name="draft_2">Draft 2</string>
     <string name="completion_type">Completion type</string>
     <string name="enter_something">Enter something…</string>
     <string name="fast_jar_fs">Fast implementation for Jar FS</string>
@@ -82,7 +67,6 @@
     <string name="no_open_files_desc">Try opening the file with a file manager</string>
     <string name="commit_message">Commit Message</string>
     <string name="commit">Commit</string>
-    <string name="push">Push</string>
     <string name="remote_repository_url">Remote Repository URL</string>
     <string name="format_group_artifact_version">Format: group:artifact:version</string>
     <string name="enter_dependency">Enter Dependency</string>
@@ -105,4 +89,13 @@
     <string name="resource_description">This will download and configure the following resources: \n• android.jar (Required for compilation)\n• core-lambdas-stubs.jar (Required for using lambdas in java)\n• rt.jar (Required for SSVM)\n• index.json (Required for Java code completion)</string>
     <string name="install">Install</string>
     <string name="navigation_item_kind">Navigation Item Kind</string>
+    <string name="clear">Clear</string>
+    <string name="git">Git</string>
+    <string name="format">Format</string>
+    <string name="navigation_elements">Navigation Elements</string>
+    <string name="close_tab">Close Tab</string>
+    <string name="close_all_tabs">Close All Tabs</string>
+    <string name="close_other_tabs">Close Other Tabs</string>
+    <string name="close_left_tab">Close Left Tab</string>
+    <string name="close_right_tab">Close Right Tab</string>
 </resources>

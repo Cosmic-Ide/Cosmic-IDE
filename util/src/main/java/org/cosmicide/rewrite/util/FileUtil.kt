@@ -11,6 +11,9 @@ import java.io.File
 
 object FileUtil {
 
+    val isInitialized
+        get() = ::dataDir.isInitialized
+
     @JvmStatic
     lateinit var dataDir: File
 

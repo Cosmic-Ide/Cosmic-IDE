@@ -32,7 +32,6 @@ import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.CommonUtils
 import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
-import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import rikka.sui.Sui
 import java.io.File
@@ -60,11 +59,15 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        if (FileUtil.isInitialized.not()) return
+
         Sui.init(packageName)
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
 
         setupHooks()
+
         loadPlugins()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

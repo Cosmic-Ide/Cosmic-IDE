@@ -35,7 +35,7 @@ import java.time.Duration
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
     private val conversationAdapter = ConversationAdapter()
-    private var model = Models.AISERVICE
+    private var model = Models.FALCON_40B
 
     // The client will expire in an hour.
     // If you were thinking of using this key, don't. It's free already, just get your own.

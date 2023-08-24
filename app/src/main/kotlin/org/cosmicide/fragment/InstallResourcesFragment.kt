@@ -16,10 +16,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.R
-import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.databinding.InstallResourcesFragmentBinding
-import org.cosmicide.util.Download
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.Download
 import org.cosmicide.util.ResourceUtil
 
 class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBinding>() {
@@ -39,6 +39,8 @@ class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBin
                 for (res in ResourceUtil.missingResources()) {
                     withContext(Dispatchers.Main) {
                         binding.installResourcesText.text = "Preparing to download resource $res"
+                        binding.installResourcesProgress.progress = 0
+                        binding.installResourcesProgressText.text = "0%"
                     }
                     if (installResource(res).not()) {
                         return@launch

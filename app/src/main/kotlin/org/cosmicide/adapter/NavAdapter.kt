@@ -17,8 +17,8 @@ import dev.pranav.navigation.NavigationProvider
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionIconDrawer
 import io.github.rosemoe.sora.text.Indexer
-import org.cosmicide.rewrite.R
-import org.cosmicide.rewrite.databinding.NavItemBinding
+import org.cosmicide.R
+import org.cosmicide.databinding.NavItemBinding
 
 class NavAdapter(
     context: Context,

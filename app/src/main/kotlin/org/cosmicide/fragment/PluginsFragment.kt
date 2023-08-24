@@ -14,13 +14,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.cosmicide.adapter.PluginAdapter
-import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.databinding.FragmentPluginsBinding
-import org.cosmicide.rewrite.databinding.PluginInfoBinding
+import org.cosmicide.databinding.PluginInfoBinding
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.plugin.api.Plugin
 import org.cosmicide.rewrite.plugin.api.PluginLoader
-import org.cosmicide.util.CommonUtils
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.CommonUtils
 
 class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
 

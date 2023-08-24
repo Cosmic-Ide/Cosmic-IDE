@@ -32,10 +32,10 @@ import com.google.android.material.color.DynamicColors
 import com.kieronquinn.app.darq.utils.extensions.awaitBinderReceived
 import com.kieronquinn.app.darq.utils.extensions.isShizukuInstalled
 import kotlinx.coroutines.launch
-import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.databinding.ActivityMainBinding
 import org.cosmicide.fragment.InstallResourcesFragment
 import org.cosmicide.fragment.ProjectFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.util.CommonUtils
 import org.cosmicide.util.ResourceUtil
 import rikka.shizuku.Shizuku
@@ -57,7 +57,8 @@ class MainActivity : AppCompatActivity() {
         val accent = Prefs.appAccent
         themeInt = CommonUtils.getAccent(accent)
         setTheme(themeInt)
-        DynamicColors.applyToActivityIfAvailable(this)
+        if (themeInt == R.style.Theme_CosmicIde)
+            DynamicColors.applyToActivityIfAvailable(this)
         enableEdgeToEdge()
         return super.onCreateView(parent, name, context, attrs)
     }

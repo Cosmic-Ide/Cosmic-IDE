@@ -11,7 +11,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import org.cosmicide.rewrite.databinding.PluginItemBinding
+import org.cosmicide.databinding.PluginItemBinding
 import org.cosmicide.rewrite.plugin.api.Plugin
 import kotlin.properties.Delegates
 

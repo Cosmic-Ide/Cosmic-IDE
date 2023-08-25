@@ -142,7 +142,7 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-perf-ktx:20.4.0")
+    implementation("com.google.firebase:firebase-perf-ktx:20.4.1")
     implementation("com.google.gms:google-services:4.3.15")
 
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
@@ -159,10 +159,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
-    implementation("androidx.activity:activity-ktx:1.8.0-alpha06")
+    implementation("androidx.activity:activity-ktx:1.8.0-alpha07")
     implementation("androidx.startup:startup-runtime:1.1.1")
 
-    val editorVersion = "0.22.0"
+    val editorVersion = "c734f6d"
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     //noinspection GradleDependency
@@ -195,11 +195,11 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.7")
     implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
 
-    val shizuku_version = "13.1.4"
-    implementation("dev.rikka.shizuku:api:$shizuku_version")
+    val shizukuVersion = "13.1.4"
+    implementation("dev.rikka.shizuku:api:$shizukuVersion")
 
     // Add this line if you want to support Shizuku
-    implementation("dev.rikka.shizuku:provider:$shizuku_version")
+    implementation("dev.rikka.shizuku:provider:$shizukuVersion")
 
     implementation(projects.buildTools)
     implementation(projects.common)

@@ -28,6 +28,7 @@
             <option value="$PROJECT_DIR$/jgit" />
             <option value="$PROJECT_DIR$/kotlinc" />
             <option value="$PROJECT_DIR$/util" />
+            <option value="$PROJECT_DIR$/zip" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

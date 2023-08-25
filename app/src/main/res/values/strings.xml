@@ -98,4 +98,5 @@
     <string name="close_other_tabs">Close Other Tabs</string>
     <string name="close_left_tab">Close Left Tab</string>
     <string name="close_right_tab">Close Right Tab</string>
+    <string name="backup">Backup</string>
 </resources>

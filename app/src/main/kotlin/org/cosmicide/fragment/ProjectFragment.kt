@@ -15,6 +15,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
@@ -30,17 +32,19 @@ import dev.pranav.jgit.tasks.Credentials
 import dev.pranav.jgit.tasks.cloneRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.cosmicide.project.Project
+import kotlinx.coroutines.withContext
 import org.cosmicide.R
 import org.cosmicide.adapter.ProjectAdapter
+import org.cosmicide.databinding.FragmentProjectBinding
+import org.cosmicide.model.ProjectViewModel
+import org.cosmicide.project.Project
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.common.Prefs
-import org.cosmicide.databinding.FragmentProjectBinding
-import org.cosmicide.model.ProjectViewModel
-import org.cosmicide.util.CommonUtils
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.rewrite.util.compressToZip
 import org.cosmicide.rewrite.util.unzip
+import org.cosmicide.util.CommonUtils
 import java.io.OutputStream
 import java.io.PrintWriter
 
@@ -49,6 +53,29 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     private val projectAdapter = ProjectAdapter(this)
     private val viewModel by activityViewModels<ProjectViewModel>()
+    private var project: Project? = null
+
+    private val zipContract = registerForActivityResult(CreateDocument("application/zip")) { uri ->
+        if (uri == null || uri.path == null) return@registerForActivityResult
+
+        val root = project?.root ?: return@registerForActivityResult
+        uri.let {
+            lifecycleScope.launch(Dispatchers.Main) {
+                binding.progressBar.visibility = View.VISIBLE
+
+                val contentResolver = requireContext().contentResolver
+
+                withContext(Dispatchers.IO) {
+                    contentResolver.openOutputStream(uri).use { outputStream ->
+                        root.compressToZip(outputStream!!)
+                    }
+                }
+                binding.progressBar.visibility = View.GONE
+
+                CommonUtils.showSnackBar(requireView(), "Project backed up successfully")
+            }
+        }
+    }
     private val documentPickerLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -166,6 +193,38 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         }
     }
 
+    private fun showMenu(v: View, p: Project) {
+        // show project_menu attached to view
+        val popupMenu = PopupMenu(requireContext(), v)
+        popupMenu.inflate(R.menu.project_menu)
+        popupMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.backup -> {
+                    project = p
+                    zipContract.launch("${p.name}.zip")
+                    true
+                }
+
+                R.id.delete -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Delete Project")
+                        .setMessage("Are you sure, you want to delete ${p.name}")
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("Delete") { _, _ ->
+                            p.delete()
+                            viewModel.loadProjects()
+                        }
+                        .show()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        popupMenu.show()
+    }
+
     private fun observeViewModelProjects() {
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
             projectAdapter.submitList(projects)
@@ -182,16 +241,8 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         navigateToEditorFragment(project)
     }
 
-    override fun onProjectLongClicked(project: Project): Boolean {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Delete Project")
-            .setMessage("Are you sure, you want to delete ${project.name}")
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Delete") { _, _ ->
-                project.delete()
-                viewModel.loadProjects()
-            }
-            .show()
+    override fun onProjectLongClicked(project: Project, v: View): Boolean {
+        showMenu(v, project)
         return true
     }
 

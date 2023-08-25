@@ -8,6 +8,9 @@
 package org.cosmicide.rewrite.util
 
 import java.io.File
+import java.io.OutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 object FileUtil {
 

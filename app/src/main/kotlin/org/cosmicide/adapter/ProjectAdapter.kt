@@ -8,11 +8,12 @@
 package org.cosmicide.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import org.cosmicide.project.Project
 import org.cosmicide.databinding.ProjectItemBinding
+import org.cosmicide.project.Project
 import kotlin.properties.Delegates
 
 /**
@@ -43,7 +44,7 @@ class ProjectAdapter(private val listener: OnProjectEventListener) :
      */
     interface OnProjectEventListener {
         fun onProjectClicked(project: Project)
-        fun onProjectLongClicked(project: Project): Boolean
+        fun onProjectLongClicked(project: Project, v: View): Boolean
     }
 
     /**
@@ -82,7 +83,12 @@ class ProjectAdapter(private val listener: OnProjectEventListener) :
             binding.projectTitle.text = data.name
             binding.projectPath.text = data.root.absolutePath
             binding.root.setOnClickListener { listener.onProjectClicked(data) }
-            binding.root.setOnLongClickListener { listener.onProjectLongClicked(data) }
+            binding.root.setOnLongClickListener {
+                listener.onProjectLongClicked(
+                    data,
+                    binding.root
+                )
+            }
         }
     }
 }

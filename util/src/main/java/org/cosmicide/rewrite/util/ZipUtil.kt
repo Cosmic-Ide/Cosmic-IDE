@@ -9,7 +9,10 @@ package org.cosmicide.rewrite.util
 
 import java.io.File
 import java.io.InputStream
+import java.io.OutputStream
+import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 fun InputStream.unzip(targetDir: File) {
     ZipInputStream(this).use { zipIn ->
@@ -35,4 +38,34 @@ fun InputStream.unzip(targetDir: File) {
     }
 
     close()
+}
+
+fun InputStream.unzip(outputStream: OutputStream) {
+    ZipInputStream(this).use { zipIn ->
+        var ze = zipIn.nextEntry
+        while (ze != null) {
+            if (!ze.isDirectory) {
+                outputStream.write(zipIn.readBytes())
+            }
+
+            ze = zipIn.nextEntry
+        }
+    }
+
+    close()
+}
+
+fun File.compressToZip(outputStream: OutputStream) {
+    ZipOutputStream(outputStream.buffered()).use { zipOut ->
+        walk().forEach { file ->
+            if (file.isFile) {
+                val zipEntry = ZipEntry(file.toRelativeString(this))
+                zipOut.putNextEntry(zipEntry)
+                file.inputStream().use { input ->
+                    input.copyTo(zipOut)
+                }
+                zipOut.closeEntry()
+            }
+        }
+    }
 }

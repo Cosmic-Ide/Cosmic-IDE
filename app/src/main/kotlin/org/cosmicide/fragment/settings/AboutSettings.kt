@@ -59,7 +59,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 summary = "Donate to the developer"
 
                 selectionChangeListener =
-                    SingleChoiceDialogPreference.OnSelectionChangeListener { preference, selection ->
+                    SingleChoiceDialogPreference.OnSelectionChangeListener { pre_ference, selection ->
                         when (selection) {
                             "paypal" -> {
                                 activity.startActivity(

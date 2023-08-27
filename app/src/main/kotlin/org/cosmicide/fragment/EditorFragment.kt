@@ -291,6 +291,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                                             }
                                             return@launch
                                         }
+                                        if (artifact == null) {
+                                            lifecycleScope.launch(Dispatchers.Main) {
+                                                binding.editor.setText("Cannot find library")
+                                            }
+                                            return@launch
+                                        }
                                         artifact.downloadArtifact(project.libDir)
                                         sheet.dismiss()
                                     }

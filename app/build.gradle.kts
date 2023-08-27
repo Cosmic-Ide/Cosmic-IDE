@@ -137,7 +137,7 @@ dependencies {
     implementation("com.android.tools:r8:8.1.56")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     //noinspection GradleDependency
-    implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
+    implementation("com.github.Cosmic-Ide:DependencyResolver:a9085eb660")
     implementation("com.github.xxdark:ssvm:df30743")
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")

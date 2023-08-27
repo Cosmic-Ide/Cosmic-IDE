@@ -109,6 +109,9 @@ object Prefs {
     val kotlinRealtimeErrors: Boolean
         get() = prefs.getBoolean("kotlin_realtime_errors", false)
 
+    val experimentsEnabled: Boolean
+        get() = prefs.getBoolean("experiments_enabled", false)
+
 
     val editorFont: String
         get() = prefs.getString("editor_font", "") ?: ""

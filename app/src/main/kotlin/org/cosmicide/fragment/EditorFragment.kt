@@ -54,7 +54,6 @@ import org.cosmicide.util.FileIndex
 import org.cosmicide.util.ProjectHandler
 import java.io.File
 
-
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private lateinit var fileIndex: FileIndex
     private val fileViewModel by activityViewModels<FileViewModel>()
@@ -235,6 +234,11 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 editorAdapter.saveAll()
                 binding.drawer.open()
             }
+
+            if (Prefs.experimentsEnabled) {
+                menu.findItem(R.id.action_chat).isVisible = true
+            }
+
             setOnMenuItemClickListener {
                 getCurrentFragment()?.save()
                 when (it.itemId) {

@@ -7,22 +7,32 @@
 
 package org.cosmicide.fragment.settings
 
+import android.annotation.SuppressLint
+import android.content.ClipboardManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.Maxr1998.modernpreferences.PreferenceScreen
+import de.Maxr1998.modernpreferences.helpers.expandText
 import de.Maxr1998.modernpreferences.helpers.onClick
 import de.Maxr1998.modernpreferences.helpers.pref
+import de.Maxr1998.modernpreferences.helpers.singleChoice
+import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
+import de.Maxr1998.modernpreferences.preferences.choice.SingleChoiceDialogPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,6 +40,7 @@ import org.cosmicide.BuildConfig
 import org.cosmicide.R
 import org.cosmicide.extension.copyToClipboard
 import org.cosmicide.fragment.InstallResourcesFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.CommonUtils.isShizukuGranted
 import org.cosmicide.util.ResourceUtil
@@ -37,14 +48,82 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
 
 class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
+    @SuppressLint("PrivateResource")
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            singleChoice(
+                "donate",
+                listOf(SelectionItem("paypal", "PayPal"), SelectionItem("patreon", "Patreon"))
+            ) {
+                title = "Donate"
+                summary = "Donate to the developer"
+
+                selectionChangeListener =
+                    SingleChoiceDialogPreference.OnSelectionChangeListener { preference, selection ->
+                        when (selection) {
+                            "paypal" -> {
+                                activity.startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://www.paypal.com/paypalme/PranavPurwar")
+                                    )
+                                )
+                            }
+
+                            "patreon" -> {
+                                activity.startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://www.patreon.com/cosmicide")
+                                    )
+                                )
+                            }
+                        }
+                        true
+                    }
+            }
+            expandText("about") {
+                title = "About"
+                summary =
+                    "Cosmic IDE is a free and open-source IDE for Android. It is licensed under the GNU General Public License v3.0."
+            }
+
             pref("version") {
                 title = "App version"
                 summary =
                     BuildConfig.VERSION_NAME + if (BuildConfig.DEBUG) " (${BuildConfig.GIT_COMMIT})" else ""
+
+                var count = 0
                 onClick {
-                    activity.copyToClipboard(summary.toString())
+                    count++
+                    if (count == 7) {
+                        val editor = PreferenceManager.getDefaultSharedPreferences(activity).edit()
+                        if (Prefs.experimentsEnabled) {
+                            editor.putBoolean("experiments_enabled", false)
+                            Toast.makeText(
+                                activity,
+                                "You are no longer a developer",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            editor.putBoolean("experiments_enabled", true)
+                            Toast.makeText(activity, "You are a developer", Toast.LENGTH_LONG)
+                                .show()
+                        }
+                        editor.apply()
+                    }
+                    val handler = Handler(Looper.myLooper()!!)
+                    handler.postDelayed({ count = 0 }, 1000)
+                    // We don't wanna show the copy to clipboard dialog multiple times
+                    if (count == 1) {
+                        val clipboardManager =
+                            ContextCompat.getSystemService(activity, ClipboardManager::class.java)!!
+                        val clip = clipboardManager.primaryClip?.getItemAt(0)?.text
+                        if (clip == summary) {
+                            return@onClick true
+                        }
+                        activity.copyToClipboard(summary.toString())
+                    }
                     true
                 }
             }

@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 
 fun Context.copyToClipboard(text: String) {
     val clipboard = ContextCompat.getSystemService(this, ClipboardManager::class.java)!!
-    clipboard.setPrimaryClip(ClipData.newPlainText("", text))
+    clipboard.setPrimaryClip(ClipData.newPlainText("version", text))
 }
 
 fun Context.getDip(input: Float): Float {

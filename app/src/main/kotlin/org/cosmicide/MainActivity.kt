@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         if (themeInt == R.style.Theme_CosmicIde)
             DynamicColors.applyToActivityIfAvailable(this)
         enableEdgeToEdge()
+        isImmersive = true
         return super.onCreateView(parent, name, context, attrs)
     }
 

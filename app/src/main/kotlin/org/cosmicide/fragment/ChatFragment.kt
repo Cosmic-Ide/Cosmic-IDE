@@ -53,6 +53,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
         setupUI(view.context)
         setOnClickListeners()
         setupRecyclerView()
+        binding.messageText.requestFocus()
     }
 
     private fun setupUI(context: Context) {
@@ -66,6 +67,12 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             parentFragmentManager.popBackStack()
         }
         binding.toolbar.setOnMenuItemClickListener {
+
+            if (it.itemId == R.id.clear) {
+                conversationAdapter.clear()
+                binding.recyclerview.invalidate()
+                return@setOnMenuItemClickListener false
+            }
             val modelName = when (it.itemId) {
                 R.id.model_bard -> {
                     model = Models.BARD
@@ -105,9 +112,6 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                 else -> return@setOnMenuItemClickListener false
             }
 
-            if (it.itemId == R.id.clear) {
-                conversationAdapter.clear()
-            }
             binding.toolbar.title = modelName
             true
         }

@@ -49,6 +49,7 @@ import java.lang.ref.WeakReference
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.time.ZonedDateTime
+import java.util.logging.Logger
 
 class App : Application() {
 
@@ -59,9 +60,6 @@ class App : Application() {
          */
         @JvmStatic
         lateinit var instance: WeakReference<App>
-
-        @JvmStatic
-        var isShizukuAvailable = false
     }
 
     override fun onCreate() {
@@ -221,6 +219,21 @@ class App : Application() {
                 }
                 // Bypass method call as we have already called the original method.
                 param.result = null
+            }
+        })
+
+        injectPrint("fine")
+        injectPrint("info")
+    }
+
+    private fun injectPrint(method: String) {
+        HookManager.registerHook(object : Hook(
+            method = method,
+            argTypes = arrayOf(String::class.java),
+            type = Logger::class.java
+        ) {
+            override fun before(param: XC_MethodHook.MethodHookParam) {
+                println(param.args[0])
             }
         })
     }

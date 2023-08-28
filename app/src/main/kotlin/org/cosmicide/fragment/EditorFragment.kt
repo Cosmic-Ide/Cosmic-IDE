@@ -53,6 +53,7 @@ import org.cosmicide.util.FileFactoryProvider
 import org.cosmicide.util.FileIndex
 import org.cosmicide.util.ProjectHandler
 import java.io.File
+import java.io.PrintStream
 
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private lateinit var fileIndex: FileIndex
@@ -274,6 +275,20 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         val binding = NewDependencyBinding.inflate(layoutInflater)
                         binding.apply {
                             download.setOnClickListener {
+                                val newOut = object : java.io.OutputStream() {
+                                    override fun write(b: Int) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            val text = editor.text
+                                            text.insert(
+                                                text.lineCount - 1,
+                                                text.getColumnCount(text.lineCount - 1),
+                                                b.toChar().toString()
+                                            )
+                                        }
+                                    }
+                                }
+                                System.setOut(PrintStream(newOut))
+
                                 var dependency = dependency.editText?.text.toString()
                                 if (dependency.isNotEmpty()) {
                                     dependency =
@@ -297,8 +312,16 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                                             }
                                             return@launch
                                         }
-                                        artifact.downloadArtifact(project.libDir)
-                                        sheet.dismiss()
+                                        try {
+                                            artifact.downloadArtifact(project.libDir)
+                                            sheet.dismiss()
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            lifecycleScope.launch(Dispatchers.Main) {
+                                                println(e.stackTraceToString())
+                                            }
+                                            return@launch
+                                        }
                                     }
                                 }
                             }

@@ -15,22 +15,26 @@ If you find any bugs, please report them on our [Discord server](https://discord
 ## Features
 
 - Supports Java 17 and Kotlin 2.1 (K2 compiler)
+- Plugin support (plugins can be written in Java or Kotlin)
+- Git integration
 - Fast incremental compilation
 - Integrated dependency management
-- Accurate code completion for Java and Kotlin
+- Code completion for Java and Kotlin
 - Syntax highlighting
-- Error and warning highlighting directly in the editor
-- Sand-boxed program execution with SSVM
 - Execution of programs
+- Code navigation
+- Support for custom fonts and ligatures
+- Highly customizable editor
 - Google Java Format and ktfmt integration
 - Support for plugins
 - Highly customizable
 - High-performance code editor (Sora Editor)
 - Code navigation
 - Bytecode Disassembler
-- Chat with AI assistants for help with programming
+- Backup and restore
 - Material You Design
 - Modern UI with prebuilt themes
+- Dark mode (and light mode)
 
 ## Benefits
 

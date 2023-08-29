@@ -2,6 +2,13 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -136,9 +143,9 @@ materialThemeBuilder {
 dependencies {
     implementation("com.android.tools:r8:8.1.56")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
+
     //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:a9085eb660")
-    implementation("com.github.xxdark:ssvm:df30743")
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.firebase:firebase-analytics-ktx")
@@ -146,8 +153,6 @@ dependencies {
     implementation("com.google.gms:google-services:4.3.15")
 
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
-
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")

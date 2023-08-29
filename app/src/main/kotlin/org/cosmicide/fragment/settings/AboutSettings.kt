@@ -2,6 +2,13 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -31,6 +38,7 @@ import de.Maxr1998.modernpreferences.helpers.expandText
 import de.Maxr1998.modernpreferences.helpers.onClick
 import de.Maxr1998.modernpreferences.helpers.pref
 import de.Maxr1998.modernpreferences.helpers.singleChoice
+import de.Maxr1998.modernpreferences.helpers.switch
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
 import de.Maxr1998.modernpreferences.preferences.choice.SingleChoiceDialogPreference
 import kotlinx.coroutines.Dispatchers
@@ -51,15 +59,22 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
     @SuppressLint("PrivateResource")
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            expandText("about") {
+                title = "About"
+                summary = "A free and open-source IDE for Android."
+                text =
+                    "Cosmic IDE is a free and open-source IDE for Android. It is licensed under the GNU General Public License v3.0."
+            }
             singleChoice(
                 "donate",
                 listOf(SelectionItem("paypal", "PayPal"), SelectionItem("patreon", "Patreon"))
             ) {
                 title = "Donate"
-                summary = "Donate to the developer"
+                summary =
+                    "Donate to the developers. This will help us to keep the project alive. The donations will be distributed among the developers. Thank you for your support!"
 
                 selectionChangeListener =
-                    SingleChoiceDialogPreference.OnSelectionChangeListener { pre_ference, selection ->
+                    SingleChoiceDialogPreference.OnSelectionChangeListener { _, selection ->
                         when (selection) {
                             "paypal" -> {
                                 activity.startActivity(
@@ -81,11 +96,6 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         }
                         true
                     }
-            }
-            expandText("about") {
-                title = "About"
-                summary =
-                    "Cosmic IDE is a free and open-source IDE for Android. It is licensed under the GNU General Public License v3.0."
             }
 
             pref("version") {
@@ -252,6 +262,11 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 onClick {
                     throw RuntimeException("Forced crash")
                 }
+            }
+
+            switch("analytics_preference") {
+                title = "Analytics"
+                summary = "Help us improve the app by sending anonymous usage data"
             }
         }
     }

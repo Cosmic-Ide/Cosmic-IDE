@@ -2,6 +2,13 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -30,11 +37,13 @@ import dev.pranav.navigation.KtNavigationProvider
 import dev.pranav.navigation.NavigationProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmic.ide.dependency.resolver.getArtifact
 import org.cosmicide.FileProvider.openFileWithExternalApp
 import org.cosmicide.R
 import org.cosmicide.adapter.EditorAdapter
 import org.cosmicide.adapter.NavAdapter
+import org.cosmicide.build.dex.D8Task
 import org.cosmicide.databinding.FragmentEditorBinding
 import org.cosmicide.databinding.NavigationElementsBinding
 import org.cosmicide.databinding.NewDependencyBinding
@@ -53,6 +62,7 @@ import org.cosmicide.util.FileFactoryProvider
 import org.cosmicide.util.FileIndex
 import org.cosmicide.util.ProjectHandler
 import java.io.File
+import java.io.OutputStream
 import java.io.PrintStream
 
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
@@ -245,11 +255,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 when (it.itemId) {
                     R.id.action_compile -> {
                         editorAdapter.fragments.forEach { fragment -> fragment.save() }
+                        getCurrentFragment()?.hideWindows()
                         navigateToCompileInfoFragment()
                         true
                     }
 
                     R.id.action_settings -> {
+                        getCurrentFragment()?.hideWindows()
                         navigateToSettingsFragment()
                         true
                     }
@@ -271,11 +283,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
 
                     R.id.dependency_manager -> {
+                        getCurrentFragment()?.hideWindows()
                         val sheet = BottomSheetDialog(requireContext())
                         val binding = NewDependencyBinding.inflate(layoutInflater)
                         binding.apply {
                             download.setOnClickListener {
-                                val newOut = object : java.io.OutputStream() {
+                                val newOut = object : OutputStream() {
                                     override fun write(b: Int) {
                                         lifecycleScope.launch(Dispatchers.Main) {
                                             val text = editor.text
@@ -289,25 +302,21 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                                 }
                                 System.setOut(PrintStream(newOut))
 
-                                var dependency = dependency.editText?.text.toString()
+                                val dependency = dependency.editText?.text.toString().trim()
                                 if (dependency.isNotEmpty()) {
-                                    dependency =
-                                        dependency.replace("implementation", "").replace("'", "")
-                                            .replace("\"", "")
-                                    dependency = dependency.trim()
                                     val arr = dependency.split(":")
                                     lifecycleScope.launch(Dispatchers.IO) {
                                         val artifact = try {
                                             getArtifact(arr[0], arr[1], arr[2])
                                         } catch (e: Exception) {
                                             e.printStackTrace()
-                                            lifecycleScope.launch(Dispatchers.Main) {
+                                            withContext(Dispatchers.Main) {
                                                 binding.editor.setText(e.stackTraceToString())
                                             }
                                             return@launch
                                         }
                                         if (artifact == null) {
-                                            lifecycleScope.launch(Dispatchers.Main) {
+                                            withContext(Dispatchers.Main) {
                                                 binding.editor.setText("Cannot find library")
                                             }
                                             return@launch
@@ -317,7 +326,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                                             sheet.dismiss()
                                         } catch (e: Exception) {
                                             e.printStackTrace()
-                                            lifecycleScope.launch(Dispatchers.Main) {
+                                            withContext(Dispatchers.Main) {
                                                 println(e.stackTraceToString())
                                             }
                                             return@launch
@@ -412,8 +421,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     return
                 }
             }
-
-            else -> {}
         }
         showSymbols(symbols, editor.editor)
     }
@@ -469,12 +476,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 if (formatted.isNotEmpty() && formatted != text) {
-                    lifecycleScope.launch(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
                         content.replace(0, content.length, formatted)
                     }
                 }
             } catch (e: Exception) {
-                lifecycleScope.launch(Dispatchers.Main) {
+                withContext(Dispatchers.Main) {
                     Snackbar.make(
                         binding.root, "Failed to format code", Snackbar.LENGTH_SHORT
                     ).apply {
@@ -548,6 +555,15 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             popup.menu.removeItem(R.id.create_kotlin_class)
             popup.menu.removeItem(R.id.create_java_class)
             popup.menu.removeItem(R.id.create_folder)
+        }
+
+        if (file.extension == "jar") {
+            popup.menu.add("DEX").setOnMenuItemClickListener {
+                val dex = file.resolveSibling("${file.nameWithoutExtension}.dex")
+                dex.createNewFile()
+                D8Task.compileJar(file.toPath(), dex.parentFile!!.toPath())
+                true
+            }
         }
 
         popup.setOnMenuItemClickListener {

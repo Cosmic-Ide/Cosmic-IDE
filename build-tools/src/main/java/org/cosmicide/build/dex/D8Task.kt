@@ -2,6 +2,13 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -31,8 +38,34 @@ class D8Task(val project: Project) : Task {
     companion object {
         const val MIN_API_LEVEL = Build.VERSION_CODES.O
 
-        @JvmStatic
         val COMPILATION_MODE = CompilationMode.DEBUG
+
+        /**
+         * Compiles a jar file to a directory of dex files.
+         *
+         * @param jarFile The jar file to compile.
+         * @param outputDir The directory to output the dex files to.
+         * @param reporter The BuildReporter instance to report any errors to.
+         */
+        fun compileJar(jarFile: Path, outputDir: Path, reporter: BuildReporter? = null) {
+            try {
+                D8.run(
+                    D8Command.builder()
+                        .setMinApiLevel(MIN_API_LEVEL)
+                        .setMode(COMPILATION_MODE)
+                        .addClasspathFiles(getSystemClasspath().map { it.toPath() })
+                        .addProgramFiles(jarFile)
+                        .setOutput(outputDir, OutputMode.DexIndexed)
+                        .build()
+                )
+                Files.move(
+                    outputDir.resolve("classes.dex"),
+                    outputDir.resolve(jarFile.nameWithoutExtension + ".dex")
+                )
+            } catch (e: Throwable) {
+                reporter?.reportError(e.stackTraceToString())
+            }
+        }
     }
 
     /**
@@ -66,33 +99,6 @@ class D8Task(val project: Project) : Task {
                 reporter.reportInfo("Compiling library ${jarFile.name}")
                 compileJar(jarFile.toPath(), libDexDir.toPath(), reporter)
             }
-        }
-    }
-
-    /**
-     * Compiles a jar file to a directory of dex files.
-     *
-     * @param jarFile The jar file to compile.
-     * @param outputDir The directory to output the dex files to.
-     * @param reporter The BuildReporter instance to report any errors to.
-     */
-    fun compileJar(jarFile: Path, outputDir: Path, reporter: BuildReporter) {
-        try {
-            D8.run(
-                D8Command.builder()
-                    .setMinApiLevel(MIN_API_LEVEL)
-                    .setMode(COMPILATION_MODE)
-                    .addClasspathFiles(getSystemClasspath().map { it.toPath() })
-                    .addProgramFiles(jarFile)
-                    .setOutput(outputDir, OutputMode.DexIndexed)
-                    .build()
-            )
-            Files.move(
-                outputDir.resolve("classes.dex"),
-                outputDir.resolve(jarFile.nameWithoutExtension + ".dex")
-            )
-        } catch (e: Throwable) {
-            reporter.reportError(e.stackTraceToString())
         }
     }
 

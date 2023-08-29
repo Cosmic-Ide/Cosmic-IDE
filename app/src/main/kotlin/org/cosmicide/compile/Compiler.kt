@@ -2,6 +2,13 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -16,7 +23,6 @@ import org.cosmicide.build.java.JarTask
 import org.cosmicide.build.java.JavaCompileTask
 import org.cosmicide.build.kotlin.KotlinCompiler
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.Prefs
 
 /**
  * A class responsible for compiling Java and Kotlin code and converting class files to dex format.
@@ -43,9 +49,7 @@ class Compiler(
             CompilerCache.saveCache(JavaCompileTask(project))
             CompilerCache.saveCache(KotlinCompiler(project))
             CompilerCache.saveCache(D8Task(project))
-            if (Prefs.useSSVM) {
-                CompilerCache.saveCache(JarTask(project))
-            }
+            CompilerCache.saveCache(JarTask(project))
         }
     }
 
@@ -58,11 +62,11 @@ class Compiler(
     /**
      * Compiles Kotlin and Java code and converts class files to dex format.
      */
-    fun compile() {
+    fun compile(release: Boolean = false) {
         compileKotlinCode()
         compileJavaCode()
         convertClassFilesToDexFormat()
-        if (Prefs.useSSVM) {
+        if (release) {
             compileJar()
         }
         reporter.reportSuccess()
@@ -117,15 +121,11 @@ class Compiler(
      * Converts class files to dex format.
      */
     private fun convertClassFilesToDexFormat() {
-        if (Prefs.useSSVM) {
-            reporter.reportInfo(context.getString(R.string.skipping_d8_ssvm_enabled))
-            return
-        }
         compileTask<D8Task>(context.getString(R.string.compiling_class_files_to_dex))
     }
 
     sealed class BuildStatus {
-        object STARTED : BuildStatus()
-        object FINISHED : BuildStatus()
+        data object STARTED : BuildStatus()
+        data object FINISHED : BuildStatus()
     }
 }

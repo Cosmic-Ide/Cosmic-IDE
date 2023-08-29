@@ -2,6 +2,13 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -14,26 +21,20 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
-import dev.xdark.ssvm.execution.VMException
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.cosmicide.project.Project
 import org.cosmicide.R
-import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
-import org.cosmicide.compile.ssvm.SSVM
 import org.cosmicide.databinding.FragmentCompileInfoBinding
 import org.cosmicide.editor.EditorInputStream
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.project.Project
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.util.ProjectHandler
 import java.io.OutputStream
 import java.io.PrintStream
 import java.lang.reflect.Modifier
-import java.util.jar.JarFile
-import java.util.zip.ZipFile
 
 class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     val project: Project = ProjectHandler.getProject()
@@ -84,34 +85,10 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
             }
         }
-        lifecycleScope.launch {
             checkClasses()
-        }
     }
 
     fun checkClasses() {
-        if (Prefs.useSSVM) {
-            val jar = project.binDir.resolve("classes.jar")
-            if (!jar.exists()) {
-                binding.infoEditor.setText("classes.jar not found")
-                return
-            }
-            JarFile(jar).use { file ->
-                val sequence = file.entries().asSequence()
-                val mainClass = sequence.firstOrNull { entry ->
-                    entry.name.endsWith("Main.class")
-                } ?: sequence.firstOrNull()
-                if (mainClass == null) {
-                    binding.infoEditor.setText("No entrypoint Main class found")
-                    return
-                }
-                runClass(
-                    mainClass.name.substringBeforeLast(".class")
-                        .replace('/', '.')
-                )
-            }
-            return
-        }
         val dex = project.binDir.resolve("classes.dex")
         if (!dex.exists()) {
             binding.infoEditor.setText("classes.dex not found")
@@ -153,14 +130,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         System.setErr(systemOut)
         System.setIn(EditorInputStream(binding.infoEditor))
 
-        if (Prefs.useSSVM) {
-            isRunning = true
-            initVM()
-            invoke(className)
-            isRunning = false
-            return@launch
-        }
-
         val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
 
         loader.loadDex(project.binDir.resolve("classes.dex").apply { setReadOnly() })
@@ -198,73 +167,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             System.`in`.close()
             isRunning = false
         }
-    }
-
-    private val ssvm by lazy {
-        SSVM(
-            ZipFile(
-                FileUtil.dataDir.resolve("rt.jar"),
-                Charsets.UTF_8
-            )
-        )
-    }
-
-    private fun initVM() {
-        println("[VM] Initializing...")
-        val time = System.currentTimeMillis()
-
-        catchVMException {
-            ssvm.addProperty("project.dir", project.root.absolutePath)
-            ssvm.addProperty("user.home", project.binDir.absolutePath)
-            ssvm.addProperty(
-                "java.home",
-                project.binDir.absolutePath
-            )
-            // init VM
-            ssvm.initVM()
-
-            // add classpath JAR
-            FileUtil.classpathDir.walk().filter { it.extension == "jar" }.forEach {
-                ssvm.addURL(it)
-            }
-            // add libs
-            project.libDir.walk().filter { it.extension == "jar" }.forEach {
-                ssvm.addURL(it)
-            }
-
-            ssvm.addURL(project.binDir.resolve("classes.jar"))
-        }
-
-        println("[VM] Initialized in ${System.currentTimeMillis() - time} ms")
-    }
-
-    private fun invoke(className: String) {
-        catchVMException {
-            println("[VM] Invoking $className")
-            ssvm.invokeMainMethod(className)
-            println("[VM] VM exited")
-        }
-    }
-
-    private fun catchVMException(runnable: () -> Unit) {
-        try {
-            runnable()
-        } catch (ex: Throwable) {
-            val cause = ex.cause
-            System.err.println(
-                "[VM] VM exception: ${
-                    if (cause is VMException)
-                        SSVM.throwableToString(cause.oop)
-                    else
-                        ex.stackTraceToString()
-                }"
-            )
-        }
-    }
-
-    override fun onDestroy() {
-        ssvm.release()
-        super.onDestroy()
     }
 }
 

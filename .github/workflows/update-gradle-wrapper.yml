@@ -22,7 +22,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Update gradle wrapper
-        uses: gradle/gradle-build-action@v2.4.0
+        uses: gradle/gradle-build-action@v2.8.0
         with:
           arguments: |
               wrapper

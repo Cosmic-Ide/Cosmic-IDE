@@ -89,7 +89,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("org.smali:dexlib2:2.5.2")
-    implementation("com.google.guava:guava:31.1-android")
+    implementation("com.google.guava:guava:32.1.2-android")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("com.github.Cosmic-Ide:DependencyResolver:main-SNAPSHOT") {
         isChanging = true

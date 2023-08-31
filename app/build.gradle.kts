@@ -91,7 +91,7 @@ dependencies {
     implementation("org.smali:dexlib2:2.5.2")
     implementation("com.google.guava:guava:31.1-android")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
-    implementation("com.github.Cosmic-Ide:DependencyResolver:main-SNAPSHOT") {
+    implementation("com.github.Cosmic-Ide:DependencyResolver:1.0.1") {
         isChanging = true
     }
     implementation(projects.treeview)

@@ -38,7 +38,7 @@ dependencies {
     implementation("it.unimi.dsi:fastutil:8.5.12")
     implementation("one.util:streamex:0.8.1")
 
-    implementation("com.jetbrains.intellij.platform:util-jdom:223.8617.58")
+    implementation("com.jetbrains.intellij.platform:util-jdom:232.9559.64")
     implementation("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 
     api(files("libs/kotlin-compiler-1.8.0.jar"))

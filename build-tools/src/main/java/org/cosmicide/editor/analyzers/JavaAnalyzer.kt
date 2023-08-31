@@ -122,7 +122,7 @@ class JavaAnalyzer(
                     .substring(it.startPosition.toInt(), it.endPosition.toInt())
                 Log.d("JavaAnalyzer", symbol)
                 CompletionProvider.symbolCacher.filterClassNames(symbol).forEach { name ->
-                    quickFixes.add(Quickfix("Import $name", 0L) {
+                    quickFixes.add(Quickfix("Import ${name.value}", 0L) {
                         val lines = editor.text.lines()
                         var firstImportLine = lines.indexOfFirst { it.startsWith("import ") }
                         if (firstImportLine == -1) {

@@ -1,4 +1,4 @@
-# Cosmic IDE Rewrite
+# Cosmic IDE
 
 A new and improved version of Cosmic IDE, a next-gen IDE for JVM development on Android.
 
@@ -8,7 +8,7 @@ Cosmic IDE is a powerful and feature-rich IDE for JVM development on Android. It
 
 ## Installation
 
-Currently, Cosmic IDE Rewrite is in the beta stage, and there is no stable release yet. You can download the latest debug app build from [here](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/apk-debug.zip).
+Currently, Cosmic IDE is in active development. You can download the latest debug app build from [here](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/apk-debug.zip).
 
 If you find any bugs, please report them on our [Discord server](https://discord.gg/8Gu6YCq2eS) or open an issue on GitHub.
 
@@ -68,11 +68,11 @@ We would like to thank the following projects and their maintainers for their wo
 
 ## Contributions
 
-[![Contributors](https://contrib.rocks/image?repo=Cosmic-Ide/rewrite)](https://github.com/Cosmic-Ide/rewrite/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=Cosmic-Ide/Cosmic-IDE)](https://github.com/Cosmic-Ide/Cosmic-IDE/graphs/contributors)
 
 ## License
 
-Cosmic IDE Rewrite is licensed under the GNU GPL-v3 License.
+Cosmic IDE is licensed under the GNU GPL-v3 License.
 
 ## Contact
 

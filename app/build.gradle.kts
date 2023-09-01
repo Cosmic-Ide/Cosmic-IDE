@@ -8,8 +8,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.firebase-perf")
     id("com.google.android.gms.oss-licenses-plugin")
     id("dev.rikka.tools.materialthemebuilder")
 }
@@ -133,6 +131,10 @@ materialThemeBuilder {
     generatePaletteAttributes = true
 }
 
+configurations.all {
+    resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.11.0")
+}
+
 dependencies {
     implementation("com.android.tools:r8:8.1.56")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
@@ -141,9 +143,6 @@ dependencies {
     implementation("com.github.Cosmic-Ide:DependencyResolver:a9085eb660")
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-perf-ktx:20.4.1")
-    implementation("com.google.gms:google-services:4.3.15")
 
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
 
@@ -181,8 +180,6 @@ dependencies {
     val markwonVersion = "4.6.2"
     implementation("io.noties.markwon:core:$markwonVersion")
     implementation("io.noties.markwon:html:$markwonVersion")
-    implementation("io.noties.markwon:image:$markwonVersion")
-    implementation("io.noties.markwon:image-glide:$markwonVersion")
     implementation("io.noties.markwon:linkify:$markwonVersion")
 
     implementation("com.aliucord:Aliuhook:main-SNAPSHOT")
@@ -191,13 +188,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.0.7")
-    implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
 
     val shizukuVersion = "13.1.4"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")
 
     // Add this line if you want to support Shizuku
     implementation("dev.rikka.shizuku:provider:$shizukuVersion")
+
+    implementation("io.appwrite:sdk-for-android:3.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     implementation(projects.buildTools)
     implementation(projects.common)

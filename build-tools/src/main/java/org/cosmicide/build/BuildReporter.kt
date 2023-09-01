@@ -92,7 +92,7 @@ class BuildReporter(
             return
         }
         val endTime = System.currentTimeMillis()
-        Analytics.logEvent("build_success", "build_time" to (endTime - startTime).toString() + "ms")
+        Analytics.logEvent("build_stats", "build_time" to (endTime - startTime).toString() + "ms")
         reportOutput("Build completed successfully.")
         buildSuccess = true
     }

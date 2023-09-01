@@ -13,7 +13,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 object ChatProvider {
 
@@ -43,10 +43,10 @@ object ChatProvider {
             .post(requestBody)
             .build()
 
-        val client = OkHttpClient().newBuilder().readTimeout(Duration.ofSeconds(120)).build()
+        val client = OkHttpClient().newBuilder().readTimeout(120, TimeUnit.SECONDS).build()
         return try {
             val response = client.newCall(request).execute()
-            val body = response.body.string()
+            val body = response.body!!.string()
             response.close()
             body
         } catch (e: Exception) {

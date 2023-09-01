@@ -26,7 +26,7 @@ object Main {
         val context = HookManager.context.get()!!
         val dataDir = pref.getString("data_directory", null)
 
-        if (dataDir == null) {
+        if (dataDir.isNullOrBlank()) {
             Log.d("Plugin", "Data directory not set")
             return
         }

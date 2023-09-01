@@ -6,8 +6,6 @@
  */
 buildscript {
     dependencies {
-        classpath("com.google.gms:google-services:4.3.15")
-        classpath("com.google.firebase:perf-plugin:1.4.2")
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
     }
 }

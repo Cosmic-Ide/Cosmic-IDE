@@ -18,6 +18,7 @@ import android.app.Application
 import android.app.UiModeManager
 import android.content.res.Configuration
 import android.os.Build
+import android.os.StrictMode
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +31,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
+import kotlinx.coroutines.runBlocking
 import org.cosmicide.fragment.PluginsFragment
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
@@ -67,7 +69,17 @@ class App : Application() {
 
         if (FileUtil.isInitialized.not()) return
 
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectLeakedClosableObjects()
+                .penaltyLog()
+                .build()
+        )
+
         Sui.init(packageName)
+        runBlocking {
+            Analytics.init(this@App)
+        }
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
 
@@ -87,7 +99,7 @@ class App : Application() {
         loadTextmateTheme()
 
         Analytics.logEvent(
-            "startup",
+            "app_start",
             "theme" to Prefs.appTheme,
             "time" to ZonedDateTime.now().toString(),
             "device" to Build.DEVICE,
@@ -150,10 +162,11 @@ class App : Application() {
 
     fun assetNeedsUpdate(assetName: String, targetFile: File): Boolean {
         val assetInputStream = assets.open(assetName)
-        val targetFileInputStream = FileInputStream(targetFile)
-        val assetChecksum = calculateChecksum(assetInputStream)
-        val targetFileChecksum = calculateChecksum(targetFileInputStream)
-        return assetChecksum != targetFileChecksum
+        FileInputStream(targetFile).use { targetFileInputStream ->
+            val assetChecksum = calculateChecksum(assetInputStream)
+            val targetFileChecksum = calculateChecksum(targetFileInputStream)
+            return assetChecksum != targetFileChecksum
+        }
     }
 
     fun calculateChecksum(inputStream: InputStream): String {

@@ -8,23 +8,33 @@
 package org.cosmicide.util
 
 import android.util.Log
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.File
-import java.net.HttpURLConnection
-import java.net.URL
 
 class Download(val url: String, val callback: (percent: Int) -> Unit) {
 
-    var totalBytes = 0L
+    var totalBytes = 0.0
     var downloadedBytes = 0L
 
     fun start(file: File) {
-        val connection = URL(url).openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-        totalBytes = connection.contentLengthLong
+        val request = Request.Builder()
+            .url(url)
+            .build()
 
+        val response = OkHttpClient().newCall(request).execute()
+
+        if (!response.isSuccessful) {
+            throw Exception("Unexpected code $response")
+        }
+
+        totalBytes = response.body!!.contentLength().toDouble()
+        if (totalBytes <= 0) {
+            totalBytes = response.body!!.source().buffer.size.toDouble()
+        }
         Log.d("Download", "Downloading $url to $file ($totalBytes B)")
         file.outputStream().use { out ->
-            connection.inputStream.buffered().use { input ->
+            response.body!!.byteStream().buffered().use { input ->
                 val buffer = ByteArray(BUFFER_SIZE)
                 var bytesRead = input.read(buffer)
 
@@ -41,6 +51,6 @@ class Download(val url: String, val callback: (percent: Int) -> Unit) {
     }
 
     companion object {
-        private const val BUFFER_SIZE = 4096
+        private const val BUFFER_SIZE = 512
     }
 }

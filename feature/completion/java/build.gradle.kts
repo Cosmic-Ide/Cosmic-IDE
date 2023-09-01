@@ -35,8 +35,8 @@ dependencies {
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     api("com.google.guava:guava:32.1.2-jre")
 
-    implementation("com.google.auto.value:auto-value-annotations:1.10.2")
-    annotationProcessor("com.google.auto.value:auto-value:1.10.2")
+    implementation("com.google.auto.value:auto-value-annotations:1.10.3")
+    annotationProcessor("com.google.auto.value:auto-value:1.10.3")
     implementation(projects.kotlinc)
     implementation(projects.util)
 }

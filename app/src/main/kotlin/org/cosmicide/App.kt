@@ -18,7 +18,6 @@ import android.app.Application
 import android.app.UiModeManager
 import android.content.res.Configuration
 import android.os.Build
-import android.os.StrictMode
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,7 +30,9 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.cosmicide.fragment.PluginsFragment
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
@@ -69,17 +70,30 @@ class App : Application() {
 
         if (FileUtil.isInitialized.not()) return
 
-        StrictMode.setVmPolicy(
-            StrictMode.VmPolicy.Builder()
-                .detectLeakedClosableObjects()
-                .penaltyLog()
-                .build()
-        )
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.d("Analytics", "Initializing")
+            Analytics.init(this@App)
+            Log.d("Analytics", "Sending event")
+            Analytics.logEvent(
+                "app_start",
+                "time" to ZonedDateTime.now().toString(),
+                "device" to Build.MODEL,
+                "sdk" to Build.VERSION.SDK_INT.toString(),
+                "version_code" to BuildConfig.VERSION_CODE.toString(),
+                "supported_abis" to Build.SUPPORTED_ABIS.joinToString(", "),
+                "brand" to Build.BRAND,
+                "device" to Build.DEVICE,
+                "fingerprint" to Build.FINGERPRINT,
+                "hardware" to Build.HARDWARE,
+                "id" to Build.ID,
+                "model" to Build.MODEL,
+                "type" to Build.TYPE,
+                "user" to Build.USER,
+                "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
+            )
+        }
 
         Sui.init(packageName)
-        runBlocking {
-            Analytics.init(this@App)
-        }
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
 
@@ -97,18 +111,6 @@ class App : Application() {
         disableModules()
 
         loadTextmateTheme()
-
-        Analytics.logEvent(
-            "app_start",
-            "theme" to Prefs.appTheme,
-            "time" to ZonedDateTime.now().toString(),
-            "device" to Build.DEVICE,
-            "model" to Build.MODEL,
-            "manufacturer" to Build.MANUFACTURER,
-            "sdk" to Build.VERSION.SDK_INT.toString(),
-            "abi" to Build.SUPPORTED_ABIS.joinToString(),
-            "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
-        )
 
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
         val theme = getTheme(Prefs.appTheme)

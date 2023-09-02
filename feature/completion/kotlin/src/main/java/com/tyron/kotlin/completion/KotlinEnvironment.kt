@@ -172,7 +172,6 @@ data class KotlinEnvironment(
     }
 
     init {
-        Log.d("KotlinEnvironment", "set collector")
         kotlinEnvironment.configuration.put(
             CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
             messageCollector
@@ -211,10 +210,8 @@ data class KotlinEnvironment(
             kotlinFiles[originalFile.name] = this
             val position = elementAt(line, character)
             val prefix = position?.let { getPrefix(it) } ?: ""
-            println("prefix: $prefix")
 
             val reference = (position?.parent as? KtSimpleNameExpression)?.mainReference
-            println("reference: $reference")
 
             list = position?.let { element ->
                 val descriptorInfo = descriptorsFrom(element, file.kotlinFile)
@@ -597,7 +594,6 @@ data class KotlinEnvironment(
             val jars = module.libDir.walk().filter { it.extension == "jar" }.toMutableList()
             jars.addAll(FileUtil.classpathDir.walk().filter { it.extension == "jar" })
             val environment = with(jars)
-            println(jars)
             environment.kotlinEnvironment.updateClasspath(
                 jars.map { JvmClasspathRoot(it) }
             )

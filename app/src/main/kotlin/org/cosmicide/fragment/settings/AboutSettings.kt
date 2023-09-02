@@ -41,6 +41,7 @@ import org.cosmicide.BuildConfig
 import org.cosmicide.R
 import org.cosmicide.extension.copyToClipboard
 import org.cosmicide.fragment.InstallResourcesFragment
+import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.CommonUtils.isShizukuGranted
@@ -68,6 +69,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
 
                 selectionChangeListener =
                     SingleChoiceDialogPreference.OnSelectionChangeListener { _, selection ->
+                        Analytics.logEvent("donate", selection)
                         when (selection) {
                             "paypal" -> {
                                 activity.startActivity(
@@ -100,6 +102,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 onClick {
                     count++
                     if (count == 7) {
+                        Analytics.logEvent("is_dev", Prefs.experimentsEnabled)
                         val editor = PreferenceManager.getDefaultSharedPreferences(activity).edit()
                         if (Prefs.experimentsEnabled) {
                             editor.putBoolean("experiments_enabled", false)

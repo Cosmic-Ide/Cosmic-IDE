@@ -118,7 +118,6 @@ class MainActivity : AppCompatActivity() {
                 if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
                     lifecycleScope.launch {
                         awaitBinderReceived()
-                        CommonUtils.showSnackBar(binding.root, "Shizuku is ready")
                     }
                 }
             }

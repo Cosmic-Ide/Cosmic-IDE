@@ -21,14 +21,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.adapter.AvailablePluginAdapter
 import org.cosmicide.adapter.PluginAdapter
-import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.databinding.FragmentPluginListBinding
 import org.cosmicide.databinding.PluginInfoBinding
+import org.cosmicide.rewrite.common.Analytics
+import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.plugin.api.Plugin
+import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.CommonUtils
 import org.cosmicide.util.CommonUtils.showSnackbarError
-import org.cosmicide.rewrite.util.FileUtil
 import java.net.URL
 
 class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
@@ -64,6 +65,7 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
                         .setTitle("Delete plugin")
                         .setMessage("Are you sure you want to delete ${plugin.name}?")
                         .setPositiveButton("Yes") { _, _ ->
+                            Analytics.logEvent("plugin_delete", mapOf("plugin" to plugin.name))
                             lifecycleScope.launch {
                                 FileUtil.pluginDir.resolve(plugin.name).deleteRecursively()
                                 val plugins = getPlugins()
@@ -75,6 +77,7 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
                 }
 
                 override fun onPluginInstall(plugin: Plugin) {
+                    Analytics.logEvent("plugin_install", mapOf("plugin" to plugin.name))
                     binding.progressBar.visibility = View.VISIBLE
                     Snackbar.make(
                         binding.root,

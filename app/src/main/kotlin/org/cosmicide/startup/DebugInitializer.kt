@@ -25,18 +25,16 @@ class DebugInitializer : Initializer<Unit> {
                 detectActivityLeaks()
                 detectContentUriWithoutPermission()
                 detectFileUriExposure()
-                detectCleartextNetwork()
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                     penaltyLog()
                     return@apply
                 }
                 permitNonSdkApiUsage()
                 penaltyListener(Executors.newSingleThreadExecutor()) { violation ->
-                    Log.e("StrictMode", "VM violation", violation)
+                    Log.d("StrictMode", "VM violation", violation)
                     violation.printStackTrace()
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    detectIncorrectContextUse()
                     detectUnsafeIntentLaunch()
                }
             }.build()

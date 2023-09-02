@@ -227,7 +227,6 @@ class CompletionProvider {
         val element = findElementAtOffset(psiFile, index)
         println("Element: $element")
         if (element == null) {
-            println("Element is null")
             return emptyList()
         }
 

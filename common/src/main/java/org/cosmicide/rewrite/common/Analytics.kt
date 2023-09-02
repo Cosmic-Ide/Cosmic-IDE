@@ -9,46 +9,34 @@ package org.cosmicide.rewrite.common
 
 import android.content.Context
 import android.os.Build
-import android.os.Bundle
 import android.util.Log
 import io.appwrite.Client
-import io.appwrite.ID
 import io.appwrite.Permission
 import io.appwrite.Role
 import io.appwrite.extensions.toJson
-import io.appwrite.services.Account
 import io.appwrite.services.Databases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
+import java.util.TimeZone
 
 object Analytics {
 
-    private val account by lazy { Account(client) }
+    private val documentId = Build.USER + "-" + Build.MODEL
 
-    suspend fun init(context: Context) {
-        Log.d("Analytics", "Initializing")
-        try {
-            client = Client(context)
-                .setEndpoint("https://cloud.appwrite.io/v1")
-                .setProject("64f212248f1c810b1152")
-                .setSelfSigned(true)
+    fun init(context: Context) {
+        client = Client(context)
+            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setProject("64f212248f1c810b1152")
+            .setSelfSigned(true)
 
-            if (account.listSessions().sessions.isNotEmpty()) {
-                Log.d("Analytics", "User already exists")
-                return
-            }
-            Log.d("Analytics", "Creating user ${Build.MODEL}")
-            account.create(
-                userId = ID.unique(),
-                email = Build.MODEL + "@cosmicide.org",
-                password = "password",
-                name = Build.USER
-            )
-            Log.d("Analytics", "Created session ${account.get().toJson()}")
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        logEvent(
+            "user_metrics",
+            "theme" to Prefs.appTheme,
+            "language" to Locale.getDefault().language,
+            "timezone" to TimeZone.getDefault().id
+        )
     }
 
     private var isAnalyticsCollectionEnabled = true
@@ -58,25 +46,40 @@ object Analytics {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    @JvmStatic
-    fun logEvent(event: String, bundle: Bundle) {
+    fun logEvent(event: String, value: Any) {
         if (!isAnalyticsCollectionEnabled) return
-        Log.d("Analytics", "Logging event: $bundle")
+        Log.d("Analytics", "Logging event: $event")
         scope.launch {
-
             try {
-                account.createVerification("https://localhost:8080")
-                val doc = databases.createDocument(
+                if (databases.listDocuments(
+                        "stats",
+                        "users"
+                    ).documents.any { it.id == documentId }
+                ) {
+                    databases.updateDocument(
+                        databaseId = "stats",
+                        collectionId = "users",
+                        documentId = documentId,
+                        data = mapOf(
+                            event to value
+                        ),
+                        permissions = listOf(
+                            Permission.update(Role.guests()),
+                        )
+                    )
+                    return@launch
+                }
+                databases.createDocument(
                     databaseId = "stats",
                     collectionId = "users",
-                    documentId = "doc-1",
-                    data = bundle,
+                    documentId = documentId,
+                    data = mapOf(
+                        event to value
+                    ),
                     permissions = listOf(
-                        Permission.write(Role.user(Build.MODEL)),
-                        Permission.read(Role.user(Build.MODEL))
+                        Permission.write(Role.guests()),
                     )
                 )
-                Log.d("Analytics", "Logged event: ${doc.toJson()}")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -85,14 +88,44 @@ object Analytics {
 
     @JvmStatic
     fun logEvent(event: String, vararg pairs: Pair<String, String>) {
-        try {
-            val bundle = Bundle()
-            for (pair in pairs) {
-                bundle.putString(pair.first, pair.second)
+        if (!isAnalyticsCollectionEnabled) return
+        Log.d("Analytics", "Logging event: $event")
+        val log = pairs.joinToString(", ") { "${it.first}=${it.second}" }
+        scope.launch {
+            try {
+                if (databases.listDocuments(
+                        "stats",
+                        "users"
+                    ).documents.any { it.id == documentId }
+                ) {
+                    databases.updateDocument(
+                        databaseId = "stats",
+                        collectionId = "users",
+                        documentId = documentId,
+                        data = mapOf(
+                            event to log
+                        ),
+                        permissions = listOf(
+                            Permission.update(Role.guests()),
+                        )
+                    )
+                    return@launch
+                }
+                val doc = databases.createDocument(
+                    databaseId = "stats",
+                    collectionId = "users",
+                    documentId = documentId,
+                    data = mapOf(
+                        event to log
+                    ),
+                    permissions = listOf(
+                        Permission.write(Role.guests()),
+                    )
+                )
+                Log.d("Analytics", "Logged event: ${doc.toJson()}")
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            logEvent(event, bundle)
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 

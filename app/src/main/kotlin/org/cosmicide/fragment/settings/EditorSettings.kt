@@ -11,9 +11,11 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.editText
+import de.Maxr1998.modernpreferences.helpers.onCheckedChange
 import de.Maxr1998.modernpreferences.helpers.seekBar
 import de.Maxr1998.modernpreferences.helpers.switch
 import org.cosmicide.R
+import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.util.PreferenceKeys
 
 class EditorSettings(private val activity: FragmentActivity) : SettingsProvider {
@@ -46,6 +48,11 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 title = "Experimental Java code completion"
                 summary = "Uses an experimental Java Completion Engine"
                 defaultValue = false
+
+                onCheckedChange { isChecked ->
+                    Analytics.logEvent("experimental_java_completion", isChecked)
+                    true
+                }
             }
 
             switch(PreferenceKeys.KOTLIN_REALTIME_ERRORS) {
@@ -53,6 +60,11 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 summary =
                     "Enables real-time error checking for Kotlin files. This is a slow process and may cause lag. Recommended to turn off on complex projects."
                 defaultValue = false
+
+                onCheckedChange { isChecked ->
+                    Analytics.logEvent("kotlin_realtime_errors", isChecked)
+                    true
+                }
             }
 
             editText(PreferenceKeys.EDITOR_FONT) {
@@ -65,6 +77,11 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 title = "Sticky scroll"
                 summary = "Enables sticky scroll in the editor"
                 defaultValue = true
+
+                onCheckedChange { isChecked ->
+                    Analytics.logEvent("sticky_scroll", isChecked)
+                    true
+                }
             }
 
             switch(PreferenceKeys.EDITOR_USE_SPACES) {

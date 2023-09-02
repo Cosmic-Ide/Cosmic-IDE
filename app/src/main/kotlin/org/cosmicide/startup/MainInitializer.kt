@@ -5,7 +5,8 @@ import androidx.startup.Initializer
 
 class MainInitializer : Initializer<Unit> {
 
-    override fun create(context: Context) {}
+    override fun create(context: Context) {
+    }
 
     override fun dependencies(): List<Class<out Initializer<*>>> {
         return listOf(

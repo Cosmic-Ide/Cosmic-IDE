@@ -28,10 +28,11 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.R
 import org.cosmicide.adapter.GitAdapter
 import org.cosmicide.adapter.StagingAdapter
-import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.databinding.FragmentGitBinding
 import org.cosmicide.databinding.GitCommandBinding
+import org.cosmicide.rewrite.common.Analytics
+import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.util.ProjectHandler
 import java.io.OutputStream
 import java.io.OutputStreamWriter
@@ -197,6 +198,14 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                 withContext(Dispatchers.Main) {
                     Snackbar.make(binding.root, "Pushed", Snackbar.LENGTH_SHORT).show()
                 }
+                Analytics.logEvent(
+                    "git_push", mapOf(
+                        "project" to ProjectHandler.getProject()!!.name,
+                        "remote" to binding.remote.text.toString(),
+                        "rebase" to binding.rebase.isChecked,
+                        "time" to System.currentTimeMillis().toString()
+                    )
+                )
             }
         }
 

@@ -10,6 +10,7 @@ package org.cosmicide.util
 import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.cosmicide.rewrite.common.Analytics
 import java.io.File
 
 class Download(val url: String, val callback: (percent: Int) -> Unit) {
@@ -18,6 +19,7 @@ class Download(val url: String, val callback: (percent: Int) -> Unit) {
     var downloadedBytes = 0L
 
     fun start(file: File) {
+        Analytics.logEvent("download", mapOf("url" to url, "file" to file.absolutePath))
         val request = Request.Builder()
             .url(url)
             .build()

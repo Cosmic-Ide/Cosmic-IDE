@@ -69,7 +69,7 @@ object Analytics {
                 val doc = databases.createDocument(
                     databaseId = "stats",
                     collectionId = "users",
-                    documentId = "doc-${ID.unique()}",
+                    documentId = "doc-1",
                     data = bundle,
                     permissions = listOf(
                         Permission.write(Role.user(Build.MODEL)),

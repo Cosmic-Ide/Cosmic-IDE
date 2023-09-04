@@ -140,15 +140,19 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                     it.name == "main" && it.parameterCount == 1 && it.parameterTypes[0] == Array<String>::class.java
                 }) {
                 val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
-                if (Modifier.isStatic(method.modifiers)) {
-                    method.invoke(null, arrayOf<String>())
-                } else if (Modifier.isPublic(method.modifiers)) {
-                    method.invoke(
-                        clazz.getDeclaredConstructor().newInstance(),
-                        arrayOf<String>()
-                    )
-                } else {
-                    System.err.println("Main method is not public or static")
+                try {
+                    if (Modifier.isStatic(method.modifiers)) {
+                        method.invoke(null, arrayOf<String>())
+                    } else if (Modifier.isPublic(method.modifiers)) {
+                        method.invoke(
+                            clazz.getDeclaredConstructor().newInstance(),
+                            arrayOf<String>()
+                        )
+                    } else {
+                        System.err.println("Main method is not public or static")
+                    }
+                } catch (e: Throwable) {
+                    e.printStackTrace()
                 }
             } else {
                 System.err.println("No main method found")

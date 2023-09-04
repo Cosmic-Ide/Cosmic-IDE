@@ -10,25 +10,30 @@
     <style name="Theme.CosmicIde.Pyro" parent="Theme.CosmicIde.Pyro.Light">
         <item name="fontFamily">@font/inter</item>
         <item name="android:fontFamily">@font/inter</item>
+        <item name="android:statusBarColor">?attr/backgroundColor</item>
     </style>
 
     <style name="Theme.CosmicIde.Indigo" parent="Theme.CosmicIde.Indigo.Light">
         <item name="fontFamily">@font/inter</item>
         <item name="android:fontFamily">@font/inter</item>
+        <item name="android:statusBarColor">?attr/backgroundColor</item>
     </style>
 
     <style name="Theme.CosmicIde.Flamingo" parent="Theme.CosmicIde.Flamingo.Light">
         <item name="fontFamily">@font/inter</item>
         <item name="android:fontFamily">@font/inter</item>
+        <item name="android:statusBarColor">?attr/backgroundColor</item>
     </style>
 
     <style name="Theme.CosmicIde.Mint" parent="Theme.CosmicIde.Mint.Light">
         <item name="fontFamily">@font/inter</item>
         <item name="android:fontFamily">@font/inter</item>
+        <item name="android:statusBarColor">?attr/backgroundColor</item>
     </style>
 
     <style name="Theme.CosmicIde.Emerald" parent="Theme.CosmicIde.Emerald.Light">
         <item name="fontFamily">@font/inter</item>
         <item name="android:fontFamily">@font/inter</item>
+        <item name="android:statusBarColor">?attr/backgroundColor</item>
     </style>
 </resources>

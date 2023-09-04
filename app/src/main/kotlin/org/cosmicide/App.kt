@@ -30,9 +30,6 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.cosmicide.fragment.PluginsFragment
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
@@ -70,7 +67,6 @@ class App : Application() {
 
         if (FileUtil.isInitialized.not()) return
 
-        CoroutineScope(Dispatchers.IO).launch {
             Log.d("Analytics", "Initializing")
             Analytics.init(this@App)
             Log.d("Analytics", "Sending event")
@@ -91,7 +87,6 @@ class App : Application() {
                 "user" to Build.USER,
                 "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
             )
-        }
 
         Sui.init(packageName)
         instance = WeakReference(this)

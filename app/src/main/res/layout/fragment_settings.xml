@@ -10,7 +10,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
+    android:background="?colorSurface"
     tools:context="org.cosmicide.fragment.SettingsFragment">
 
     <com.google.android.material.appbar.AppBarLayout

@@ -59,14 +59,14 @@ class MainActivity : AppCompatActivity() {
         setTheme(themeInt)
         if (themeInt == R.style.Theme_CosmicIde)
             DynamicColors.applyToActivityIfAvailable(this)
-        enableEdgeToEdge()
-        isImmersive = true
+
         return super.onCreateView(parent, name, context, attrs)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         installSplashScreen()
+
+        super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
@@ -78,15 +78,21 @@ class MainActivity : AppCompatActivity() {
 
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 leftMargin = systemBarInsets.left
-                topMargin = systemBarInsets.top
                 rightMargin = systemBarInsets.right
-                bottomMargin = if (imeInset.bottom > 0) imeInset.bottom else systemBarInsets.bottom
+                bottomMargin = if (imeInset.bottom > 0) imeInset.bottom else 0
+            }
+
+            binding.fragmentContainer.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBarInsets.top
+                bottomMargin = systemBarInsets.bottom
             }
 
             WindowInsetsCompat.CONSUMED
         }
 
         setContentView(binding.root)
+        enableEdgeToEdge()
+
         if (ResourceUtil.missingResources().isNotEmpty()) {
             supportFragmentManager.commit {
                 replace(binding.fragmentContainer.id, InstallResourcesFragment())

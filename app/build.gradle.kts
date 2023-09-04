@@ -187,7 +187,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
-    implementation("org.slf4j:slf4j-simple:2.0.7")
+    implementation("org.slf4j:slf4j-simple:2.0.9")
 
     val shizukuVersion = "13.1.4"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")

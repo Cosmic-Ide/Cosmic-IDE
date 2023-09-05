@@ -2,7 +2,14 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -26,7 +33,6 @@ package com.tyron.javacompletion;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.google.common.collect.ImmutableList;
 import com.tyron.javacompletion.completion.CompletionResult;
 import com.tyron.javacompletion.file.FileManager;
 import com.tyron.javacompletion.file.FileManagerImpl;
@@ -46,6 +52,8 @@ public class JavaCompletions {
     private static final JLogger logger = JLogger.createForEnclosingClass();
 
     private final ExecutorService mExecutor;
+
+    private static final String notInit = "Not yet initialized.";
 
     private boolean mInitialized;
     private FileManager mFileManager;
@@ -76,7 +84,7 @@ public class JavaCompletions {
         if (options.getIgnorePaths() != null) {
             ignorePaths = options.getIgnorePaths();
         } else {
-            ignorePaths = ImmutableList.of();
+            ignorePaths = List.of();
         }
         mFileManager = new FileManagerImpl(projectRootUri, ignorePaths, mExecutor);
         mProject = new Project(mFileManager, projectRootUri, IndexOptions.FULL_INDEX_BUILDER.build());
@@ -101,7 +109,7 @@ public class JavaCompletions {
     }
 
     public synchronized Project getProject() {
-        checkState(mInitialized, "Not yet initialized.");
+        checkState(mInitialized, notInit);
         return checkNotNull(mProject);
     }
 
@@ -111,12 +119,12 @@ public class JavaCompletions {
      * to file immediately
      */
     public synchronized void updateFileContent(Path file, String newContent) {
-        checkState(mInitialized, "Not yet initialized.");
+        checkState(mInitialized, notInit);
         mFileManager.setSnaphotContent(file.toUri(), newContent);
     }
 
     public synchronized void openFile(Path file, String content) throws IOException {
-        checkState(mInitialized, "Not yet initialized.");
+        checkState(mInitialized, notInit);
         mFileManager.openFileForSnapshot(file.toUri(), content);
     }
 
@@ -128,7 +136,7 @@ public class JavaCompletions {
      * @param column 0 based column of the caret
      */
     public synchronized CompletionResult getCompletions(Path file, int line, int column) {
-        checkState(mInitialized, "Not yet initialized.");
+        checkState(mInitialized, notInit);
         return mProject.getCompletionResult(file, line, column);
     }
 }

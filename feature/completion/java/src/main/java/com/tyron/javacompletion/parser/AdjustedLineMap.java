@@ -2,7 +2,14 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -27,7 +34,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.sun.source.tree.LineMap;
 
@@ -46,7 +52,7 @@ public class AdjustedLineMap implements LineMap {
     private static final Adjustment INITIAL_LINE_START_ADJUSTMENT = Adjustment.create(1, 0);
     private static final Adjustment INITIAL_COLUMN_ADJUSTMENT = Adjustment.create(1, 1);
     private static final List<Adjustment> DEFAULT_COLUMN_ADJUSTMENTS =
-            ImmutableList.of(INITIAL_COLUMN_ADJUSTMENT);
+            List.of(INITIAL_COLUMN_ADJUSTMENT);
 
     // Sorted original line number -> adjusted line start position mappings.
     // Last line is guaranteed to exist if there are insertions on it.
@@ -97,10 +103,10 @@ public class AdjustedLineMap implements LineMap {
             Adjustment adjustment = adjustments.get(i);
             if (adjustment.getAdjusted() > adjusted) {
                 Adjustment lowerBound = (i > 0) ? adjustments.get(i - 1) : INITIAL_LINE_START_ADJUSTMENT;
-                return ImmutableList.of(lowerBound, adjustment);
+                return List.of(lowerBound, adjustment);
             }
         }
-        return ImmutableList.of(adjustments.get(adjustments.size() - 1));
+        return List.of(adjustments.get(adjustments.size() - 1));
     }
 
     @Override

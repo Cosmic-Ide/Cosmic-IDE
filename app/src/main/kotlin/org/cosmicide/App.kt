@@ -9,7 +9,14 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.cosmicide
@@ -67,26 +74,26 @@ class App : Application() {
 
         if (FileUtil.isInitialized.not()) return
 
-            Log.d("Analytics", "Initializing")
-            Analytics.init(this@App)
-            Log.d("Analytics", "Sending event")
-            Analytics.logEvent(
-                "app_start",
-                "time" to ZonedDateTime.now().toString(),
-                "device" to Build.MODEL,
-                "sdk" to Build.VERSION.SDK_INT.toString(),
-                "version_code" to BuildConfig.VERSION_CODE.toString(),
-                "supported_abis" to Build.SUPPORTED_ABIS.joinToString(", "),
-                "brand" to Build.BRAND,
-                "device" to Build.DEVICE,
-                "fingerprint" to Build.FINGERPRINT,
-                "hardware" to Build.HARDWARE,
-                "id" to Build.ID,
-                "model" to Build.MODEL,
-                "type" to Build.TYPE,
-                "user" to Build.USER,
-                "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
-            )
+        Log.d("Analytics", "Initializing")
+        Analytics.init(this@App)
+        Log.d("Analytics", "Sending event")
+        Analytics.logEvent(
+            "app_start",
+            "time" to ZonedDateTime.now().toString(),
+            "device" to Build.MODEL,
+            "sdk" to Build.VERSION.SDK_INT.toString(),
+            "version_code" to BuildConfig.VERSION_CODE.toString(),
+            "supported_abis" to Build.SUPPORTED_ABIS.joinToString(", "),
+            "brand" to Build.BRAND,
+            "device" to Build.DEVICE,
+            "fingerprint" to Build.FINGERPRINT,
+            "hardware" to Build.HARDWARE,
+            "id" to Build.ID,
+            "model" to Build.MODEL,
+            "type" to Build.TYPE,
+            "user" to Build.USER,
+            "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
+        )
 
         Sui.init(packageName)
         instance = WeakReference(this)
@@ -107,7 +114,6 @@ class App : Application() {
 
         loadTextmateTheme()
 
-        Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
         val theme = getTheme(Prefs.appTheme)
         val uiModeManager = getSystemService(UiModeManager::class.java)
         if (uiModeManager.nightMode == theme) return
@@ -117,6 +123,8 @@ class App : Application() {
         } else {
             AppCompatDelegate.setDefaultNightMode(if (theme == UiModeManager.MODE_NIGHT_AUTO) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM else theme)
         }
+
+        Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
     }
 
     fun getTheme(theme: String): Int {

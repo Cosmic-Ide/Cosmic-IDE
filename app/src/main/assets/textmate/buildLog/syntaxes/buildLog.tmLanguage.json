@@ -12,24 +12,20 @@
     "keywords": {
       "patterns": [
         {
-          "name": "keyword.control.build",
-          "match": "\\b(if|while|for|return)\\b"
-        },
-        {
           "name": "token.warn-token",
-          "match": "WARNING|warning|warn|WARN|Warning"
+          "match": "WARNING:|warn:|WARN:|Warning:"
         },
         {
           "name": "token.info-token",
-          "match": "INFO|info|Info"
+          "match": "INFO:|info:|Info:"
         },
         {
           "name": "token.error-token",
-          "match": "ERROR|error|Error"
+          "match": "ERROR:|error:|Error:"
         },
         {
           "name": "token.debug-token",
-          "match": "OUTPUT|out|OUT"
+          "match": "OUTPUT:"
         }
       ]
     },

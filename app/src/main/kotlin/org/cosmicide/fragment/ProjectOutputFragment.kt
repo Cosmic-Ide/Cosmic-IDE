@@ -2,7 +2,14 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.cosmicide.fragment
@@ -15,7 +22,6 @@ import androidx.lifecycle.lifecycleScope
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.R
@@ -103,19 +109,17 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         runClass(index)
     }
 
-    fun runClass(className: String) = CoroutineScope(Dispatchers.IO).launch {
+    fun runClass(className: String) = lifecycleScope.launch(Dispatchers.IO) {
         val systemOut = PrintStream(object : OutputStream() {
             override fun write(p0: Int) {
-                // This is a hack to allow the editor to update properly even when in a while(true) loop
-                Thread.sleep(1)
-
                 val text = binding.infoEditor.text
-                lifecycleScope.launch(Dispatchers.Main) {
+                lifecycleScope.launch {
                     text.insert(
                         text.lineCount - 1,
                         text.getColumnCount(text.lineCount - 1),
                         p0.toChar().toString()
                     )
+                    binding.infoEditor.invalidate()
                 }
             }
         })
@@ -123,7 +127,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         System.setErr(systemOut)
         System.setIn(EditorInputStream(binding.infoEditor))
 
-        val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
+        val loader = MultipleDexClassLoader()
 
         loader.loadDex(project.binDir.resolve("classes.dex").apply { setReadOnly() })
 

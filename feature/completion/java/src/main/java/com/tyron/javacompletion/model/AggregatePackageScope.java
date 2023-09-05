@@ -2,7 +2,14 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -39,6 +46,8 @@ import java.util.Set;
 public class AggregatePackageScope extends PackageScope {
     private final Set<PackageScope> packageScopes;
 
+    private static final String notSupported = "not supported.";
+
     public AggregatePackageScope() {
         packageScopes = new HashSet<>();
     }
@@ -52,8 +61,8 @@ public class AggregatePackageScope extends PackageScope {
             for (Map.Entry<String, Entity> entry : packageScope.getMemberEntities().entries()) {
                 String key = entry.getKey();
                 Entity entity = entry.getValue();
-                if (entity instanceof PackageEntity) {
-                    packageEntityMembers.put(key, (PackageEntity) entity);
+                if (entity instanceof PackageEntity packageEntity) {
+                    packageEntityMembers.put(key, packageEntity);
                 } else {
                     members.put(key, entity);
                 }
@@ -82,22 +91,22 @@ public class AggregatePackageScope extends PackageScope {
 
     @Override
     public void addEntity(Entity entity) {
-        throw new UnsupportedOperationException("not supported.");
+        throw new UnsupportedOperationException(notSupported);
     }
 
     @Override
     public void removePackage(PackageEntity entity) {
-        throw new UnsupportedOperationException("not supported.");
+        throw new UnsupportedOperationException(notSupported);
     }
 
     @Override
     public void addFile(FileScope fileScope) {
-        throw new UnsupportedOperationException("not supported.");
+        throw new UnsupportedOperationException(notSupported);
     }
 
     @Override
     public void removeFile(FileScope fileScope) {
-        throw new UnsupportedOperationException("not supported.");
+        throw new UnsupportedOperationException(notSupported);
     }
 
     @Override

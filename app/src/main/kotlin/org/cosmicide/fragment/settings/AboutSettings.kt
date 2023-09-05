@@ -2,7 +2,14 @@
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.cosmicide.fragment.settings
@@ -35,7 +42,7 @@ import de.Maxr1998.modernpreferences.helpers.switch
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
 import de.Maxr1998.modernpreferences.preferences.choice.SingleChoiceDialogPreference
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.cosmicide.BuildConfig
 import org.cosmicide.R
@@ -212,7 +219,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         .setPositiveButton("Execute") { _, _ ->
                             val editText = inflated.findViewById<EditText>(android.R.id.edit)
                             val command = editText.text.toString()
-                            activity.lifecycleScope.launch(Dispatchers.IO) {
+                            activity.lifecycleScope.async {
                                 val output = exec(command)
                                 withContext(Dispatchers.Main) {
                                     MaterialAlertDialogBuilder(activity)
@@ -236,7 +243,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
             pref("clear_cache") {
                 title = "Clear cache"
                 onClick {
-                    activity.lifecycleScope.launch(Dispatchers.IO) {
+                    activity.lifecycleScope.async {
                         ResourceUtil.resources.forEach {
                             FileUtil.dataDir.resolve(it).delete()
                         }

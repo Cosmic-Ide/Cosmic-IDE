@@ -2,7 +2,14 @@
   ~ This file is part of Cosmic IDE.
   ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
   ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-  ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+  ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!--
+  ~ This file is part of Cosmic IDE.
+  ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+  ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -46,7 +53,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="org.cosmicide.rewrite.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -84,19 +91,6 @@
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/Theme.CosmicIde.Flamingo" />
-
-        <activity
-            android:name="io.appwrite.views.CallbackActivity"
-            android:exported="true">
-            <intent-filter android:label="android_web_auth">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="appwrite-callback-64f212248f1c810b1152" />
-            </intent-filter>
-        </activity>
 
         <provider
             android:name="rikka.shizuku.ShizukuProvider"

@@ -45,7 +45,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.databinding:viewbinding:8.1.1")
 
-    implementation("io.appwrite:sdk-for-android:3.0.1")
+    implementation("io.appwrite:sdk-for-android:4.0.0")
 
     api("androidx.preference:preference-ktx:1.2.1")
 

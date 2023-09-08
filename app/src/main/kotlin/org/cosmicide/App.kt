@@ -19,13 +19,24 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide
 
+import android.app.Activity
 import android.app.Application
 import android.app.UiModeManager
 import android.content.res.Configuration
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -123,6 +134,25 @@ class App : Application() {
         } else {
             AppCompatDelegate.setDefaultNightMode(if (theme == UiModeManager.MODE_NIGHT_AUTO) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM else theme)
         }
+
+        // iterate through each activity and apply theme
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityCreated(p0: Activity, p1: Bundle?) {
+                (p0 as? ComponentActivity)?.enableEdgeToEdge()
+            }
+
+            override fun onActivityStarted(p0: Activity) {}
+
+            override fun onActivityResumed(p0: Activity) {}
+
+            override fun onActivityPaused(p0: Activity) {}
+
+            override fun onActivityStopped(p0: Activity) {}
+
+            override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {}
+
+            override fun onActivityDestroyed(p0: Activity) {}
+        })
 
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
     }

@@ -6,6 +6,24 @@ A new and improved version of Cosmic IDE, a next-gen IDE for JVM development on 
 
 Cosmic IDE is a powerful and feature-rich IDE for JVM development on Android. It is built on top of the latest tools, and offers a wide range of features that make it the perfect tool for developers who want to build high-quality, bug-free applications without needing a computer.
 
+## Screenshots
+
+<p align="center">
+
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/9.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/10.png">
+
+</p>
+
+
 ## Installation
 
 Currently, Cosmic IDE is in active development. You can download the latest debug app build from [here](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/apk-debug.zip).

@@ -205,7 +205,7 @@ dependencies {
     // Add this line if you want to support Shizuku
     implementation("dev.rikka.shizuku:provider:$shizukuVersion")
 
-    implementation("io.appwrite:sdk-for-android:3.0.1")
+    implementation("io.appwrite:sdk-for-android:4.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     implementation(projects.buildTools)

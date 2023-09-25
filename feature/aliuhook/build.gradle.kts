@@ -16,17 +16,28 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
 }
+
 android {
-    namespace = "org.cosmicide.rewrite.util"
+    namespace = "com.aliucord.aliuhook"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 26
+
+        externalNativeBuild {
+            cmake {
+                arguments("-DANDROID_STL=c++_shared")
+            }
+        }
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = true
+    buildFeatures {
+        prefab = true
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
         }
     }
 
@@ -34,14 +45,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = "17"
     }
 }
 
 dependencies {
-    implementation("de.maxr1998:modernandroidpreferences:2.3.2")
-    implementation(projects.feature.aliuhook)
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("io.github.vvb2060.ndk:dobby:1.2")
+    implementation("org.lsposed.lsplant:lsplant:5.2")
 }

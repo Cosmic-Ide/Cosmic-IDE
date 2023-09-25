@@ -5,17 +5,9 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
- * This file is part of Cosmic IDE.
- * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
- */
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.android.gms.oss-licenses-plugin")
     id("dev.rikka.tools.materialthemebuilder")
 }
 
@@ -181,7 +173,6 @@ dependencies {
     implementation("com.itsaky.androidide:android-tree-sitter:3.3.0")
     implementation("com.itsaky.androidide:tree-sitter-java:3.3.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
     implementation("com.github.sya-ri:kgit:1.0.5")

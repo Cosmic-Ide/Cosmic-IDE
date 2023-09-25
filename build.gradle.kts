@@ -11,11 +11,6 @@
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
-buildscript {
-    dependencies {
-        classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
-    }
-}
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {

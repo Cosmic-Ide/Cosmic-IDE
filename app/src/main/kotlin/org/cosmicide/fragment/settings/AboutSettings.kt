@@ -12,6 +12,13 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide.fragment.settings
 
 import android.annotation.SuppressLint
@@ -31,7 +38,6 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.expandText
@@ -137,18 +143,6 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         }
                         activity.copyToClipboard(summary.toString())
                     }
-                    true
-                }
-            }
-
-            pref("license") {
-                title = "License"
-                onClick {
-                    activity.startActivity(
-                        Intent(activity, OssLicensesMenuActivity::class.java).setAction(
-                            Intent.ACTION_VIEW
-                        )
-                    )
                     true
                 }
             }

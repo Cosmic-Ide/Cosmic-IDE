@@ -23,7 +23,7 @@ fun CodeEditor.setFont() {
     typefaceText = if (Prefs.editorFont.isNotEmpty()) {
         Typeface.createFromFile(Prefs.editorFont)
     } else {
-        ResourcesCompat.getFont(context, R.font.source_pro_regular)
+        ResourcesCompat.getFont(context, R.font.noto_sans_mono)
     }
     isHighlightCurrentLine = true
 }

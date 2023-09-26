@@ -120,7 +120,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         System.setErr(systemOut)
         System.setIn(EditorInputStream(binding.infoEditor))
 
-        val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader)
+        val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
 
         loader.loadDex(project.binDir.resolve("classes.dex").apply { setReadOnly() })
 

@@ -118,7 +118,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         editor.apply()
                     }
                     val handler = Handler(Looper.myLooper()!!)
-                    handler.postDelayed({ count = 0 }, 1000)
+                    handler.postDelayed({ count = 0 }, 3000)
                     // We don't wanna show the copy to clipboard dialog multiple times
                     if (count == 1) {
                         val clipboardManager =

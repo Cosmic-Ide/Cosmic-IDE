@@ -170,7 +170,7 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion") {
         isTransitive = false
     }
-    implementation("com.itsaky.androidide:android-tree-sitter:3.3.0")
+    implementation("com.itsaky.androidide:android-tree-sitter:3.4.0")
     implementation("com.itsaky.androidide:tree-sitter-java:3.3.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 

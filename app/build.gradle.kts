@@ -150,15 +150,15 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
     implementation("androidx.fragment:fragment-ktx:1.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
-    implementation("androidx.activity:activity-ktx:1.8.0-alpha07")
+    implementation("androidx.activity:activity-ktx:1.8.0-rc01")
     implementation("androidx.startup:startup-runtime:1.1.1")
 
     val editorVersion = "c734f6d"
@@ -186,6 +186,7 @@ dependencies {
     implementation(projects.feature.aliuhook)
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
 
+    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.0.9")
@@ -209,12 +210,12 @@ dependencies {
     implementation(projects.feature.javaCompletion)
     implementation(projects.feature.project)
     implementation(projects.feature.codeNavigation)
-    implementation(projects.kotlinc)
     implementation(projects.util)
     implementation(projects.jgit)
     implementation(projects.feature.treeView)
 
     // jgit uses some methods like `transferTo` are only available from Android 13 onwards
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")
+
     testImplementation("junit:junit:4.13.2")
 }

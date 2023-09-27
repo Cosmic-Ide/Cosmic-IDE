@@ -41,11 +41,12 @@ android {
 }
 
 dependencies {
+    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("io.github.Rosemoe.sora-editor:editor:0.22.0")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.22.1")
     implementation("com.google.guava:guava:32.1.2-jre")
+
     implementation(projects.feature.project)
-    implementation(projects.kotlinc)
     implementation(projects.common)
     implementation(projects.util)
 }

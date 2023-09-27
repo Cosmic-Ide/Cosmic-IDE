@@ -5,13 +5,6 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
- * This file is part of Cosmic IDE.
- * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
- */
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -44,7 +37,6 @@ android {
 dependencies {
     implementation(projects.common)
     implementation(projects.feature.project)
-    implementation(projects.kotlinc)
     implementation(projects.util)
     implementation(projects.feature.javaCompletion)
     /* D8 cannot handle scala3 compiler rn (https://issuetracker.google.com/issues/285036373)
@@ -54,9 +46,9 @@ dependencies {
         exclude(group = "org.jline", module = "jline-reader")
     }
     */
+    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.22.1")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("com.google.guava:guava:32.1.2-jre")
     implementation("com.android.tools:r8:8.1.56")
-    implementation("io.github.Rosemoe.sora-editor:editor:0.22.0")
-
 }

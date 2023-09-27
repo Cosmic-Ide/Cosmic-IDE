@@ -171,7 +171,7 @@ dependencies {
         isTransitive = false
     }
     implementation("com.itsaky.androidide:android-tree-sitter:3.3.0")
-    implementation("com.itsaky.androidide:tree-sitter-java:3.3.0")
+    implementation("com.itsaky.androidide:tree-sitter-java:3.4.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")

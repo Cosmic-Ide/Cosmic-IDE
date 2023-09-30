@@ -242,7 +242,11 @@ dependencies {
 
 // Fetches Android SDK root
 fun getSdkDir(): File {
-    var sdk = System.getProperty("ANDROID_HOME")
+    var sdk = System.getenv("ANDROID_HOME")
+
+    if (sdk.isNullOrBlank()) {
+        sdk = System.getenv("ANDROID_SDK")
+    }
 
     if (sdk.isNullOrBlank()) {
         val f = File(System.getProperty("user.dir") + "/local.properties")

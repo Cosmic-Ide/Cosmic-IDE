@@ -99,7 +99,6 @@ class KotlinLanguage(
     ) {
         super.requireAutoComplete(content, position, publisher, extraArguments)
 
-
         try {
             val text = editor.text.toString()
             val ktFile = kotlinEnvironment.updateKotlinFile(file.absolutePath, text)

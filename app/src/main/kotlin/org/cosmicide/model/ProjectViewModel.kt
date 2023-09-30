@@ -7,7 +7,6 @@
 
 package org.cosmicide.model
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,7 +39,6 @@ class ProjectViewModel : ViewModel() {
 
             withContext(Dispatchers.Main) {
                 _projects.value = projectsList
-                Log.d(TAG, "Projects: $projectsList")
             }
         }
     }

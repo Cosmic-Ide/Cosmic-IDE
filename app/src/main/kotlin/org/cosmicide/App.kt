@@ -116,8 +116,8 @@ class App : Application() {
 
         // iterate through each activity and apply theme
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-            override fun onActivityCreated(p0: Activity, p1: Bundle?) {
-                (p0 as? ComponentActivity)?.enableEdgeToEdge()
+            override fun onActivityCreated(activity: Activity, p1: Bundle?) {
+                (activity as? ComponentActivity)?.enableEdgeToEdge()
             }
 
             override fun onActivityStarted(p0: Activity) {}
@@ -155,6 +155,16 @@ class App : Application() {
         extractAsset(
             "kotlin-stdlib-common-1.9.0.jar",
             FileUtil.classpathDir.resolve("kotlin-stdlib-common-1.9.0.jar")
+        )
+
+        extractAsset(
+            "android.jar",
+            FileUtil.classpathDir.resolve("android.jar")
+        )
+
+        extractAsset(
+            "core-lambda-stubs.jar",
+            FileUtil.classpathDir.resolve("core-lambda-stubs.jar")
         )
     }
 
@@ -267,8 +277,11 @@ class App : Application() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        setTheme(CommonUtils.getAccent(Prefs.appTheme))
-        applyThemeBasedOnConfiguration()
+
+        if (Prefs.isInitialized) {
+            applyThemeBasedOnConfiguration()
+            setTheme(CommonUtils.getAccent(Prefs.appTheme))
+        }
     }
 
     fun applyThemeBasedOnConfiguration() {

@@ -173,7 +173,6 @@ data class KotlinEnvironment(
                 message,
                 severity
             )
-            println("issue: $issue")
             issueListener(issue)
         }
     }

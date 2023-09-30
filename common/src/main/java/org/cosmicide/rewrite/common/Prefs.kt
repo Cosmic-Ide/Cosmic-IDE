@@ -33,6 +33,9 @@ object Prefs {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
     }
 
+    val isInitialized: Boolean
+        get() = ::prefs.isInitialized
+
     val appTheme: String
         get() = prefs.getString("app_theme", "auto") ?: "auto"
 

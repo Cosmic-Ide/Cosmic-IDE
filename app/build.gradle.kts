@@ -15,6 +15,8 @@ android {
     namespace = "org.cosmicide"
     compileSdk = 34
 
+    moveSdkToAssetsIfNeeded()
+
     defaultConfig {
         val commit = getGitCommit()
         applicationId = "org.cosmicide"
@@ -93,6 +95,24 @@ android {
     )
     buildFeatures {
         buildConfig = true
+    }
+}
+
+// Copies `android.jar` and `core-lambda-stubs.jar` from Android SDK to app's assets.
+// Note: The version used is the latest one installed on the machine.
+fun moveSdkToAssetsIfNeeded() {
+    val assets = File(System.getProperty("user.dir") + "/app/src/main/assets")
+
+    val androidJar = assets.resolve("android.jar")
+    if (androidJar.exists().not()) {
+        println("Copying SDK android.jar to ${androidJar.absolutePath}")
+        getAndroidJar().copyTo(androidJar)
+    }
+
+    val coreLambdaStubs = assets.resolve("core-lambda-stubs.jar")
+    if (coreLambdaStubs.exists().not()) {
+        println("Copying SDK core-lambda-stubs.jar to ${coreLambdaStubs.absolutePath}")
+        getCoreLambdaStubs().copyTo(coreLambdaStubs)
     }
 }
 
@@ -219,3 +239,37 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
 }
+
+// Fetches Android SDK root
+fun getSdkDir(): File {
+    var sdk = System.getProperty("ANDROID_HOME")
+
+    if (sdk.isNullOrBlank()) {
+        val f = File(System.getProperty("user.dir") + "/local.properties")
+        val localProps = f.readLines()
+        val sdkDirIndex = localProps.indexOfFirst { it.startsWith("sdk.dir=") }
+        if (sdkDirIndex != -1) {
+            sdk = localProps[sdkDirIndex].substring(8)
+        }
+    }
+
+    return File(sdk)
+}
+
+// Fetches core-lambda-stubs.jar from Android SDK
+fun getCoreLambdaStubs(): File {
+    val sdk = getSdkDir()
+
+    return sdk.resolve("build-tools").listFiles().orEmpty().sortedBy { it.name }.last()
+        .resolve("core-lambda-stubs.jar")
+}
+
+// Fetches android.jar from Android SDK
+fun getAndroidJar(): File {
+    val sdk = getSdkDir()
+
+    val sdks = sdk.resolve("platforms").listFiles().orEmpty().filter { it.isHidden.not() }
+        .sortedBy { it.name }
+    return sdks.last().resolve("android.jar")
+}
+

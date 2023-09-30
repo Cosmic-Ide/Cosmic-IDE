@@ -25,9 +25,7 @@
             <option value="$PROJECT_DIR$/feature/formatter/google-java-format" />
             <option value="$PROJECT_DIR$/feature/formatter/ktfmt" />
             <option value="$PROJECT_DIR$/feature/java-completion" />
-            <option value="$PROJECT_DIR$/feature/jaxp" />
             <option value="$PROJECT_DIR$/feature/project" />
-            <option value="$PROJECT_DIR$/feature/the-unsafe" />
             <option value="$PROJECT_DIR$/jgit" />
             <option value="$PROJECT_DIR$/kotlinc" />
             <option value="$PROJECT_DIR$/util" />

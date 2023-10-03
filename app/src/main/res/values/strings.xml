@@ -8,6 +8,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">Cosmic IDE Rewrite</string>
     <string name="action_settings">Settings</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="import_project">Import Project</string>
     <string name="app_theme">App theme</string>
@@ -86,7 +87,7 @@
     <string name="class_name">Class name</string>
     <string name="no_projects_found_create_one_now">No projects found. Create one now!</string>
     <string name="install_resource_description">Cosmic IDE requires certain resources to build and run your projects. Press the button below to initiate the download process and configure them.</string>
-    <string name="resource_description">This will download and configure the following resources: \n• android.jar (Required for compilation)\n• core-lambdas-stubs.jar (Required for using lambdas in java)\n• index.json (Required for Java code completion)</string>
+    <string name="resource_description">This will download and configure the following resources: \n• index.json (Required for Java code completion)</string>
     <string name="install">Install</string>
     <string name="navigation_item_kind">Navigation Item Kind</string>
     <string name="clear">Clear</string>

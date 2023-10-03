@@ -15,15 +15,13 @@ android {
     namespace = "org.cosmicide"
     compileSdk = 34
 
-    moveSdkToAssetsIfNeeded()
-
     defaultConfig {
         val commit = getGitCommit()
         applicationId = "org.cosmicide"
         minSdk = 26
         targetSdk = 34
-        versionCode = 22
-        versionName = "2.2"
+        versionCode = 23
+        versionName = "2.2.1"
         buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
     }
 
@@ -98,12 +96,17 @@ android {
     }
 }
 
+tasks.assemble {
+    dependsOn("copySdk")
+}
+
 // Copies `android.jar` and `core-lambda-stubs.jar` from Android SDK to app's assets.
 // Note: The version used is the latest one installed on the machine.
-fun moveSdkToAssetsIfNeeded() {
+tasks.create("copySdk") {
     val assets = File(System.getProperty("user.dir") + "/app/src/main/assets")
 
     val androidJar = assets.resolve("android.jar")
+
     if (androidJar.exists().not()) {
         println("Copying SDK android.jar to ${androidJar.absolutePath}")
         getAndroidJar().copyTo(androidJar)

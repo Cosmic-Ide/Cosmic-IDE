@@ -199,7 +199,7 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.0.9")
 
-    val shizukuVersion = "13.1.4"
+    val shizukuVersion = "13.1.5"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")
 
     // Add this line if you want to support Shizuku

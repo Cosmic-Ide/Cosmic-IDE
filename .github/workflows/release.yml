@@ -30,6 +30,6 @@ jobs:
       - name: Upload release apk
         uses: actions/upload-artifact@v3
         with:
-          name: apk-release.apk
-          path: app/build/outputs/apk/release/app-release.apk
+          name: apk-release
+          path: app/build/outputs/apk/release
 

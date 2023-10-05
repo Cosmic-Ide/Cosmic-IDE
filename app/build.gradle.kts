@@ -21,7 +21,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 23
-        versionName = "2.2.1"
+        versionName = "2.0.3"
         buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
     }
 
@@ -94,28 +94,13 @@ android {
     buildFeatures {
         buildConfig = true
     }
-}
 
-tasks.assemble {
-    dependsOn("copySdk")
-}
+    splits {
+        abi {
+            isEnable = true
 
-// Copies `android.jar` and `core-lambda-stubs.jar` from Android SDK to app's assets.
-// Note: The version used is the latest one installed on the machine.
-tasks.create("copySdk") {
-    val assets = File(System.getProperty("user.dir") + "/app/src/main/assets")
-
-    val androidJar = assets.resolve("android.jar")
-
-    if (androidJar.exists().not()) {
-        println("Copying SDK android.jar to ${androidJar.absolutePath}")
-        getAndroidJar().copyTo(androidJar)
-    }
-
-    val coreLambdaStubs = assets.resolve("core-lambda-stubs.jar")
-    if (coreLambdaStubs.exists().not()) {
-        println("Copying SDK core-lambda-stubs.jar to ${coreLambdaStubs.absolutePath}")
-        getCoreLambdaStubs().copyTo(coreLambdaStubs)
+            isUniversalApk = true
+        }
     }
 }
 
@@ -193,8 +178,8 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion") {
         isTransitive = false
     }
-    implementation("com.itsaky.androidide:android-tree-sitter:3.3.0")
-    implementation("com.itsaky.androidide:tree-sitter-java:3.3.0")
+    implementation("com.itsaky.androidide:android-tree-sitter:3.4.0")
+    implementation("com.itsaky.androidide:tree-sitter-java:3.4.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")

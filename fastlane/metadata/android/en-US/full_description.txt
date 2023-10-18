@@ -1,0 +1,30 @@
+Cosmic IDE is a powerful and feature-rich IDE for JVM development on Android. It is built on top of the latest tools, and offers a wide range of features that make it the perfect tool for developers who want to build high-quality, bug-free applications without needing a computer.
+
+Features
+* Supports Java 17 and Kotlin 2.1 (K2 compiler)
+* Plugin support (plugins can be written in Java or Kotlin)
+* Git integration
+* Fast incremental compilation
+* Integrated dependency management
+* Code completion for Java and Kotlin
+* Syntax highlighting
+* Execution of programs
+* Code navigation
+* Support for custom fonts and ligatures
+* Highly customizable editor
+* Google Java Format and ktfmt integration
+* Support for plugins
+* Highly customizable
+* High-performance code editor (Sora Editor)
+* Code navigation
+* Bytecode Disassembler
+* Backup and restore
+* Material You Design
+* Modern UI with prebuilt themes
+* Dark mode (and light mode)
+
+Benefits
+* Faster and more efficient development
+* Reduced errors and warnings
+* Improved code readability and maintainability
+* Easier development experience

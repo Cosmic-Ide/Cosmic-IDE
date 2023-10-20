@@ -123,6 +123,15 @@ object Prefs {
     val editorFont: String
         get() = prefs.getString("editor_font", "") ?: ""
 
+    val repositories: String
+        get() = prefs.getString("repos", "") ?: """
+            Maven Central: https://repo1.maven.org/maven2
+            Google Maven: https://maven.google.com
+            Jitpack: https://jitpack.io
+            Sonatype Snapshots: https://s01.oss.sonatype.org/content/repositories/snapshots
+            JCenter: https://jcenter.bintray.com
+        """.trimIndent()
+
     val pluginRepository: String
         get() = prefs.getString(
             "plugin_repository",

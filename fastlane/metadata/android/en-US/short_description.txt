@@ -1,1 +1,1 @@
-A full fledged Java and Kotlin IDE for Android devices.
+A powerful IDE for developing Java and Kotlin applications.

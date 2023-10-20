@@ -31,7 +31,9 @@ import dev.pranav.navigation.NavigationProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.cosmic.ide.dependency.resolver.api.Repository
 import org.cosmic.ide.dependency.resolver.getArtifact
+import org.cosmic.ide.dependency.resolver.repositories
 import org.cosmicide.FileProvider.openFileWithExternalApp
 import org.cosmicide.R
 import org.cosmicide.adapter.EditorAdapter
@@ -299,6 +301,27 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                                 if (dependency.isNotEmpty()) {
                                     val arr = dependency.split(":")
                                     lifecycleScope.launch(Dispatchers.IO) {
+                                        repositories.apply s@{
+                                            if (Prefs.repositories.isBlank()) {
+                                                return@s
+                                            }
+                                            clear()
+
+                                            Prefs.repositories.lines().forEach {
+                                                val split = it.split(":")
+                                                if (split.size != 2) return@forEach
+
+                                                val name = split[0].trim()
+                                                val url = split[1].trim()
+
+                                                add(
+                                                    object : Repository {
+                                                        override fun getName() = name
+                                                        override fun getURL() = url
+                                                    }
+                                                )
+                                            }
+                                        }
                                         val artifact = try {
                                             getArtifact(arr[0], arr[1], arr[2])
                                         } catch (e: Exception) {

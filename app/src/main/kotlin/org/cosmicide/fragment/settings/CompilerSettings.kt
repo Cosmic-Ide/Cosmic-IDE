@@ -10,6 +10,7 @@ package org.cosmicide.fragment.settings
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
+import de.Maxr1998.modernpreferences.helpers.categoryHeader
 import de.Maxr1998.modernpreferences.helpers.editText
 import de.Maxr1998.modernpreferences.helpers.singleChoice
 import de.Maxr1998.modernpreferences.helpers.switch
@@ -75,6 +76,20 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
             editText(PreferenceKeys.COMPILER_JAVAC_FLAGS) {
                 title = activity.getString(R.string.additional_javac_flags)
                 summaryProvider = { activity.getString(R.string.additional_javac_flags_desc) }
+            }
+
+            categoryHeader("libs") {
+                title = "Library Download Manager"
+                summary = "Manage preferences for the library download manager"
+
+                editText("repos") {
+                    title = "Repositories"
+                    summary = "A list of repositories to search for libraries"
+                    summaryProvider = { "A list of repositories to search for libraries" }
+
+                    defaultValue =
+                        "Maven Central:https://repo1.maven.org/maven2\nGoogle Maven:https://maven.google.com\nJitpack:https://jitpack.io\nSonatype Snapshots:https://s01.oss.sonatype.org/content/repositories/snapshots\nJCenter:https://jcenter.bintray.com"
+                }
             }
         }
     }

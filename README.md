@@ -1,6 +1,18 @@
 # Cosmic IDE
 
-A new and improved version of Cosmic IDE, a next-gen IDE for JVM development on Android.
+[![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-Ide)](https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/94a4082a551c496cae031bcdb6f2040d)](https://codacy.com/gh/Cosmic-Ide/Cosmic-Ide/dashboard)
+[![Total downloads](https://img.shields.io/github/downloads/Cosmic-Ide/Cosmic-Ide/total)](https://github.com/Cosmic-Ide/Cosmic-Ide/releases)
+[![Discord](https://img.shields.io/discord/867985135931383809)](https://discord.gg/8Gu6YCq2eS)
+[![Telegram](https://img.shields.io/badge/Telegram-join-blue)](https://t.me/cosmicide)
+[![F-Droid (including pre-releases)](https://img.shields.io/f-droid/v/org.cosmicide)](https://f-droid.org/packages/org.cosmicide)
+![GitHub Repo stars](https://img.shields.io/github/stars/Cosmic-IDE/Cosmic-IDE)
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+alt="Get it on F-Droid"
+height="80">](https://f-droid.org/packages/org.cosmicide)
+
+A next-gen IDE for JVM development on Android.
 
 ## Description
 

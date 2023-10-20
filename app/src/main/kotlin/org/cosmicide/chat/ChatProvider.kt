@@ -17,13 +17,16 @@ import java.util.concurrent.TimeUnit
 
 object ChatProvider {
 
+    private val client = OkHttpClient()
+
     private val gson = Gson()
 
     data class Message(val role: String, val content: String)
 
     @JvmStatic
     fun generate(model: String, conversation: List<Map<String, String>>): String {
-        // json format: {
+        // json format
+        // {
         //  "messages": [
         //    {"role": "user", "content": "hi"},
         //    {"role": "bot", "content": "hello"}
@@ -43,7 +46,7 @@ object ChatProvider {
             .post(requestBody)
             .build()
 
-        val client = OkHttpClient().newBuilder().readTimeout(120, TimeUnit.SECONDS).build()
+        val client = client.newBuilder().readTimeout(120, TimeUnit.SECONDS).build()
         return try {
             val response = client.newCall(request).execute()
             val body = response.body!!.string()

@@ -19,7 +19,7 @@ class ConversationAdapter :
 
     private val conversations = mutableListOf<Conversation>()
 
-    data class Conversation(val text: String, val author: String = "Bot")
+    data class Conversation(val text: String, val author: String = "assistant")
 
     companion object {
         const val VIEW_TYPE_SENT = 1
@@ -73,7 +73,7 @@ class ConversationAdapter :
 
     override fun getItemViewType(position: Int): Int {
         val conversation = conversations[position]
-        return if (conversation.author == "User") {
+        return if (conversation.author == "user") {
             VIEW_TYPE_SENT
         } else {
             VIEW_TYPE_RECEIVED

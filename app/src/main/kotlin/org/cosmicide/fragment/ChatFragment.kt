@@ -19,10 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import com.pkslow.ai.AIClient
-import com.pkslow.ai.GoogleBardClient
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.R
 import org.cosmicide.adapter.ConversationAdapter
@@ -30,21 +28,11 @@ import org.cosmicide.chat.ChatProvider
 import org.cosmicide.databinding.FragmentChatBinding
 import org.cosmicide.extension.getDip
 import org.cosmicide.rewrite.common.BaseBindingFragment
-import java.time.Duration
 
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
     private val conversationAdapter = ConversationAdapter()
-    private var model = Models.FALCON_40B
-
-    // The client will expire in an hour.
-    // If you were thinking of using this key, don't. It's free already, just get your own.
-    private val client: AIClient by lazy {
-        GoogleBardClient(
-            "WwioM6QIAAtOsjpFrWTtle935KZySZOzVDxXGg6IrBezbtYb6RrMzFklQYi2QTJ80bo_Nw.",
-            Duration.ofHours(1)
-        )
-    }
+    private var model = Models.GPT_35_TURBO
 
     override fun getViewBinding() = FragmentChatBinding.inflate(layoutInflater)
 
@@ -74,39 +62,19 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                 return@setOnMenuItemClickListener false
             }
             val modelName = when (it.itemId) {
-                R.id.model_bard -> {
-                    model = Models.BARD
-                    "Google Bard"
+                R.id.model_gpt35turbo -> {
+                    model = Models.GPT_35_TURBO
+                    "GPT-3.5 Turbo"
                 }
 
-                R.id.model_aiservice -> {
-                    model = Models.AISERVICE
-                    "AI Service"
+                R.id.model_gpt3516k -> {
+                    model = Models.GPT_3516K
+                    "GPT-3.5 16k"
                 }
 
-                R.id.model_wewordle -> {
-                    model = Models.WEWORDLE
-                    "WeWordle"
-                }
-
-                R.id.model_falcon_40b -> {
-                    model = Models.FALCON_40B
-                    "falcon-40b"
-                }
-
-                R.id.model_falcon_7b -> {
-                    model = Models.FALCON_7B
-                    "falcon-7b"
-                }
-
-                R.id.model_llama_13b -> {
-                    model = Models.LLAMA_13B
-                    "llama-13b"
-                }
-
-                R.id.model_theb -> {
-                    model = Models.THEB
-                    "TheB"
+                R.id.model_gpt35turbo0613 -> {
+                    model = Models.GPT_35_TURBO_0613
+                    "GPT-3.5 Turbo 0613"
                 }
 
                 else -> return@setOnMenuItemClickListener false
@@ -123,42 +91,26 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             if (message.isEmpty()) {
                 return@setOnClickListener
             }
-            val conversation = ConversationAdapter.Conversation(message, "User")
+            val conversation = ConversationAdapter.Conversation(message, "user")
             conversationAdapter.add(conversation)
             binding.messageText.setText("")
-            lifecycleScope.async {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val reply = when (model) {
-                    Models.BARD -> client.ask(message).markdown()
-
-                    Models.AISERVICE -> ChatProvider.generate(
-                        "aiservice",
+                    Models.GPT_35_TURBO_0613 -> ChatProvider.generate(
+                        "gpt-3.5-turbo-0613",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.WEWORDLE -> ChatProvider.generate(
-                        "wewordle",
+                    Models.GPT_35_TURBO -> ChatProvider.generate(
+                        "gpt-3.5-turbo",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.FALCON_40B -> ChatProvider.generate(
-                        "h2o/falcon-40b",
+                    Models.GPT_3516K -> ChatProvider.generate(
+                        "gpt-3.5-16k",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.FALCON_7B -> ChatProvider.generate(
-                        "h2o/falcon-7b",
-                        conversationAdapter.getConversations()
-                    )
-
-                    Models.LLAMA_13B -> ChatProvider.generate(
-                        "h2o/llama-13b",
-                        conversationAdapter.getConversations()
-                    )
-
-                    Models.THEB -> ChatProvider.generate(
-                        "theb",
-                        conversationAdapter.getConversations()
-                    )
                 }
                 val response = ConversationAdapter.Conversation(reply)
                 withContext(Dispatchers.Main) {
@@ -209,13 +161,9 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 }
 
 enum class Models {
-    BARD,
-    AISERVICE,
-    WEWORDLE,
-    FALCON_40B,
-    FALCON_7B,
-    LLAMA_13B,
-    THEB
+    GPT_35_TURBO,
+    GPT_3516K,
+    GPT_35_TURBO_0613,
 }
 
 private val Int.dp: Int

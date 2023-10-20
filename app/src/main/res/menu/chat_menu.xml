@@ -4,14 +4,6 @@
   ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
   -->
-
-<!--
-  ~ This file is part of Cosmic IDE.
-  ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-  ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-  ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
-  -->
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -22,31 +14,14 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/model_bard"
-        android:title="Google Bard" />
+        android:id="@+id/model_gpt35turbo"
+        android:title="gpt-35-turbo" />
 
     <item
-        android:id="@+id/model_aiservice"
-        android:title="AIService GPT-3.5" />
+        android:id="@+id/model_gpt3516k"
+        android:title="gpt-35-turbo-16k" />
 
     <item
-        android:id="@+id/model_wewordle"
-        android:title="Wewordle GPT-3.5" />
-
-    <item
-        android:id="@+id/model_falcon_40b"
-        android:title="H2O falcon-40b" />
-
-    <item
-        android:id="@+id/model_falcon_7b"
-        android:title="H2O falcon-7b" />
-
-
-    <item
-        android:id="@+id/model_llama_13b"
-        android:title="H2O llama-13b" />
-
-    <item
-        android:id="@+id/model_theb"
-        android:title="TheB GPT-3.5" />
+        android:id="@+id/model_gpt35turbo0613"
+        android:title="gpt35-turbo-0613" />
 </menu>

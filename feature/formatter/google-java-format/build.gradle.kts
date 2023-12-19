@@ -23,7 +23,7 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
-    implementation("com.google.guava:guava:32.1.2-jre")
+    implementation("com.google.guava:guava:33.0.0-jre")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
     implementation("com.google.auto.value:auto-value-annotations:1.10.4")

@@ -36,7 +36,7 @@ dependencies {
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("androidx.annotation:annotation:1.7.0")
     implementation("com.google.code.gson:gson:2.10.1")
-    api("com.google.guava:guava:32.1.2-jre")
+    api("com.google.guava:guava:33.0.0-jre")
 
     implementation(projects.util)
 }

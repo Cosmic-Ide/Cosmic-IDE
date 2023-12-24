@@ -20,6 +20,7 @@ import android.util.Log
 import io.appwrite.Client
 import io.appwrite.Permission
 import io.appwrite.Role
+import io.appwrite.exceptions.AppwriteException
 import io.appwrite.extensions.toJson
 import io.appwrite.services.Databases
 import kotlinx.coroutines.CoroutineScope
@@ -131,7 +132,9 @@ object Analytics {
                 )
                 Log.d("Analytics", "Logged event: ${doc.toJson()}")
             } catch (e: Exception) {
-                e.printStackTrace()
+                if (e !is AppwriteException) {
+                    e.printStackTrace()
+                }
             }
         }
     }

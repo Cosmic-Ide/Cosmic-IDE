@@ -25,7 +25,6 @@ import com.google.googlejavaformat.CommentsHelper
 import com.google.googlejavaformat.Input.Tok
 import com.google.googlejavaformat.Newlines
 import com.google.googlejavaformat.java.Formatter
-import java.util.ArrayList
 import java.util.regex.Pattern
 
 /** `KDocCommentsHelper` extends [CommentsHelper] to rewrite KDoc comments. */

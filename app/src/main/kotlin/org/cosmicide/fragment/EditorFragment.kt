@@ -42,6 +42,7 @@ import org.cosmicide.build.dex.D8Task
 import org.cosmicide.databinding.FragmentEditorBinding
 import org.cosmicide.databinding.NavigationElementsBinding
 import org.cosmicide.databinding.NewDependencyBinding
+import org.cosmicide.databinding.TextDialogBinding
 import org.cosmicide.databinding.TreeviewContextActionDialogItemBinding
 import org.cosmicide.editor.IdeEditor
 import org.cosmicide.editor.formatter.GoogleJavaFormat
@@ -245,9 +246,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 menu.findItem(R.id.action_chat).isVisible = true
             }
 
-            setOnMenuItemClickListener {
+            setOnMenuItemClickListener { item ->
                 getCurrentFragment()?.save()
-                when (it.itemId) {
+                when (item.itemId) {
                     R.id.action_compile -> {
                         editorAdapter.fragments.forEach { fragment -> fragment.save() }
                         getCurrentFragment()?.hideWindows()
@@ -378,6 +379,67 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
                     R.id.nav_items -> {
                         showNavigationElements()
+                        true
+                    }
+
+                    R.id.arguments -> {
+                        val binding = TextDialogBinding.inflate(layoutInflater)
+                        MaterialAlertDialogBuilder(context).setTitle("Enter program arguments")
+                            .setView(binding.root).setPositiveButton("Save") { _, _ ->
+                                binding.textInputLayout.hint = "Arguments"
+                                binding.textInputLayout.editText?.setText(
+                                    project.args.joinToString(
+                                        " "
+                                    )
+                                )
+                                val args = binding.textInputLayout.editText?.text.toString()
+
+                                // split args into a list considering both single and double quotes and ending with a space
+                                val argList = mutableListOf<String>()
+                                var arg = ""
+                                var inSingleQuote = false
+                                var inDoubleQuote = false
+                                args.forEach { c ->
+                                    when (c) {
+                                        '\'' -> {
+                                            arg += '\''
+                                            if (inSingleQuote) {
+                                                argList.add(arg)
+                                                arg = ""
+                                            }
+                                            inSingleQuote = !inSingleQuote
+                                        }
+
+                                        '"' -> {
+                                            arg += '"'
+                                            if (inDoubleQuote) {
+                                                argList.add(arg)
+                                                arg = ""
+                                            }
+                                            inDoubleQuote = !inDoubleQuote
+                                        }
+
+                                        ' ' -> {
+                                            if (inSingleQuote || inDoubleQuote) {
+                                                arg += c
+                                            } else {
+                                                if (arg.isNotEmpty()) {
+                                                    return@forEach
+                                                }
+                                                argList.add(arg)
+                                                arg = ""
+                                            }
+                                        }
+
+                                        else -> arg += c
+                                    }
+                                }
+                                if (arg.isNotEmpty()) argList.add(arg)
+                                project.args = argList.filterNot { it.isBlank() }
+
+                            }.setNegativeButton("Cancel") { dialog, _ ->
+                                dialog.dismiss()
+                            }.show()
                         true
                     }
 
@@ -655,7 +717,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 R.id.delete -> {
                     MaterialAlertDialogBuilder(v.context).setTitle("Delete")
                         .setMessage("Are you sure you want to delete this file")
-                        .setPositiveButton("Create") { _, _ ->
+                        .setPositiveButton("Delete") { _, _ ->
                             file.deleteRecursively()
                             initTreeView()
                         }.setNegativeButton("Cancel") { dialog, _ ->

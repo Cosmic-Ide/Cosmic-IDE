@@ -58,4 +58,14 @@
         android:id="@+id/action_git"
         android:title="@string/git" />
 
+
+    <item android:title="@string/advanced">
+
+        <menu>
+            <item
+                android:id="@+id/arguments"
+                android:title="@string/program_arguments" />
+        </menu>
+    </item>
+
 </menu>

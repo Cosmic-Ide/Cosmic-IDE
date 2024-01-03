@@ -9,7 +9,6 @@ package org.cosmicide.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.pkslow.ai.domain.Answer
 import org.cosmicide.databinding.ConversationItemReceivedBinding
 import org.cosmicide.databinding.ConversationItemSentBinding
 import org.cosmicide.util.CommonUtils
@@ -29,10 +28,6 @@ class ConversationAdapter :
     fun add(conversation: Conversation) {
         conversations += conversation
         notifyItemInserted(conversations.lastIndex)
-    }
-
-    fun add(answer: Answer) {
-        add(Conversation(answer.markdown()))
     }
 
     fun getConversations(): List<Map<String, String>> {

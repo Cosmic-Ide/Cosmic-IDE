@@ -98,7 +98,8 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             binding.infoEditor.setText("No classes found")
             return
         }
-        val index = classes.firstOrNull { it.endsWith("Main") } ?: classes.first()
+        val index = classes.firstOrNull { it.endsWith("Main") }
+            ?: classes.firstOrNull { it.endsWith("MainKt") } ?: classes.first()
 
         runClass(index)
     }
@@ -139,11 +140,11 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
                 try {
                     if (Modifier.isStatic(method.modifiers)) {
-                        method.invoke(null, arrayOf<String>())
+                        method.invoke(null, project.args.toTypedArray())
                     } else if (Modifier.isPublic(method.modifiers)) {
                         method.invoke(
                             clazz.getDeclaredConstructor().newInstance(),
-                            arrayOf<String>()
+                            project.args.toTypedArray()
                         )
                     } else {
                         System.err.println("Main method is not public or static")

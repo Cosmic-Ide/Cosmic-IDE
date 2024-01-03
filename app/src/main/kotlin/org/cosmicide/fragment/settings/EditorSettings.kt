@@ -144,6 +144,12 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 summary = "If enabled, double clicking on an opened tab will close it"
                 defaultValue = false
             }
+
+            switch(PreferenceKeys.DISABLE_SYMBOLS_VIEW) {
+                title = "Disable symbols view"
+                summary = "If enabled, symbols view above will be disabled"
+                defaultValue = false
+            }
         }
     }
 }

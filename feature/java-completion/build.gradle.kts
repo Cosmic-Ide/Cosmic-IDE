@@ -34,8 +34,8 @@ android {
 }
 dependencies {
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
-    implementation("com.github.javaparser:javaparser-core:3.25.5")
-    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.5") {
+    implementation("com.github.javaparser:javaparser-core:3.25.8")
+    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.8") {
         exclude(group = "com.google.guava", module = "guava")
     }
     implementation("org.javassist:javassist:3.29.2-GA")

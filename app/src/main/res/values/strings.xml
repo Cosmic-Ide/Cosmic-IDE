@@ -100,4 +100,6 @@
     <string name="close_left_tab">Close Left Tab</string>
     <string name="close_right_tab">Close Right Tab</string>
     <string name="backup">Backup</string>
+    <string name="program_arguments">Program Arguments</string>
+    <string name="advanced">Advanced</string>
 </resources>

@@ -55,8 +55,6 @@ object ChatProvider {
         } catch (e: Exception) {
             e.printStackTrace()
             "Error: ${e.message}"
-        } finally {
-            client.connectionPool.evictAll()
         }
     }
 }

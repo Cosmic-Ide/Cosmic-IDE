@@ -33,6 +33,7 @@ import org.cosmicide.editor.language.KotlinLanguage
 import org.cosmicide.editor.language.TsLanguageJava
 import org.cosmicide.extension.setFont
 import org.cosmicide.model.FileViewModel
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.util.ProjectHandler
 import java.io.File
 import kotlin.properties.Delegates
@@ -146,6 +147,10 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
 
         private fun setupSymbols() {
             binding.apply {
+                if (Prefs.disableSymbolsView) {
+                    symbolView.visibility = View.GONE
+                    return
+                }
                 symbolView.bindEditor(editor)
                 symbolView.addSymbols(
                     arrayOf(
@@ -220,6 +225,7 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
                     editor.setEditorLanguage(EmptyLanguage())
                 }
             }
+            editor.editable = true
         }
 
         private fun setColorScheme() {

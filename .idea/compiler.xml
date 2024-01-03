@@ -7,20 +7,31 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.10.4/90f9629eaa123f88551cc26a64bc386967ee24cc/auto-value-1.10.4.jar" />
         </processorPath>
-        <module name="CosmicIDE-Rewrite.feature.formatter.google-java-format.main" />
+        <module name="CosmicIDE.feature.formatter.google-java-format.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel target="17">
       <module name="Cosmic_IDE_Rewrite.app" target="17" />
+      <module name="CosmicIDE-Rewrite.app" target="20" />
       <module name="CosmicIDE-Rewrite.bardapi" target="17" />
       <module name="CosmicIDE-Rewrite.bardapi.main" target="17" />
       <module name="CosmicIDE-Rewrite.bardapi.test" target="17" />
+      <module name="CosmicIDE-Rewrite.build-tools" target="20" />
+      <module name="CosmicIDE-Rewrite.common" target="20" />
       <module name="CosmicIDE-Rewrite.completion.java" target="17" />
       <module name="CosmicIDE-Rewrite.completion.kotlin" target="17" />
+      <module name="CosmicIDE-Rewrite.datadir" target="20" />
+      <module name="CosmicIDE-Rewrite.feature.aliuhook" target="20" />
+      <module name="CosmicIDE-Rewrite.feature.code-navigation" target="20" />
+      <module name="CosmicIDE-Rewrite.feature.completion.java" target="20" />
+      <module name="CosmicIDE-Rewrite.feature.completion.kotlin" target="20" />
+      <module name="CosmicIDE-Rewrite.feature.formatter.ktfmt" target="20" />
+      <module name="CosmicIDE-Rewrite.feature.java-completion" target="20" />
       <module name="CosmicIDE-Rewrite.feature.jaxp" target="17" />
       <module name="CosmicIDE-Rewrite.feature.jaxp.main" target="17" />
       <module name="CosmicIDE-Rewrite.feature.jaxp.test" target="17" />
       <module name="CosmicIDE-Rewrite.feature.rish" target="20" />
+      <module name="CosmicIDE-Rewrite.feature.TreeView" target="20" />
       <module name="CosmicIDE-Rewrite.java-completion" target="17" />
       <module name="CosmicIDE-Rewrite.java-completion.main" target="17" />
       <module name="CosmicIDE-Rewrite.java-completion.test" target="17" />
@@ -33,6 +44,7 @@
       <module name="CosmicIDE-Rewrite.project.main" target="17" />
       <module name="CosmicIDE-Rewrite.project.test" target="17" />
       <module name="CosmicIDE-Rewrite.TreeView" target="17" />
+      <module name="CosmicIDE-Rewrite.util" target="20" />
       <module name="CosmicIDE-Rewrite.util.test" target="17" />
     </bytecodeTargetLevel>
   </component>

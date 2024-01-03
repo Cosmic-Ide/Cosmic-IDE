@@ -28,6 +28,7 @@ class Compiler(
     private val reporter: BuildReporter
 ) {
     companion object {
+
         /**
          * A listener to be called when a compiler starts or finishes compiling.
          */
@@ -47,6 +48,7 @@ class Compiler(
     }
 
     private val context = App.instance.get()!!
+
 
     init {
         initializeCache(project)

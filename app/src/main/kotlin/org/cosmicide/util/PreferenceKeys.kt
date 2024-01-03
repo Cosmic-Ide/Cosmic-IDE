@@ -38,6 +38,7 @@ object PreferenceKeys {
     const val BRACKET_PAIR_AUTOCOMPLETE = "bracket_pair_autocomplete"
     const val QUICK_DELETE = "quick_delete"
     const val STICKY_SCROLL = "sticky_scroll"
+    const val DISABLE_SYMBOLS_VIEW = "disable_symbols_view"
 
     // Formatter
     const val FORMATTER_KTFMT_STYLE = "ktfmt_style"

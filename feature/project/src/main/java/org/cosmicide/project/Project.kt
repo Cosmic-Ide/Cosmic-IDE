@@ -5,13 +5,6 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
- * This file is part of Cosmic IDE.
- * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package org.cosmicide.project
 
 import java.io.File
@@ -61,6 +54,21 @@ data class Project(
      * The library directory of the project.
      */
     val libDir = File(root, "libs")
+
+    var args = listOf<String>()
+        get() {
+            val f = cacheDir.resolve("args.txt")
+            if (f.exists()) {
+                return f.readLines().toMutableList()
+            }
+
+            return listOf()
+        }
+        set(value) {
+            val f = cacheDir.resolve("args.txt")
+            f.writeText(value.joinToString("\n"))
+            field = value
+        }
 
     /**
      * Deletes the project directory.

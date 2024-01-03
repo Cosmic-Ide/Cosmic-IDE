@@ -73,6 +73,10 @@ android {
         useLegacyPackaging = false
     }
 
+    configurations.all {
+        resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.11.0")
+    }
+
     packagingOptions.resources.excludes.addAll(
         listOf(
             "META-INF/INDEX.LIST",
@@ -146,30 +150,30 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.android.tools:r8:8.1.56")
+    implementation("com.android.tools:r8:8.2.33")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
 
     //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:868996895a")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.12.0-alpha02")
     implementation("com.google.code.gson:gson:2.10.1")
 
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
 
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
+    implementation("androidx.core:core-ktx:1.13.0-alpha02")
+    implementation("androidx.core:core-splashscreen:1.1.0-alpha02")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
-    implementation("androidx.fragment:fragment-ktx:1.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha07")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0-rc02")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0-rc02")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
-    implementation("androidx.activity:activity-ktx:1.8.0-rc01")
-    implementation("androidx.startup:startup-runtime:1.1.1")
+    implementation("androidx.activity:activity-ktx:1.9.0-alpha01")
+    implementation("androidx.startup:startup-runtime:1.2.0-alpha02")
 
-    val editorVersion = "c734f6d"
+    val editorVersion = "0.22.1"
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     //noinspection GradleDependency
@@ -183,7 +187,7 @@ dependencies {
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
-    implementation("com.github.sya-ri:kgit:1.0.5")
+    implementation("com.github.sya-ri:kgit:1.0.6")
 
     // markwon
     val markwonVersion = "4.6.2"
@@ -192,12 +196,12 @@ dependencies {
     implementation("io.noties.markwon:linkify:$markwonVersion")
 
     implementation(projects.feature.aliuhook)
-    implementation("de.maxr1998:modernandroidpreferences:2.3.2")
+    implementation("de.maxr1998:modernandroidpreferences:2.4.0-beta1")
 
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC2")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
-    implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
 
     val shizukuVersion = "13.1.5"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")
@@ -205,12 +209,11 @@ dependencies {
     // Add this line if you want to support Shizuku
     implementation("dev.rikka.shizuku:provider:$shizukuVersion")
 
-    implementation("io.appwrite:sdk-for-android:4.0.0")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.12")
 
     implementation(projects.buildTools)
     implementation(projects.common)
-    implementation(projects.feature.bardapi)
+    implementation(projects.feature.appwrite)
     implementation(projects.feature.completion.java)
     implementation(projects.feature.completion.kotlin)
     implementation(projects.feature.formatter.googleJavaFormat)
@@ -223,7 +226,7 @@ dependencies {
     implementation(projects.feature.treeView)
 
     // jgit uses some methods like `transferTo` are only available from Android 13 onwards
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
 
     testImplementation("junit:junit:4.13.2")
 }

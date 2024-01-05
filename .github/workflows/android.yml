@@ -34,24 +34,24 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: app-arm64-v8a
-          path: app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
+          path: app/build/outputs/apk/dev/debug/app-dev-arm64-v8a-debug.apk
 
       - uses: actions/upload-artifact@v2
         with:
           name: app-armeabi-v7a
-          path: app/build/outputs/apk/debug/app-armeabi-v7a-debug.apk
+          path: app/build/outputs/apk/dev/debug/app-dev-armeabi-v7a-debug.apk
 
       - uses: actions/upload-artifact@v2
         with:
           name: app-x86
-          path: app/build/outputs/apk/debug/app-x86-debug.apk
+          path: app/build/outputs/apk/dev/debug/app-dev-x86-debug.apk
 
       - uses: actions/upload-artifact@v2
         with:
           name: app-x86_64
-          path: app/build/outputs/apk/debug/app-x86_64-debug.apk
+          path: app/build/outputs/apk/dev/debug/app-dev-x86_64-debug.apk
 
       - uses: actions/upload-artifact@v2
         with:
           name: app-universal
-          path: app/build/outputs/apk/debug/app-universal-debug.apk
+          path: app/build/outputs/apk/dev/debug/app-dev-universal-debug.apk

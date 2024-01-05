@@ -38,7 +38,8 @@ Cosmic IDE is a powerful and feature-rich IDE for JVM development on Android. It
 
 ## Installation
 
-Currently, Cosmic IDE is in active development. You can download the latest debug app build from [here](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/apk-debug.zip).
+Currently, Cosmic IDE is in active development. You can download the latest debug app build
+from [here](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/app-universal.zip).
 
 If you find any bugs, please report them on our [Discord server](https://discord.gg/8Gu6YCq2eS) or open an issue on GitHub.
 
@@ -50,6 +51,7 @@ If you find any bugs, please report them on our [Discord server](https://discord
 - Fast incremental compilation
 - Integrated dependency management
 - Code completion for Java and Kotlin
+- Google Gemini AI chatbot
 - Syntax highlighting
 - Execution of programs
 - Code navigation

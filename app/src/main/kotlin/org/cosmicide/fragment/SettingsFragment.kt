@@ -13,16 +13,19 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.os.BundleCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.Maxr1998.modernpreferences.Preference
+import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.PreferencesAdapter
 import de.Maxr1998.modernpreferences.helpers.screen
 import de.Maxr1998.modernpreferences.helpers.subScreen
 import org.cosmicide.MainActivity
+import org.cosmicide.chat.ChatProvider
 import org.cosmicide.databinding.FragmentSettingsBinding
 import org.cosmicide.fragment.settings.AboutSettings
 import org.cosmicide.fragment.settings.AppearanceSettings
 import org.cosmicide.fragment.settings.CompilerSettings
 import org.cosmicide.fragment.settings.EditorSettings
 import org.cosmicide.fragment.settings.FormatterSettings
+import org.cosmicide.fragment.settings.GeminiSettings
 import org.cosmicide.fragment.settings.GitSettings
 import org.cosmicide.fragment.settings.PluginSettingsProvider
 import org.cosmicide.rewrite.common.BaseBindingFragment
@@ -51,6 +54,9 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
         val pluginsSettings = PluginSettingsProvider(requireActivity())
         val gitSettings = GitSettings()
         val aboutSettings = AboutSettings(requireActivity())
+        val geminiSettings = GeminiSettings(requireActivity())
+
+        var geminiScreen: PreferenceScreen? = null
 
         val screen = screen(requireContext()) {
             subScreen {
@@ -72,11 +78,13 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
                 compilerSettings.provideSettings(this)
             }
             subScreen {
+                collapseIcon = true
                 title = "Formatter"
                 summary = "Adjust code formatting preferences"
                 formatterSettings.provideSettings(this)
             }
             subScreen {
+                collapseIcon = true
                 title = "Plugins"
                 summary = "Explore and install plugins to extend the functionality of the IDE"
                 pluginsSettings.provideSettings(this)
@@ -86,6 +94,12 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
                 title = "Git"
                 summary = "Configure Git integration"
                 gitSettings.provideSettings(this)
+            }
+            geminiScreen = subScreen {
+                collapseIcon = true
+                title = "Gemini"
+                summary = "Configure Gemini integration"
+                geminiSettings.provideSettings(this)
             }
             subScreen {
                 collapseIcon = true
@@ -108,6 +122,9 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
 
         binding.preferencesView.adapter = preferencesAdapter
         binding.toolbar.setNavigationOnClickListener {
+            if (preferencesAdapter.currentScreen == geminiScreen) {
+                ChatProvider.regenerateModel()
+            }
             if (!preferencesAdapter.goBack()) {
                 parentFragmentManager.popBackStack()
             }
@@ -118,6 +135,9 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
                 override fun handleOnBackPressed() {
                     if (isResumed.not()) {
                         return
+                    }
+                    if (preferencesAdapter.currentScreen == geminiScreen) {
+                        ChatProvider.regenerateModel()
                     }
                     if (!preferencesAdapter.goBack()) {
                         isEnabled = false

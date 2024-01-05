@@ -32,7 +32,6 @@ import org.cosmicide.rewrite.common.BaseBindingFragment
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
     private val conversationAdapter = ConversationAdapter()
-    private var model = Models.GPT_35_TURBO
 
     override fun getViewBinding() = FragmentChatBinding.inflate(layoutInflater)
 
@@ -47,7 +46,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
     private fun setupUI(context: Context) {
         initToolbar()
         initBackground(context)
-        binding.toolbar.title = model.name
+        binding.toolbar.title = "Gemini Pro"
     }
 
     private fun initToolbar() {
@@ -61,26 +60,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                 binding.recyclerview.invalidate()
                 return@setOnMenuItemClickListener false
             }
-            val modelName = when (it.itemId) {
-                R.id.model_gpt35turbo -> {
-                    model = Models.GPT_35_TURBO
-                    "GPT-3.5 Turbo"
-                }
 
-                R.id.model_gpt3516k -> {
-                    model = Models.GPT_3516K
-                    "GPT-3.5 16k"
-                }
-
-                R.id.model_gpt35turbo0613 -> {
-                    model = Models.GPT_35_TURBO_0613
-                    "GPT-3.5 Turbo 0613"
-                }
-
-                else -> return@setOnMenuItemClickListener false
-            }
-
-            binding.toolbar.title = modelName
             true
         }
     }
@@ -95,24 +75,11 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             conversationAdapter.add(conversation)
             binding.messageText.setText("")
             lifecycleScope.launch(Dispatchers.IO) {
-                val reply = when (model) {
-                    Models.GPT_35_TURBO_0613 -> ChatProvider.generate(
-                        "gpt-3.5-turbo-0613",
-                        conversationAdapter.getConversations()
-                    )
+                val reply = ChatProvider.generate(
+                    conversationAdapter.getConversations()
+                )
 
-                    Models.GPT_35_TURBO -> ChatProvider.generate(
-                        "gpt-3.5-turbo",
-                        conversationAdapter.getConversations()
-                    )
-
-                    Models.GPT_3516K -> ChatProvider.generate(
-                        "gpt-3.5-16k",
-                        conversationAdapter.getConversations()
-                    )
-
-                }
-                val response = ConversationAdapter.Conversation(reply)
+                val response = ConversationAdapter.Conversation(flow = reply)
                 withContext(Dispatchers.Main) {
                     conversationAdapter.add(response)
                     binding.recyclerview.scrollToPosition(conversationAdapter.itemCount - 1)
@@ -158,12 +125,6 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
         binding.chatLayout.background = shapeDrawable
         binding.toolbar.background = shapeDrawable
     }
-}
-
-enum class Models {
-    GPT_35_TURBO,
-    GPT_3516K,
-    GPT_35_TURBO_0613,
 }
 
 private val Int.dp: Int

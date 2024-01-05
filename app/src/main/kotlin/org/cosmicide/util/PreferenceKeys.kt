@@ -56,4 +56,10 @@ object PreferenceKeys {
     const val PLUGIN_REPOSITORY = "plugin_repository"
     const val PLUGIN_SETTINGS = "plugin_settings"
 
+    // Gemini Pro
+    const val TEMPERATURE = "temperature"
+    const val TOP_P = "top_p"
+    const val TOP_K = "top_k"
+    const val CANDIDATE_COUNT = "candidate_count"
+    const val MAX_TOKENS = "max_tokens"
 }

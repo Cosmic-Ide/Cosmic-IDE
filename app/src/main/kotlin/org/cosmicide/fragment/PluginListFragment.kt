@@ -65,7 +65,6 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
                         .setTitle("Delete plugin")
                         .setMessage("Are you sure you want to delete ${plugin.name}?")
                         .setPositiveButton("Yes") { _, _ ->
-                            Analytics.logEvent("plugin_delete", mapOf("plugin" to plugin.name))
                             lifecycleScope.launch {
                                 FileUtil.pluginDir.resolve(plugin.name).deleteRecursively()
                                 val plugins = getPlugins()
@@ -77,7 +76,6 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
                 }
 
                 override fun onPluginInstall(plugin: Plugin) {
-                    Analytics.logEvent("plugin_install", mapOf("plugin" to plugin.name))
                     binding.progressBar.visibility = View.VISIBLE
                     Snackbar.make(
                         binding.root,

@@ -8,23 +8,74 @@
 package org.cosmicide.chat
 
 import android.util.Log
-import com.google.gson.Gson
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.concurrent.TimeUnit
+import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.BlockThreshold
+import com.google.ai.client.generativeai.type.GenerateContentResponse
+import com.google.ai.client.generativeai.type.HarmCategory
+import com.google.ai.client.generativeai.type.SafetySetting
+import com.google.ai.client.generativeai.type.generationConfig
+import kotlinx.coroutines.flow.Flow
+import org.cosmicide.BuildConfig
+import org.cosmicide.common.Prefs
 
 object ChatProvider {
 
-    private val client = OkHttpClient()
+    private val safetySettings = listOf(
+        SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE), // should we block this?
+        SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE),
+        SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE),
+        SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.NONE),
+    )
 
-    private val gson = Gson()
+    private var generativeModel = GenerativeModel(
+        apiKey = BuildConfig.GEMINI_API_KEY,
+        modelName = "gemini-pro",
+        safetySettings = safetySettings,
+        generationConfig = generationConfig {
+            temperature = Prefs.temperature
+            topP = Prefs.topP
+            topK = Prefs.topK
+            maxOutputTokens = Prefs.maxTokens
+        }
+    )
 
-    data class Message(val role: String, val content: String)
+    private var chat = generativeModel.startChat()
 
     @JvmStatic
-    fun generate(model: String, conversation: List<Map<String, String>>): String {
+    fun regenerateModel(
+        temp: Float = Prefs.temperature,
+        top_p: Float = Prefs.topP,
+        top_k: Int = Prefs.topK,
+        maxTokens: Int = Prefs.maxTokens
+    ) {
+        Log.d(
+            "ChatProvider",
+            "regenerateModel: temperature ${Prefs.temperature}, topP ${Prefs.topP}, topK ${Prefs.topK}, maxTokens ${Prefs.maxTokens}"
+        )
+
+        GenerativeModel(
+            apiKey = BuildConfig.GEMINI_API_KEY,
+            modelName = "gemini-pro",
+            safetySettings = safetySettings,
+            generationConfig = generationConfig {
+                temperature = temp
+                topP = top_p
+                topK = top_k
+                maxOutputTokens = maxTokens
+            }
+        ).let {
+            generativeModel = it
+            chat = it.startChat()
+        }
+    }
+
+    @JvmStatic
+    fun generate(conversation: List<Map<String, String>>): Flow<GenerateContentResponse> {
+        return chat.sendMessageStream(conversation.last()["text"]!!)
+
+
+        /*
+
         // json format
         // {
         //  "messages": [
@@ -56,5 +107,7 @@ object ChatProvider {
             e.printStackTrace()
             "Error: ${e.message}"
         }
+
+         */
     }
 }

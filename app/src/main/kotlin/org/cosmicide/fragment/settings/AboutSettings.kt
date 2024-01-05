@@ -19,6 +19,7 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat.*
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
@@ -52,6 +53,12 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
     @SuppressLint("PrivateResource")
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            icon = getDrawable(
+                activity.resources,
+                R.drawable.round_info_outline_24,
+                activity.theme
+            )
+
             expandText("about") {
                 title = "About"
                 summary = "A free and open-source IDE for Android."

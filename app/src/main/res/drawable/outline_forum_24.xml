@@ -1,18 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ This file is part of Cosmic IDE.
   ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
   ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
   -->
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:ignore="HardcodedText">
 
-    <item
-        android:id="@+id/clear"
-        android:icon="@drawable/baseline_close_24"
-        android:title="@string/clear"
-        app:showAsAction="always" />
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="?colorControlNormal"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
 
-</menu>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M15,4v7L5.2,11L4,12.2L4,4h11m1,-2L3,2c-0.6,0 -1,0.5 -1,1v14l4,-4h10c0.6,0 1,-0.5 1,-1L17,3c0,-0.6 -0.5,-1 -1,-1zM21,6h-2v9L6,15v2c0,0.6 0.5,1 1,1h11l4,4L22,7c0,-0.6 -0.5,-1 -1,-1z" />
+
+</vector>

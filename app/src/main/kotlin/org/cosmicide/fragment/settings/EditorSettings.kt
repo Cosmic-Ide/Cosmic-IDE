@@ -78,10 +78,6 @@ class EditorSettings(private val activity: FragmentActivity) : SettingsProvider 
                 summary = "Enables sticky scroll in the editor"
                 defaultValue = true
 
-                onCheckedChange { isChecked ->
-                    Analytics.logEvent("sticky_scroll", isChecked)
-                    true
-                }
             }
 
             switch(PreferenceKeys.EDITOR_USE_SPACES) {

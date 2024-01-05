@@ -9,6 +9,12 @@ package org.cosmicide.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.ai.client.generativeai.type.GenerateContentResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.databinding.ConversationItemReceivedBinding
 import org.cosmicide.databinding.ConversationItemSentBinding
 import org.cosmicide.util.CommonUtils
@@ -18,7 +24,23 @@ class ConversationAdapter :
 
     private val conversations = mutableListOf<Conversation>()
 
-    data class Conversation(val text: String, val author: String = "assistant")
+    data class Conversation(
+        var text: String = "",
+        val author: String = "assistant",
+        val flow: Flow<GenerateContentResponse>? = null,
+        var finished: Boolean = false
+    ) {
+        init {
+            if (flow != null) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    flow.collect {
+                        if (finished) return@collect
+                        text = it.text!!
+                    }
+                }
+            }
+        }
+    }
 
     companion object {
         const val VIEW_TYPE_SENT = 1
@@ -26,6 +48,7 @@ class ConversationAdapter :
     }
 
     fun add(conversation: Conversation) {
+        conversations.last().finished = true
         conversations += conversation
         notifyItemInserted(conversations.lastIndex)
     }
@@ -94,8 +117,27 @@ class ConversationAdapter :
         BindableViewHolder<Conversation, ConversationItemReceivedBinding>(itemBinding) {
 
         override fun bind(data: Conversation) {
+            val scope = CoroutineScope(Dispatchers.IO)
+
+            scope.launch {
+                if (data.text.isNotEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        stream(data.text)
+                    }
+                }
+                data.flow!!.collect {
+                    if (data.finished) return@collect
+
+                    withContext(Dispatchers.Main) {
+                        stream(it.text!!)
+                    }
+                }
+            }
+        }
+
+        fun stream(text: String) {
             binding.message.apply {
-                CommonUtils.getMarkwon().setMarkdown(this, data.text)
+                CommonUtils.getMarkwon().setMarkdown(this, binding.message.text.toString() + text)
             }
         }
     }

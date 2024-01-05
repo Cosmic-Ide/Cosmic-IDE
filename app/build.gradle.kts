@@ -17,12 +17,15 @@ android {
 
     defaultConfig {
         val commit = getGitCommit()
+        val GEMINI_API_KEY = "AIzaSyB-axwh7qrTGngrI2qNLgN5YAjCFJ-w0R8"
+
         applicationId = "org.cosmicide"
         minSdk = 26
         targetSdk = 34
         versionCode = 24
         versionName = "2.0.4"
         buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$GEMINI_API_KEY\"")
     }
 
     signingConfigs {
@@ -202,6 +205,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC2")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.1.1")
+
 
     val shizukuVersion = "13.1.5"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")

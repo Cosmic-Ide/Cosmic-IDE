@@ -8,7 +8,6 @@
 package org.cosmicide.rewrite.chat
 
 import org.cosmicide.chat.ChatProvider
-import org.cosmicide.fragment.Models
 import org.junit.Test
 
 class ChatProviderTest {
@@ -18,10 +17,7 @@ class ChatProviderTest {
             mapOf("author" to "user", "text" to "hi"),
             mapOf("author" to "bot", "text" to "hello")
         )
-        val models = Models.values().map { it.name }
-        for (model in models) {
-            val output = ChatProvider.generate(model, conversation)
-            println(output)
-        }
+        val output = ChatProvider.generate(conversation)
+        println(output)
     }
 }

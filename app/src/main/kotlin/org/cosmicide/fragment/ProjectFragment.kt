@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
@@ -115,6 +116,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        askClientName()
         askForAnalyticsPermission()
 
         setOnClickListeners()
@@ -330,6 +332,38 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
             }
         }.show()
     }
+
+    private fun askClientName() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        val enteredName = prefs.getString("client_name", null)
+        if (enteredName != null) return
+
+        val editText = EditText(requireContext()).apply {
+            hint = "Enter your name"
+        }
+
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(editText)
+            setTitle("Enter your name")
+            setPositiveButton("Okay") { _, _ ->
+                val name = editText.text.toString()
+
+                if (name.isEmpty()) {
+                    Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT)
+                        .show()
+                    askClientName()
+                    return@setPositiveButton
+                }
+
+                prefs.edit(commit = true) {
+                    putString("client_name", name).apply()
+                }
+            }
+            show()
+        }
+    }
+
 
     private fun askForAnalyticsPermission() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())

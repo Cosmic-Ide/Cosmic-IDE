@@ -151,12 +151,10 @@ object Prefs {
         }.getOrElse { 1.0f }
 
     val topK: Int
-        get() = runCatching {
-            prefs.getString("top_k", "1")?.toIntOrNull()?.coerceIn(1, 60) ?: 1
-        }.getOrElse { 1 }
+        get() = prefs.getInt("top_k", 1).coerceIn(1, 60)
 
     val maxTokens: Int
-        get() = prefs.getString("max_tokens", "1024")?.toIntOrNull()?.coerceIn(60, 2048) ?: 1024
+        get() = prefs.getInt("max_tokens", 1024).coerceIn(60, 2048)
 
     val clientName: String
         get() = prefs.getString("client_name", null)?.replace(" ", "") ?: Build.ID

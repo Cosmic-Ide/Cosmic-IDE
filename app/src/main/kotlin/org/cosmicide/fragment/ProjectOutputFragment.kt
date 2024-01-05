@@ -21,7 +21,7 @@ import org.cosmicide.R
 import org.cosmicide.databinding.FragmentCompileInfoBinding
 import org.cosmicide.editor.EditorInputStream
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.util.ProjectHandler
 import java.io.OutputStream

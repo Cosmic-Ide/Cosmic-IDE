@@ -18,7 +18,7 @@ import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.cosmicide.extension.setCompletionLayout
 import org.cosmicide.extension.setFont
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 
 class IdeEditor @JvmOverloads constructor(
     context: Context,

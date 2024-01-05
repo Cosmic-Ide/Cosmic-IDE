@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "org.cosmicide.rewrite.common"
+    namespace = "org.cosmicide.common"
     compileSdk = 34
 
     defaultConfig {
@@ -21,6 +21,18 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+        }
+    }
+
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            isDefault = true
+        }
+        create("prod") {
+            dimension = "environment"
         }
     }
 
@@ -40,7 +52,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.databinding:viewbinding:8.2.0")
 
-    implementation(projects.feature.appwrite)
+    "prodImplementation"(projects.feature.appwrite)
+    "devImplementation"("com.google.firebase:firebase-analytics-ktx:21.5.0")
 
     api("androidx.preference:preference-ktx:1.2.1")
 

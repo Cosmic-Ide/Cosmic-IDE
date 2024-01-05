@@ -27,9 +27,9 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
+import org.cosmicide.common.Analytics
+import org.cosmicide.common.Prefs
 import org.cosmicide.fragment.PluginsFragment
-import org.cosmicide.rewrite.common.Analytics
-import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.plugin.api.Hook
 import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.plugin.api.PluginLoader
@@ -44,8 +44,11 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 import java.lang.ref.WeakReference
 import java.math.BigInteger
+import java.net.URL
 import java.security.MessageDigest
 import java.time.ZonedDateTime
+import java.util.Locale
+import java.util.TimeZone
 import java.util.logging.Logger
 
 class App : Application() {
@@ -67,22 +70,23 @@ class App : Application() {
         Log.d("Analytics", "Initializing")
         Analytics.init(this@App)
         Log.d("Analytics", "Sending event")
+
+        Analytics.logEvent(
+            "user_metrics",
+            "name" to Prefs.clientName,
+            "ip" to getPublicIp(),
+            "theme" to Prefs.appTheme,
+            "language" to Locale.getDefault().language,
+            "timezone" to TimeZone.getDefault().id,
+            "sdk" to Build.VERSION.SDK_INT.toString() + " (" + Build.SUPPORTED_ABIS.joinToString(", ") + ")",
+            "device" to Build.DEVICE + " " + Build.DEVICE + " " + Build.PRODUCT,
+            "fingerprint" to Build.FINGERPRINT,
+            "hardware" to Build.HARDWARE,
+            "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
+        )
         Analytics.logEvent(
             "app_start",
             "time" to ZonedDateTime.now().toString(),
-            "device" to Build.MODEL,
-            "sdk" to Build.VERSION.SDK_INT.toString(),
-            "version_code" to BuildConfig.VERSION_CODE.toString(),
-            "supported_abis" to Build.SUPPORTED_ABIS.joinToString(", "),
-            "brand" to Build.BRAND,
-            "device" to Build.DEVICE,
-            "fingerprint" to Build.FINGERPRINT,
-            "hardware" to Build.HARDWARE,
-            "id" to Build.ID,
-            "model" to Build.MODEL,
-            "type" to Build.TYPE,
-            "user" to Build.USER,
-            "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
         )
 
         Sui.init(packageName)
@@ -273,6 +277,16 @@ class App : Application() {
                 println(param.args[0])
             }
         })
+    }
+
+
+    private fun getPublicIp(): String {
+        return try {
+            val ip = URL("https://api.ipify.org").readText()
+            ip
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

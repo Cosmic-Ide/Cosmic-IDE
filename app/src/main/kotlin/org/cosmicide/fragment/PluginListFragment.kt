@@ -21,11 +21,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.adapter.AvailablePluginAdapter
 import org.cosmicide.adapter.PluginAdapter
+import org.cosmicide.common.BaseBindingFragment
+import org.cosmicide.common.Prefs
 import org.cosmicide.databinding.FragmentPluginListBinding
 import org.cosmicide.databinding.PluginInfoBinding
-import org.cosmicide.rewrite.common.Analytics
-import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.plugin.api.Plugin
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.CommonUtils

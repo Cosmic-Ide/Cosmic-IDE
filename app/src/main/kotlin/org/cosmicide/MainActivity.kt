@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 import org.cosmicide.databinding.ActivityMainBinding
 import org.cosmicide.fragment.InstallResourcesFragment
 import org.cosmicide.fragment.ProjectFragment
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import org.cosmicide.util.CommonUtils
 import org.cosmicide.util.ResourceUtil
 import rikka.shizuku.Shizuku

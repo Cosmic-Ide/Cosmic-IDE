@@ -11,7 +11,7 @@ import com.sun.tools.javac.api.JavacTool
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.io.Writer

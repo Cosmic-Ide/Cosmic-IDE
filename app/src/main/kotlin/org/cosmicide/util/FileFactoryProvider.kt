@@ -16,7 +16,7 @@ import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.LightVirtualFile
 import org.cosmicide.completion.java.parser.CompletionProvider
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.config.AnalysisFlags

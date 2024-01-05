@@ -29,8 +29,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.Prefs
-import org.cosmicide.rewrite.editor.EditorCompletionItem
+import org.cosmicide.common.Prefs
+import org.cosmicide.editor.EditorCompletionItem
 import java.io.File
 import java.net.URI
 import java.util.logging.Level

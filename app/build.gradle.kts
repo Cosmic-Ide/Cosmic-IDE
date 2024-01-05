@@ -9,6 +9,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("dev.rikka.tools.materialthemebuilder")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -100,6 +101,18 @@ android {
     )
     buildFeatures {
         buildConfig = true
+    }
+
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            isDefault = true
+        }
+        create("prod") {
+            dimension = "environment"
+        }
     }
 
     splits {
@@ -219,7 +232,6 @@ dependencies {
 
     implementation(projects.buildTools)
     implementation(projects.common)
-    implementation(projects.feature.appwrite)
     implementation(projects.feature.completion.java)
     implementation(projects.feature.completion.kotlin)
     implementation(projects.feature.formatter.googleJavaFormat)

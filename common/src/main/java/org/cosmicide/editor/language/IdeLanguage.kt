@@ -12,8 +12,8 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.SymbolPairMatch
-import org.cosmicide.rewrite.common.Prefs
-import org.cosmicide.rewrite.editor.language.IdeFormatter
+import org.cosmicide.common.Prefs
+import org.cosmicide.editor.language.IdeFormatter
 import org.eclipse.tm4e.core.grammar.IGrammar
 import org.eclipse.tm4e.languageconfiguration.model.LanguageConfiguration
 

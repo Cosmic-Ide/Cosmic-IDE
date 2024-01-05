@@ -7,7 +7,7 @@
 
 package org.cosmicide.build
 
-import org.cosmicide.rewrite.common.Analytics
+import org.cosmicide.common.Analytics
 
 /**
  * Enum to represent different kinds of build reports.

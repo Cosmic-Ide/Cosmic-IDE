@@ -13,7 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import org.cosmicide.databinding.CompletionResultBinding
-import org.cosmicide.rewrite.editor.EditorCompletionItem
+import org.cosmicide.editor.EditorCompletionItem
 
 class CustomCompletionItemAdapter : EditorCompletionAdapter() {
 

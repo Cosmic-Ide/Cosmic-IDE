@@ -10,7 +10,7 @@ package org.cosmicide.util
 import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.cosmicide.rewrite.common.Analytics
+import org.cosmicide.common.Analytics
 import java.io.File
 
 class Download(val url: String, val callback: (percent: Int) -> Unit) {

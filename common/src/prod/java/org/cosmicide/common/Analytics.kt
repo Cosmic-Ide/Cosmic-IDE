@@ -5,7 +5,7 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.rewrite.common
+package org.cosmicide.common
 
 import android.content.Context
 import android.os.Build
@@ -19,8 +19,6 @@ import io.appwrite.services.Databases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Locale
-import java.util.TimeZone
 
 object Analytics {
 
@@ -31,13 +29,6 @@ object Analytics {
             .setEndpoint("https://cloud.appwrite.io/v1")
             .setProject("64f212248f1c810b1152")
             .setSelfSigned(true)
-
-        logEvent(
-            "user_metrics",
-            "theme" to Prefs.appTheme,
-            "language" to Locale.getDefault().language,
-            "timezone" to TimeZone.getDefault().id
-        )
     }
 
     private var isAnalyticsCollectionEnabled = true
@@ -54,12 +45,12 @@ object Analytics {
             try {
                 if (databases.listDocuments(
                         "stats",
-                        "users"
+                        "clients"
                     ).documents.any { it.id == documentId }
                 ) {
                     databases.updateDocument(
                         databaseId = "stats",
-                        collectionId = "users",
+                        collectionId = "clients",
                         documentId = documentId,
                         data = mapOf(
                             event to value
@@ -72,7 +63,7 @@ object Analytics {
                 }
                 databases.createDocument(
                     databaseId = "stats",
-                    collectionId = "users",
+                    collectionId = "clients",
                     documentId = documentId,
                     data = mapOf(
                         event to value
@@ -96,15 +87,15 @@ object Analytics {
             try {
                 if (databases.listDocuments(
                         "stats",
-                        "users"
+                        "clients"
                     ).documents.any { it.id == documentId }
                 ) {
                     databases.updateDocument(
                         databaseId = "stats",
-                        collectionId = "users",
+                        collectionId = "clients",
                         documentId = documentId,
                         data = mapOf(
-                            event to log
+                            event to pairs.toMap()
                         ),
                         permissions = listOf(
                             Permission.update(Role.guests()),
@@ -114,7 +105,7 @@ object Analytics {
                 }
                 val doc = databases.createDocument(
                     databaseId = "stats",
-                    collectionId = "users",
+                    collectionId = "clients",
                     documentId = documentId,
                     data = mapOf(
                         event to log

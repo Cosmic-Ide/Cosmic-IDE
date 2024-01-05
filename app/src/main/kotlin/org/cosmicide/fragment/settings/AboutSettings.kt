@@ -41,8 +41,8 @@ import org.cosmicide.BuildConfig
 import org.cosmicide.R
 import org.cosmicide.extension.copyToClipboard
 import org.cosmicide.fragment.InstallResourcesFragment
-import org.cosmicide.rewrite.common.Analytics
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Analytics
+import org.cosmicide.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.CommonUtils.isShizukuGranted
 import org.cosmicide.util.ResourceUtil

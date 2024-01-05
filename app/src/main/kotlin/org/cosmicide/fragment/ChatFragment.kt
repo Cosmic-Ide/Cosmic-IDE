@@ -27,7 +27,7 @@ import org.cosmicide.adapter.ConversationAdapter
 import org.cosmicide.chat.ChatProvider
 import org.cosmicide.databinding.FragmentChatBinding
 import org.cosmicide.extension.getDip
-import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.common.BaseBindingFragment
 
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 

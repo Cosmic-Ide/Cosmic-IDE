@@ -30,9 +30,9 @@ import org.cosmicide.adapter.GitAdapter
 import org.cosmicide.adapter.StagingAdapter
 import org.cosmicide.databinding.FragmentGitBinding
 import org.cosmicide.databinding.GitCommandBinding
-import org.cosmicide.rewrite.common.Analytics
-import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Analytics
+import org.cosmicide.common.BaseBindingFragment
+import org.cosmicide.common.Prefs
 import org.cosmicide.util.ProjectHandler
 import java.io.OutputStream
 import java.io.OutputStreamWriter

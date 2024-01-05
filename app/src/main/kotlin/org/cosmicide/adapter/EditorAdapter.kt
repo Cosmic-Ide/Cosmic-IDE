@@ -33,7 +33,7 @@ import org.cosmicide.editor.language.KotlinLanguage
 import org.cosmicide.editor.language.TsLanguageJava
 import org.cosmicide.extension.setFont
 import org.cosmicide.model.FileViewModel
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import org.cosmicide.util.ProjectHandler
 import java.io.File
 import kotlin.properties.Delegates

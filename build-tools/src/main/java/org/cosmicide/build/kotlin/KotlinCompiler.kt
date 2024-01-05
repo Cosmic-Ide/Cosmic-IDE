@@ -12,7 +12,7 @@ import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSourceFiles
 import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation

@@ -20,7 +20,7 @@ import org.cosmicide.build.BuildReporter
 import org.cosmicide.compile.Compiler
 import org.cosmicide.databinding.FragmentCompileInfoBinding
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.util.ProjectHandler
 
 /**

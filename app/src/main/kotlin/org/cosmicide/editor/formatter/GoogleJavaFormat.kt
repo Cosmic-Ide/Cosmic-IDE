@@ -8,7 +8,7 @@
 package org.cosmicide.editor.formatter
 
 import com.google.googlejavaformat.java.Main
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import kotlin.io.path.absolutePathString

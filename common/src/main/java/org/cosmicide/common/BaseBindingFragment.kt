@@ -5,7 +5,7 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.rewrite.common
+package org.cosmicide.common
 
 import android.content.Intent
 import android.os.Bundle

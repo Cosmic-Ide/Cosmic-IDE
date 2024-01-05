@@ -28,7 +28,7 @@ import org.cosmicide.fragment.settings.FormatterSettings
 import org.cosmicide.fragment.settings.GeminiSettings
 import org.cosmicide.fragment.settings.GitSettings
 import org.cosmicide.fragment.settings.PluginSettingsProvider
-import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.common.BaseBindingFragment
 
 /**
  * Fragment for displaying settings screen.

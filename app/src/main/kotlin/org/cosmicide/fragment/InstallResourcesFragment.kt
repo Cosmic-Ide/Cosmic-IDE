@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.R
 import org.cosmicide.databinding.InstallResourcesFragmentBinding
-import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.Download
 import org.cosmicide.util.ResourceUtil

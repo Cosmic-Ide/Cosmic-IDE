@@ -25,7 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import java.io.File
 

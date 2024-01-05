@@ -39,9 +39,9 @@ import org.cosmicide.adapter.ProjectAdapter
 import org.cosmicide.databinding.FragmentProjectBinding
 import org.cosmicide.model.ProjectViewModel
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.Analytics
-import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Analytics
+import org.cosmicide.common.BaseBindingFragment
+import org.cosmicide.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.compressToZip
 import org.cosmicide.rewrite.util.unzip

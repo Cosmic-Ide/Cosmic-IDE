@@ -19,7 +19,7 @@ import de.Maxr1998.modernpreferences.helpers.pref
 import org.cosmicide.R
 import org.cosmicide.fragment.PluginListFragment
 import org.cosmicide.fragment.PluginsFragment
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.util.PreferenceKeys
 

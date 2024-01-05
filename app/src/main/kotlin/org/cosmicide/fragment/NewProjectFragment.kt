@@ -17,7 +17,7 @@ import org.cosmicide.databinding.FragmentNewProjectBinding
 import org.cosmicide.model.ProjectViewModel
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.io.IOException

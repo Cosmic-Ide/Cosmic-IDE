@@ -14,7 +14,7 @@ import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import org.cosmicide.R
 import org.cosmicide.editor.completion.CustomCompletionItemAdapter
 import org.cosmicide.editor.completion.CustomCompletionLayout
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 
 /**
  * Sets the font and enables highlighting of the current line for the code editor.

@@ -5,10 +5,11 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.rewrite.common
+package org.cosmicide.common
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import androidx.preference.PreferenceManager
 
 /**
@@ -27,7 +28,7 @@ object Prefs {
     }
 
     val isInitialized: Boolean
-        get() = ::prefs.isInitialized
+        get() = Prefs::prefs.isInitialized
 
     val appTheme: String
         get() = prefs.getString("app_theme", "auto") ?: "auto"
@@ -138,4 +139,25 @@ object Prefs {
         get() = runCatching {
             prefs.getString("font_size", "14")?.toFloatOrNull()?.coerceIn(1f, 32f) ?: 14f
         }.getOrElse { 16f }
+
+    val temperature: Float
+        get() = runCatching {
+            prefs.getString("temperature", "0.9")?.toFloatOrNull()?.coerceIn(0f, 1f) ?: 0.9f
+        }.getOrElse { 0.9f }
+
+    val topP: Float
+        get() = runCatching {
+            prefs.getString("top_p", "1.0")?.toFloatOrNull()?.coerceIn(0f, 1f) ?: 1.0f
+        }.getOrElse { 1.0f }
+
+    val topK: Int
+        get() = runCatching {
+            prefs.getString("top_k", "1")?.toIntOrNull()?.coerceIn(1, 60) ?: 1
+        }.getOrElse { 1 }
+
+    val maxTokens: Int
+        get() = prefs.getString("max_tokens", "1024")?.toIntOrNull()?.coerceIn(60, 2048) ?: 1024
+
+    val clientName: String
+        get() = prefs.getString("client_name", null)?.replace(" ", "") ?: Build.ID
 }

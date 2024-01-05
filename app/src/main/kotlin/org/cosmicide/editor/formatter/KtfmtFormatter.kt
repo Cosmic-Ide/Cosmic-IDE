@@ -8,7 +8,7 @@
 package org.cosmicide.editor.formatter
 
 import com.facebook.ktfmt.cli.Main
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import kotlin.io.path.createTempFile
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.readText

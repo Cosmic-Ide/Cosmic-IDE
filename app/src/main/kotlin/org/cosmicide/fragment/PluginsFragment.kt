@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken
 import org.cosmicide.adapter.PluginAdapter
 import org.cosmicide.databinding.FragmentPluginsBinding
 import org.cosmicide.databinding.PluginInfoBinding
-import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.rewrite.plugin.api.Plugin
 import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.FileUtil

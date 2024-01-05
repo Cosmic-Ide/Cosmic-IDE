@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import io.github.rosemoe.sora.widget.component.DefaultCompletionLayout
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.cosmicide.App
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 
 class CustomCompletionLayout : DefaultCompletionLayout() {
 

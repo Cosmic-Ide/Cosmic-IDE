@@ -51,8 +51,8 @@ import org.cosmicide.editor.language.KotlinLanguage
 import org.cosmicide.model.FileViewModel
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.BaseBindingFragment
+import org.cosmicide.common.Prefs
 import org.cosmicide.util.CommonUtils
 import org.cosmicide.util.FileFactoryProvider
 import org.cosmicide.util.FileIndex

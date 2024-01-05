@@ -13,4 +13,9 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.0.0-Beta2" apply false
     id("dev.rikka.tools.materialthemebuilder") version "1.3.3" apply false
 }
-val appcompatVersion by extra("1.7.0-alpha03")
+
+buildscript {
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.0")
+    }
+}

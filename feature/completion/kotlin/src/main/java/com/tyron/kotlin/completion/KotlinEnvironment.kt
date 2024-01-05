@@ -42,8 +42,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.Prefs
-import org.cosmicide.rewrite.editor.EditorCompletionItem
+import org.cosmicide.common.Prefs
+import org.cosmicide.editor.EditorCompletionItem
 import org.cosmicide.rewrite.util.FileUtil
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys

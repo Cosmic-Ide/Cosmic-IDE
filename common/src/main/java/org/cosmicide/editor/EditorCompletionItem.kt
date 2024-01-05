@@ -5,7 +5,7 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.rewrite.editor
+package org.cosmicide.editor
 
 import android.util.Log
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind

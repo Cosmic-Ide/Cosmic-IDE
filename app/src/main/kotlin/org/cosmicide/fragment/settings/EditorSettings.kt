@@ -15,7 +15,7 @@ import de.Maxr1998.modernpreferences.helpers.onCheckedChange
 import de.Maxr1998.modernpreferences.helpers.seekBar
 import de.Maxr1998.modernpreferences.helpers.switch
 import org.cosmicide.R
-import org.cosmicide.rewrite.common.Analytics
+import org.cosmicide.common.Analytics
 import org.cosmicide.util.PreferenceKeys
 
 class EditorSettings(private val activity: FragmentActivity) : SettingsProvider {

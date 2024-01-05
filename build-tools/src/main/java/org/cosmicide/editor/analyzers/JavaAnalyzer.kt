@@ -16,7 +16,7 @@ import io.github.rosemoe.sora.lang.diagnostic.Quickfix
 import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.nio.charset.Charset

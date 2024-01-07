@@ -19,6 +19,7 @@ import org.cosmicide.project.Project
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.zip.ZipFile
 import kotlin.io.path.nameWithoutExtension
 
 /**
@@ -41,6 +42,16 @@ class D8Task(val project: Project) : Task {
          * @param reporter The BuildReporter instance to report any errors to.
          */
         fun compileJar(jarFile: Path, outputDir: Path, reporter: BuildReporter? = null) {
+            val zipFile = ZipFile(jarFile.toFile())
+
+            // If the jar has no files with the .class extension, skip it
+            if (zipFile.use { zip ->
+                    zip.entries().asSequence()
+                        .none { it.name.startsWith("META-INF").not() && it.name.endsWith(".class") }
+                }) {
+                return
+            }
+
             try {
                 D8.run(
                     D8Command.builder()

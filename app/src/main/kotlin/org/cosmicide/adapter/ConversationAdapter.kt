@@ -48,7 +48,8 @@ class ConversationAdapter :
     }
 
     fun add(conversation: Conversation) {
-        conversations.last().finished = true
+        if (conversations.size != 0)
+            conversations.last().finished = true
         conversations += conversation
         notifyItemInserted(conversations.lastIndex)
     }

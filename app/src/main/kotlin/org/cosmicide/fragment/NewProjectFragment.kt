@@ -13,11 +13,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import com.google.android.material.snackbar.Snackbar
 import org.cosmicide.R
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.databinding.FragmentNewProjectBinding
 import org.cosmicide.model.ProjectViewModel
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
-import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.io.IOException
@@ -84,7 +84,8 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             val root = FileUtil.projectDir.resolve(projectName).apply { mkdirs() }
             val project = Project(root = root, language = language)
             val srcDir = project.srcDir.apply { mkdirs() }
-            val mainFile = srcDir.resolve("Main.${language.extension}")
+            val mainFile = srcDir.resolve(packageName.replace('.', '/')).apply { mkdirs() }
+                .resolve("Main.${language.extension}")
             mainFile.createMainFile(language, packageName)
             viewModel.loadProjects()
             navigateToEditorFragment(project)

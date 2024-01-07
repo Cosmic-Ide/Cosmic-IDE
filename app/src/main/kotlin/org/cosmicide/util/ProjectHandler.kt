@@ -21,6 +21,8 @@ class ProjectHandler {
         @JvmStatic
         private var project: Project? = null
 
+        var clazz: String? = null
+
         /**
          * Gets the current project.
          * @return the current project, or null if no project is set

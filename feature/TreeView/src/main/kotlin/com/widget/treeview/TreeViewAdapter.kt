@@ -160,15 +160,9 @@ class TreeViewAdapter(
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
 
-        val expandView: ImageView
-        val fileView: ImageView
-        val textView: TextView
-
-        init {
-            expandView = v.findViewById(R.id.expand)
-            fileView = v.findViewById(R.id.file_view)
-            textView = v.findViewById(R.id.text_view)
-        }
+        val expandView: ImageView = v.findViewById(R.id.expand)
+        val fileView: ImageView = v.findViewById(R.id.file_view)
+        val textView: TextView = v.findViewById(R.id.text_view)
     }
 }
 

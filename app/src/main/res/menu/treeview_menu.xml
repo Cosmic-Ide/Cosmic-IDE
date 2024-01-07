@@ -18,6 +18,11 @@
         android:title="@string/create_folder" />
 
     <item
+        android:id="@+id/execute"
+        android:title="Execute"
+        android:visible="false" />
+
+    <item
         android:id="@+id/create_file"
         android:title="@string/create_file" />
     <item

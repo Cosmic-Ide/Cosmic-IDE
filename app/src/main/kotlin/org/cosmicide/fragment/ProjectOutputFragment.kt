@@ -18,10 +18,10 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.R
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.databinding.FragmentCompileInfoBinding
 import org.cosmicide.editor.EditorInputStream
 import org.cosmicide.project.Project
-import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.util.ProjectHandler
 import java.io.OutputStream
@@ -98,8 +98,20 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             binding.infoEditor.setText("No classes found")
             return
         }
-        val index = classes.firstOrNull { it.endsWith("Main") }
+
+        println("Found ${classes.size} classes")
+        println("Available classes:")
+        classes.forEach {
+            println("  $it")
+        }
+        var index = classes.firstOrNull { it.endsWith("Main") }
             ?: classes.firstOrNull { it.endsWith("MainKt") } ?: classes.first()
+
+        if (ProjectHandler.clazz != null) {
+            println("Running ${ProjectHandler.clazz}")
+            index = ProjectHandler.clazz!!.substringBeforeLast('.')
+            ProjectHandler.clazz = null
+        }
 
         runClass(index)
     }

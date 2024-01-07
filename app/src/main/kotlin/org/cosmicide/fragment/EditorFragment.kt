@@ -39,6 +39,8 @@ import org.cosmicide.R
 import org.cosmicide.adapter.EditorAdapter
 import org.cosmicide.adapter.NavAdapter
 import org.cosmicide.build.dex.D8Task
+import org.cosmicide.common.BaseBindingFragment
+import org.cosmicide.common.Prefs
 import org.cosmicide.databinding.FragmentEditorBinding
 import org.cosmicide.databinding.NavigationElementsBinding
 import org.cosmicide.databinding.NewDependencyBinding
@@ -51,8 +53,6 @@ import org.cosmicide.editor.language.KotlinLanguage
 import org.cosmicide.model.FileViewModel
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
-import org.cosmicide.common.BaseBindingFragment
-import org.cosmicide.common.Prefs
 import org.cosmicide.util.CommonUtils
 import org.cosmicide.util.FileFactoryProvider
 import org.cosmicide.util.FileIndex
@@ -578,7 +578,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
     }
 
-    private fun navigateToCompileInfoFragment() {
+    private fun navigateToCompileInfoFragment(clazz: String? = null) {
+        ProjectHandler.clazz = clazz
         editorAdapter.saveAll()
         parentFragmentManager.commit {
             add(R.id.fragment_container, CompileInfoFragment())
@@ -633,6 +634,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             popup.menu.removeItem(R.id.create_kotlin_class)
             popup.menu.removeItem(R.id.create_java_class)
             popup.menu.removeItem(R.id.create_folder)
+
+            if (file.extension == "kt" || file.extension == "java") {
+                popup.menu.findItem(R.id.execute).isVisible = true
+            }
         }
 
         if (file.extension == "jar") {
@@ -646,6 +651,16 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
+                R.id.execute -> {
+                    editorAdapter.fragments.forEach { fragment -> fragment.save() }
+                    getCurrentFragment()?.hideWindows()
+                    navigateToCompileInfoFragment(
+                        file.absolutePath.replace(
+                            project.srcDir.absolutePath + "/",
+                            ""
+                        )
+                    )
+                }
                 R.id.create_kotlin_class -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     binding.textInputLayout.suffixText = ".kt"

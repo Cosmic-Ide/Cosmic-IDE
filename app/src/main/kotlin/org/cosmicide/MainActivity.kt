@@ -5,13 +5,6 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
- * This file is part of Cosmic IDE.
- * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package org.cosmicide
 
 import android.content.Context
@@ -28,15 +21,15 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
-import org.cosmicide.util.awaitBinderReceived
-import org.cosmicide.util.isShizukuInstalled
 import kotlinx.coroutines.launch
+import org.cosmicide.common.Prefs
 import org.cosmicide.databinding.ActivityMainBinding
 import org.cosmicide.fragment.InstallResourcesFragment
 import org.cosmicide.fragment.ProjectFragment
-import org.cosmicide.common.Prefs
 import org.cosmicide.util.CommonUtils
 import org.cosmicide.util.ResourceUtil
+import org.cosmicide.util.awaitBinderReceived
+import org.cosmicide.util.isShizukuInstalled
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
 import rikka.shizuku.ShizukuProvider
@@ -54,8 +47,10 @@ class MainActivity : AppCompatActivity() {
         attrs: AttributeSet
     ): View? {
         val accent = Prefs.appAccent
+
         themeInt = CommonUtils.getAccent(accent)
         setTheme(themeInt)
+
         if (themeInt == R.style.Theme_CosmicIde)
             DynamicColors.applyToActivityIfAvailable(this)
 
@@ -78,13 +73,10 @@ class MainActivity : AppCompatActivity() {
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 leftMargin = systemBarInsets.left
                 rightMargin = systemBarInsets.right
-                bottomMargin = if (imeInset.bottom > 0) imeInset.bottom else 0
+                topMargin = systemBarInsets.top
+                bottomMargin = if (imeInset.bottom > 0) imeInset.bottom else systemBarInsets.bottom
             }
 
-            binding.fragmentContainer.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = systemBarInsets.top
-                bottomMargin = systemBarInsets.bottom
-            }
 
             WindowInsetsCompat.CONSUMED
         }

@@ -25,6 +25,7 @@
             <option value="$PROJECT_DIR$/feature/formatter/google-java-format" />
             <option value="$PROJECT_DIR$/feature/formatter/ktfmt" />
             <option value="$PROJECT_DIR$/feature/java-completion" />
+            <option value="$PROJECT_DIR$/feature/jvm-decompiler" />
             <option value="$PROJECT_DIR$/feature/project" />
             <option value="$PROJECT_DIR$/jgit" />
             <option value="$PROJECT_DIR$/kotlinc" />
@@ -34,5 +35,6 @@
         <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
+    <option name="offlineMode" value="true" />
   </component>
 </project>

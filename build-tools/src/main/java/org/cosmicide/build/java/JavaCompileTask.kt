@@ -10,9 +10,10 @@ package org.cosmicide.build.java
 import com.sun.tools.javac.api.JavacTool
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
-import org.cosmicide.project.Project
+import org.cosmicide.build.util.getSourceFiles
+import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.common.Prefs
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.project.Project
 import java.io.File
 import java.io.Writer
 import java.nio.file.Files
@@ -24,7 +25,6 @@ import javax.tools.SimpleJavaFileObject
 import javax.tools.StandardLocation
 
 class JavaCompileTask(val project: Project) : Task {
-
     val diagnostics = DiagnosticCollector<JavaFileObject>()
     val tool = JavacTool.create()
     val fileManager = tool.getStandardFileManager(diagnostics, null, null)
@@ -39,12 +39,14 @@ class JavaCompileTask(val project: Project) : Task {
             reporter.reportWarning(e.stackTraceToString())
         }
 
-        val javaFiles = getSourceFiles(project.srcDir)
+        val javaFiles = project.srcDir.getSourceFiles("java")
 
         if (javaFiles.isEmpty()) {
             reporter.reportInfo("No java files found. Skipping compilation.")
             return
         }
+
+        reporter.reportInfo("Compilingg")
 
         val size = javaFiles.size
         reporter.reportInfo("Compiling $size java ${if (size == 1) "file" else "files"}...")
@@ -115,22 +117,12 @@ class JavaCompileTask(val project: Project) : Task {
         }
     }
 
-    fun getSourceFiles(directory: File): List<File> {
-        return directory.listFiles()?.filter {
-            it.isFile && it.extension == "java"
-        } ?: emptyList()
-    }
-
     fun getClasspath(project: Project): List<File> {
         val classpath = mutableListOf(File(project.binDir, "classes"))
         val libDir = project.libDir
         if (libDir.exists() && libDir.isDirectory) {
-            classpath += libDir.listFiles()?.toList() ?: emptyList()
+            classpath += libDir.walk().filter { it.extension == "jar" }.toList()
         }
         return classpath
-    }
-
-    fun getSystemClasspath(): List<File> {
-        return FileUtil.classpathDir.listFiles()?.toList() ?: emptyList()
     }
 }

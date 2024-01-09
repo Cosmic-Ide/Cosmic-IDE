@@ -57,6 +57,7 @@ object PreferenceKeys {
     const val PLUGIN_SETTINGS = "plugin_settings"
 
     // Gemini Pro
+    const val GEMINI_API_KEY = "gemini_api_key"
     const val TEMPERATURE = "temperature"
     const val TOP_P = "top_p"
     const val TOP_K = "top_k"

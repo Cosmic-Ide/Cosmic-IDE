@@ -41,7 +41,6 @@ object ChatProvider {
 
     private var chat = generativeModel.startChat()
 
-    @JvmStatic
     fun regenerateModel(
         temp: Float = Prefs.temperature,
         top_p: Float = Prefs.topP,
@@ -54,7 +53,7 @@ object ChatProvider {
         )
 
         GenerativeModel(
-            apiKey = BuildConfig.GEMINI_API_KEY,
+            apiKey = Prefs.geminiApiKey.ifEmpty { BuildConfig.GEMINI_API_KEY },
             modelName = "gemini-pro",
             safetySettings = safetySettings,
             generationConfig = generationConfig {
@@ -69,7 +68,6 @@ object ChatProvider {
         }
     }
 
-    @JvmStatic
     fun generate(conversation: List<Map<String, String>>): Flow<GenerateContentResponse> {
         return chat.sendMessageStream(conversation.last()["text"]!!)
 

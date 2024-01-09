@@ -11,8 +11,8 @@ import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSourceFiles
 import org.cosmicide.build.util.getSystemClasspath
-import org.cosmicide.project.Project
 import org.cosmicide.common.Prefs
+import org.cosmicide.project.Project
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
@@ -35,7 +35,7 @@ class KotlinCompiler(val project: Project) : Task {
     }
 
     override fun execute(reporter: BuildReporter) {
-        val sourceFiles = getSourceFiles(project.srcDir, "kt")
+        val sourceFiles = project.srcDir.getSourceFiles("kt")
         if (sourceFiles.isEmpty()) {
             reporter.reportInfo("No Kotlin files are present. Skipping Kotlin compilation.")
             return

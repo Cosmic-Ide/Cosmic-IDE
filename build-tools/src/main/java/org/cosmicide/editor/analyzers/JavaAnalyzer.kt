@@ -14,9 +14,9 @@ import io.github.rosemoe.sora.lang.diagnostic.DiagnosticDetail
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
 import io.github.rosemoe.sora.lang.diagnostic.Quickfix
 import io.github.rosemoe.sora.widget.CodeEditor
+import org.cosmicide.common.Prefs
 import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.project.Project
-import org.cosmicide.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.nio.charset.Charset
@@ -110,43 +110,48 @@ class JavaAnalyzer(
     fun getDiagnostics(): List<DiagnosticRegion> {
         val diagnostic = diagnostics.diagnostics
         val problems = mutableListOf<DiagnosticRegion>()
-        for (it in diagnostic) {
-            if (it.source == null) continue
-            val severity =
-                if (it.kind == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
+        try {
+            for (it in diagnostic) {
+                if (it.source == null) continue
+                val severity =
+                    if (it.kind == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
 
-            val message = it.getMessage(Locale.getDefault())
-            val quickFixes = mutableListOf<Quickfix>()
-            if (it.code == "compiler.err.cant.resolve.location") {
-                val symbol = it.source.getCharContent(true)
-                    .substring(it.startPosition.toInt(), it.endPosition.toInt())
-                Log.d("JavaAnalyzer", symbol)
-                CompletionProvider.symbolCacher.filterClassNames(symbol).forEach { name ->
-                    quickFixes.add(Quickfix("Import ${name.value}", 0L) {
-                        val lines = editor.text.lines()
-                        var firstImportLine = lines.indexOfFirst { it.startsWith("import ") }
-                        if (firstImportLine == -1) {
-                            firstImportLine = lines.indexOfFirst { it.startsWith("package ") } + 1
-                        }
-                        Log.d("JavaAnalyzer", "index: $firstImportLine")
-                        editor.text.insert(
-                            firstImportLine,
-                            0,
-                            "import ${name.key}.${name.value};\n"
-                        )
-                    })
+                val message = it.getMessage(Locale.getDefault())
+                val quickFixes = mutableListOf<Quickfix>()
+                if (it.code == "compiler.err.cant.resolve.location") {
+                    val symbol = it.source.getCharContent(true)
+                        .substring(it.startPosition.toInt(), it.endPosition.toInt())
+                    Log.d("JavaAnalyzer", symbol)
+                    CompletionProvider.symbolCacher.filterClassNames(symbol).forEach { name ->
+                        quickFixes.add(Quickfix("Import ${name.value}", 0L) {
+                            val lines = editor.text.lines()
+                            var firstImportLine = lines.indexOfFirst { it.startsWith("import ") }
+                            if (firstImportLine == -1) {
+                                firstImportLine =
+                                    lines.indexOfFirst { it.startsWith("package ") } + 1
+                            }
+                            Log.d("JavaAnalyzer", "index: $firstImportLine")
+                            editor.text.insert(
+                                firstImportLine,
+                                0,
+                                "import ${name.key}.${name.value};\n"
+                            )
+                        })
+                    }
                 }
-            }
 
-            problems.add(
-                DiagnosticRegion(
-                    it.startPosition.toInt(),
-                    it.endPosition.toInt(),
-                    severity,
-                    0,
-                    DiagnosticDetail(message, quickfixes = quickFixes),
+                problems.add(
+                    DiagnosticRegion(
+                        it.startPosition.toInt(),
+                        it.endPosition.toInt(),
+                        severity,
+                        0,
+                        DiagnosticDetail(message, quickfixes = quickFixes),
+                    )
                 )
-            )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         return problems
     }

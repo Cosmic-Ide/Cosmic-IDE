@@ -17,11 +17,10 @@ import java.io.File
  * @param extension The file extension to filter by.
  * @return A list of files with the given extension within the specified directory and its subdirectories.
  */
-fun getSourceFiles(directory: File, extension: String): List<File> {
-    return directory.listFiles()
-        ?.flatMap { if (it.isDirectory) getSourceFiles(it, extension) else listOf(it) }
-        ?.filter { it.extension == extension }
-        ?: emptyList()
+fun File.getSourceFiles(extension: String): List<File> {
+    return walkTopDown()
+        .filter { it.isFile && it.extension == extension }
+        .toList()
 }
 
 /**

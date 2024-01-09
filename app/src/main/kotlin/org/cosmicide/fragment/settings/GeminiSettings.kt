@@ -10,6 +10,7 @@ package org.cosmicide.fragment.settings
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
+import de.Maxr1998.modernpreferences.helpers.editText
 import de.Maxr1998.modernpreferences.helpers.seekBar
 import de.Maxr1998.modernpreferences.helpers.singleChoice
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
@@ -33,6 +34,13 @@ class GeminiSettings(private val activity: FragmentActivity) : SettingsProvider 
                 R.drawable.outline_forum_24,
                 activity.theme
             )
+
+            editText(PreferenceKeys.GEMINI_API_KEY) {
+                title = "Gemini API Key"
+                summary =
+                    "The API key to connect to the Gemini API. You can get one at https://makersuite.google.com/app/apikey"
+            }
+
             singleChoice(PreferenceKeys.TEMPERATURE, keys) {
                 title = "temperature"
                 summary =

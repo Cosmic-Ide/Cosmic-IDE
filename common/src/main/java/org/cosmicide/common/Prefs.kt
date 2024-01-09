@@ -140,6 +140,9 @@ object Prefs {
             prefs.getString("font_size", "14")?.toFloatOrNull()?.coerceIn(1f, 32f) ?: 14f
         }.getOrElse { 16f }
 
+    val geminiApiKey: String
+        get() = prefs.getString("gemini_api_key", "") ?: ""
+
     val temperature: Float
         get() = runCatching {
             prefs.getString("temperature", "0.9")?.toFloatOrNull()?.coerceIn(0f, 1f) ?: 0.9f

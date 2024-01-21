@@ -166,30 +166,30 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.android.tools:r8:8.2.33")
+    implementation("com.android.tools:r8:8.2.42")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
 
     //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:868996895a")
-    implementation("com.google.android.material:material:1.12.0-alpha02")
+    implementation("com.google.android.material:material:1.12.0-alpha03")
     implementation("com.google.code.gson:gson:2.10.1")
 
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
 
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
-    implementation("androidx.core:core-ktx:1.13.0-alpha02")
+    implementation("androidx.core:core-ktx:1.13.0-alpha03")
     implementation("androidx.core:core-splashscreen:1.1.0-alpha02")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
-    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha07")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0-rc02")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0-rc02")
+    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha08")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
     implementation("androidx.activity:activity-ktx:1.9.0-alpha01")
     implementation("androidx.startup:startup-runtime:1.2.0-alpha02")
 
-    val editorVersion = "0.22.1"
+    val editorVersion = "0.22.2-3e1c25a-SNAPSHOT"
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     //noinspection GradleDependency
@@ -198,8 +198,8 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion") {
         isTransitive = false
     }
-    implementation("com.itsaky.androidide:android-tree-sitter:3.4.0")
-    implementation("com.itsaky.androidide:tree-sitter-java:3.4.0")
+    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.0.0")
+    implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.0.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
@@ -219,7 +219,7 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
 
-    implementation("com.google.ai.client.generativeai:generativeai:0.1.1")
+    implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
 
 
     val shizukuVersion = "13.1.5"

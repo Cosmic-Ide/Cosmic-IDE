@@ -27,10 +27,10 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.cosmicide.completion.java.parser.CompletionProvider
-import org.cosmicide.project.Project
 import org.cosmicide.common.Prefs
+import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.editor.EditorCompletionItem
+import org.cosmicide.project.Project
 import java.io.File
 import java.net.URI
 import java.util.logging.Level
@@ -45,7 +45,7 @@ class TsLanguageJava(
 
     private lateinit var completionProvider: CompletionProvider
 
-    private val completions by lazy { JavaCompletions() }
+    private lateinit var completions: JavaCompletions
     private val path = file.toPath()
 
     init {
@@ -54,16 +54,18 @@ class TsLanguageJava(
                 completionProvider = CompletionProvider()
             }
         } else {
-            val options = JavaCompletionOptionsImpl(
-                "${project.binDir.absolutePath}/autocomplete.log",
-                Level.ALL,
-                emptyList(),
-                emptyList()
-            )
-            completions.initialize(URI("file://" + project.root.absolutePath), options)
-            completions.openFile(path, editor.text.toString())
+            completions = JavaCompletions()
+            CoroutineScope(Dispatchers.IO).launch {
+                val options = JavaCompletionOptionsImpl(
+                    "${project.binDir.absolutePath}/autocomplete.log",
+                    Level.ALL,
+                    emptyList(),
+                    emptyList()
+                )
+                completions.initialize(URI("file://" + project.root.absolutePath), options)
+                completions.openFile(path, editor.text.toString())
+            }
         }
-
     }
 
 
@@ -76,9 +78,14 @@ class TsLanguageJava(
         super.requireAutoComplete(content, position, publisher, extraArguments)
 
         try {
+            if (::completions.isInitialized && completions.mInitialized.not()) {
+                return
+            }
+
             val text = editor.text.toString()
-            if (::completionProvider.isInitialized) {
-                val items = completionProvider.complete(text, "Main.java", position.index)
+
+            if (Prefs.experimentalJavaCompletion) {
+                val items = completionProvider.complete(text, file.name, position.index)
                 publisher.setComparator(Comparator<CompletionItem> { o1, o2 ->
                     // if the first letter of the label is lowercase, then its most likely a module/package
                     if (o1.label[0].isLowerCase() && o2.label[0].isUpperCase()) {
@@ -127,13 +134,21 @@ class TsLanguageJava(
         }
     }
 
+    override fun destroy() {
+        super.destroy()
+
+        if (Prefs.experimentalJavaCompletion.not()) {
+            completions.shutdown()
+        }
+    }
+
 
     override val analyzer: TsAnalyzeManager
         get() = super.analyzer
 
     companion object {
         private val TS_LANGUAGE_JAVA = TSLanguageJava.getInstance()
-        private val parser: TSParser = TSParser()
+        private val parser: TSParser = TSParser.create()
 
         init {
             parser.language = TS_LANGUAGE_JAVA

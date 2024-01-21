@@ -48,7 +48,7 @@ public class JavaCompletions {
 
     private static final String notInit = "Not yet initialized.";
 
-    private boolean mInitialized;
+    public boolean mInitialized;
     private FileManager mFileManager;
     private Project mProject;
 

@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.rosemoe.sora.event.ContentChangeEvent
@@ -23,8 +22,6 @@ import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.subscribeEvent
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.cosmicide.build.Javap
 import org.cosmicide.common.Prefs
 import org.cosmicide.databinding.EditorFragmentBinding
@@ -141,9 +138,7 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
             editor.setFont()
             setColorScheme()
             editor.isDisableSoftKbdIfHardKbdAvailable = true
-            lifecycleScope.launch(Dispatchers.IO) {
-                setEditorLanguage()
-            }
+            setEditorLanguage()
         }
 
         private fun setupSymbols() {

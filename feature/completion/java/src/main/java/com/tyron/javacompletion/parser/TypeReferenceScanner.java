@@ -69,7 +69,11 @@ public class TypeReferenceScanner extends TreeScanner<Void, Void> {
         scan(node, null);
         if (names.isEmpty()) {
             // Malformed input, no type can be referenced
-            logger.warning(new Throwable(), "Empty type name with %s", node);
+            if (node == null) {
+                logger.warning("Empty type name with null node");
+            } else {
+                logger.warning("Empty type name with %s", node);
+            }
             return TypeReference.EMPTY_TYPE;
         }
         return TypeReference.builder()

@@ -76,13 +76,11 @@ class IdeEditor @JvmOverloads constructor(
     }
 
     private fun updateTextSize() {
-        val textSize = Prefs.editorFontSize
-        setTextSize(textSize)
+        setTextSize(Prefs.editorFontSize)
     }
 
     private fun updateTabSize() {
-        val tabSize = Prefs.tabSize
-        tabWidth = tabSize
+        tabWidth = Prefs.tabSize
     }
 
     private fun updateNonPrintablePaintingFlags() {

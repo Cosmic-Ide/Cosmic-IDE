@@ -36,6 +36,10 @@ class KotlinFile(val name: String, val kotlinFile: KtFile) {
     fun elementAt(line: Int, character: Int): PsiElement? =
         kotlinFile.findElementAt(offsetFor(line, character))?.let { expressionFor(it) }
 
+
+    fun elementAt(offset: Int): PsiElement? =
+        kotlinFile.findElementAt(offset)?.let { expressionFor(it) }
+
     fun insert(content: String, atLine: Int, atCharacter: Int): KotlinFile {
         val caretPositionOffset = offsetFor(atLine, atCharacter)
         return if (caretPositionOffset != 0) {

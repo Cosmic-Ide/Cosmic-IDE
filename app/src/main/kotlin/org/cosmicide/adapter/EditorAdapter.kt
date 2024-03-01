@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.rosemoe.sora.event.ContentChangeEvent
+import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.event.SubscriptionReceipt
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -139,6 +140,19 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
             setColorScheme()
             editor.isDisableSoftKbdIfHardKbdAvailable = true
             setEditorLanguage()
+            /*
+                        editor.subscribeEvent(SelectionChangeEvent::class.java) { event, unsubscribe ->
+                            val lang = editor.editorLanguage
+                            if (event.cause == SelectionChangeEvent.CAUSE_LONG_PRESS) {
+                                if (lang is KotlinLanguage) {
+                                    val file = lang.kotlinEnvironment.kotlinFiles[file.absolutePath]!!
+
+                                    val element = file.elementAt(event.left.index)!!
+
+                                }
+                            }
+                        }
+             */
         }
 
         private fun setupSymbols() {

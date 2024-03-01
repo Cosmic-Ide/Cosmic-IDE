@@ -43,7 +43,7 @@ object PluginLoader {
             return
         }
         runCatching {
-            loader.loadDex(pluginFile)
+            loader.loadDex(pluginFile.makeReadOnly())
             val className = plugin.name.lowercase() + ".Main"
             val clazz = loader.loader.loadClass(className)
             val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
@@ -82,5 +82,21 @@ object PluginLoader {
         }.onFailure {
             Log.e("Plugin", "Failed to load plugin ${plugin.name}", it)
         }
+    }
+
+    fun File.makeReadOnly(): File {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return this
+        }
+        val target = HookManager.context.get()!!.cacheDir.resolve(name)
+        if (target.exists()) {
+            target.delete()
+        }
+        target.createNewFile()
+        inputStream().buffered().use {
+            target.writeBytes(it.readBytes())
+        }
+        target.setReadOnly() // This is required for Android 14+
+        return target
     }
 }

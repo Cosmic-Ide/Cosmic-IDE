@@ -45,5 +45,5 @@ android {
 
 dependencies {
     implementation("io.github.vvb2060.ndk:dobby:1.2")
-    implementation("org.lsposed.lsplant:lsplant:6.1")
+    implementation("org.lsposed.lsplant:lsplant:6.3")
 }

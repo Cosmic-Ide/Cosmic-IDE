@@ -78,7 +78,7 @@ android {
     }
 
     configurations.all {
-        resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.11.0")
+        resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.12.0")
     }
 
     packagingOptions.resources.excludes.addAll(
@@ -162,7 +162,7 @@ materialThemeBuilder {
 }
 
 configurations.all {
-    resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.11.0")
+    resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
 dependencies {
@@ -228,7 +228,7 @@ dependencies {
     // Add this line if you want to support Shizuku
     implementation("dev.rikka.shizuku:provider:$shizukuVersion")
 
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.12")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation(projects.buildTools)
     implementation(projects.common)

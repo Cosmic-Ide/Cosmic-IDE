@@ -10,7 +10,7 @@ plugins {
     id("com.android.application") version "8.4.0-alpha03" apply false
     id("com.android.library") version "8.4.0-alpha03" apply false
     id("org.jetbrains.kotlin.android") version "2.0.0-Beta2" apply false
-    id("org.jetbrains.kotlin.jvm") version "2.0.0-Beta2" apply false
+    id("org.jetbrains.kotlin.jvm") version "2.0.0-Beta4" apply false
     id("dev.rikka.tools.materialthemebuilder") version "1.3.3" apply false
 }
 

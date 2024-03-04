@@ -48,7 +48,7 @@ android {
 dependencies {
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("io.github.Rosemoe.sora-editor:editor:0.22.1")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.23.4-3895689-SNAPSHOT")
     implementation("com.google.guava:guava:33.0.0-jre")
 
     implementation(projects.feature.project)

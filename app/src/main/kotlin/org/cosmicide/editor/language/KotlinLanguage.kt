@@ -42,7 +42,7 @@ class KotlinLanguage(
     private val file: File
 ) : IdeLanguage(
     grammarRegistry.findGrammar("source.kotlin"),
-    grammarRegistry.findLanguageConfiguration("source.kotlin"),
+    grammarRegistry.findLanguageConfiguration("source.kotlin")!,
     grammarRegistry,
     themeRegistry
 ) {

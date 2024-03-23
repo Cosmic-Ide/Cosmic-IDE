@@ -167,6 +167,7 @@ configurations.all {
 
 dependencies {
     implementation("com.android.tools:r8:8.3.37")
+    implementation("com.android.tools.smali:smali-dexlib2:3.0.5")
 
     //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:868996895a")

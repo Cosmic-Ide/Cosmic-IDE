@@ -166,27 +166,26 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.android.tools:r8:8.2.42")
-    implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
+    implementation("com.android.tools:r8:8.3.37")
 
     //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:868996895a")
-    implementation("com.google.android.material:material:1.12.0-alpha03")
+    implementation("com.google.android.material:material:1.12.0-beta01")
     implementation("com.google.code.gson:gson:2.10.1")
 
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
 
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
-    implementation("androidx.core:core-ktx:1.13.0-alpha03")
+    implementation("androidx.core:core-ktx:1.13.0-beta01")
     implementation("androidx.core:core-splashscreen:1.1.0-alpha02")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
-    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha08")
+    implementation("androidx.fragment:fragment-ktx:1.7.0-beta01")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
-    implementation("androidx.activity:activity-ktx:1.9.0-alpha01")
+    implementation("androidx.activity:activity-ktx:1.9.0-beta01")
     implementation("androidx.startup:startup-runtime:1.2.0-alpha02")
 
     val editorVersion = "0.23.4-3895689-SNAPSHOT"
@@ -219,7 +218,7 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
 
-    implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
+    implementation("com.google.ai.client.generativeai:generativeai:0.2.2")
 
 
     val shizukuVersion = "13.1.5"
@@ -244,7 +243,7 @@ dependencies {
     implementation(projects.feature.treeView)
 
     // jgit uses some methods like `transferTo` are only available from Android 13 onwards
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     testImplementation("junit:junit:4.13.2")
 }

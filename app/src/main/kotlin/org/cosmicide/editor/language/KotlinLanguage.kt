@@ -24,8 +24,8 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.cosmicide.project.Project
 import org.cosmicide.common.Prefs
+import org.cosmicide.project.Project
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import java.io.File
 
@@ -42,7 +42,6 @@ class KotlinLanguage(
     private val file: File
 ) : IdeLanguage(
     grammarRegistry.findGrammar("source.kotlin"),
-    grammarRegistry.findLanguageConfiguration("source.kotlin")!!,
     grammarRegistry,
     themeRegistry
 ) {

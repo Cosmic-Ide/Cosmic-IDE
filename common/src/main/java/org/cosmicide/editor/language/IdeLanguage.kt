@@ -15,26 +15,23 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch
 import org.cosmicide.common.Prefs
 import org.cosmicide.editor.language.IdeFormatter
 import org.eclipse.tm4e.core.grammar.IGrammar
-import org.eclipse.tm4e.languageconfiguration.model.LanguageConfiguration
 
 /**
  * A language implementation for the IDE.
  *
  * @param grammar The grammar for the language.
- * @param langConfiguration The language configuration.
  * @param grammarRegistry The grammar registry.
  * @param themeRegistry The theme registry.
  * @param createIdentifiers Whether to create identifiers or not.
  */
 open class IdeLanguage(
     private val grammar: IGrammar?,
-    private val langConfiguration: LanguageConfiguration?,
     private val grammarRegistry: GrammarRegistry,
     private val themeRegistry: ThemeRegistry,
     private val createIdentifiers: Boolean = false
 ) : TextMateLanguage(
     grammar,
-    langConfiguration,
+    grammarRegistry.findLanguageConfiguration(grammar?.scopeName),
     grammarRegistry,
     themeRegistry,
     createIdentifiers
@@ -42,7 +39,7 @@ open class IdeLanguage(
 
     private val _symbolPairs: SymbolPairMatch by lazy {
         val symbolPair = SymbolPairMatch()
-        langConfiguration?.autoClosingPairs?.forEach { autoClosingPair ->
+        languageConfiguration.autoClosingPairs!!.forEach { autoClosingPair ->
             symbolPair.putPair(
                 autoClosingPair.open,
                 SymbolPairMatch.SymbolPair(

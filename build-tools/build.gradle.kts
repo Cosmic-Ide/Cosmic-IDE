@@ -63,5 +63,5 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:editor:0.23.4-3895689-SNAPSHOT")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("com.google.guava:guava:33.0.0-jre")
-    implementation("com.android.tools:r8:8.2.33")
+    implementation("com.android.tools:r8:8.3.37")
 }

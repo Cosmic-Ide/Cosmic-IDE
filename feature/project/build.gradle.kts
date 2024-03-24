@@ -23,5 +23,5 @@ kotlin {
 
 dependencies {
     implementation("com.squareup:javapoet:1.13.0")
-    implementation("com.squareup:kotlinpoet:1.15.3")
+    implementation("com.squareup:kotlinpoet:1.16.0")
 }

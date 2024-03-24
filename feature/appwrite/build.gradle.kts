@@ -35,8 +35,8 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1-Beta")
 
     implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.12"))
     implementation("com.squareup.okhttp3:okhttp")
@@ -44,9 +44,9 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor")
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0-rc02")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0-alpha03")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
-    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha07")
-    implementation("androidx.activity:activity-ktx:1.9.0-alpha01")
-    implementation("androidx.browser:browser:1.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.7.0-beta01")
+    implementation("androidx.activity:activity-ktx:1.9.0-beta01")
+    implementation("androidx.browser:browser:1.8.0")
 }

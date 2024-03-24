@@ -11,7 +11,7 @@ plugins {
     id("com.android.library") version "8.4.0-alpha03" apply false
     id("org.jetbrains.kotlin.android") version "2.0.0-Beta5" apply false
     id("org.jetbrains.kotlin.jvm") version "2.0.0-Beta5" apply false
-    id("dev.rikka.tools.materialthemebuilder") version "1.3.3" apply false
+    id("dev.rikka.tools.materialthemebuilder") version "1.4.1" apply false
 }
 
 buildscript {

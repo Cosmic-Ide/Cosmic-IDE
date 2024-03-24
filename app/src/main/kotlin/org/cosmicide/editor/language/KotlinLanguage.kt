@@ -79,7 +79,6 @@ class KotlinLanguage(
                     it.value.kotlinFile
                 }, ktFile)
 
-
                 editor.post {
                     editor.diagnostics = container
                 }
@@ -119,6 +118,7 @@ class KotlinLanguage(
                 Log.e(TAG, "Failed to fetch code completions", e)
             }
         }
+        kotlinEnvironment.analysis = null
     }
 
     companion object {

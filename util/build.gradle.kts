@@ -36,5 +36,5 @@ android {
 dependencies {
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
     implementation(projects.feature.aliuhook)
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-ktx:1.13.0-beta01")
 }

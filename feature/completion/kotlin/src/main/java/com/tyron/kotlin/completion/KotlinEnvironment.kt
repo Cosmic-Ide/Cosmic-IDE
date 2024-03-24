@@ -119,7 +119,7 @@ data class KotlinEnvironment(
         IdeDescriptorRenderersScripting.SOURCE_CODE.withOptions {
             classifierNamePolicy = ClassifierNamePolicy.SHORT
             typeNormalizer = IdeDescriptorRenderersScripting.APPROXIMATE_FLEXIBLE_TYPES
-            parameterNameRenderingPolicy = ParameterNameRenderingPolicy.NONE
+            parameterNameRenderingPolicy = ParameterNameRenderingPolicy.ALL
             typeNormalizer = { if (it.isFlexible()) it.asFlexibleType().upperBound else it }
         }
 

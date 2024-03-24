@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 /*
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -38,5 +36,5 @@ android {
 dependencies {
     implementation(projects.feature.formatter.googleJavaFormat)
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
-    implementation("com.google.guava:guava:33.0.0-jre")
+    implementation("com.google.guava:guava:33.1.0-android")
 }

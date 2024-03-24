@@ -34,9 +34,9 @@ dependencies {
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
     implementation("com.google.auto.value:auto-value-annotations:1.10.4")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("androidx.annotation:annotation:1.7.1")
+    implementation("androidx.annotation:annotation:1.8.0-alpha02")
     implementation("com.google.code.gson:gson:2.10.1")
-    api("com.google.guava:guava:33.0.0-jre")
+    api("com.google.guava:guava:33.1.0-android")
 
     implementation(projects.util)
 }

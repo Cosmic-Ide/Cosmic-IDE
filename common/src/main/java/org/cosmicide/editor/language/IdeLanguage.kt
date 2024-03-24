@@ -11,11 +11,10 @@ import io.github.rosemoe.sora.lang.format.Formatter
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.Content
-import io.github.rosemoe.sora.widget.SymbolPairMatch
 import org.cosmicide.common.Prefs
 import org.cosmicide.editor.language.IdeFormatter
 import org.eclipse.tm4e.core.grammar.IGrammar
-import org.eclipse.tm4e.languageconfiguration.model.LanguageConfiguration
+import org.eclipse.tm4e.languageconfiguration.internal.model.LanguageConfiguration
 
 /**
  * A language implementation for the IDE.
@@ -40,21 +39,6 @@ open class IdeLanguage(
     createIdentifiers
 ) {
 
-    private val _symbolPairs: SymbolPairMatch by lazy {
-        val symbolPair = SymbolPairMatch()
-        langConfiguration?.autoClosingPairs?.forEach { autoClosingPair ->
-            symbolPair.putPair(
-                autoClosingPair.open,
-                SymbolPairMatch.SymbolPair(
-                    autoClosingPair.open,
-                    autoClosingPair.close,
-                    TextMateSymbolPairMatch.SymbolPairEx(autoClosingPair)
-                )
-            )
-        }
-        symbolPair
-    }
-
     private val _formatter: IdeFormatter by lazy {
         IdeFormatter(this)
     }
@@ -69,13 +53,6 @@ open class IdeLanguage(
 
     override fun useTab(): Boolean {
         return Prefs.useSpaces.not()
-    }
-
-    override fun getSymbolPairs(): SymbolPairMatch {
-        if (Prefs.bracketPairAutocomplete) {
-            return _symbolPairs
-        }
-        return SymbolPairMatch()
     }
 
     fun formatCode(text: Content): String {

@@ -228,43 +228,50 @@ class App : Application() {
     private fun setupHooks() {
         // Some libraries may call System.exit() to exit the app, which crashes the app.
         // Currently, only JGit does this.
-        HookManager.registerHook(object : Hook(
-            method = "exit",
-            argTypes = arrayOf(Int::class.java),
-            type = System::class.java
-        ) {
-            override fun before(param: XC_MethodHook.MethodHookParam) {
-                System.err.println("System.exit() called!")
-                // Setting result to null bypasses the original method call.
-                param.result = null
-            }
-        })
-
-        // Fix crash in ViewPager2
-        HookManager.registerHook(object : Hook(
-            method = "onLayoutChildren",
-            argTypes = arrayOf(RecyclerView.Recycler::class.java, RecyclerView.State::class.java),
-            type = LinearLayoutManager::class.java
-        ) {
-            override fun before(param: XC_MethodHook.MethodHookParam) {
-                try {
-                    // Call the original method.
-                    HookManager.invokeOriginal(
-                        param.method,
-                        param.thisObject,
-                        param.args[0],
-                        param.args[1]
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
+        try {
+            HookManager.registerHook(object : Hook(
+                method = "exit",
+                argTypes = arrayOf(Int::class.java),
+                type = System::class.java
+            ) {
+                override fun before(param: XC_MethodHook.MethodHookParam) {
+                    System.err.println("System.exit() called!")
+                    // Setting result to null bypasses the original method call.
+                    param.result = null
                 }
-                // Bypass method call as we have already called the original method.
-                param.result = null
-            }
-        })
+            })
 
-        injectPrint("fine")
-        injectPrint("info")
+            // Fix crash in ViewPager2
+            HookManager.registerHook(object : Hook(
+                method = "onLayoutChildren",
+                argTypes = arrayOf(
+                    RecyclerView.Recycler::class.java,
+                    RecyclerView.State::class.java
+                ),
+                type = LinearLayoutManager::class.java
+            ) {
+                override fun before(param: XC_MethodHook.MethodHookParam) {
+                    try {
+                        // Call the original method.
+                        HookManager.invokeOriginal(
+                            param.method,
+                            param.thisObject,
+                            param.args[0],
+                            param.args[1]
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    // Bypass method call as we have already called the original method.
+                    param.result = null
+                }
+            })
+
+            injectPrint("fine")
+            injectPrint("info")
+        } catch (e: UnsatisfiedLinkError) {
+            Log.e("App", "Failed to setup hooks", e)
+        }
     }
 
     private fun injectPrint(method: String) {

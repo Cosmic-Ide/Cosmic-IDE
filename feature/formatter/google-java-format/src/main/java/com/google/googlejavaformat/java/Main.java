@@ -154,15 +154,13 @@ public final class Main {
       } catch (InterruptedException e) {
         errWriter.println(e.getMessage());
         allOk = false;
-        continue;
       } catch (ExecutionException e) {
         errWriter.println("error: " + e.getCause().getMessage());
         e.getCause().printStackTrace(errWriter);
         allOk = false;
-        continue;
       }
     }
-    Collections.sort(results, comparing(FormatFileCallable.Result::path));
+    results.sort(comparing(FormatFileCallable.Result::path));
     for (FormatFileCallable.Result result : results) {
       Path path = result.path();
       if (result.exception() != null) {
@@ -186,7 +184,6 @@ public final class Main {
         } catch (IOException e) {
           errWriter.println(path + ": could not write file: " + e.getMessage());
           allOk = false;
-          continue;
         }
       } else if (parameters.dryRun()) {
         if (changed) {

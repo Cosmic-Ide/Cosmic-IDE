@@ -81,24 +81,34 @@ android {
         resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.12.0")
     }
 
-    packagingOptions.resources.excludes.addAll(
-        listOf(
-            "META-INF/INDEX.LIST",
-            "META-INF/eclipse.inf",
-            "META-INF/CHANGES",
-            "META-INF/README.md",
-            "META-INF/DEPENDENCIES",
-            "about_files/LICENSE-2.0.txt",
-            "META-INF/AL2.0",
-            "META-INF/LGPL2.1",
-            "plugin.xml",
-            "plugin.properties",
-            "about.mappings",
-            "about.properties",
-            "about.ini",
-            "src/*"
-        )
-    )
+    packaging {
+        resources {
+            excludes.addAll(
+                listOf(
+                    "META-INF/INDEX.LIST",
+                    "META-INF/eclipse.inf",
+                    "META-INF/CHANGES",
+                    "META-INF/README.md",
+                    "META-INF/DEPENDENCIES",
+                    "about_files/LICENSE-2.0.txt",
+                    "META-INF/AL2.0",
+                    "META-INF/LGPL2.1",
+                    "plugin.xml",
+                    "plugin.properties",
+                    "about.mappings",
+                    "about.properties",
+                    "about.ini",
+                    "src/*",
+                )
+            )
+
+            pickFirsts.addAll(
+                listOf(
+                    "OSGI-INF/l10n/plugin.properties"
+                )
+            )
+        }
+    }
     buildFeatures {
         buildConfig = true
     }
@@ -182,14 +192,14 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.1.0-alpha02")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
     implementation("androidx.fragment:fragment-ktx:1.7.0-beta01")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0-alpha03")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0-alpha03")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
     implementation("androidx.activity:activity-ktx:1.9.0-beta01")
     implementation("androidx.startup:startup-runtime:1.2.0-alpha02")
 
-    val editorVersion = "0.22.2-3e1c25a-SNAPSHOT"
+    val editorVersion = "0.23.4"
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     //noinspection GradleDependency
@@ -198,8 +208,10 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion") {
         isTransitive = false
     }
-    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.0.0")
-    implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.0.0")
+    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.1")
+    implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.3.1")
+    implementation("com.itsaky.androidide.treesitter:tree-sitter-kotlin:4.3.1")
+
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
@@ -215,12 +227,11 @@ dependencies {
     implementation("de.maxr1998:modernandroidpreferences:2.4.0-beta1")
 
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1-Beta")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
 
     implementation("com.google.ai.client.generativeai:generativeai:0.2.2")
-
 
     val shizukuVersion = "13.1.5"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")

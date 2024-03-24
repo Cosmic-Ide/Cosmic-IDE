@@ -214,7 +214,7 @@ dependencies {
 
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
-    implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.9.0.202403050737-r")
     implementation("com.github.sya-ri:kgit:1.0.6")
 
     // markwon

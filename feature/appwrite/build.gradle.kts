@@ -38,7 +38,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1-Beta")
 
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.12"))
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-SNAPSHOT"))
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:okhttp-urlconnection")
     implementation("com.squareup.okhttp3:logging-interceptor")

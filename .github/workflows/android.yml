@@ -35,7 +35,7 @@ jobs:
         uses: gradle/gradle-build-action@v3.1.0
         with:
           gradle-version: nightly
-          arguments: assembleDebug
+          arguments: assembleDevDebug
 
       - name: Upload debug apks
         uses: actions/upload-artifact@v4

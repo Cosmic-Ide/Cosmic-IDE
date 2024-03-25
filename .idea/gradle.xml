@@ -21,6 +21,7 @@
             <option value="$PROJECT_DIR$/feature/completion" />
             <option value="$PROJECT_DIR$/feature/completion/java" />
             <option value="$PROJECT_DIR$/feature/completion/kotlin" />
+            <option value="$PROJECT_DIR$/feature/editor-textmate" />
             <option value="$PROJECT_DIR$/feature/formatter" />
             <option value="$PROJECT_DIR$/feature/formatter/google-java-format" />
             <option value="$PROJECT_DIR$/feature/formatter/ktfmt" />

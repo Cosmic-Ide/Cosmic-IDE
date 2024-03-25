@@ -173,6 +173,7 @@ materialThemeBuilder {
 
 configurations.all {
     resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.12.0")
+    resolutionStrategy.force("com.google.guava:guava:33.1.0-android")
 }
 
 dependencies {
@@ -199,11 +200,9 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.9.0-beta01")
     implementation("androidx.startup:startup-runtime:1.2.0-alpha02")
 
-    val editorVersion = "0.23.4"
+    val editorVersion = "0.23.4-cac2770-SNAPSHOT"
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
-    //noinspection GradleDependency
-    implementation("io.github.Rosemoe.sora-editor:language-textmate:$editorVersion")
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion") {
         isTransitive = false
@@ -253,6 +252,7 @@ dependencies {
     implementation(projects.util)
     implementation(projects.jgit)
     implementation(projects.feature.treeView)
+    implementation(projects.feature.editorTextmate)
 
     // jgit uses some methods like `transferTo` are only available from Android 13 onwards
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")

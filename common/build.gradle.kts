@@ -61,8 +61,9 @@ dependencies {
 
     implementation("com.google.android.material:material:1.12.0-beta01")
 
-    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.23.4"))
+    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.23.4-cac2770-SNAPSHOT"))
     api("io.github.Rosemoe.sora-editor:editor")
-    api("io.github.Rosemoe.sora-editor:language-textmate")
     api("io.github.Rosemoe.sora-editor:language-treesitter")
+
+    implementation(projects.feature.editorTextmate)
 }

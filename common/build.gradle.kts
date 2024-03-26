@@ -46,8 +46,6 @@ android {
     }
 }
 
-
-
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
     implementation("androidx.databinding:viewbinding:8.5.0-alpha02")

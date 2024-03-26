@@ -13,9 +13,11 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.ai.client.generativeai.type.ServerException
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -25,9 +27,9 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.R
 import org.cosmicide.adapter.ConversationAdapter
 import org.cosmicide.chat.ChatProvider
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.databinding.FragmentChatBinding
 import org.cosmicide.extension.getDip
-import org.cosmicide.common.BaseBindingFragment
 
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
@@ -75,14 +77,18 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             conversationAdapter.add(conversation)
             binding.messageText.setText("")
             lifecycleScope.launch(Dispatchers.IO) {
-                val reply = ChatProvider.generate(
-                    conversationAdapter.getConversations()
-                )
+                try {
+                    val reply = ChatProvider.generate(
+                        conversationAdapter.getConversations()
+                    )
 
-                val response = ConversationAdapter.Conversation(flow = reply)
-                withContext(Dispatchers.Main) {
-                    conversationAdapter.add(response)
-                    binding.recyclerview.scrollToPosition(conversationAdapter.itemCount - 1)
+                    val response = ConversationAdapter.Conversation(flow = reply)
+                    withContext(Dispatchers.Main) {
+                        conversationAdapter.add(response)
+                        binding.recyclerview.scrollToPosition(conversationAdapter.itemCount - 1)
+                    }
+                } catch (e: ServerException) {
+                    Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }

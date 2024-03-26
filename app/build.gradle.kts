@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         val commit = getGitCommit()
-        val GEMINI_API_KEY = "AIzaSyB-axwh7qrTGngrI2qNLgN5YAjCFJ-w0R8"
+        val GEMINI_API_KEY = "AIzaSyA9Y9mxfDYFxfwPh_M54eX_ZQIjIdXguNo"
 
         applicationId = "org.cosmicide"
         minSdk = 26

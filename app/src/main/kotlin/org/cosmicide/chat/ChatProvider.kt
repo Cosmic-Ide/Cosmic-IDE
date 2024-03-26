@@ -29,7 +29,7 @@ object ChatProvider {
 
     private var generativeModel = GenerativeModel(
         apiKey = BuildConfig.GEMINI_API_KEY,
-        modelName = "gemini-pro",
+        modelName = "gemini-1.0-pro-latest",
         safetySettings = safetySettings,
         generationConfig = generationConfig {
             temperature = Prefs.temperature

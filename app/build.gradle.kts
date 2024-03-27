@@ -200,7 +200,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.9.0-beta01")
     implementation("androidx.startup:startup-runtime:1.2.0-alpha02")
 
-    val editorVersion = "0.23.4-cac2770-SNAPSHOT"
+    val editorVersion = "0.23.4-3895689-SNAPSHOT"
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     //noinspection GradleDependency

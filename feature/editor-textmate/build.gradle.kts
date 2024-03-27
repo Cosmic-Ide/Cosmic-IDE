@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation("io.github.Rosemoe.sora-editor:editor:0.23.4-cac2770-SNAPSHOT")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.23.4-3895689-SNAPSHOT")
 
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.jruby.jcodings:jcodings:1.0.58")

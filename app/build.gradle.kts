@@ -255,7 +255,7 @@ dependencies {
     implementation(projects.feature.editorTextmate)
 
     // jgit uses some methods like `transferTo` are only available from Android 13 onwards
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
 
     testImplementation("junit:junit:4.13.2")
 }

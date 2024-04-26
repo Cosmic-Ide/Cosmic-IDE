@@ -38,7 +38,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with gradle
-        uses: gradle/gradle-build-action@v3.1.0
+        uses: gradle/gradle-build-action@v3.3.2
         with:
           gradle-version: current
           arguments: clean assembleDebug --no-build-cache

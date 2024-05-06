@@ -45,7 +45,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0-alpha03")
-    implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
+    implementation("androidx.appcompat:appcompat:1.7.0-beta01")
     implementation("androidx.fragment:fragment-ktx:1.7.0-beta01")
     implementation("androidx.activity:activity-ktx:1.9.0-beta01")
     implementation("androidx.browser:browser:1.8.0")

@@ -70,10 +70,12 @@ class FileViewModel : ViewModel() {
      * Removes all files from the list except for the given file, and sets the current position to 0.
      */
     fun removeOthers(file: File) {
-        files.value = mutableListOf(file)
-        setCurrentPosition(0)
+        if (files.value!!.size > 1) {
+            files.value = mutableListOf(file)
+            setCurrentPosition(0)
+        }
     }
-
+    
     /**
      * Removes all files from the list.
      * Sets the current position to -1 to indicate that there is no current file.

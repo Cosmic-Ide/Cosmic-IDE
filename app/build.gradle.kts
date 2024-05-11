@@ -196,7 +196,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0-alpha03")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0-alpha03")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
+    implementation("androidx.viewpager2:viewpager2:1.1.0-rc01")
     implementation("androidx.activity:activity-ktx:1.9.0-beta01")
     implementation("androidx.startup:startup-runtime:1.2.0-alpha02")
 

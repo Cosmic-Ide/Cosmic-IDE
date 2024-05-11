@@ -617,7 +617,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 R.id.close_all_tab -> fileViewModel.removeAll()
                 R.id.close_left_tab -> fileViewModel.removeLeft(pos - 1)
                 R.id.close_right_tab -> fileViewModel.removeRight(pos + 1)
-                R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.files.value!![pos])
+                R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.files.value!![position])
             }
             true
         }

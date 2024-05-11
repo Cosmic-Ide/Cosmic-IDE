@@ -145,7 +145,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         })
 
-        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
+        TabLayoutMediator(binding.tabLayout, binding.pager, true, false) { tab, position ->
             tab.text = fileViewModel.files.value!![position].name
             tab.view.setOnLongClickListener {
                 Log.d("EditorFragment", "onLongClick: $position")

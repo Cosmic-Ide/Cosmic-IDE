@@ -145,7 +145,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         })
 
-        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
+        TabLayoutMediator(binding.tabLayout, binding.pager, true, false) { tab, position ->
             tab.text = fileViewModel.files.value!![position].name
             tab.view.setOnLongClickListener {
                 Log.d("EditorFragment", "onLongClick: $position")
@@ -617,7 +617,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 R.id.close_all_tab -> fileViewModel.removeAll()
                 R.id.close_left_tab -> fileViewModel.removeLeft(pos - 1)
                 R.id.close_right_tab -> fileViewModel.removeRight(pos + 1)
-                R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.files.value!![pos])
+                R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.files.value!![position])
             }
             true
         }

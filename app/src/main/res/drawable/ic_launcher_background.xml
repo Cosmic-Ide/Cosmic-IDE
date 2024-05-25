@@ -5,31 +5,15 @@
   ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="1445"
-    android:viewportHeight="1445">
-
-    <path
-        android:fillColor="@color/logo_background"
-        android:pathData="M0,0h1445v1445h-1445z" />
-
-    <path
-        android:pathData="M404,899C307,723 371,501 547,404C723,307 945,371 1042,547"
-        android:strokeWidth="100"
-        android:strokeColor="@color/logo_accent"
-        android:strokeLineCap="round" />
-
-    <path
-        android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"
-        android:strokeWidth="100"
-        android:strokeColor="@color/logo_stroke"
-        android:strokeLineCap="round" />
-
-    <path
-        android:pathData="M570,723a153,153 0,1 1,306 0a153,153 0,1 1,-306 0"
-        android:strokeWidth="150"
-        android:strokeColor="@color/logo_stroke" />
-
+<vector 
+    xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:name="vector"
+    android:width="108dp" 
+    android:height="108dp" 
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+        <path android:name="path"
+            android:pathData="M -14.204 130.914 L -14.204 -20.449 L 123.817 -20.449 L 123.817 130.914 Z" 
+            android:fillColor="@color/logo_background"
+            android:strokeWidth="0"/>
 </vector>

@@ -52,13 +52,6 @@ dependencies {
     implementation(projects.feature.project)
     implementation(projects.util)
     implementation(projects.feature.javaCompletion)
-    /* D8 cannot handle scala3 compiler rn (https://issuetracker.google.com/issues/285036373)
-    implementation("org.scala-lang:scala3-compiler_3:3.3.1-RC1") {
-        exclude(group = "org.jline", module = "jline-terminal")
-        exclude(group = "org.jline", module = "jline-terminal-jna")
-        exclude(group = "org.jline", module = "jline-reader")
-    }
-    */
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
     implementation("io.github.Rosemoe.sora-editor:editor:0.23.4-cac2770-SNAPSHOT")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")

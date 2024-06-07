@@ -34,6 +34,8 @@ android {
         }
     }
 
+    ndkVersion = "27.0.11902837"
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

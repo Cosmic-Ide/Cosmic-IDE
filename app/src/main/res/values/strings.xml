@@ -103,4 +103,5 @@
     <string name="program_arguments">Program Arguments</string>
     <string name="advanced">Advanced</string>
     <string name="gemini_pro">Gemini Pro</string>
+    <string name="terminal">Terminal</string>
 </resources>

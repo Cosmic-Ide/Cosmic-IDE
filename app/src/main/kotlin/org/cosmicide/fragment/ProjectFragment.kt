@@ -36,12 +36,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.R
 import org.cosmicide.adapter.ProjectAdapter
-import org.cosmicide.databinding.FragmentProjectBinding
-import org.cosmicide.model.ProjectViewModel
-import org.cosmicide.project.Project
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.common.Prefs
+import org.cosmicide.databinding.FragmentProjectBinding
+import org.cosmicide.model.ProjectViewModel
+import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.compressToZip
 import org.cosmicide.rewrite.util.unzip
@@ -131,6 +131,11 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                         addToBackStack(null)
                         setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
+                    true
+                }
+
+                R.id.action_terminal -> {
+                    navigateToTerminalFragment()
                     true
                 }
                 else -> false
@@ -394,6 +399,14 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         setOnClickListeners()
         parentFragmentManager.commit {
             add(R.id.fragment_container, NewProjectFragment())
+            addToBackStack(null)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+        }
+    }
+
+    private fun navigateToTerminalFragment() {
+        parentFragmentManager.commit {
+            add(R.id.fragment_container, TerminalFragment())
             addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }

@@ -57,6 +57,9 @@
         android:id="@+id/action_git"
         android:title="@string/git" />
 
+    <item
+        android:id="@+id/action_terminal"
+        android:title="@string/terminal" />
 
     <item android:title="@string/advanced">
 

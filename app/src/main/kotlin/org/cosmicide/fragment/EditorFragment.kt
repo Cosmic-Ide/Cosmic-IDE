@@ -382,6 +382,15 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
 
+                    R.id.action_terminal -> {
+                        parentFragmentManager.commit {
+                            add(R.id.fragment_container, TerminalFragment())
+                            addToBackStack(null)
+                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        }
+                        true
+                    }
+
                     R.id.arguments -> {
                         val binding = TextDialogBinding.inflate(layoutInflater)
                         MaterialAlertDialogBuilder(context).setTitle("Enter program arguments")
@@ -394,7 +403,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                                 )
                                 val args = binding.textInputLayout.editText?.text.toString()
 
-                                // split args into a list considering both single and double quotes and ending with a space
                                 val argList = mutableListOf<String>()
                                 var arg = ""
                                 var inSingleQuote = false

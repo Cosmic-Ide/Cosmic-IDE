@@ -177,6 +177,10 @@ configurations.all {
 }
 
 dependencies {
+    implementation("com.github.termux.termux-app:terminal-view:062c9771a9")
+    implementation("com.github.termux.termux-app:terminal-emulator:062c9771a9")
+    implementation("com.blankj:utilcodex:1.31.1")
+
     implementation("com.android.tools:r8:8.3.37")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.7")
 

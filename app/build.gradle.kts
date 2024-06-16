@@ -74,11 +74,12 @@ android {
     }
 
     packagingOptions.jniLibs.apply {
-        useLegacyPackaging = false
+        useLegacyPackaging = true
     }
 
     configurations.all {
         resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.12.0")
+        resolutionStrategy.force("androidx.window:window:1.0.0-alpha09")
     }
 
     packaging {
@@ -177,10 +178,6 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.github.termux.termux-app:terminal-view:062c9771a9")
-    implementation("com.github.termux.termux-app:terminal-emulator:062c9771a9")
-    implementation("com.blankj:utilcodex:1.31.1")
-
     implementation("com.android.tools:r8:8.3.37")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.7")
 
@@ -196,9 +193,9 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.1.0-rc01")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
-    implementation("androidx.fragment:fragment-ktx:1.7.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
+    implementation("androidx.fragment:fragment-ktx:1.8.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.activity:activity-ktx:1.9.0")
@@ -234,7 +231,7 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
 
-    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+    implementation("com.google.ai.client.generativeai:generativeai:0.8.0")
 
     val shizukuVersion = "13.1.5"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")

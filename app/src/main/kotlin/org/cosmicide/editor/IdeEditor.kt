@@ -8,6 +8,7 @@
 package org.cosmicide.editor
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
 import com.google.common.collect.ImmutableSet
@@ -16,9 +17,10 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import org.cosmicide.common.Prefs
+import org.cosmicide.editor.language.TsLanguageJava
 import org.cosmicide.extension.setCompletionLayout
 import org.cosmicide.extension.setFont
-import org.cosmicide.common.Prefs
 
 class IdeEditor @JvmOverloads constructor(
     context: Context,
@@ -101,6 +103,14 @@ class IdeEditor @JvmOverloads constructor(
         getComponent(EditorDiagnosticTooltipWindow::class.java).apply {
             setSize(500, 100)
             parentView.setBackgroundColor(colorScheme.getColor(EditorColorScheme.WHOLE_BACKGROUND))
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+
+        if (editorLanguage is TsLanguageJava) {
+            (editorLanguage as TsLanguageJava).onConfigurationChanged()
         }
     }
 }

@@ -133,11 +133,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                     }
                     true
                 }
-
-                R.id.action_terminal -> {
-                    navigateToTerminalFragment()
-                    true
-                }
                 else -> false
             }
         }
@@ -399,14 +394,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         setOnClickListeners()
         parentFragmentManager.commit {
             add(R.id.fragment_container, NewProjectFragment())
-            addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        }
-    }
-
-    private fun navigateToTerminalFragment() {
-        parentFragmentManager.commit {
-            add(R.id.fragment_container, TerminalFragment())
             addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }

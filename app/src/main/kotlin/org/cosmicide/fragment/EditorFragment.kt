@@ -382,15 +382,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
 
-                    R.id.action_terminal -> {
-                        parentFragmentManager.commit {
-                            add(R.id.fragment_container, TerminalFragment())
-                            addToBackStack(null)
-                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        }
-                        true
-                    }
-
                     R.id.arguments -> {
                         val binding = TextDialogBinding.inflate(layoutInflater)
                         MaterialAlertDialogBuilder(context).setTitle("Enter program arguments")

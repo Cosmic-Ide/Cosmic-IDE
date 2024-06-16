@@ -68,6 +68,19 @@ class TsLanguageJava(
         }
     }
 
+    fun onConfigurationChanged() {
+        if (!completions.mInitialized) {
+            completions.initialize(
+                URI("file://" + project.root.absolutePath), JavaCompletionOptionsImpl(
+                    "${project.binDir.absolutePath}/autocomplete.log",
+                    Level.ALL,
+                    emptyList(),
+                    emptyList()
+                )
+            )
+            completions.openFile(path, editor.text.toString())
+        }
+    }
 
     override fun requireAutoComplete(
         content: ContentReference,

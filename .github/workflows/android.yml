@@ -29,13 +29,13 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Clear build cache
-        uses: gradle/gradle-build-action@v3.1.0
+        uses: gradle/gradle-build-action@v3.5.0
         with:
           gradle-version: nightly
           arguments: clean
 
       - name: Build with gradle
-        uses: gradle/gradle-build-action@v3.1.0
+        uses: gradle/gradle-build-action@v3.5.0
         with:
           gradle-version: nightly
           arguments: assembleDevDebug

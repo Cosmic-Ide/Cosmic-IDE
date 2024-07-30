@@ -22,7 +22,7 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r")
     implementation("org.eclipse.jgit:org.eclipse.jgit.pgm:6.9.0.202403050737-r") {
         exclude("net.java.dev.jna", "jna-platform")
         exclude("net.java.dev.jna", "jna")

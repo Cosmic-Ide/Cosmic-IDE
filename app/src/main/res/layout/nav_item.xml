@@ -10,7 +10,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="2dp">
+    android:clickable="true"
+    android:gravity="center_vertical"
+    android:paddingVertical="4dp">
 
     <Space
         android:id="@+id/space"
@@ -22,7 +24,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:contentDescription="@string/navigation_item_kind"
-        android:src="@drawable/baseline_close_24" />
+        android:src="@drawable/round_chevron_right_24" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -33,18 +35,16 @@
         <TextView
             android:id="@+id/nav_item_title"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:textSize="18sp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             tools:text="main(String[] args)" />
 
         <TextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="12sp"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             tools:text="public static void" />
     </LinearLayout>
 

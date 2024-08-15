@@ -137,8 +137,6 @@ class App : Application() {
             override fun onActivityDestroyed(p0: Activity) {}
         })
 
-        //TermuxApplication.init(this)
-
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
     }
 

@@ -12,12 +12,11 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
-import android.view.ViewGroup
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
@@ -64,19 +63,20 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
+        enableEdgeToEdge()
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
             val imeInset =
                 ViewCompat.getRootWindowInsets(view)!!.getInsets(WindowInsetsCompat.Type.ime())
 
             val systemBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                leftMargin = systemBarInsets.left
-                rightMargin = systemBarInsets.right
-                topMargin = systemBarInsets.top
-                bottomMargin = if (imeInset.bottom > 0) 0 else systemBarInsets.bottom
-            }
-
+            view.setPadding(
+                systemBarInsets.left,
+                systemBarInsets.top,
+                systemBarInsets.right,
+                if (imeInset.bottom > 0) 0 else systemBarInsets.bottom
+            )
 
             WindowInsetsCompat.CONSUMED
         }

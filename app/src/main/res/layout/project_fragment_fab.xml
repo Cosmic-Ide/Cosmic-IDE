@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:text="@string/clone_from_git"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:textSize="16sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -51,6 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:text="@string/import_project"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:textSize="16sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -78,6 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:text="@string/create_project"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:textSize="16sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -106,6 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:text="@string/cancel"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:textSize="16sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

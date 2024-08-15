@@ -14,7 +14,7 @@ plugins {
 
 android {
     namespace = "org.cosmicide"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         val commit = getGitCommit()
@@ -22,7 +22,7 @@ android {
 
         applicationId = "org.cosmicide"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 24
         versionName = "2.0.4"
         buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
@@ -170,6 +170,7 @@ materialThemeBuilder {
     }
 
     generatePaletteAttributes = true
+    packageName = "org.cosmicide"
 }
 
 configurations.all {
@@ -178,7 +179,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.android.tools:r8:8.3.37")
+    implementation("com.android.tools:r8:8.5.35")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.7")
 
     //noinspection GradleDependency
@@ -189,25 +190,24 @@ dependencies {
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
 
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha14")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.1.0-rc01")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
-    implementation("androidx.fragment:fragment-ktx:1.8.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
+    implementation("androidx.fragment:fragment-ktx:1.8.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
-    implementation("androidx.activity:activity-ktx:1.9.0")
+    implementation("androidx.activity:activity-ktx:1.9.1")
     implementation("androidx.startup:startup-runtime:1.2.0-alpha02")
 
-    val editorVersion = "0.23.4-cac2770-SNAPSHOT"
+    val editorVersion = "0.23.4-96c0abc-SNAPSHOT"
     //noinspection GradleDependency
     implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
     //noinspection GradleDependency
-    implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion") {
-        isTransitive = false
-    }
+    implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion")
+    implementation("io.github.Rosemoe.sora-editor:language-textmate:$editorVersion")
     implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.1")
     implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.3.1")
     implementation("com.itsaky.androidide.treesitter:tree-sitter-kotlin:4.3.1")
@@ -231,7 +231,7 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
 
-    implementation("com.google.ai.client.generativeai:generativeai:0.8.0")
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
     val shizukuVersion = "13.1.5"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")
@@ -253,7 +253,6 @@ dependencies {
     implementation(projects.util)
     implementation(projects.jgit)
     implementation(projects.feature.treeView)
-    implementation(projects.feature.editorTextmate)
 
     // jgit uses some methods like `transferTo` are only available from Android 13 onwards
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")

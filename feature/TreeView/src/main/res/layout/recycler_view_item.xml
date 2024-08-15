@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
     android:orientation="horizontal"
     android:paddingVertical="8dp">
 
@@ -26,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
         tools:text="Main.kt" />
 
 </LinearLayout>

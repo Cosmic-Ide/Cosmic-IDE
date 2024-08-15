@@ -8,10 +8,9 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:tint="?colorControlNormal"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="?colorControlNormal"
+        android:fillColor="?colorOnSurfaceVariant"
         android:pathData="M19,6.4L17.6,5 12,10.6 6.4,5 5,6.4 10.6,12 5,17.6 6.4,19 12,13.4 17.6,19 19,17.6 13.4,12z" />
 </vector>

@@ -7,7 +7,6 @@
 
 <resources>
     <color name="logo_background">#1B1B1B</color>
-    <color name="splash_background">?colorSurface</color>
     <color name="logo_stroke">#FFFFFF</color>
     <color name="logo_accent">#1F75FE</color>
 </resources>

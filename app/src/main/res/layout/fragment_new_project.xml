@@ -11,7 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="?colorSurface"
+    android:background="?colorSurfaceContainerLow"
     tools:context="org.cosmicide.fragment.NewProjectFragment"
     android:id="@+id/scrollable">
 
@@ -31,6 +31,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:navigationIcon="@drawable/baseline_arrow_back_24"
                 app:title="@string/new_project" />
+
         </com.google.android.material.appbar.AppBarLayout>
 
         <LinearLayout

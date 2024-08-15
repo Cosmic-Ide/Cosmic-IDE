@@ -6,7 +6,6 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
         <path android:name="path"
-            android:pathData="M -14.204 130.914 L -14.204 -20.449 L 123.817 -20.449 L 123.817 130.914 Z" 
-            android:fillColor="@color/logo_background"
-            android:strokeWidth="0"/>
+            android:pathData="M -14.2 130.9 L -14.2 -20.5 L 123.8 -20.5 L 123.8 130.9 Z"
+            android:fillColor="@color/logo_background" />
 </vector>

@@ -7,14 +7,23 @@
 
 package org.cosmicide.fragment.settings
 
+import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.editText
+import org.cosmicide.R
 import org.cosmicide.util.PreferenceKeys
 
-class GitSettings : SettingsProvider {
+class GitSettings(private val activity: FragmentActivity) : SettingsProvider {
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            icon = ResourcesCompat.getDrawable(
+                activity.resources,
+                R.drawable.github,
+                activity.theme
+            )
+
             editText(PreferenceKeys.GIT_USERNAME) {
                 title = "Username"
                 defaultValue = ""

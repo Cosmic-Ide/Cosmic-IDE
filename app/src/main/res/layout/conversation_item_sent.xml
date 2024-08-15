@@ -18,7 +18,7 @@
         style="?attr/materialCardViewFilledStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="?attr/colorPrimaryContainer"
+        app:cardBackgroundColor="?colorPrimaryContainer"
         app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge">
 
         <TextView
@@ -29,7 +29,8 @@
             android:linksClickable="true"
             android:paddingHorizontal="12dp"
             android:paddingVertical="8dp"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textIsSelectable="true"
             tools:text="This is a very useful response" />
     </com.google.android.material.card.MaterialCardView>

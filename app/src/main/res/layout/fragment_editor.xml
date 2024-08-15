@@ -10,7 +10,7 @@
     android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?colorSurface">
+    android:background="?colorSurfaceContainerLow">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +20,8 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="?colorSurfaceContainerLow">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
@@ -33,6 +34,7 @@
                 android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?colorSurfaceContainerLow"
                 app:tabGravity="start"
                 app:tabMode="scrollable" />
 

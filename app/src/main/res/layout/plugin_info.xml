@@ -10,8 +10,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="16sp"
-    android:paddingTop="5dp">
+    android:background="?colorSurfaceContainer"
+    android:paddingTop="5dp"
+    android:paddingHorizontal="16sp">
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
         android:id="@+id/drag_handle"

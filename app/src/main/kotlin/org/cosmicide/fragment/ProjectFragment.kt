@@ -12,6 +12,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -133,6 +134,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                     }
                     true
                 }
+
                 else -> false
             }
         }
@@ -343,8 +345,14 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
             hint = "Enter your name"
         }
 
+        val linear = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(32, 16, 32, 8)
+            addView(editText)
+        }
+
         MaterialAlertDialogBuilder(requireContext()).apply {
-            setView(editText)
+            setView(linear)
             setTitle("Enter your name")
             setPositiveButton("Okay") { _, _ ->
                 val name = editText.text.toString()

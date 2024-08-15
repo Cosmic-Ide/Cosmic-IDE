@@ -10,8 +10,8 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     repositories {
         google()
-        mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
     }
 }
 dependencyResolutionManagement {
@@ -43,4 +43,3 @@ include(":feature:code-navigation")
 include(":datadir")
 include(":feature:aliuhook")
 include(":feature:appwrite")
-include(":feature:editor-textmate")

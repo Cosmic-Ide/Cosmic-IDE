@@ -11,6 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="8dp"
     android:orientation="horizontal">
 
     <ImageView
@@ -36,10 +37,11 @@
             android:paddingHorizontal="12dp"
             android:paddingVertical="8dp"
             android:linksClickable="true"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textIsSelectable="true"
             tools:text="This is a very useful response" />
+
     </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

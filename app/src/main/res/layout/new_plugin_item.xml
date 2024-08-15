@@ -7,6 +7,7 @@
 
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.CosmicIde.ListItemCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -28,7 +29,8 @@
             app:layout_constraintEnd_toStartOf="@id/button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/author"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Plugin Name" />
 
         <TextView
             android:id="@+id/author"
@@ -40,7 +42,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/button"
             app:layout_constraintTop_toBottomOf="@id/name"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Plugin Author" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button"

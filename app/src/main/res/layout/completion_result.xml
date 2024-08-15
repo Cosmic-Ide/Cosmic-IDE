@@ -29,9 +29,9 @@
             android:id="@+id/result_item_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/noto_sans_mono"
+            android:fontFamily="@font/montserrat_medium"
             android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             tools:text="Completion result title" />
 
         <TextView
@@ -40,7 +40,8 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/noto_sans_mono"
             android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
             tools:text="Identifier" />
     </LinearLayout>
 

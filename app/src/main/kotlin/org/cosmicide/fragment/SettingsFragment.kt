@@ -19,6 +19,7 @@ import de.Maxr1998.modernpreferences.helpers.screen
 import de.Maxr1998.modernpreferences.helpers.subScreen
 import org.cosmicide.MainActivity
 import org.cosmicide.chat.ChatProvider
+import org.cosmicide.common.BaseBindingFragment
 import org.cosmicide.databinding.FragmentSettingsBinding
 import org.cosmicide.fragment.settings.AboutSettings
 import org.cosmicide.fragment.settings.AppearanceSettings
@@ -28,7 +29,6 @@ import org.cosmicide.fragment.settings.FormatterSettings
 import org.cosmicide.fragment.settings.GeminiSettings
 import org.cosmicide.fragment.settings.GitSettings
 import org.cosmicide.fragment.settings.PluginSettingsProvider
-import org.cosmicide.common.BaseBindingFragment
 
 /**
  * Fragment for displaying settings screen.
@@ -52,7 +52,7 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
         val formatterSettings = FormatterSettings(requireActivity())
         val compilerSettings = CompilerSettings(requireActivity())
         val pluginsSettings = PluginSettingsProvider(requireActivity())
-        val gitSettings = GitSettings()
+        val gitSettings = GitSettings(requireActivity())
         val aboutSettings = AboutSettings(requireActivity())
         val geminiSettings = GeminiSettings(requireActivity())
 

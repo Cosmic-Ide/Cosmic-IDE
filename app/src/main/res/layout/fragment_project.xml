@@ -11,7 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:transitionGroup="true"
-    android:background="?colorSurface"
+    android:background="?colorSurfaceContainerLow"
     tools:context="org.cosmicide.fragment.ProjectFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -22,6 +22,7 @@
             style="?attr/collapsingToolbarLayoutMediumStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
+            android:background="?colorSurfaceContainerLow"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <com.google.android.material.appbar.MaterialToolbar
@@ -59,6 +60,7 @@
                 android:layout_height="match_parent"
                 android:transitionGroup="true"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/project_item"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
             <TextView
@@ -67,7 +69,8 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="@string/no_projects_found_create_one_now"
-                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="?colorOnSurfaceVariant"
                 android:transitionGroup="true"
                 android:visibility="gone" />
 

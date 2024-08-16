@@ -7,7 +7,6 @@
 
 package org.cosmicide.editor.analyzers
 
-import android.util.Log
 import com.sun.tools.javac.api.JavacTool
 import com.sun.tools.javac.file.JavacFileManager
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticDetail
@@ -28,10 +27,12 @@ import javax.tools.StandardLocation
 
 class JavaAnalyzer(
     val editor: CodeEditor,
-    val project: Project
+    val project: Project,
+    val compilerOptions: List<String> = mutableListOf()
 ) {
     private val args by lazy {
         listOf(
+            "-XDstringConcat=inline",
             "-XDcompilePolicy=byfile",
             "-XD-Xprefer=source",
             "-XDide",
@@ -62,8 +63,7 @@ class JavaAnalyzer(
 
     init {
         standardFileManager.setLocation(
-            StandardLocation.PLATFORM_CLASS_PATH,
-            FileUtil.classpathDir.walk().toList()
+            StandardLocation.PLATFORM_CLASS_PATH, FileUtil.classpathDir.walk().toList()
         )
         if (!project.binDir.exists()) {
             project.binDir.mkdirs()
@@ -86,6 +86,7 @@ class JavaAnalyzer(
             add(version.toString())
             add("-target")
             add(version.toString())
+            addAll(compilerOptions)
         }
 
         tool.getTask(System.out.writer(), standardFileManager, diagnostics, copy, null, toCompile)
@@ -121,7 +122,6 @@ class JavaAnalyzer(
                 if (it.code == "compiler.err.cant.resolve.location") {
                     val symbol = it.source.getCharContent(true)
                         .substring(it.startPosition.toInt(), it.endPosition.toInt())
-                    Log.d("JavaAnalyzer", symbol)
                     CompletionProvider.symbolCacher.filterClassNames(symbol).forEach { name ->
                         quickFixes.add(Quickfix("Import ${name.value}", 0L) {
                             val lines = editor.text.lines()
@@ -130,11 +130,8 @@ class JavaAnalyzer(
                                 firstImportLine =
                                     lines.indexOfFirst { it.startsWith("package ") } + 1
                             }
-                            Log.d("JavaAnalyzer", "index: $firstImportLine")
                             editor.text.insert(
-                                firstImportLine,
-                                0,
-                                "import ${name.key}.${name.value};\n"
+                                firstImportLine, 0, "import ${name.key}.${name.value};\n"
                             )
                         })
                     }
@@ -166,15 +163,11 @@ class JavaAnalyzer(
         }
 
 
-        project.binDir
-            .resolve("classes")
-            .walk()
-            .filter { it.extension == "class" }
-            .forEach {
-                if (Cache.getCache(it) != null && Cache.getCache(it)!!.lastModified == it.lastModified()) {
-                    classpath.add(it)
-                }
+        project.binDir.resolve("classes").walk().filter { it.extension == "class" }.forEach {
+            if (Cache.getCache(it) != null && Cache.getCache(it)!!.lastModified == it.lastModified()) {
+                classpath.add(it)
             }
+        }
 
         return classpath
     }

@@ -33,5 +33,5 @@ android {
 dependencies {
     implementation(projects.util)
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0-alpha03")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
 }

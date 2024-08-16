@@ -523,7 +523,7 @@ data class KotlinEnvironment(
             setupIdeaStandaloneExecution()
             return KotlinEnvironment(
                 KotlinCoreEnvironment.createForProduction(
-                    parentDisposable = {},
+                    {},
                     configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
                     configuration =
                     CompilerConfiguration().apply {

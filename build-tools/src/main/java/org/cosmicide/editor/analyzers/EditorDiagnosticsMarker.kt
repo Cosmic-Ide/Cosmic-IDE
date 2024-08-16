@@ -16,6 +16,7 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.cosmicide.common.Prefs
 import org.cosmicide.project.Project
 import java.io.File
 
@@ -26,7 +27,11 @@ class EditorDiagnosticsMarker(
 ) : EventReceiver<ContentChangeEvent> {
 
     private val diagnostics = DiagnosticsContainer()
-    private var analyzer = JavaAnalyzer(editor, project)
+    private var analyzer = JavaAnalyzer(
+        editor,
+        project,
+        if (Prefs.javacFlags.isNotEmpty()) Prefs.javacFlags.split(" ").toList() else listOf()
+    )
 
     init {
         analyze(editor.text)

@@ -68,6 +68,7 @@ class JavaCompileTask(val project: Project) : Task {
             val flags = Prefs.javacFlags
 
             val options = listOf(
+                "-XDstringConcat=inline",
                 "-proc:none",
                 "-source",
                 version,

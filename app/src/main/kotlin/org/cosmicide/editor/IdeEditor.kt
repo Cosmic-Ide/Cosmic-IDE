@@ -11,12 +11,12 @@ import android.content.Context
 import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
+import com.google.android.material.color.MaterialColors
 import com.google.common.collect.ImmutableSet
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.cosmicide.common.Prefs
 import org.cosmicide.editor.language.TsLanguageJava
 import org.cosmicide.extension.setCompletionLayout
@@ -102,7 +102,13 @@ class IdeEditor @JvmOverloads constructor(
     private fun setTooltipImprovements() {
         getComponent(EditorDiagnosticTooltipWindow::class.java).apply {
             setSize(500, 100)
-            parentView.setBackgroundColor(colorScheme.getColor(EditorColorScheme.WHOLE_BACKGROUND))
+            parentView.setBackgroundColor(
+                MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorErrorContainer,
+                    null
+                )
+            )
         }
     }
 

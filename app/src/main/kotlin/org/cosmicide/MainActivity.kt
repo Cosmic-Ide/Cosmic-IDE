@@ -20,15 +20,19 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import kotlinx.coroutines.launch
 import org.cosmicide.common.Prefs
 import org.cosmicide.databinding.ActivityMainBinding
 import org.cosmicide.fragment.InstallResourcesFragment
 import org.cosmicide.fragment.ProjectFragment
 import org.cosmicide.util.CommonUtils
+import org.cosmicide.util.MaterialEditorTheme
 import org.cosmicide.util.ResourceUtil
 import org.cosmicide.util.awaitBinderReceived
 import org.cosmicide.util.isShizukuInstalled
+import org.eclipse.tm4e.core.registry.IThemeSource
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
 import rikka.shizuku.ShizukuProvider
@@ -64,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         enableEdgeToEdge()
+        loadEditorThemes()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
             val imeInset =
@@ -119,12 +124,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    fun requestPermission() {
+    private fun requestPermission() {
         if (Shizuku.isPreV11()) {
             requestPermissions(arrayOf(ShizukuProvider.PERMISSION), shizukuPermissionCode)
         } else {
             Shizuku.requestPermission(shizukuPermissionCode)
         }
+    }
+
+    private fun loadEditorThemes() {
+        val themeRegistry = ThemeRegistry.getInstance()
+        themeRegistry.loadTheme(loadTheme("darcula.json", "darcula"))
+        themeRegistry.loadTheme(loadTheme("QuietLight.tmTheme.json", "QuietLight"))
+
+        App.instance.get()!!.applyThemeBasedOnConfiguration()
+    }
+
+
+    private fun loadTheme(fileName: String, themeName: String): ThemeModel {
+        val inputStream =
+            MaterialEditorTheme.resolveTheme(this, fileName)
+        val source = IThemeSource.fromInputStream(inputStream, fileName, null)
+        return ThemeModel(source, themeName)
     }
 
     override fun onDestroy() {

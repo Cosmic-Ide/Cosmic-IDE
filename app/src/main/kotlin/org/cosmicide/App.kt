@@ -25,7 +25,6 @@ import de.robv.android.xposed.XC_MethodHook
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
@@ -35,7 +34,6 @@ import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.CommonUtils
-import org.eclipse.tm4e.core.registry.IThemeSource
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import rikka.sui.Sui
 import java.io.File
@@ -67,7 +65,6 @@ class App : Application() {
 
         if (FileUtil.isInitialized.not()) return
 
-        Log.d("Analytics", "Initializing")
         Analytics.init(this@App)
         Log.d("Analytics", "Sending event")
 
@@ -217,12 +214,6 @@ class App : Application() {
         FileProviderRegistry.getInstance().addFileProvider(fileProvider)
 
         GrammarRegistry.getInstance().loadGrammars("textmate/languages.json")
-
-        val themeRegistry = ThemeRegistry.getInstance()
-        themeRegistry.loadTheme(loadTheme("darcula.json", "darcula"))
-        themeRegistry.loadTheme(loadTheme("QuietLight.tmTheme.json", "QuietLight"))
-
-        applyThemeBasedOnConfiguration()
     }
 
     private fun setupHooks() {
@@ -333,13 +324,5 @@ class App : Application() {
 
             PluginLoader.loadPlugin(dir, plugin)
         }
-    }
-
-    fun loadTheme(fileName: String, themeName: String): ThemeModel {
-        val inputStream =
-            FileProviderRegistry.getInstance().tryGetInputStream("textmate/$fileName")
-                ?: throw FileNotFoundException("Theme file not found: $fileName")
-        val source = IThemeSource.fromInputStream(inputStream, fileName, null)
-        return ThemeModel(source, themeName)
     }
 }

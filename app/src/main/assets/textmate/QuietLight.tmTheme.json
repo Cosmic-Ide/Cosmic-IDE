@@ -62,7 +62,7 @@
       "name": "Keywords",
       "scope": "keyword, storage",
       "settings": {
-        "foreground": "#4B83CD"
+        "foreground": "#4B8ECD"
       }
     },
     {
@@ -120,7 +120,7 @@
       "name": "Numbers, Characters",
       "scope": "constant.numeric, constant.character, constant",
       "settings": {
-        "foreground": "#AB6526"
+        "foreground": "#888888"
       }
     },
     {
@@ -171,14 +171,14 @@
     },
     {
       "name": "HTML: Doctype Declaration",
-      "scope": "meta.tag.sgml.doctype, meta.tag.sgml.doctype string, meta.tag.sgml.doctype\n                    entity.name.tag, meta.tag.sgml punctuation.definition.tag.html\n                ",
+      "scope": "meta.tag.sgml.doctype, meta.tag.sgml.doctype string, meta.tag.sgml.doctype entity.name.tag, meta.tag.sgml punctuation.definition.tag.html",
       "settings": {
         "foreground": "#AAAAAA"
       }
     },
     {
       "name": "HTML: Tags",
-      "scope": "meta.tag, punctuation.definition.tag.html,\n                    punctuation.definition.tag.begin.html, punctuation.definition.tag.end.html\n                ",
+      "scope": "meta.tag, punctuation.definition.tag.html, punctuation.definition.tag.begin.html, punctuation.definition.tag.end.html",
       "settings": {
         "foreground": "#91B3E0"
       }
@@ -216,7 +216,7 @@
     },
     {
       "name": "HTML: Attribute Names",
-      "scope": "meta.tag entity.other.attribute-name, entity.other.attribute-name.html\n                ",
+      "scope": "meta.tag entity.other.attribute-name, entity.other.attribute-name.html",
       "settings": {
         "foreground": "#91B3E0"
       }
@@ -234,7 +234,7 @@
     },
     {
       "name": "CSS: Selectors",
-      "scope": "meta.selector, meta.selector entity, meta.selector entity punctuation,\n                    entity.name.tag.css\n                ",
+      "scope": "meta.selector, meta.selector entity, meta.selector entity punctuation, entity.name.tag.css",
       "settings": {
         "foreground": "#7A3E9D"
       }
@@ -248,7 +248,7 @@
     },
     {
       "name": "CSS: Property Values",
-      "scope": "meta.property-value, meta.property-value constant.other,\n                    support.constant.property-value\n                ",
+      "scope": "meta.property-value, meta.property-value constant.other, support.constant.property-value",
       "settings": {
         "foreground": "#448C27"
       }
@@ -409,6 +409,5 @@
         "foreground": "#434343"
       }
     }
-  ],
-  "uuid": "231D6A91-5FD1-4CBE-BD2A-0F36C08693F1"
+  ]
 }

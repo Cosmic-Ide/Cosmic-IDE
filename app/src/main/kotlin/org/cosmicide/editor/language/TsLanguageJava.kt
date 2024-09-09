@@ -172,12 +172,12 @@ class TsLanguageJava(
             project: Project,
             file: File
         ) = TsLanguageJava(
-            Util.createLanguageSpec(
+            TreeSitterUtil.createLanguageSpec(
                 TS_LANGUAGE_JAVA,
                 editor.context.assets,
                 "java"
             ),
-            { Util.applyTheme(it) },
+            { TreeSitterUtil.applyTheme(it) },
             editor,
             project,
             file

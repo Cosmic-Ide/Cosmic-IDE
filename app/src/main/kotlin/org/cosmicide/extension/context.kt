@@ -12,6 +12,9 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.TypedValue
 import androidx.core.content.ContextCompat
+import com.google.android.material.color.MaterialColors
+import okhttp3.internal.toHexString
+
 
 fun Context.copyToClipboard(text: String) {
     val clipboard = ContextCompat.getSystemService(this, ClipboardManager::class.java)!!
@@ -20,4 +23,8 @@ fun Context.copyToClipboard(text: String) {
 
 fun Context.getDip(input: Float): Float {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, input, resources.displayMetrics)
+}
+
+fun Context.getDynamicColor(colorId: Int): String {
+    return "#" + MaterialColors.getColor(this, colorId, null).toHexString()
 }

@@ -16,7 +16,7 @@ import io.github.rosemoe.sora.editor.ts.predicate.builtin.MatchPredicate
 import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
-object Util {
+object TreeSitterUtil {
     fun applyTheme(desc: TsThemeBuilder) {
         desc.apply {
             TextStyle.makeStyle(

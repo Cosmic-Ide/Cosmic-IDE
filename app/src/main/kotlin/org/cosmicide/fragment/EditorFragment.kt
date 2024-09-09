@@ -24,7 +24,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.widget.treeview.OnItemClickListener
+import com.widget.treeview.OnTreeItemClickListener
+import com.widget.treeview.TreeUtils.toNodeList
 import com.widget.treeview.TreeViewAdapter
 import dev.pranav.navigation.KtNavigationProvider
 import dev.pranav.navigation.NavigationProvider
@@ -122,8 +123,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         })
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     binding.apply {
@@ -141,14 +141,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                             fileViewModel.removeAll()
                             parentFragmentManager.popBackStack()
                         }
+                    }
                 }
-            }
-        })
+            })
 
         TabLayoutMediator(binding.tabLayout, binding.pager, true, false) { tab, position ->
             tab.text = fileViewModel.files.value!![position].name
             tab.view.setOnLongClickListener {
-                Log.d("EditorFragment", "onLongClick: $position")
                 showMenu(it, R.menu.tab_menu, position)
                 true
             }
@@ -159,7 +158,32 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         fileViewModel.files.observe(viewLifecycleOwner, ::handleFilesUpdate)
 
         fileViewModel.currentPosition.observe(viewLifecycleOwner) { pos ->
-            if (pos == -1) return@observe
+            binding.toolbar.apply {
+                if (pos == -1) {
+                    menu.findItem(R.id.nav_items).apply {
+                        isVisible = false
+                    }
+                    menu.findItem(R.id.undo).apply {
+                        isVisible = false
+                    }
+                    menu.findItem(R.id.redo).apply {
+                        isVisible = false
+                    }
+                    return@observe
+                } else {
+                    menu.findItem(R.id.nav_items).apply {
+                        isVisible = true
+                    }
+                    menu.findItem(R.id.undo).apply {
+                        isVisible = true
+                    }
+                    menu.findItem(R.id.redo).apply {
+                        isVisible = true
+                    }
+                }
+            }
+
+
             if (binding.drawer.isOpen) binding.drawer.close()
             val tab = binding.tabLayout.getTabAt(pos)
             if (tab != null && tab.isSelected.not()) {
@@ -175,11 +199,11 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun initTreeView() {
         binding.included.recycler.apply {
-            val nodes = TreeViewAdapter.merge(project.root)
+            val nodes = project.root.toNodeList()
             layoutManager = LinearLayoutManager(context)
             adapter = TreeViewAdapter(context, nodes).apply {
-                setOnItemClickListener(object : OnItemClickListener {
-                    override fun onItemClick(v: View, position: Int) {
+                setOnItemClickListener(object : OnTreeItemClickListener {
+                    override fun onItemClick(view: View, position: Int) {
                         val file = nodes[position].value
                         if (file.exists().not() || file.isDirectory) return
                         if (file.isFile) {
@@ -187,8 +211,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         }
                     }
 
-                    override fun onItemLongClick(v: View, position: Int) {
-                        showTreeViewMenu(v, nodes[position].value)
+                    override fun onItemLongClick(view: View, position: Int) {
+                        showTreeViewMenu(view, nodes[position].value)
                     }
                 })
             }
@@ -315,12 +339,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                                                 val name = split[0].trim()
                                                 val url = split[1].trim()
 
-                                                add(
-                                                    object : Repository {
-                                                        override fun getName() = name
-                                                        override fun getURL() = url
-                                                    }
-                                                )
+                                                add(object : Repository {
+                                                    override fun getName() = name
+                                                    override fun getURL() = url
+                                                })
                                             }
                                         }
                                         val artifact = try {
@@ -469,8 +491,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         when (language) {
             is Language.Java -> {
                 val psiJavaFile = FileFactoryProvider.getPsiJavaFile(
-                    editor.file.name,
-                    editor.editor.text.toString()
+                    editor.file.name, editor.editor.text.toString()
                 )
 
                 if (psiJavaFile.classes.isEmpty()) {
@@ -504,8 +525,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun showSymbols(navItems: List<NavigationProvider.NavigationItem>, editor: IdeEditor) {
         val binding = NavigationElementsBinding.inflate(layoutInflater)
-        binding.elementList.adapter =
-            NavAdapter(requireContext(), navItems, editor.text.indexer)
+        binding.elementList.adapter = NavAdapter(requireContext(), navItems, editor.text.indexer)
         val bottomSheet = BottomSheetDialog(requireContext())
         binding.elementList.setOnItemClickListener { _, _, position, _ ->
             val item = navItems[position]
@@ -655,11 +675,11 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     getCurrentFragment()?.hideWindows()
                     navigateToCompileInfoFragment(
                         file.absolutePath.replace(
-                            project.srcDir.absolutePath + "/",
-                            ""
+                            project.srcDir.absolutePath + "/", ""
                         )
                     )
                 }
+
                 R.id.create_kotlin_class -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     binding.textInputLayout.suffixText = ".kt"

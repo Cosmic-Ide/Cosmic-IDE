@@ -68,7 +68,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
         binding.infoEditor.apply {
             setEditorLanguage(TextMateLanguage.create("source.build", false))
-            isWordwrap = true
         }
 
         binding.toolbar.title = "Running ${project.name}"

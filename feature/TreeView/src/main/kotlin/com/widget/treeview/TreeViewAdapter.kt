@@ -23,58 +23,46 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import com.unnamed.b.atv.R
+import com.widget.treeview.TreeUtils.toNodeList
 import java.io.File
 
-interface OnItemClickListener {
-    fun onItemClick(v: View, position: Int)
-
-    fun onItemLongClick(v: View, position: Int)
+interface OnTreeItemClickListener {
+    fun onItemClick(view: View, position: Int)
+    fun onItemLongClick(view: View, position: Int)
 }
 
 class TreeViewAdapter(
-    val context: Context,
-    var data: MutableList<Node<File>>
+    context: Context,
+    private var nodes: MutableList<Node<File>>
 ) : RecyclerView.Adapter<TreeViewAdapter.ViewHolder>() {
 
-    private val icFile = ResourcesCompat.getDrawable(
+    private val fileIcon = ResourcesCompat.getDrawable(
         context.resources,
         R.drawable.outline_insert_drive_file_24,
         context.theme
     )
-    private val icFolder = ResourcesCompat.getDrawable(
+    private val folderIcon = ResourcesCompat.getDrawable(
         context.resources,
         R.drawable.outline_folder_24,
         context.theme
     )
-    private val icChevronRight = ResourcesCompat.getDrawable(
+    private val chevronRightIcon = ResourcesCompat.getDrawable(
         context.resources,
         R.drawable.round_chevron_right_24,
         context.theme
-    )
-    private val icExpandMore = ResourcesCompat.getDrawable(
+    )!!
+    private val expandMoreIcon = ResourcesCompat.getDrawable(
         context.resources,
         R.drawable.round_expand_more_24,
         context.theme
-    )
+    )!!
 
-    private var listener: OnItemClickListener? = null
+    private var listener: OnTreeItemClickListener? = null
 
-    companion object {
-        fun merge(root: File): MutableList<Node<File>> {
-            // child files
-            val list = root.listFiles()?.toMutableList() ?: return mutableListOf()
-            // dir with sorted
-            val dirs = list.filter { it.isDirectory }.sortedBy { it.name }
-            // file with sorted
-            val files = (list - dirs.toSet()).sortedBy { it.name }
-            // file to node
-            return (dirs + files).map { Node(it) }.toMutableList()
-        }
-    }
-
-    fun setOnItemClickListener(listener: OnItemClickListener?) {
+    fun setOnItemClickListener(listener: OnTreeItemClickListener?) {
         this.listener = listener
     }
 
@@ -85,84 +73,78 @@ class TreeViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val node = data[position]
+        val node = nodes[position]
 
-        // set itemView margin
-        holder.itemView.setPaddingRelative(node.level * 35, 0, 0, 0)
+        val indentation = node.depth * 36
+        holder.itemView.setPaddingRelative(indentation, 0, 0, 0)
 
         if (node.value.isDirectory) {
-            if (!node.isExpand) {
-                holder.expandView.setImageDrawable(icChevronRight)
-            } else {
-                holder.expandView.setImageDrawable(icExpandMore)
-            }
-
-            holder.fileView.setPadding(0, 0, 0, 0)
-            holder.fileView.setImageDrawable(icFolder)
+            holder.expandView.setImageDrawable(if (!node.isExpanded) chevronRightIcon else expandMoreIcon)
+            holder.fileView.setPadding(0)
+            holder.fileView.setImageDrawable(folderIcon)
         } else {
-            // non-directory not show the expand icon
             holder.expandView.setImageDrawable(null)
-            // padding
-            holder.fileView.setPadding(icChevronRight!!.intrinsicWidth, 0, 0, 0)
-            holder.fileView.setImageDrawable(icFile)
+            holder.fileView.setPaddingRelative(chevronRightIcon.intrinsicWidth, 0, 0, 0)
+            holder.fileView.setImageDrawable(fileIcon)
         }
 
         holder.textView.text = node.value.name
 
         holder.itemView.setOnClickListener {
             if (node.value.isDirectory) {
-                var parent = node
-                var child: List<Node<File>>
-                // expand and collapsed
-                if (!node.isExpand) {
-                    var index = position
-                    var count = 0
-                    // only one child directory
-                    do {
-                        child = merge(parent.value)
-                        data.addAll(index + 1, child)
-                        TreeView.add(parent, child)
-
-                        if (child.isNotEmpty()) {
-                            parent = child[0]
-                            count += child.size
-                            index++
-                        }
-                    } while (child.size == 1 && child[0].value.isDirectory)
-                    // refresh data
-                    notifyItemRangeInserted(position + 1, count)
-                } else {
-                    child = TreeView.getChildren(parent)
-                    data.removeAll(child.toSet())
-                    TreeView.remove(parent, parent.child)
-                    // refresh data
-                    notifyItemRangeRemoved(position + 1, child.size)
-                }
-
-                // refresh data at position
-                notifyItemChanged(position)
+                toggleDirectory(node, position)
             }
-
-            // callback
             listener?.onItemClick(it, position)
         }
 
         holder.itemView.setOnLongClickListener {
-            // callback
             listener?.onItemLongClick(it, position)
-            return@setOnLongClickListener true
+            true
         }
+    }
+
+    private fun toggleDirectory(node: Node<File>, position: Int) {
+        if (!node.isExpanded) {
+            expandDirectory(node, position)
+        } else {
+            collapseDirectory(node, position)
+        }
+        notifyItemChanged(position)
+    }
+
+    private fun expandDirectory(node: Node<File>, position: Int) {
+        var parent = node
+        var children: List<Node<File>>
+        var index = position
+        var count = 0
+        do {
+            children = parent.value.toNodeList()
+            nodes.addAll(index + 1, children)
+            TreeUtils.addChildren(parent, children)
+
+            if (children.isNotEmpty()) {
+                parent = children[0]
+                count += children.size
+                index++
+            }
+        } while (children.size == 1 && children[0].value.isDirectory)
+        notifyItemRangeInserted(position + 1, count)
+    }
+
+    private fun collapseDirectory(node: Node<File>, position: Int) {
+        val descendants = TreeUtils.getDescendants(node)
+        nodes.removeAll(descendants.toSet())
+        TreeUtils.removeChildren(node)
+        notifyItemRangeRemoved(position + 1, descendants.size)
     }
 
     override fun getItemViewType(position: Int) = position
 
-    override fun getItemCount() = data.size
+    override fun getItemCount() = nodes.size
 
-    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-
-        val expandView: ImageView = v.findViewById(R.id.expand)
-        val fileView: ImageView = v.findViewById(R.id.file_view)
-        val textView: TextView = v.findViewById(R.id.text_view)
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val expandView: ImageView = view.findViewById(R.id.expand)
+        val fileView: ImageView = view.findViewById(R.id.file_view)
+        val textView: TextView = view.findViewById(R.id.text_view)
     }
 }
-

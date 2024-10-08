@@ -362,6 +362,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                                         }
                                         try {
                                             artifact.downloadArtifact(project.libDir)
+                                            project.libDir.walk().filter { it.extension != "jar" }.forEach { it.delete() }
                                             sheet.dismiss()
                                         } catch (e: Exception) {
                                             e.printStackTrace()

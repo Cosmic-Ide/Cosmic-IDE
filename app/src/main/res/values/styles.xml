@@ -4,12 +4,9 @@
   ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
   -->
-
 <resources>
-
     <style name="Widget.CosmicIde.ListItemCard" parent="Widget.Material3.CardView.Filled">
         <item name="android:layout_marginHorizontal">16dp</item>
         <item name="android:layout_marginVertical">8dp</item>
     </style>
-
 </resources>

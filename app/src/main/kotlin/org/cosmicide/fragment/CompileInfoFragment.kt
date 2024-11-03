@@ -92,7 +92,6 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
         parentFragmentManager.commit {
             add(R.id.fragment_container, ProjectOutputFragment())
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 }

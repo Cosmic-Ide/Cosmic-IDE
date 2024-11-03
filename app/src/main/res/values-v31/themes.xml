@@ -14,9 +14,11 @@
     <style name="Theme.CosmicIde" parent="Theme.CosmicIde.BaseV31" />
 
     <style name="Theme.CosmicIde.Start" parent="Theme.SplashScreen">
+        <!-- Android framework -->
+        <item name="android:navigationBarColor">@color/logo_background</item>
+        <item name="android:statusBarColor">@color/logo_background</item>
+
         <item name="windowSplashScreenBackground">@color/logo_background</item>
-        <item name="android:splashScreenTheme">@style/Theme.CosmicIde.Flamingo</item>
-        <item name="windowSplashScreenIconBackgroundColor">?attr/colorSurface</item>
-        <item name="postSplashScreenTheme">@style/Theme.CosmicIde.Pyro</item>
+        <item name="postSplashScreenTheme">@style/Theme.CosmicIde</item>
     </style>
 </resources>

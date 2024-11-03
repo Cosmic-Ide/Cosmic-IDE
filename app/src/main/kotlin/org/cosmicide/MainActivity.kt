@@ -39,26 +39,8 @@ import rikka.shizuku.ShizukuProvider
 
 class MainActivity : AppCompatActivity() {
 
-    var themeInt = 0
     private lateinit var binding: ActivityMainBinding
     val shizukuPermissionCode = 1
-
-    override fun onCreateView(
-        parent: View?,
-        name: String,
-        context: Context,
-        attrs: AttributeSet
-    ): View? {
-        val accent = Prefs.appAccent
-
-        themeInt = CommonUtils.getAccent(accent)
-        setTheme(themeInt)
-
-        if (themeInt == R.style.Theme_CosmicIde)
-            DynamicColors.applyToActivityIfAvailable(this)
-
-        return super.onCreateView(parent, name, context, attrs)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()

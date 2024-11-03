@@ -8,7 +8,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("dev.rikka.tools.materialthemebuilder")
     id("com.google.gms.google-services")
 }
 
@@ -145,32 +144,6 @@ fun getGitCommit(): String {
     } catch (e: Exception) {
         ""
     }
-}
-
-materialThemeBuilder {
-    themes {
-        for ((name, color) in listOf(
-            "Pyro" to "#EF7A35",
-            "indigo" to "#3F51B5",
-            "flamingo" to "#E91E63",
-            "mint" to "#009688",
-            "emerald" to "#4CAF50",
-            "azure" to "#2196F3",
-        )) {
-            create(name) {
-                primaryColor = color
-                lightThemeFormat = "Theme.CosmicIde.%s.Light"
-                lightThemeParent = "Theme.CosmicIde"
-                darkThemeFormat = "Theme.CosmicIde.%s.Dark"
-                darkThemeParent = "Theme.CosmicIde"
-
-                isDynamicColors = false
-            }
-        }
-    }
-
-    generatePaletteAttributes = true
-    packageName = "org.cosmicide"
 }
 
 configurations.all {

@@ -52,7 +52,6 @@ class InstallResourcesFragment : BaseBindingFragment<InstallResourcesFragmentBin
                 withContext(Dispatchers.Main) {
                     parentFragmentManager.commit {
                         replace(R.id.fragment_container, ProjectFragment())
-                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                 }
             }

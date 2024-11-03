@@ -46,7 +46,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                     if (isRunning) {
                         parentFragmentManager.commit {
                             replace(R.id.fragment_container, ProjectOutputFragment())
-                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                         }
                     }
                     text.insert(text.cursor.rightLine, text.cursor.rightColumn, "--- Stopped ---\n")
@@ -57,7 +56,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 R.id.cancel -> {
                     parentFragmentManager.commit {
                         remove(this@ProjectOutputFragment)
-                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                     }
                     true
                 }
@@ -74,7 +72,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         binding.toolbar.setNavigationOnClickListener {
             parentFragmentManager.commit {
                 remove(this@ProjectOutputFragment)
-                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
             }
         }
 

@@ -30,7 +30,7 @@ abstract class BaseBindingFragment<T : ViewBinding> : Fragment() {
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // applyTransitions()
+        applyTransitions()
 
         if (isBackHandled.not()) {
             requireActivity().onBackPressedDispatcher.addCallback(this) {

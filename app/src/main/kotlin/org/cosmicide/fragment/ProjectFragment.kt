@@ -130,7 +130,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                     parentFragmentManager.commit {
                         replace(R.id.fragment_container, SettingsFragment())
                         addToBackStack(null)
-                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                     true
                 }
@@ -262,7 +261,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                 setPositiveButton("Ok") { _, _ ->
                     parentFragmentManager.commit {
                         replace(R.id.fragment_container, SettingsFragment())
-                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                 }
                 show()
@@ -403,7 +401,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         parentFragmentManager.commit {
             add(R.id.fragment_container, NewProjectFragment())
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 
@@ -415,7 +412,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                 }
             })
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 }

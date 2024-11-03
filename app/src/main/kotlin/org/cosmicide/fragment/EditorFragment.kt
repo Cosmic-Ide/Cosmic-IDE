@@ -386,7 +386,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         parentFragmentManager.commit {
                             add(R.id.fragment_container, ChatFragment())
                             addToBackStack(null)
-                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         }
                         true
                     }
@@ -395,7 +394,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         parentFragmentManager.commit {
                             add(R.id.fragment_container, GitFragment())
                             addToBackStack(null)
-                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         }
                         true
                     }
@@ -604,7 +602,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         parentFragmentManager.commit {
             add(R.id.fragment_container, CompileInfoFragment())
             addToBackStack(null)
-            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 
@@ -612,7 +609,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         parentFragmentManager.commit {
             add(R.id.fragment_container, SettingsFragment())
             addToBackStack(null)
-            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 

@@ -238,7 +238,6 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
 
                             activity.supportFragmentManager.commit {
                                 replace(R.id.fragment_container, InstallResourcesFragment())
-                                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                             }
                         }
                     }

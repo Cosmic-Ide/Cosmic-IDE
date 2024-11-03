@@ -11,7 +11,6 @@ object PreferenceKeys {
 
     // Appearance
     const val APP_THEME = "app_theme"
-    const val APP_ACCENT = "app_accent"
 
     // Compiler
     const val COMPILER_USE_FJFS = "use_fast_jar_file_system"

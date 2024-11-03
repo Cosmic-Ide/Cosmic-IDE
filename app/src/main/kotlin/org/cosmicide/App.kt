@@ -292,7 +292,6 @@ class App : Application() {
 
         if (Prefs.isInitialized) {
             applyThemeBasedOnConfiguration()
-            setTheme(CommonUtils.getAccent(Prefs.appTheme))
         }
     }
 

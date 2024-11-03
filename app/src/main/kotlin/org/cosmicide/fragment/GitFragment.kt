@@ -96,7 +96,6 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                     parentFragmentManager.popBackStack()
                     parentFragmentManager.commit {
                         replace(R.id.fragment_container, SettingsFragment()).addToBackStack(null)
-                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     }
                 }.setNegativeButton("No") { _, _ ->
                     parentFragmentManager.popBackStack()

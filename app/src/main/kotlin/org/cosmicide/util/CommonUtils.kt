@@ -66,18 +66,6 @@ object CommonUtils {
         .usePlugin(HtmlPlugin.create())
         .build()
 
-    fun getAccent(accent: String): Int {
-        return when (accent) {
-            "default" -> R.style.Theme_CosmicIde
-            "pyro" -> R.style.Theme_CosmicIde_Pyro
-            "indigo" -> R.style.Theme_CosmicIde_Indigo
-            "flamingo" -> R.style.Theme_CosmicIde_Flamingo
-            "mint" -> R.style.Theme_CosmicIde_Mint
-            "emerald" -> R.style.Theme_CosmicIde_Emerald
-            else -> R.style.Theme_CosmicIde
-        }
-    }
-
     fun Activity.isShizukuGranted(): Boolean {
         if (Shizuku.pingBinder().not()) {
             Log.d("Shizuku", "Shizuku not installed")

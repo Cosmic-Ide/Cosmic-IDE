@@ -33,9 +33,6 @@ object Prefs {
     val appTheme: String
         get() = prefs.getString("app_theme", "auto") ?: "auto"
 
-    val appAccent: String
-        get() = prefs.getString("app_accent", "default") ?: "default"
-
     val useFastJarFs: Boolean
         get() = prefs.getBoolean("use_fastjarfs", true)
 

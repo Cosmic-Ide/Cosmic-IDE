@@ -32,15 +32,6 @@ class AppearanceSettings(private val activity: MainActivity) : SettingsProvider 
     private val themeItems: List<SelectionItem>
         get() = themeValues.zip(themeOptions).map { SelectionItem(it.first, it.second, null) }
 
-    private val accentItems = listOf(
-        SelectionItem("default", "default", null),
-        SelectionItem("pyro", "pyro", null),
-        SelectionItem("indigo", "indigo", null),
-        SelectionItem("flamingo", "flamingo", null),
-        SelectionItem("mint", "mint", null),
-        SelectionItem("emerald", "emerald", null),
-    )
-
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
             icon = ResourcesCompat.getDrawable(
@@ -66,23 +57,6 @@ class AppearanceSettings(private val activity: MainActivity) : SettingsProvider 
                         )?.setApplicationNightMode(theme)
                     } else {
                         AppCompatDelegate.setDefaultNightMode(if (theme == UiModeManager.MODE_NIGHT_AUTO) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM else theme)
-                    }
-                }
-            }
-
-            singleChoice(PreferenceKeys.APP_ACCENT, accentItems) {
-                initialSelection = accentItems.first().key
-                title = "Choose Accent Color"
-                defaultOnSelectionChange {
-                    if (activity.themeInt != CommonUtils.getAccent(it)) {
-                        val intent = Intent(
-                            activity,
-                            MainActivity::class.java
-                        ).apply {
-                            action = Intent.ACTION_VIEW
-                        }
-                        activity.finishAffinity()
-                        activity.startActivity(intent)
                     }
                 }
             }

@@ -4,20 +4,17 @@
   ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
   -->
-
 <resources>
-
-    <style name="Theme.CosmicIde.Base" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:fontFamily">@font/inter</item>
+    <style name="Theme.CosmicIde.Base" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+        <!-- Android framework -->
         <item name="android:overScrollMode">never</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
 
-        <item name="android:navigationBarColor">
-            @android:color/transparent
-        </item>
+        <!-- Font -->
+        <item name="android:fontFamily">@font/inter</item>
         <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="Theme.CosmicIde" parent="Theme.CosmicIde.Base" />
-
 </resources>

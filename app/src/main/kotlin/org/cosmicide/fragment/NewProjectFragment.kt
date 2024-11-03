@@ -68,7 +68,6 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             if (success) {
                 parentFragmentManager.commit {
                     remove(this@NewProjectFragment)
-                    setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                 }
             }
         }
@@ -104,7 +103,6 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
         parentFragmentManager.commit {
             add(R.id.fragment_container, EditorFragment.newInstance(project))
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 

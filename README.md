@@ -1,3 +1,7 @@
+> [!NOTE]
+> A new version is currently being developed that will fix most of the errors contained in the latest versions of the application.
+> Release time: unknown.
+
 # Cosmic IDE
 
 [![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-Ide)](https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE)

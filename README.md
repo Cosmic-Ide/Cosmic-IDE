@@ -1,6 +1,6 @@
 > [!NOTE]
-> A new version is currently being developed that will fix most of the errors contained in the latest versions of the application.
-> Release time: unknown.
+> ~~A new version is currently being developed that will fix most of the errors contained in the latest versions of the application.
+> Release time: unknown.~~
 
 # Cosmic IDE
 

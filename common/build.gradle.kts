@@ -47,7 +47,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.databinding:viewbinding:8.10.1")
 
     "prodImplementation"(projects.feature.appwrite)

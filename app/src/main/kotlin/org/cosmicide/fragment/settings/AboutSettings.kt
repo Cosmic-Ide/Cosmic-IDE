@@ -10,10 +10,7 @@ package org.cosmicide.fragment.settings
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.widget.EditText
@@ -21,7 +18,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat.*
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
@@ -29,11 +25,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.expandText
 import de.Maxr1998.modernpreferences.helpers.onClick
+import de.Maxr1998.modernpreferences.helpers.onSelectionChange
 import de.Maxr1998.modernpreferences.helpers.pref
 import de.Maxr1998.modernpreferences.helpers.singleChoice
 import de.Maxr1998.modernpreferences.helpers.switch
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
-import de.Maxr1998.modernpreferences.preferences.choice.SingleChoiceDialogPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -48,6 +44,8 @@ import org.cosmicide.util.CommonUtils.isShizukuGranted
 import org.cosmicide.util.ResourceUtil
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
+import androidx.core.net.toUri
+import androidx.core.content.edit
 
 class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
     @SuppressLint("PrivateResource")
@@ -73,15 +71,14 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                 summary =
                     "Donate to the developers. This will help us to keep the project alive. The donations will be distributed among the developers. Thank you for your support!"
 
-                selectionChangeListener =
-                    SingleChoiceDialogPreference.OnSelectionChangeListener { _, selection ->
+                onSelectionChange { selection ->
                         Analytics.logEvent("donate", selection)
                         when (selection) {
                             "paypal" -> {
                                 activity.startActivity(
                                     Intent(
                                         Intent.ACTION_VIEW,
-                                        Uri.parse("https://www.paypal.com/paypalme/PranavPurwar")
+                                        "https://www.paypal.com/paypalme/PranavPurwar".toUri()
                                     )
                                 )
                             }
@@ -90,7 +87,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                                 activity.startActivity(
                                     Intent(
                                         Intent.ACTION_VIEW,
-                                        Uri.parse("https://www.patreon.com/cosmicide")
+                                        "https://www.patreon.com/cosmicide".toUri()
                                     )
                                 )
                             }
@@ -109,22 +106,21 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                     count++
                     if (count == 7) {
                         Analytics.logEvent("is_dev", Prefs.experimentsEnabled)
-                        val editor = PreferenceManager.getDefaultSharedPreferences(activity).edit()
-                        if (Prefs.experimentsEnabled) {
-                            editor.putBoolean("experiments_enabled", false)
-                            Toast.makeText(
-                                activity,
-                                "You are no longer a developer",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        } else {
-                            editor.putBoolean("experiments_enabled", true)
-                            Toast.makeText(activity, "You are a developer", Toast.LENGTH_LONG)
-                                .show()
+                        PreferenceManager.getDefaultSharedPreferences(activity).edit {
+                            if (Prefs.experimentsEnabled) {
+                                putBoolean("experiments_enabled", false)
+                                Toast.makeText(
+                                    activity,
+                                    "You are no longer a developer",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                putBoolean("experiments_enabled", true)
+                                Toast.makeText(activity, "You are a developer", Toast.LENGTH_LONG)
+                                    .show()
+                            }
                         }
-                        editor.apply()
                     }
-                    val handler = Handler(Looper.myLooper()!!)
                     // We don't wanna show the copy to clipboard dialog multiple times
                     if (count == 1) {
                         val clipboardManager =
@@ -145,7 +141,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                     activity.startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://github.com/Cosmic-IDE/Cosmic-IDE")
+                            "https://github.com/Cosmic-IDE/Cosmic-IDE".toUri()
                         )
                     )
                     true
@@ -160,10 +156,10 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                             activity.startActivity(
                                 Intent(
                                     Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                    Uri.parse("package:" + activity.packageName)
+                                    ("package:" + activity.packageName).toUri()
                                 )
                             )
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                             activity.startActivity(intent)
                         }
@@ -172,7 +168,7 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         activity.startActivity(
                             Intent(
                                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                Uri.parse("package:" + activity.packageName)
+                                ("package:" + activity.packageName).toUri()
                             )
                         )
                     }

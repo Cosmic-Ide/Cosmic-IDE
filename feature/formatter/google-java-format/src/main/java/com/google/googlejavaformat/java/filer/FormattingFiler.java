@@ -17,6 +17,9 @@ package com.google.googlejavaformat.java.filer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.googlejavaformat.java.Formatter;
+
+import org.jspecify.annotations.Nullable;
+
 import java.io.IOException;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -24,7 +27,6 @@ import javax.lang.model.element.Element;
 import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A decorating {@link Filer} implementation which formats Java source files with a {@link

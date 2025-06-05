@@ -24,6 +24,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.widget.treeview.Node
 import com.widget.treeview.OnTreeItemClickListener
 import com.widget.treeview.TreeUtils.toNodeList
 import com.widget.treeview.TreeViewAdapter

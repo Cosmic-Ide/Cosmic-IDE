@@ -5,51 +5,55 @@
   ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorSurfaceContainerLow"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@null">
+        android:background="?colorSurfaceContainer">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
             app:navigationIcon="@drawable/baseline_arrow_back_24"
             app:titleCentered="true"
+            tools:title="Gemini 2.0"
             app:menu="@menu/chat_menu" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="8dp"
+        android:paddingBottom="80dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/conversation_item_received" />
 
     <LinearLayout
         android:id="@+id/chat_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginHorizontal="12dp"
+        android:layout_gravity="bottom"
+        android:background="?colorSurfaceContainer"
+        android:padding="8dp"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="8dp"
         android:orientation="horizontal">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/message_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
             android:layout_weight="1"
             android:background="@null"
             android:gravity="center_vertical"
@@ -79,8 +83,9 @@
                 android:layout_height="match_parent"
                 android:contentDescription="@string/send_message"
                 android:paddingHorizontal="6dp"
+                app:tint="?colorControlActivated"
                 app:srcCompat="@drawable/ic_baseline_send_24" />
         </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

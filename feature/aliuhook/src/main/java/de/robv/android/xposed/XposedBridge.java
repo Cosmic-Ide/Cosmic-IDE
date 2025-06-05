@@ -12,17 +12,8 @@ package de.robv.android.xposed;
 
 import android.util.Log;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 
 @SuppressWarnings({"unused", "JavaDoc"})
 public class XposedBridge {
@@ -50,6 +41,10 @@ public class XposedBridge {
     private static native boolean deoptimize0(Member target);
 
     private static native boolean makeClassInheritable0(Class<?> target);
+
+    private static native Object allocateInstance0(Class<?> clazz);
+
+    private static native boolean invokeConstructor0(Object instance, Constructor<?> constructor, Object[] args);
 
     // Not used for now
     private static native boolean isHooked0(Member target);
@@ -90,7 +85,6 @@ public class XposedBridge {
 
     /**
      * Check if a method is hooked
-     *
      * @param method The method to check
      * @return true if method is hooked
      */
@@ -256,6 +250,36 @@ public class XposedBridge {
             ctor.setAccessible(true);
             return ctor.newInstance(args);
         }
+    }
+
+    /**
+     * Allocate a class instance without calling any constructors.
+     *
+     * @param clazz Target class to allocate
+     * @noinspection unchecked
+     */
+    public static <T> T allocateInstance(Class<T> clazz) {
+        Objects.requireNonNull(clazz);
+        return (T) allocateInstance0(clazz);
+    }
+
+    /**
+     * Invoke a constructor for an already existing instance.
+     * This is most useful in conjunction with {@code sun.misc.Unsafe#allocateInstance(Class)} or
+     * {@link XposedBridge#allocateInstance(Class)} in order to control when the constructor gets called.
+     *
+     * @param instance    A class instance.
+     * @param constructor Constructor located on the instance's class or one of its supertypes.
+     * @param args        Args matching the constructor, if any. Can be null.
+     * @return True if operation was successful
+     */
+    public static <S, T extends S> boolean invokeConstructor(T instance, Constructor<S> constructor, Object... args) {
+        Objects.requireNonNull(instance);
+        Objects.requireNonNull(constructor);
+        if (constructor.isVarArgs())
+            throw new IllegalArgumentException("varargs parameters are not supported");
+        if (args.length == 0) args = null;
+        return invokeConstructor0(instance, constructor, args);
     }
 
     /**

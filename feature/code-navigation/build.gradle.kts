@@ -11,7 +11,7 @@ plugins {
 }
 android {
     namespace = "dev.pranav.navigation"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -34,5 +34,5 @@ android {
 }
 
 dependencies {
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
+    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
 }

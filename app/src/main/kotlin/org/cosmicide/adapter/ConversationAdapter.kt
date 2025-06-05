@@ -9,15 +9,16 @@ package org.cosmicide.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.ai.client.generativeai.type.GenerateContentResponse
+import com.google.genai.ResponseStream
+import com.google.genai.types.GenerateContentResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.databinding.ConversationItemReceivedBinding
 import org.cosmicide.databinding.ConversationItemSentBinding
 import org.cosmicide.util.CommonUtils
+import java.util.concurrent.CompletableFuture
 
 class ConversationAdapter :
     RecyclerView.Adapter<BindableViewHolder<ConversationAdapter.Conversation, *>>() {
@@ -27,20 +28,9 @@ class ConversationAdapter :
     data class Conversation(
         var text: String = "",
         val author: String = "assistant",
-        val flow: Flow<GenerateContentResponse>? = null,
+        val stream: CompletableFuture<ResponseStream<GenerateContentResponse>>? = null,
         var finished: Boolean = false
-    ) {
-        init {
-            if (flow != null) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    flow.collect {
-                        if (finished) return@collect
-                        text = it.text!!
-                    }
-                }
-            }
-        }
-    }
+    )
 
     companion object {
         const val VIEW_TYPE_SENT = 1
@@ -48,14 +38,14 @@ class ConversationAdapter :
     }
 
     fun add(conversation: Conversation) {
-        if (conversations.size != 0)
+        if (conversations.isNotEmpty())
             conversations.last().finished = true
         conversations += conversation
         notifyItemInserted(conversations.lastIndex)
     }
 
-    fun getConversations(): List<Map<String, String>> {
-        return conversations.map { mapOf("text" to it.text, "author" to it.author) }
+    fun getConversations(): List<Pair<String, String>> {
+        return conversations.map { Pair(it.author, it.text) }
     }
 
     override fun onCreateViewHolder(
@@ -118,27 +108,61 @@ class ConversationAdapter :
         BindableViewHolder<Conversation, ConversationItemReceivedBinding>(itemBinding) {
 
         override fun bind(data: Conversation) {
-            val scope = CoroutineScope(Dispatchers.IO)
-
-            scope.launch {
-                if (data.text.isNotEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        stream(data.text)
-                    }
+            // Display existing text immediately
+            if (data.text.isNotEmpty()) {
+                binding.message.apply {
+                    CommonUtils.getMarkwon().setMarkdown(this, data.text)
                 }
-                data.flow!!.collect {
-                    if (data.finished) return@collect
+            }
 
-                    withContext(Dispatchers.Main) {
-                        stream(it.text!!)
-                    }
-                }
+            // Only process the stream if it's not finished yet
+            if (!data.finished && data.stream != null) {
+                processStream(data)
             }
         }
 
-        fun stream(text: String) {
-            binding.message.apply {
-                CommonUtils.getMarkwon().setMarkdown(this, binding.message.text.toString() + text)
+        private fun processStream(data: Conversation) {
+            // Create a dedicated coroutine to handle the stream processing
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    // Wait for the CompletableFuture to complete
+                    val responseStream = data.stream?.get() ?: return@launch
+
+                    var accumulatedText = data.text
+
+                    // Process each response in the stream
+                    for (response in responseStream) {
+                        if (data.finished) break
+
+                        val newText = response.text() ?: ""
+                        if (newText.isNotEmpty()) {
+                            accumulatedText += newText
+
+                            // Update UI on the main thread
+                            withContext(Dispatchers.Main) {
+                                data.text = accumulatedText
+                                binding.message.apply {
+                                    CommonUtils.getMarkwon().setMarkdown(this, accumulatedText)
+                                }
+                            }
+                        }
+                    }
+
+                    // Mark as finished once complete
+                    withContext(Dispatchers.Main) {
+                        data.finished = true
+                    }
+                } catch (e: Exception) {
+                    // Handle errors on the main thread
+                    withContext(Dispatchers.Main) {
+                        val errorMsg = "Error: ${e.message}"
+                        data.text += errorMsg
+                        data.finished = true
+                        binding.message.apply {
+                            CommonUtils.getMarkwon().setMarkdown(this, data.text)
+                        }
+                    }
+                }
             }
         }
     }

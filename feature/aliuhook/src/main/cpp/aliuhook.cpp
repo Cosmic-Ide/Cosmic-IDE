@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <cerrno>
 #include "aliuhook.h"
+#include "invoke_constructor.h"
 
 int AliuHook::android_version = -1;
 pine::ElfImg AliuHook::elf_img; // NOLINT(cert-err58-cpp)
@@ -67,17 +68,13 @@ bool InlineUnhooker(void *func) {
 }
 
 extern "C"
-JNIEXPORT jboolean
-
-JNICALL
+JNIEXPORT jboolean JNICALL
 Java_de_robv_android_xposed_XposedBridge_isHooked0(JNIEnv *env, jclass, jobject method) {
     return lsplant::IsHooked(env, method);
 }
 
 extern "C"
-JNIEXPORT jobject
-
-JNICALL
+JNIEXPORT jobject JNICALL
 Java_de_robv_android_xposed_XposedBridge_hook0(JNIEnv *env, jclass, jobject context,
                                                jobject original,
                                                jobject callback) {
@@ -85,48 +82,58 @@ Java_de_robv_android_xposed_XposedBridge_hook0(JNIEnv *env, jclass, jobject cont
 }
 
 extern "C"
-JNIEXPORT jboolean
-
-JNICALL
+JNIEXPORT jboolean JNICALL
 Java_de_robv_android_xposed_XposedBridge_unhook0(JNIEnv *env, jclass, jobject target) {
     return lsplant::UnHook(env, target);
 }
 
 extern "C"
-JNIEXPORT jboolean
-
-JNICALL
+JNIEXPORT jboolean JNICALL
 Java_de_robv_android_xposed_XposedBridge_deoptimize0(JNIEnv *env, jclass, jobject method) {
     return lsplant::Deoptimize(env, method);
 }
 
 extern "C"
-JNIEXPORT jboolean
-
-JNICALL
+JNIEXPORT jboolean JNICALL
 Java_de_robv_android_xposed_XposedBridge_makeClassInheritable0(JNIEnv *env, jclass, jclass clazz) {
     return lsplant::MakeClassInheritable(env, clazz);
 }
 
 extern "C"
-JNIEXPORT jboolean
-
-JNICALL
+JNIEXPORT jboolean JNICALL
 Java_de_robv_android_xposed_XposedBridge_disableProfileSaver(JNIEnv *, jclass) {
     return disable_profile_saver();
 }
 
 extern "C"
-JNIEXPORT jboolean
-
-JNICALL
+JNIEXPORT jboolean JNICALL
 Java_de_robv_android_xposed_XposedBridge_disableHiddenApiRestrictions(JNIEnv *env, jclass) {
     return disable_hidden_api(env);
 }
 
-JNIEXPORT jint
+extern "C"
+JNIEXPORT jobject JNICALL
+Java_de_robv_android_xposed_XposedBridge_allocateInstance0(JNIEnv *env, jclass, jclass clazz) {
+    return env->AllocObject(clazz);
+}
 
-JNICALL
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_de_robv_android_xposed_XposedBridge_invokeConstructor0(JNIEnv *env, jclass, jobject instance,
+                                                            jobject constructor,
+                                                            jobjectArray args) {
+    jmethodID constructorMethodId = env->FromReflectedMethod(constructor);
+    if (!constructorMethodId) return JNI_FALSE;
+
+    if (!args) {
+        env->CallVoidMethod(instance, constructorMethodId);
+        return JNI_TRUE;
+    } else {
+        return InvokeConstructorWithArgs(env, instance, constructor, args);
+    }
+}
+
+JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
@@ -136,19 +143,14 @@ JNI_OnLoad(JavaVM *vm, void *) {
     page_size_ = static_cast<const size_t>(sysconf(_SC_PAGESIZE));
 
     {
-        char version_str[PROP_VALUE_MAX];
-        if (!__system_property_get("ro.build.version.sdk", version_str)) {
-            LOGE("Failed to obtain SDK int");
-            return JNI_ERR;
-        }
-        long version = std::strtol(version_str, nullptr, 10);
+        int api_level = android_get_device_api_level();
 
-        if (version == 0) {
-            LOGE("Invalid SDK int %s", version_str);
+        if (api_level <= 0) {
+            LOGE("Invalid SDK int %i", api_level);
             return JNI_ERR;
         }
 
-        AliuHook::init(static_cast<int>(version));
+        AliuHook::init(static_cast<int>(api_level));
     }
 
     lsplant::InitInfo initInfo{
@@ -170,5 +172,19 @@ JNI_OnLoad(JavaVM *vm, void *) {
 
     LOGI("lsplant init finished");
 
+    res = LoadInvokeConstructorCache(env, AliuHook::android_version);
+    if (!res) {
+        LOGE("invoke_constructor init failed");
+        return JNI_ERR;
+    }
+
     return JNI_VERSION_1_6;
+}
+
+JNIEXPORT void JNICALL
+JNI_OnUnload(JavaVM *vm, void *) {
+    JNIEnv *env;
+    vm->GetEnv((void **) &env, JNI_VERSION_1_1);
+
+    UnloadInvokeConstructorCache(env);
 }

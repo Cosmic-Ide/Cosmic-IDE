@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.facebook.ktfmt"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -35,6 +35,6 @@ android {
 
 dependencies {
     implementation(projects.feature.formatter.googleJavaFormat)
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
-    implementation("com.google.guava:guava:33.1.0-android")
+    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
+    implementation("com.google.guava:guava:33.4.8-android")
 }

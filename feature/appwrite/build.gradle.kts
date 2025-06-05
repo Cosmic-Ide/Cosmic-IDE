@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "io.appwrite.appwrite"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 21
@@ -35,18 +35,18 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1-Beta")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.12"))
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.16"))
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:okhttp-urlconnection")
     implementation("com.squareup.okhttp3:logging-interceptor")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.13.1")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.fragment:fragment-ktx:1.8.2")
-    implementation("androidx.activity:activity-ktx:1.9.1")
+    implementation("androidx.fragment:fragment-ktx:1.8.7")
+    implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("androidx.browser:browser:1.8.0")
 }

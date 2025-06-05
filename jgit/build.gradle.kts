@@ -28,5 +28,5 @@ dependencies {
         exclude("net.java.dev.jna", "jna")
         exclude("commons-logging", "commons-logging")
     }
-    implementation("com.github.sya-ri:kgit:1.0.6")
+    implementation("com.github.sya-ri:kgit:1.1.0")
 }

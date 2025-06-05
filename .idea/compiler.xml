@@ -5,12 +5,13 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.10.4/90f9629eaa123f88551cc26a64bc386967ee24cc/auto-value-1.10.4.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.11.0/d1fd0e74d20e922145c3fede3f05e246bb6be281/auto-value-1.11.0.jar" />
         </processorPath>
+        <module name="CosmicIDE.feature.genai.main" />
         <module name="CosmicIDE.feature.formatter.google-java-format.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17">
+    <bytecodeTargetLevel target="11">
       <module name="Cosmic_IDE_Rewrite.app" target="17" />
       <module name="CosmicIDE-Rewrite.app" target="20" />
       <module name="CosmicIDE-Rewrite.bardapi" target="17" />
@@ -51,6 +52,9 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="CosmicIDE-Rewrite.feature.formatter.google-java-format.main" options="--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" />
+      <module name="CosmicIDE.feature.formatter.google-java-format" options="--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" />
+      <module name="CosmicIDE.feature.formatter.google-java-format.main" options="--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" />
+      <module name="CosmicIDE.feature.formatter.google-java-format.test" options="--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" />
     </option>
   </component>
 </project>

@@ -34,11 +34,11 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
         LanguageVersion.KOTLIN_2_0,
         LanguageVersion.KOTLIN_2_1
     )
-    private val javaVersionItems: List<SelectionItem>
+    private val javaVersionItems: List<SelectionItem<String>>
         get() = javaVersionValues.zip(javaVersionValues)
             .map { SelectionItem(it.first, it.second, null) }
 
-    private val kotlinVersionItems: List<SelectionItem>
+    private val kotlinVersionItems: List<SelectionItem<String>>
         get() = kotlinVersionValues.map { SelectionItem(it.versionString, it.versionString, null) }
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {

@@ -351,8 +351,8 @@ data class KotlinEnvironment(
 
 
     fun analysisOf(files: List<KtFile>, current: KtFile): Analysis {
-        val bindingTrace = CliBindingTrace()
         val project = files.first().project
+        val bindingTrace = CliBindingTrace(project)
         var componentProvider: ComponentProvider? = null
         analyzerWithCompilerReport.analyzeAndReport(files) {
             componentProvider = logTime("componentProvider") {

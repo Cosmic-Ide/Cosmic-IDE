@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "com.aliucord.aliuhook"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -30,11 +30,12 @@ android {
 
     externalNativeBuild {
         cmake {
+            version = "4.0.2"
             path = file("src/main/cpp/CMakeLists.txt")
         }
     }
 
-    ndkVersion = "27.1.12297006"
+    ndkVersion = "29.0.13113456"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -47,5 +48,5 @@ android {
 
 dependencies {
     implementation("io.github.vvb2060.ndk:dobby:1.2")
-    implementation("org.lsposed.lsplant:lsplant:6.3")
+    implementation("org.lsposed.lsplant:lsplant:6.4")
 }

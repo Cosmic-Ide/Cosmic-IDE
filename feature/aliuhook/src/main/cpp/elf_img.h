@@ -14,7 +14,7 @@
 #include <string_view>
 #include <jni.h>
 #include <stdio.h>
-
+#include <string>
 #if defined(__LP64__)
 typedef Elf64_Ehdr Elf_Ehdr;
 typedef Elf64_Shdr Elf_Shdr;
@@ -59,9 +59,12 @@ namespace pine {
         void Open(const char *path, bool warn_if_symtab_not_found);
 
         void RelativeOpen(const char *elf, bool warn_if_symtab_not_found);
-
         // Pine changed: GetModuleBase is private
         void *GetModuleBase(const char *name);
+
+        void parse(Elf_Ehdr *header, const char *path, bool warn_if_symtab_not_found);
+
+        bool xzdecompress();
 
 #ifdef __LP64__
         static constexpr const char* kSystemLibDir = "/system/lib64/";
@@ -80,6 +83,7 @@ namespace pine {
         off_t size = 0;
         off_t bias = -4396;
         Elf_Ehdr *header = nullptr;
+        Elf_Ehdr *header_debugdata = nullptr;
         Elf_Shdr *section_header = nullptr;
         Elf_Shdr *symtab = nullptr;
         Elf_Shdr *strtab = nullptr;
@@ -95,6 +99,9 @@ namespace pine {
         Elf_Off dynsym_offset = 0;
         Elf_Off symtab_size = 0;
         Elf_Off dynsym_size = 0;
+        Elf_Off debugdata_offset = 0;
+        Elf_Off debugdata_size = 0;
+        std::string elf_debugdata;
     };
 }
 

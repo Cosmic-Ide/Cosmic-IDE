@@ -41,6 +41,13 @@ class GeminiSettings(private val activity: FragmentActivity) : SettingsProvider 
                     "The API key to connect to the Gemini API. You can get one at https://makersuite.google.com/app/apikey"
             }
 
+            editText(PreferenceKeys.GEMINI_MODEL) {
+                title = "Gemini Model"
+                summary =
+                    "The model to use for Gemini. Default is 'gemini-2.0-flash'. Do not change this unless you know what you are doing."
+                defaultValue = "gemini-2.0-flash"
+            }
+
             singleChoice(PreferenceKeys.TEMPERATURE, keys) {
                 title = "temperature"
                 summary =
@@ -62,6 +69,7 @@ class GeminiSettings(private val activity: FragmentActivity) : SettingsProvider 
                 min = 1
                 default = 1
             }
+
 
             seekBar(PreferenceKeys.MAX_TOKENS) {
                 title = "max_tokens"

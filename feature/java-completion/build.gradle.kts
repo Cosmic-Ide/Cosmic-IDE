@@ -11,7 +11,7 @@ plugins {
 }
 android {
     namespace = "org.cosmicide.completion.java"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -46,8 +46,8 @@ android {
     }
 }
 dependencies {
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
-    implementation("com.github.javaparser:javaparser-core:3.25.9")
+    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
+    implementation("com.github.javaparser:javaparser-core:3.26.4")
     implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.9") {
         exclude(group = "com.google.guava", module = "guava")
     }

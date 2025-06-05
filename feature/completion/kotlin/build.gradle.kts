@@ -11,7 +11,7 @@ plugins {
 }
 android {
     namespace = "com.tyron.kotlin.completion"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -46,10 +46,10 @@ android {
 }
 
 dependencies {
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1-Beta")
-    implementation("io.github.Rosemoe.sora-editor:editor:0.23.4-cac2770-SNAPSHOT")
-    implementation("com.google.guava:guava:33.1.0-android")
+    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.23.5")
+    implementation("com.google.guava:guava:33.4.8-android")
 
     implementation(projects.feature.project)
     implementation(projects.common)

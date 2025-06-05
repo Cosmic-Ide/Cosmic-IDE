@@ -14,13 +14,16 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.ai.client.generativeai.type.ServerException
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import com.google.genai.errors.ServerException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,12 +45,12 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
         setupUI(view.context)
         setOnClickListeners()
         setupRecyclerView()
+        setupKeyboardVisibility(view)
         binding.messageText.requestFocus()
     }
 
     private fun setupUI(context: Context) {
         initToolbar()
-        initBackground(context)
         binding.toolbar.title = "Gemini Pro"
     }
 
@@ -82,7 +85,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                         conversationAdapter.getConversations()
                     )
 
-                    val response = ConversationAdapter.Conversation(flow = reply)
+                    val response = ConversationAdapter.Conversation(stream = reply)
                     withContext(Dispatchers.Main) {
                         conversationAdapter.add(response)
                         binding.recyclerview.scrollToPosition(conversationAdapter.itemCount - 1)
@@ -115,21 +118,29 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
         }
     }
 
-    private fun initBackground(context: Context) {
-        val shapeAppearance = ShapeAppearanceModel.builder().setAllCornerSizes(context.getDip(24f)).build()
-        val shapeDrawable = MaterialShapeDrawable(shapeAppearance).apply {
-            initializeElevationOverlay(context)
-            fillColor = ColorStateList.valueOf(
-                MaterialColors.getColor(
-                    context,
-                    com.google.android.material.R.attr.colorSurface,
-                    0
-                )
-            )
-            elevation = 6f
+    private fun setupKeyboardVisibility(view: View) {
+        view.viewTreeObserver.addOnGlobalLayoutListener {
+            val r = Rect()
+            view.getWindowVisibleDisplayFrame(r)
+
+            // Screen height minus visible area = keyboard height
+            val keyboardHeight = view.rootView.height - r.bottom
+
+            if (keyboardHeight > 300) { // Keyboard is visible
+                // Scroll to bottom of conversation when keyboard appears
+                if (conversationAdapter.itemCount > 0) {
+                    binding.recyclerview.post {
+                        binding.recyclerview.scrollToPosition(conversationAdapter.itemCount - 1)
+                    }
+                }
+
+                // Add padding to make sure input field is above keyboard
+                binding.chatLayout.translationY = -keyboardHeight.toFloat()
+            } else {
+                // Reset position when keyboard is hidden
+                binding.chatLayout.translationY = 0f
+            }
         }
-        binding.chatLayout.background = shapeDrawable
-        binding.toolbar.background = shapeDrawable
     }
 }
 

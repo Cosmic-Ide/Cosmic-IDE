@@ -4,6 +4,7 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="jbr-17" />
         <option name="modules">
@@ -24,6 +25,7 @@
             <option value="$PROJECT_DIR$/feature/formatter" />
             <option value="$PROJECT_DIR$/feature/formatter/google-java-format" />
             <option value="$PROJECT_DIR$/feature/formatter/ktfmt" />
+            <option value="$PROJECT_DIR$/feature/genai" />
             <option value="$PROJECT_DIR$/feature/java-completion" />
             <option value="$PROJECT_DIR$/feature/project" />
             <option value="$PROJECT_DIR$/jgit" />
@@ -31,7 +33,6 @@
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

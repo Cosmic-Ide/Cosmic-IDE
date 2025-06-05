@@ -84,28 +84,20 @@ public abstract class XC_MethodHook extends XCallback {
             super();
         }
 
-        /**
-         * The hooked method/constructor.
-         */
+        /** The hooked method/constructor. */
         public Member method;
 
-        /**
-         * The {@code this} reference for an instance method, or {@code null} for static methods.
-         */
+        /** The {@code this} reference for an instance method, or {@code null} for static methods. */
         public Object thisObject;
 
-        /**
-         * Arguments to the method call.
-         */
+        /** Arguments to the method call. */
         public Object[] args;
 
         private Object result = null;
         private Throwable throwable = null;
         /* package */ boolean returnEarly = false;
 
-        /**
-         * Returns the result of the method call.
-         */
+        /** Returns the result of the method call. */
         public Object getResult() {
             return result;
         }
@@ -121,16 +113,12 @@ public abstract class XC_MethodHook extends XCallback {
             this.returnEarly = true;
         }
 
-        /**
-         * Returns the {@link Throwable} thrown by the method, or {@code null}.
-         */
+        /** Returns the {@link Throwable} thrown by the method, or {@code null}. */
         public Throwable getThrowable() {
             return throwable;
         }
 
-        /**
-         * Returns true if an exception was thrown by the method.
-         */
+        /** Returns true if an exception was thrown by the method. */
         public boolean hasThrowable() {
             return throwable != null;
         }
@@ -146,9 +134,7 @@ public abstract class XC_MethodHook extends XCallback {
             this.returnEarly = true;
         }
 
-        /**
-         * Returns the result of the method call, or throws the Throwable caused by it.
-         */
+        /** Returns the result of the method call, or throws the Throwable caused by it. */
         public Object getResultOrThrowable() throws Throwable {
             if (throwable != null)
                 throw throwable;

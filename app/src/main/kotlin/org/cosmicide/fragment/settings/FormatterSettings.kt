@@ -25,11 +25,11 @@ class FormatterSettings(private val activity: FragmentActivity) : SettingsProvid
     private val gjfStyles: Array<String>
         get() = activity.resources.getStringArray(R.array.gjf_styles)
 
-    private val ktfmtStyleItems: List<SelectionItem>
+    private val ktfmtStyleItems: List<SelectionItem<String>>
         get() = ktfmtStyles.zip(ktfmtStyles).map { SelectionItem(it.first, it.second, null) }
-    private val gjfOptionItems: List<SelectionItem>
+    private val gjfOptionItems: List<SelectionItem<String>>
         get() = gjfOptions.zip(gjfOptions).map { SelectionItem(it.first, it.second, null) }
-    private val gjfStyleItems: List<SelectionItem>
+    private val gjfStyleItems: List<SelectionItem<String>>
         get() = gjfStyles.zip(gjfStyles).map { SelectionItem(it.first, it.second, null) }
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {

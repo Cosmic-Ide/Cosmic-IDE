@@ -7,44 +7,36 @@
 
 package org.cosmicide.chat
 
+import android.R.attr.apiKey
 import android.util.Log
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.BlockThreshold
-import com.google.ai.client.generativeai.type.GenerateContentResponse
-import com.google.ai.client.generativeai.type.HarmCategory
-import com.google.ai.client.generativeai.type.SafetySetting
-import com.google.ai.client.generativeai.type.generationConfig
-import kotlinx.coroutines.flow.Flow
+import com.google.genai.Client
+import com.google.genai.ResponseStream
+import com.google.genai.types.GenerateContentConfig
+import com.google.genai.types.GenerateContentResponse
 import org.cosmicide.BuildConfig
 import org.cosmicide.common.Prefs
+import java.util.concurrent.CompletableFuture
 
 object ChatProvider {
 
-    private val safetySettings = listOf(
-        SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE), // should we block this?
-        SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE),
-        SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE),
-        SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.NONE),
-    )
+    private val client = Client.builder()
+        .apiKey(Prefs.geminiApiKey.ifEmpty { BuildConfig.GEMINI_API_KEY })
+        .build()
 
-    private var generativeModel = GenerativeModel(
-        apiKey = BuildConfig.GEMINI_API_KEY,
-        modelName = "gemini-1.0-pro-latest",
-        safetySettings = safetySettings,
-        generationConfig = generationConfig {
-            temperature = Prefs.temperature
-            topP = Prefs.topP
-            topK = Prefs.topK
-            maxOutputTokens = Prefs.maxTokens
-        }
-    )
+    private var config = GenerateContentConfig.builder()
+        .maxOutputTokens(Prefs.maxTokens)
+        .temperature(Prefs.temperature)
+        .topP(Prefs.topP)
+        .topK(Prefs.topK)
+        .build()
 
-    private var chat = generativeModel.startChat()
+    private var chat =
+        client.async.chats.create(Prefs.geminiModel.ifEmpty { "gemini-2.0-flash" }, config)
 
     fun regenerateModel(
         temp: Float = Prefs.temperature,
         top_p: Float = Prefs.topP,
-        top_k: Int = Prefs.topK,
+        top_k: Float = Prefs.topK,
         maxTokens: Int = Prefs.maxTokens
     ) {
         Log.d(
@@ -52,24 +44,18 @@ object ChatProvider {
             "regenerateModel: temperature ${Prefs.temperature}, topP ${Prefs.topP}, topK ${Prefs.topK}, maxTokens ${Prefs.maxTokens}"
         )
 
-        GenerativeModel(
-            apiKey = Prefs.geminiApiKey.ifEmpty { BuildConfig.GEMINI_API_KEY },
-            modelName = "gemini-pro",
-            safetySettings = safetySettings,
-            generationConfig = generationConfig {
-                temperature = temp
-                topP = top_p
-                topK = top_k
-                maxOutputTokens = maxTokens
-            }
-        ).let {
-            generativeModel = it
-            chat = it.startChat()
-        }
+        config = GenerateContentConfig.builder()
+            .maxOutputTokens(maxTokens)
+            .temperature(temp)
+            .topP(top_p)
+            .topK(top_k)
+            .build()
+
+        chat = client.async.chats.create(Prefs.geminiModel.ifEmpty { "gemini-2.0-flash" }, config)
     }
 
-    fun generate(conversation: List<Map<String, String>>): Flow<GenerateContentResponse> {
-        return chat.sendMessageStream(conversation.last()["text"]!!)
+    fun generate(conversation: List<Pair<String, String>>): CompletableFuture<ResponseStream<GenerateContentResponse>> {
+        return chat.sendMessageStream(conversation.last().second)
 
 
         /*

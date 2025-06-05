@@ -18,9 +18,11 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
+
+import org.jspecify.annotations.Nullable;
+
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Encapsulates information about a file to be formatted, including which parts of the file to

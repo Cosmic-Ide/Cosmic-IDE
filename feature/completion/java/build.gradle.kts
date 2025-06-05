@@ -10,7 +10,7 @@ plugins {
 }
 android {
     namespace = "com.tyron.javacompletion"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -29,14 +29,14 @@ android {
 }
 
 dependencies {
-    annotationProcessor("com.google.auto.value:auto-value:1.10.4")
+    annotationProcessor("com.google.auto.value:auto-value:1.11.0")
 
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc:2a0a6a7291")
-    implementation("com.google.auto.value:auto-value-annotations:1.10.4")
+    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
+    implementation("com.google.auto.value:auto-value-annotations:1.11.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("androidx.annotation:annotation:1.8.2")
-    implementation("com.google.code.gson:gson:2.10.1")
-    api("com.google.guava:guava:33.1.0-android")
+    implementation("androidx.annotation:annotation:1.9.1")
+    implementation("com.google.code.gson:gson:2.13.1")
+    api("com.google.guava:guava:33.4.8-android")
 
     implementation(projects.util)
 }

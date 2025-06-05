@@ -5,7 +5,8 @@
   ~ You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
-    <style name="Theme.CosmicIde.Base" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+
+    <style name="Theme.CosmicIde.Base" parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar">
         <!-- Android framework -->
         <item name="android:overScrollMode">never</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>

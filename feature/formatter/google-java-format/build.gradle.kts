@@ -23,9 +23,9 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
-    implementation("com.google.guava:guava:33.1.0-android")
+    implementation("com.google.guava:guava:33.4.8-android")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
-    implementation("com.google.auto.value:auto-value-annotations:1.10.4")
-    annotationProcessor("com.google.auto.value:auto-value:1.10.4")
+    implementation("com.google.auto.value:auto-value-annotations:1.11.0")
+    annotationProcessor("com.google.auto.value:auto-value:1.11.0")
 }

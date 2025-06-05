@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "org.cosmicide.common"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -48,10 +48,10 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.databinding:viewbinding:8.5.2")
+    implementation("androidx.databinding:viewbinding:8.10.1")
 
     "prodImplementation"(projects.feature.appwrite)
-    "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.0.2")
+    "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.4.0")
 
     implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.1")
 
@@ -59,7 +59,7 @@ dependencies {
 
     implementation("com.google.android.material:material:1.12.0")
 
-    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.23.4-96c0abc-SNAPSHOT"))
+    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.23.5"))
     api("io.github.Rosemoe.sora-editor:editor")
     api("io.github.Rosemoe.sora-editor:language-treesitter")
     api("io.github.Rosemoe.sora-editor:language-textmate")

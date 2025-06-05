@@ -140,6 +140,9 @@ object Prefs {
     val geminiApiKey: String
         get() = prefs.getString("gemini_api_key", "") ?: ""
 
+    val geminiModel: String
+        get() = prefs.getString("gemini_model", "gemini-2.0-flash") ?: "gemini-2.0-flash"
+
     val temperature: Float
         get() = runCatching {
             prefs.getString("temperature", "0.9")?.toFloatOrNull()?.coerceIn(0f, 1f) ?: 0.9f
@@ -150,8 +153,8 @@ object Prefs {
             prefs.getString("top_p", "1.0")?.toFloatOrNull()?.coerceIn(0f, 1f) ?: 1.0f
         }.getOrElse { 1.0f }
 
-    val topK: Int
-        get() = prefs.getInt("top_k", 1).coerceIn(1, 60)
+    val topK: Float
+        get() = prefs.getInt("top_k", 40).coerceIn(1, 100).toFloat()
 
     val maxTokens: Int
         get() = prefs.getInt("max_tokens", 1024).coerceIn(60, 2048)

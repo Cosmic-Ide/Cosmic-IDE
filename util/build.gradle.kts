@@ -11,7 +11,7 @@ plugins {
 }
 android {
     namespace = "org.cosmicide.rewrite.util"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -36,5 +36,5 @@ android {
 dependencies {
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
     implementation(projects.feature.aliuhook)
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.16.0")
 }

@@ -41,27 +41,27 @@ jobs:
           arguments: assembleDevDebug
 
       - name: Upload debug apks
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-arm64-v8a
           path: app/build/outputs/apk/dev/debug/app-dev-arm64-v8a-debug.apk
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: app-armeabi-v7a
           path: app/build/outputs/apk/dev/debug/app-dev-armeabi-v7a-debug.apk
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: app-x86
           path: app/build/outputs/apk/dev/debug/app-dev-x86-debug.apk
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: app-x86_64
           path: app/build/outputs/apk/dev/debug/app-dev-x86_64-debug.apk
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: app-universal
           path: app/build/outputs/apk/dev/debug/app-dev-universal-debug.apk

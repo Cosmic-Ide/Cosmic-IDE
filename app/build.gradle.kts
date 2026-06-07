@@ -7,13 +7,11 @@
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "org.cosmicide"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         val commit = getGitCommit()
@@ -21,7 +19,7 @@ android {
 
         applicationId = "org.cosmicide"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 25
         versionName = "2.0.5"
         buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
@@ -53,12 +51,6 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        apiVersion = "1.9"
-    }
-
     viewBinding {
         enable = true
     }
@@ -72,7 +64,7 @@ android {
         exclude(group = "com.google.errorprone", module = "error_prone_annotations")
     }
 
-    packagingOptions.jniLibs.apply {
+    packaging.jniLibs.apply {
         useLegacyPackaging = true
     }
 
@@ -118,10 +110,10 @@ android {
     productFlavors {
         create("dev") {
             dimension = "environment"
-            isDefault = true
         }
         create("prod") {
             dimension = "environment"
+            isDefault = true
         }
     }
 
@@ -197,7 +189,7 @@ dependencies {
     implementation("io.noties.markwon:html:$markwonVersion")
     implementation("io.noties.markwon:linkify:$markwonVersion")
 
-    implementation(projects.feature.aliuhook)
+    implementation("com.aliucord:Aliuhook:1.1.4")
     implementation("de.maxr1998:modernandroidpreferences:2.4.0-beta2")
 
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")

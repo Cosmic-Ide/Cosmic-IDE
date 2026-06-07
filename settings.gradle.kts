@@ -14,6 +14,7 @@ pluginManagement {
         mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -21,6 +22,7 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://jitpack.io")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+        maven("https://maven.aliucord.com/releases")
     }
 }
 
@@ -40,6 +42,4 @@ include(":util")
 include(":jgit")
 include(":feature:code-navigation")
 include(":datadir")
-include(":feature:aliuhook")
-include(":feature:appwrite")
 include(":feature:genai")

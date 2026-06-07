@@ -7,11 +7,10 @@
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 android {
     namespace = "org.cosmicide.rewrite.util"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26
@@ -27,14 +26,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
 }
 
 dependencies {
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
-    implementation(projects.feature.aliuhook)
     implementation("androidx.core:core-ktx:1.16.0")
+    implementation("com.aliucord:Aliuhook:1.1.4")
 }

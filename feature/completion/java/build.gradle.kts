@@ -10,7 +10,7 @@ plugins {
 }
 android {
     namespace = "com.tyron.javacompletion"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26

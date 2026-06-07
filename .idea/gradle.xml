@@ -6,7 +6,7 @@
       <GradleProjectSettings>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="jbr-17" />
+        <option name="gradleJvm" value="jbr-21" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -16,8 +16,6 @@
             <option value="$PROJECT_DIR$/datadir" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/TreeView" />
-            <option value="$PROJECT_DIR$/feature/aliuhook" />
-            <option value="$PROJECT_DIR$/feature/appwrite" />
             <option value="$PROJECT_DIR$/feature/code-navigation" />
             <option value="$PROJECT_DIR$/feature/completion" />
             <option value="$PROJECT_DIR$/feature/completion/java" />
@@ -29,7 +27,6 @@
             <option value="$PROJECT_DIR$/feature/java-completion" />
             <option value="$PROJECT_DIR$/feature/project" />
             <option value="$PROJECT_DIR$/jgit" />
-            <option value="$PROJECT_DIR$/kotlinc" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>

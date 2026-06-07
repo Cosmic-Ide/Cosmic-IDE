@@ -6,7 +6,7 @@
   -->
 
 <resources>
-    <string name="app_name">Cosmic IDE Rewrite</string>
+    <string name="app_name">Cosmic IDE</string>
     <string name="action_settings">Настройки</string>
     <!-- Строки, используемые для фрагментов для навигации -->
     <string name="import_project">Импортировать проект</string>

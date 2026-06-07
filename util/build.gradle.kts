@@ -30,6 +30,6 @@ android {
 
 dependencies {
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
-    implementation("androidx.core:core-ktx:1.16.0")
     implementation("com.aliucord:Aliuhook:1.1.4")
+    implementation("androidx.core:core-ktx:1.19.0")
 }

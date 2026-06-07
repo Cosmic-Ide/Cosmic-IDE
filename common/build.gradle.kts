@@ -7,12 +7,11 @@
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 
 android {
     namespace = "org.cosmicide.common"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26
@@ -40,28 +39,22 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.databinding:viewbinding:8.10.1")
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.databinding:viewbinding:9.2.1")
 
-    "prodImplementation"(projects.feature.appwrite)
+    "prodImplementation"("io.appwrite:sdk-for-android:25.0.0")
     "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.4.0")
 
-    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.1")
+    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.2")
 
     api("androidx.preference:preference-ktx:1.2.1")
 
-    implementation("com.google.android.material:material:1.12.0")
+    implementation("com.google.android.material:material:1.14.0")
 
-    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.23.5"))
-    api("io.github.Rosemoe.sora-editor:editor")
-    api("io.github.Rosemoe.sora-editor:language-treesitter")
-    api("io.github.Rosemoe.sora-editor:language-textmate")
-
+    api("io.github.rosemoe:editor:0.24.5")
+    api("io.github.rosemoe:language-treesitter:0.24.5")
+    api("io.github.rosemoe:language-textmate:0.24.5")
 }

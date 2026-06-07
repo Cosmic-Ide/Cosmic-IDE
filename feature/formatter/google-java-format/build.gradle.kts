@@ -3,8 +3,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks.withType<JavaCompile> {
@@ -23,9 +23,14 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
-    implementation("com.google.guava:guava:33.4.8-android")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
+    implementation("com.google.guava:guava:33.6.0-jre")
+    implementation("org.commonmark:commonmark:0.28.0")
+    implementation("org.commonmark:commonmark-ext-gfm-tables:0.28.0")
 
-    implementation("com.google.auto.value:auto-value-annotations:1.11.0")
-    annotationProcessor("com.google.auto.value:auto-value:1.11.0")
+    implementation("com.google.auto.service:auto-service-annotations:1.1.1")
+    implementation("com.google.auto.value:auto-value-annotations:1.11.1")
+    annotationProcessor("com.google.auto.value:auto-value:1.11.1")
+    annotationProcessor("com.google.auto.service:auto-service:1.1.1")
+
 }

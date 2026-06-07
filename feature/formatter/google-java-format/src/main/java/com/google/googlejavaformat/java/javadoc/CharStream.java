@@ -14,7 +14,6 @@
 
 package com.google.googlejavaformat.java.javadoc;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.regex.Matcher;
@@ -27,42 +26,48 @@ import java.util.regex.Pattern;
  * characters from tryConsume? -- but it is convenient for the lexer.
  */
 final class CharStream {
-  String remaining;
-  int toConsume;
+  private final String input;
+  private int position;
+  private int tokenEnd = -1; // Negative value means no token, and will cause an exception if used.
 
   CharStream(String input) {
-    this.remaining = checkNotNull(input);
+    this.input = checkNotNull(input);
   }
 
   boolean tryConsume(String expected) {
-    if (!remaining.startsWith(expected)) {
+    if (!input.startsWith(expected, position)) {
       return false;
     }
-    toConsume = expected.length();
+    tokenEnd = position + expected.length();
     return true;
   }
 
-  /*
+  /**
+   * Tries to consume characters from the current position that match the given pattern.
+   *
    * @param pattern the pattern to search for, which must be anchored to match only at position 0
    */
   boolean tryConsumeRegex(Pattern pattern) {
-    Matcher matcher = pattern.matcher(remaining);
-    if (!matcher.find()) {
+    Matcher matcher = pattern.matcher(input).region(position, input.length());
+    if (!matcher.lookingAt()) {
       return false;
     }
-    checkArgument(matcher.start() == 0);
-    toConsume = matcher.end();
+    tokenEnd = matcher.end();
     return true;
   }
 
   String readAndResetRecorded() {
-    String result = remaining.substring(0, toConsume);
-    remaining = remaining.substring(toConsume);
-    toConsume = 0; // TODO(cpovirk): Set this to a bogus value here and in the constructor.
+    String result = input.substring(position, tokenEnd);
+    position = tokenEnd;
+    tokenEnd = -1;
     return result;
   }
 
   boolean isExhausted() {
-    return remaining.isEmpty();
+    return position == input.length();
+  }
+
+  int position() {
+    return position;
   }
 }

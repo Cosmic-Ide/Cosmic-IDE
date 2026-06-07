@@ -42,7 +42,7 @@ android {
 }
 dependencies {
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
-    implementation("com.github.javaparser:javaparser-core:3.26.4")
+    implementation("com.github.javaparser:javaparser-core:3.28.2")
     implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.9") {
         exclude(group = "com.google.guava", module = "guava")
     }

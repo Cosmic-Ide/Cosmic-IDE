@@ -31,7 +31,7 @@ public interface CommentsHelper {
    * @param column0 the current column
    * @return the rewritten comment
    */
-  String rewrite(Input.Tok tok, int maxWidth, int column0);
+  String rewrite(Tok tok, int maxWidth, int column0);
 
   static Optional<String> reformatParameterComment(Tok tok) {
     if (!tok.isSlashStarComment()) {

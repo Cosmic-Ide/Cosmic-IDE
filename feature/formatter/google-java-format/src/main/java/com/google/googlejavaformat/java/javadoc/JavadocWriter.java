@@ -16,19 +16,36 @@ package com.google.googlejavaformat.java.javadoc;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Comparators.max;
-import static com.google.common.collect.Sets.immutableEnumSet;
 import static com.google.googlejavaformat.java.javadoc.JavadocWriter.AutoIndent.AUTO_INDENT;
 import static com.google.googlejavaformat.java.javadoc.JavadocWriter.AutoIndent.NO_AUTO_INDENT;
 import static com.google.googlejavaformat.java.javadoc.JavadocWriter.RequestedWhitespace.BLANK_LINE;
 import static com.google.googlejavaformat.java.javadoc.JavadocWriter.RequestedWhitespace.NEWLINE;
 import static com.google.googlejavaformat.java.javadoc.JavadocWriter.RequestedWhitespace.NONE;
 import static com.google.googlejavaformat.java.javadoc.JavadocWriter.RequestedWhitespace.WHITESPACE;
-import static com.google.googlejavaformat.java.javadoc.Token.Type.HEADER_OPEN_TAG;
-import static com.google.googlejavaformat.java.javadoc.Token.Type.LIST_ITEM_OPEN_TAG;
-import static com.google.googlejavaformat.java.javadoc.Token.Type.PARAGRAPH_OPEN_TAG;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.googlejavaformat.java.javadoc.Token.Type;
+import com.google.googlejavaformat.java.javadoc.Token.BrTag;
+import com.google.googlejavaformat.java.javadoc.Token.CodeCloseTag;
+import com.google.googlejavaformat.java.javadoc.Token.CodeOpenTag;
+import com.google.googlejavaformat.java.javadoc.Token.FooterJavadocTagStart;
+import com.google.googlejavaformat.java.javadoc.Token.HeaderCloseTag;
+import com.google.googlejavaformat.java.javadoc.Token.HeaderOpenTag;
+import com.google.googlejavaformat.java.javadoc.Token.HtmlComment;
+import com.google.googlejavaformat.java.javadoc.Token.ListCloseTag;
+import com.google.googlejavaformat.java.javadoc.Token.ListItemOpenTag;
+import com.google.googlejavaformat.java.javadoc.Token.ListOpenTag;
+import com.google.googlejavaformat.java.javadoc.Token.Literal;
+import com.google.googlejavaformat.java.javadoc.Token.MarkdownFencedCodeBlock;
+import com.google.googlejavaformat.java.javadoc.Token.MarkdownTable;
+import com.google.googlejavaformat.java.javadoc.Token.MoeBeginStripComment;
+import com.google.googlejavaformat.java.javadoc.Token.MoeEndStripComment;
+import com.google.googlejavaformat.java.javadoc.Token.PreCloseTag;
+import com.google.googlejavaformat.java.javadoc.Token.PreOpenTag;
+import com.google.googlejavaformat.java.javadoc.Token.SnippetBegin;
+import com.google.googlejavaformat.java.javadoc.Token.SnippetEnd;
+import com.google.googlejavaformat.java.javadoc.Token.StartOfLineToken;
+import com.google.googlejavaformat.java.javadoc.Token.TableCloseTag;
+import com.google.googlejavaformat.java.javadoc.Token.TableOpenTag;
+import java.util.List;
 
 /**
  * Stateful object that accepts "requests" and "writes," producing formatted Javadoc.
@@ -38,8 +55,13 @@ import com.google.googlejavaformat.java.javadoc.Token.Type;
  * are we inside?"
  */
 final class JavadocWriter {
+
+  private static final Literal BACKSLASH_LITERAL = new Literal("\\");
+
   private final int blockIndent;
+  private final boolean classicJavadoc;
   private final StringBuilder output = new StringBuilder();
+
   /**
    * Whether we are inside an {@code <li>} element, excluding the case in which the {@code <li>}
    * contains a {@code <ul>} or {@code <ol>} that we are also inside -- unless of course we're
@@ -48,9 +70,9 @@ final class JavadocWriter {
   private boolean continuingListItemOfInnermostList;
 
   private boolean continuingFooterTag;
-  private final NestingCounter continuingListItemCount = new NestingCounter();
-  private final NestingCounter continuingListCount = new NestingCounter();
-  private final NestingCounter postWriteModifiedContinuingListCount = new NestingCounter();
+  private final NestingStack.Int continuingListItemStack = new NestingStack.Int();
+  private final NestingStack.Int continuingListStack = new NestingStack.Int();
+  private final NestingStack.Int postWriteModifiedContinuingListStack = new NestingStack.Int();
   private int remainingOnLine;
   private boolean atStartOfLine;
   private RequestedWhitespace requestedWhitespace = NONE;
@@ -58,8 +80,9 @@ final class JavadocWriter {
   private int indentForMoeEndStripComment;
   private boolean wroteAnythingSignificant;
 
-  JavadocWriter(int blockIndent) {
+  JavadocWriter(int blockIndent, boolean classicJavadoc) {
     this.blockIndent = blockIndent;
+    this.classicJavadoc = classicJavadoc;
   }
 
   /**
@@ -71,27 +94,38 @@ final class JavadocWriter {
     requestWhitespace(WHITESPACE);
   }
 
-  void requestMoeBeginStripComment(Token token) {
+  private void requestWhitespace(RequestedWhitespace requestedWhitespace) {
+    this.requestedWhitespace = max(requestedWhitespace, this.requestedWhitespace);
+  }
+
+  void requestMoeBeginStripComment(MoeBeginStripComment token) {
     // We queue this up so that we can put it after any requested whitespace.
     requestedMoeBeginStripComment = checkNotNull(token);
   }
 
   void writeBeginJavadoc() {
-    /*
-     * JavaCommentsHelper will make sure this is indented right. But it seems sensible enough that,
-     * if our input starts with ∕✱✱, so too does our output.
-     */
-    output.append("/**");
-    writeNewline();
+    if (classicJavadoc) {
+      /*
+       * JavaCommentsHelper will make sure this is indented right. But it seems sensible enough
+       * that, if our input starts with ∕✱✱, so too does our output.
+       */
+      output.append("/**");
+      writeNewline();
+    } else {
+      output.append("/// ");
+      remainingOnLine = JavadocFormatter.MAX_LINE_LENGTH - blockIndent - 4;
+    }
   }
 
   void writeEndJavadoc() {
-    output.append("\n");
-    appendSpaces(blockIndent + 1);
-    output.append("*/");
+    if (classicJavadoc) {
+      output.append("\n");
+      appendSpaces(blockIndent + 1);
+      output.append("*/");
+    }
   }
 
-  void writeFooterJavadocTagStart(Token token) {
+  void writeFooterJavadocTagStart(FooterJavadocTagStart token) {
     // Close any unclosed lists (e.g., <li> without <ul>).
     // TODO(cpovirk): Actually generate </ul>, etc.?
     /*
@@ -101,13 +135,13 @@ final class JavadocWriter {
      * currently know which of those tags are open.
      */
     continuingListItemOfInnermostList = false;
-    continuingListItemCount.reset();
-    continuingListCount.reset();
+    continuingListItemStack.reset();
+    continuingListStack.reset();
     /*
      * There's probably no need for this, since its only effect is to disable blank lines in some
      * cases -- and we're doing that already in the footer.
      */
-    postWriteModifiedContinuingListCount.reset();
+    postWriteModifiedContinuingListStack.reset();
 
     if (!wroteAnythingSignificant) {
       // Javadoc consists solely of tags. This is frowned upon in general but OK for @Overrides.
@@ -123,47 +157,89 @@ final class JavadocWriter {
     continuingFooterTag = true;
   }
 
-  void writeListOpen(Token token) {
+  void writeSnippetBegin(SnippetBegin token) {
     requestBlankLine();
+    writeToken(token);
+    /*
+     * We don't request a newline here because we should have at least a colon following on this
+     * line, and we may have attributes after that.
+     *
+     * (If we find it convenient, we could instead consume the entire rest of the line as part of
+     * the same token as `{@snippet` itself. But we already would never split the rest of the line
+     * across lines (because we preserve whitespace), so that might not accomplish anything. Plus,
+     * we'd probably want to be careful not to swallow an expectedly early closing `}`.)
+     */
+  }
+
+  void writeSnippetEnd(SnippetEnd token) {
+    /*
+     * We don't request a newline here because we have preserved all newlines that existed in the
+     * input. TODO: b/323389829 - Improve upon that. Specifically:
+     *
+     * - If there is not yet a newline, we should add one.
+     *
+     * - If there are multiple newlines, we should probably collapse them.
+     *
+     * - If the closing brace isn't indented as we'd want (as in the link below, in which the whole
+     *   @apiNote isn't indented), we should indent it.
+     *
+     * https://github.com/openjdk/jdk/blob/1ebf2cf639300728ffc024784f5dc1704317b0b3/src/java.base/share/classes/java/util/Collections.java#L5993-L6006
+     */
+    writeToken(token);
+    requestBlankLine();
+  }
+
+  void writeListOpen(ListOpenTag token) {
+    if (classicJavadoc) {
+      requestBlankLine();
+    }
 
     writeToken(token);
     continuingListItemOfInnermostList = false;
-    continuingListCount.increment();
-    postWriteModifiedContinuingListCount.increment();
+    int indent = token.value().isEmpty() ? 0 : 2; // No indent for Markdown since no explicit open
+    continuingListStack.push(indent);
+    postWriteModifiedContinuingListStack.push();
 
     requestNewline();
   }
 
-  void writeListClose(Token token) {
-    requestNewline();
+  void writeListClose(ListCloseTag token) {
+    if (classicJavadoc) {
+      requestNewline();
+    }
 
-    continuingListItemCount.decrementIfPositive();
-    continuingListCount.decrementIfPositive();
+    continuingListItemStack.popIfNotEmpty();
+    continuingListStack.popIfNotEmpty();
     writeToken(token);
-    postWriteModifiedContinuingListCount.decrementIfPositive();
+    postWriteModifiedContinuingListStack.popIfNotEmpty();
 
-    requestBlankLine();
+    if (classicJavadoc) {
+      requestBlankLine();
+    }
   }
 
-  void writeListItemOpen(Token token) {
+  void writeListItemOpen(ListItemOpenTag token) {
     requestNewline();
 
     if (continuingListItemOfInnermostList) {
       continuingListItemOfInnermostList = false;
-      continuingListItemCount.decrementIfPositive();
+      continuingListItemStack.popIfNotEmpty();
     }
     writeToken(token);
     continuingListItemOfInnermostList = true;
-    continuingListItemCount.increment();
+    int indent = token.value().length();
+    continuingListItemStack.push(indent);
   }
 
-  void writeHeaderOpen(Token token) {
-    requestBlankLine();
+  void writeHeaderOpen(HeaderOpenTag token) {
+    if (wroteAnythingSignificant) {
+      requestBlankLine();
+    }
 
     writeToken(token);
   }
 
-  void writeHeaderClose(Token token) {
+  void writeHeaderClose(HeaderCloseTag token) {
     writeToken(token);
 
     requestBlankLine();
@@ -191,39 +267,39 @@ final class JavadocWriter {
     requestBlankLine();
   }
 
-  void writePreOpen(Token token) {
+  void writePreOpen(PreOpenTag token) {
     requestBlankLine();
 
     writeToken(token);
   }
 
-  void writePreClose(Token token) {
+  void writePreClose(PreCloseTag token) {
     writeToken(token);
 
     requestBlankLine();
   }
 
-  void writeCodeOpen(Token token) {
+  void writeCodeOpen(CodeOpenTag token) {
     writeToken(token);
   }
 
-  void writeCodeClose(Token token) {
+  void writeCodeClose(CodeCloseTag token) {
     writeToken(token);
   }
 
-  void writeTableOpen(Token token) {
+  void writeTableOpen(TableOpenTag token) {
     requestBlankLine();
 
     writeToken(token);
   }
 
-  void writeTableClose(Token token) {
+  void writeTableClose(TableCloseTag token) {
     writeToken(token);
 
     requestBlankLine();
   }
 
-  void writeMoeEndStripComment(Token token) {
+  void writeMoeEndStripComment(MoeEndStripComment token) {
     writeLineBreakNoAutoIndent();
     appendSpaces(indentForMoeEndStripComment);
 
@@ -233,7 +309,7 @@ final class JavadocWriter {
     requestNewline();
   }
 
-  void writeHtmlComment(Token token) {
+  void writeHtmlComment(HtmlComment token) {
     requestNewline();
 
     writeToken(token);
@@ -241,7 +317,7 @@ final class JavadocWriter {
     requestNewline();
   }
 
-  void writeBr(Token token) {
+  void writeBr(BrTag token) {
     writeToken(token);
 
     requestNewline();
@@ -251,8 +327,47 @@ final class JavadocWriter {
     writeNewline(NO_AUTO_INDENT);
   }
 
-  void writeLiteral(Token token) {
+  void writeMarkdownHardLineBreak() {
+    writeLiteral(BACKSLASH_LITERAL);
+    writeNewline();
+  }
+
+  void writeLiteral(Literal token) {
     writeToken(token);
+  }
+
+  void writeMarkdownFencedCodeBlock(MarkdownFencedCodeBlock token) {
+    if (wroteAnythingSignificant && !atStartOfLine) {
+      // A reminder that atStartOfLine is still true after `-␣` because it is a StartOfLineToken.
+      requestBlankLine();
+    }
+    flushWhitespace();
+    output.append(token.start());
+    token
+        .literal()
+        .lines()
+        .forEach(
+            line -> {
+              writeNewline();
+              output.append(line);
+            });
+    writeNewline();
+    output.append(token.end());
+    requestBlankLine();
+  }
+
+  void writeMarkdownTable(MarkdownTable token) {
+    if (wroteAnythingSignificant && !atStartOfLine) {
+      requestBlankLine();
+    }
+    flushWhitespace();
+    List<String> lines = token.value().lines().toList();
+    output.append(lines.get(0));
+    for (String line : lines.subList(1, lines.size())) {
+      writeNewline(AutoIndent.NO_AUTO_INDENT);
+      output.append(line);
+    }
+    requestBlankLine();
   }
 
   @Override
@@ -268,10 +383,6 @@ final class JavadocWriter {
     requestWhitespace(NEWLINE);
   }
 
-  private void requestWhitespace(RequestedWhitespace requestedWhitespace) {
-    this.requestedWhitespace = max(requestedWhitespace, this.requestedWhitespace);
-  }
-
   /**
    * The kind of whitespace that has been requested between the previous and next tokens. The order
    * of the values is significant: It goes from lowest priority to highest. For example, if the
@@ -283,16 +394,16 @@ final class JavadocWriter {
     WHITESPACE,
     NEWLINE,
     BLANK_LINE,
-    ;
   }
 
-  private void writeToken(Token token) {
+  private void flushWhitespace() {
     if (requestedMoeBeginStripComment != null) {
       requestNewline();
     }
 
-    if (requestedWhitespace == BLANK_LINE
-        && (postWriteModifiedContinuingListCount.isPositive() || continuingFooterTag)) {
+    if (classicJavadoc
+        && requestedWhitespace == BLANK_LINE
+        && (!postWriteModifiedContinuingListStack.isEmpty() || continuingFooterTag)) {
       /*
        * We don't write blank lines inside lists or footer tags, even in cases where we otherwise
        * would (e.g., before a <p> tag). Justification: We don't write blank lines _between_ list
@@ -310,6 +421,14 @@ final class JavadocWriter {
       writeNewline();
       requestedWhitespace = NONE;
     }
+  }
+
+  private void writeToken(Token token) {
+    if (token.value().isEmpty()) {
+      return;
+    }
+
+    flushWhitespace();
     boolean needWhitespace = (requestedWhitespace == WHITESPACE);
 
     /*
@@ -326,7 +445,7 @@ final class JavadocWriter {
     }
 
     if (requestedMoeBeginStripComment != null) {
-      output.append(requestedMoeBeginStripComment.getValue());
+      output.append(requestedMoeBeginStripComment.value());
       requestedMoeBeginStripComment = null;
       indentForMoeEndStripComment = innerIndent();
       requestNewline();
@@ -334,9 +453,9 @@ final class JavadocWriter {
       return;
     }
 
-    output.append(token.getValue());
+    output.append(token.value());
 
-    if (!START_OF_LINE_TOKENS.contains(token.getType())) {
+    if (!(token instanceof StartOfLineToken)) {
       atStartOfLine = false;
     }
 
@@ -355,10 +474,14 @@ final class JavadocWriter {
     wroteAnythingSignificant = true;
   }
 
-  private void writeBlankLine() {
+  private void writeNewlineStart() {
     output.append("\n");
-    appendSpaces(blockIndent + 1);
-    output.append("*");
+    appendSpaces(blockIndent + (classicJavadoc ? 1 : 0));
+    output.append(classicJavadoc ? "*" : "///");
+  }
+
+  private void writeBlankLine() {
+    writeNewlineStart();
     writeNewline();
   }
 
@@ -367,11 +490,9 @@ final class JavadocWriter {
   }
 
   private void writeNewline(AutoIndent autoIndent) {
-    output.append("\n");
-    appendSpaces(blockIndent + 1);
-    output.append("*");
+    writeNewlineStart();
     appendSpaces(1);
-    remainingOnLine = JavadocFormatter.MAX_LINE_LENGTH - blockIndent - 3;
+    remainingOnLine = JavadocFormatter.MAX_LINE_LENGTH - blockIndent - (classicJavadoc ? 3 : 4);
     if (autoIndent == AUTO_INDENT) {
       appendSpaces(innerIndent());
       remainingOnLine -= innerIndent();
@@ -385,26 +506,14 @@ final class JavadocWriter {
   }
 
   private int innerIndent() {
-    int innerIndent = continuingListItemCount.value() * 4 + continuingListCount.value() * 2;
+    int innerIndent = continuingListItemStack.total() + continuingListStack.total();
     if (continuingFooterTag) {
       innerIndent += 4;
     }
     return innerIndent;
   }
 
-  // If this is a hotspot, keep a String of many spaces around, and call append(string, start, end).
   private void appendSpaces(int count) {
-    output.append(" ".repeat(count));
+    output.repeat(' ', count);
   }
-
-  /**
-   * Tokens that are always pinned to the following token. For example, {@code <p>} in {@code <p>Foo
-   * bar} (never {@code <p> Foo bar} or {@code <p>\nFoo bar}).
-   *
-   * <p>This is not the only kind of "pinning" that we do: See also the joining of LITERAL tokens
-   * done by the lexer. The special pinning here is necessary because these tokens are not of type
-   * LITERAL (because they require other special handling).
-   */
-  private static final ImmutableSet<Type> START_OF_LINE_TOKENS =
-      immutableEnumSet(LIST_ITEM_OPEN_TAG, PARAGRAPH_OPEN_TAG, HEADER_OPEN_TAG);
 }

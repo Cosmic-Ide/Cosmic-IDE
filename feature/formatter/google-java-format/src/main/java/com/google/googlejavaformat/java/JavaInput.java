@@ -37,10 +37,13 @@ import com.sun.tools.javac.file.JavacFileManager;
 import com.sun.tools.javac.parser.Tokens.TokenKind;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.JCDiagnostic;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Log.DeferredDiagnosticHandler;
 import com.sun.tools.javac.util.Options;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,9 +56,10 @@ import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.SimpleJavaFileObject;
+import org.jspecify.annotations.Nullable;
 
 /** {@code JavaInput} extends {@link Input} to represent a Java input document. */
-public final class JavaInput extends Input {
+final class JavaInput extends Input {
   /**
    * A {@code JavaInput} is a sequence of {@link Tok}s that cover the Java input. A {@link Tok} is
    * either a token (if {@code isToken()}), or a non-token, which is a comment (if {@code
@@ -156,9 +160,14 @@ public final class JavaInput extends Input {
 
     @Override
     public boolean isJavadocComment() {
-      // comments like `/***` are also javadoc, but their formatting probably won't be improved
-      // by the javadoc formatter
-      return text.startsWith("/**") && text.charAt("/**".length()) != '*' && text.length() > 4;
+      // comments like `/***` or `////` are also javadoc, but their formatting probably won't be
+      // improved by the javadoc formatter
+      return ((text.startsWith("/**") && !text.startsWith("/***"))
+              || (
+//                  Runtime.version().feature() >= 23 &&
+                  text.startsWith("///")
+                  && !text.startsWith("////")))
+          && text.length() > 4;
     }
 
     @Override
@@ -271,7 +280,7 @@ public final class JavaInput extends Input {
    * @param text the input text
    * @throws FormatterException if the input cannot be parsed
    */
-  public JavaInput(String text) throws FormatterException {
+  JavaInput(String text) throws FormatterException {
     this.text = checkNotNull(text);
     setLines(ImmutableList.copyOf(Newlines.lineIterator(text)));
     ImmutableList<Tok> toks = buildToks(text);
@@ -362,9 +371,17 @@ public final class JavaInput extends Input {
             return text;
           }
         });
-    DeferredDiagnosticHandler diagnostics = new DeferredDiagnosticHandler(log);
+    DeferredDiagnosticHandler diagnostics = deferredDiagnosticHandler(log);
     ImmutableList<RawTok> rawToks = JavacTokens.getTokens(text, context, stopTokens);
-    if (diagnostics.getDiagnostics().stream().anyMatch(d -> d.getKind() == Diagnostic.Kind.ERROR)) {
+    Collection<JCDiagnostic> ds;
+    try {
+      @SuppressWarnings("unchecked")
+      var extraLocalForSuppression = (Collection<JCDiagnostic>) GET_DIAGNOSTICS.invoke(diagnostics);
+      ds = extraLocalForSuppression;
+    } catch (ReflectiveOperationException e) {
+      throw new LinkageError(e.getMessage(), e);
+    }
+    if (ds.stream().anyMatch(d -> d.getKind() == Diagnostic.Kind.ERROR)) {
       return ImmutableList.of(new Tok(0, "", "", 0, 0, true, null)); // EOF
     }
     int kN = 0;
@@ -471,6 +488,39 @@ public final class JavaInput extends Input {
     return ImmutableList.copyOf(toks);
   }
 
+  private static final Constructor<DeferredDiagnosticHandler>
+      DEFERRED_DIAGNOSTIC_HANDLER_CONSTRUCTOR = getDeferredDiagnosticHandlerConstructor();
+
+  // Depending on the JDK version, we might have a static class whose constructor has an explicit
+  // Log parameter, or an inner class whose constructor has an *implicit* Log parameter. They are
+  // different at the source level, but look the same to reflection.
+
+  private static Constructor<DeferredDiagnosticHandler> getDeferredDiagnosticHandlerConstructor() {
+    try {
+      return DeferredDiagnosticHandler.class.getConstructor(Log.class);
+    } catch (NoSuchMethodException e) {
+      throw new LinkageError(e.getMessage(), e);
+    }
+  }
+
+  private static DeferredDiagnosticHandler deferredDiagnosticHandler(Log log) {
+    try {
+      return DEFERRED_DIAGNOSTIC_HANDLER_CONSTRUCTOR.newInstance(log);
+    } catch (ReflectiveOperationException e) {
+      throw new LinkageError(e.getMessage(), e);
+    }
+  }
+
+  private static final Method GET_DIAGNOSTICS = getGetDiagnostics();
+
+  private static @Nullable Method getGetDiagnostics() {
+    try {
+      return DeferredDiagnosticHandler.class.getMethod("getDiagnostics");
+    } catch (NoSuchMethodException e) {
+      throw new LinkageError(e.getMessage(), e);
+    }
+  }
+
   private static int updateColumn(int columnI, String originalTokText) {
     Integer last = Iterators.getLast(Newlines.lineOffsetIterator(originalTokText));
     if (last > 0) {
@@ -516,20 +566,18 @@ public final class JavaInput extends Input {
         // TODO(cushon): find a better strategy.
         if (toks.get(k).isSlashStarComment()) {
           switch (tok.getText()) {
-            case "(":
-            case "<":
-            case ".":
+            case "(", "<", "." -> {
               break OUTER;
-            default:
-              break;
+            }
+            default -> {}
           }
         }
         if (toks.get(k).isJavadocComment()) {
           switch (tok.getText()) {
-            case ";":
+            case ";" -> {
               break OUTER;
-            default:
-              break;
+            }
+            default -> {}
           }
         }
         if (isParamComment(toks.get(k))) {
@@ -565,14 +613,16 @@ public final class JavaInput extends Input {
    * @return the {@code 0}-based {@link Range} of tokens
    * @throws FormatterException if the upper endpoint of the range is outside the file
    */
-  Range<Integer> characterRangeToTokenRange(Range<Integer> characterRange)
+  private Range<Integer> characterRangeToTokenRange(Range<Integer> characterRange)
       throws FormatterException {
     if (characterRange.upperEndpoint() > text.length()) {
       throw new FormatterException(
           String.format(
-              "error: invalid length %d, offset + length (%d) is outside the file",
+              "error: invalid offset (%d) or length (%d); offset + length (%d) > file length (%d)",
+              characterRange.lowerEndpoint(),
               characterRange.upperEndpoint() - characterRange.lowerEndpoint(),
-              characterRange.upperEndpoint()));
+              characterRange.upperEndpoint(),
+              text.length()));
     }
     // empty range stands for "format the line under the cursor"
     Range<Integer> nonEmptyRange =
@@ -654,11 +704,11 @@ public final class JavaInput extends Input {
 
   // TODO(cushon): refactor JavaInput so the CompilationUnit can be passed into
   // the constructor.
-  public void setCompilationUnit(JCCompilationUnit unit) {
+  void setCompilationUnit(JCCompilationUnit unit) {
     this.unit = unit;
   }
 
-  public RangeSet<Integer> characterRangesToTokenRanges(Collection<Range<Integer>> characterRanges)
+  RangeSet<Integer> characterRangesToTokenRanges(Collection<Range<Integer>> characterRanges)
       throws FormatterException {
     RangeSet<Integer> tokenRangeSet = TreeRangeSet.create();
     for (Range<Integer> characterRange : characterRanges) {

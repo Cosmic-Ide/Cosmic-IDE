@@ -14,15 +14,14 @@
 
 package com.google.googlejavaformat.java;
 
-import com.google.auto.value.AutoValue;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
-
-import org.jspecify.annotations.Nullable;
-
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Encapsulates information about a file to be formatted, including which parts of the file to
@@ -30,26 +29,25 @@ import java.util.concurrent.Callable;
  */
 class FormatFileCallable implements Callable<FormatFileCallable.Result> {
 
-  @AutoValue
-  abstract static class Result {
-    abstract @Nullable Path path();
-
-    abstract String input();
-
-    abstract @Nullable String output();
+  record Result(
+      @Nullable Path path,
+      String input,
+      @Nullable String output,
+      @Nullable FormatterException exception) {
+    Result {
+      requireNonNull(input, "input");
+    }
 
     boolean changed() {
       return !input().equals(output());
     }
-
-    abstract @Nullable FormatterException exception();
 
     static Result create(
         @Nullable Path path,
         String input,
         @Nullable String output,
         @Nullable FormatterException exception) {
-      return new AutoValue_FormatFileCallable_Result(path, input, output, exception);
+      return new Result(path, input, output, exception);
     }
   }
 
@@ -58,7 +56,7 @@ class FormatFileCallable implements Callable<FormatFileCallable.Result> {
   private final CommandLineOptions parameters;
   private final JavaFormatterOptions options;
 
-  public FormatFileCallable(
+  FormatFileCallable(
       CommandLineOptions parameters, Path path, String input, JavaFormatterOptions options) {
     this.path = path;
     this.input = input;

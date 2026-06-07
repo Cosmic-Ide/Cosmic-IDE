@@ -33,7 +33,6 @@ import org.cosmicide.rewrite.plugin.api.Hook
 import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.FileUtil
-import org.cosmicide.util.CommonUtils
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import rikka.sui.Sui
 import java.io.File
@@ -282,7 +281,7 @@ class App : Application() {
         return try {
             val ip = URL("https://api.ipify.org").readText()
             ip
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
     }

@@ -29,14 +29,13 @@ android {
 }
 
 dependencies {
-    annotationProcessor("com.google.auto.value:auto-value:1.11.0")
+    annotationProcessor("com.google.auto.value:auto-value:1.11.1")
 
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
-    implementation("com.google.auto.value:auto-value-annotations:1.11.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("androidx.annotation:annotation:1.9.1")
-    implementation("com.google.code.gson:gson:2.13.1")
-    api("com.google.guava:guava:33.4.8-android")
+    implementation("com.google.auto.value:auto-value-annotations:1.11.1")
+    implementation("androidx.annotation:annotation:1.10.0")
+    implementation("com.google.code.gson:gson:2.14.0")
+    api("com.google.guava:guava:33.6.0-android")
 
     implementation(projects.util)
 }

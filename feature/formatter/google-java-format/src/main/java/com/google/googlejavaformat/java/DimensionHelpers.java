@@ -14,6 +14,8 @@
 
 package com.google.googlejavaformat.java;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.ImmutableList;
 import com.sun.source.tree.AnnotatedTypeTree;
 import com.sun.source.tree.AnnotationTree;
@@ -25,25 +27,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utilities for working with array dimensions.
  *
  * <p>javac's parser does not preserve concrete syntax for mixed-notation arrays, so we have to
- * re-lex the input to extra it.
+ * re-lex the input to extract it.
  *
  * <p>For example, {@code int [] a;} cannot be distinguished from {@code int [] a [];} in the AST.
  */
-class DimensionHelpers {
+final class DimensionHelpers {
 
   /** The array dimension specifiers (including any type annotations) associated with a type. */
-  static class TypeWithDims {
-    final Tree node;
-    final ImmutableList<List<AnnotationTree>> dims;
-
-    public TypeWithDims(Tree node, ImmutableList<List<AnnotationTree>> dims) {
-      this.node = node;
-      this.dims = dims;
+  record TypeWithDims(@Nullable Tree node, ImmutableList<List<AnnotationTree>> dims) {
+    TypeWithDims {
+      requireNonNull(dims, "dims");
     }
   }
 
@@ -106,19 +105,20 @@ class DimensionHelpers {
    * int}.
    */
   private static Tree extractDims(Deque<List<AnnotationTree>> dims, Tree node) {
-    switch (node.getKind()) {
-      case ARRAY_TYPE:
-        return extractDims(dims, ((ArrayTypeTree) node).getType());
-      case ANNOTATED_TYPE:
+    return switch (node.getKind()) {
+      case ARRAY_TYPE -> extractDims(dims, ((ArrayTypeTree) node).getType());
+      case ANNOTATED_TYPE -> {
         AnnotatedTypeTree annotatedTypeTree = (AnnotatedTypeTree) node;
         if (annotatedTypeTree.getUnderlyingType().getKind() != Tree.Kind.ARRAY_TYPE) {
-          return node;
+          yield node;
         }
         node = extractDims(dims, annotatedTypeTree.getUnderlyingType());
         dims.addFirst(ImmutableList.copyOf(annotatedTypeTree.getAnnotations()));
-        return node;
-      default:
-        return node;
-    }
+        yield node;
+      }
+      default -> node;
+    };
   }
+
+  private DimensionHelpers() {}
 }

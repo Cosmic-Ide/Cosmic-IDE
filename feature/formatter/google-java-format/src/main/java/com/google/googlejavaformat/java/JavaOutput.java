@@ -140,7 +140,7 @@ public final class JavaOutput extends Output {
             if (i + 1 < text.length() && text.charAt(i + 1) == '\n') {
               i++;
             }
-            // falls through
+          // falls through
           case '\n':
             spacesPending = new StringBuilder();
             ++newlinesPending;
@@ -337,24 +337,15 @@ public final class JavaOutput extends Output {
 
   public static String applyReplacements(String input, List<Replacement> replacements) {
     replacements = new ArrayList<>(replacements);
-    replacements.sort(comparing((Replacement r) -> r.getReplaceRange().lowerEndpoint()).reversed());
+    replacements.sort(comparing((Replacement r) -> r.replaceRange().lowerEndpoint()).reversed());
     StringBuilder writer = new StringBuilder(input);
     for (Replacement replacement : replacements) {
       writer.replace(
-          replacement.getReplaceRange().lowerEndpoint(),
-          replacement.getReplaceRange().upperEndpoint(),
-          replacement.getReplacementString());
+          replacement.replaceRange().lowerEndpoint(),
+          replacement.replaceRange().upperEndpoint(),
+          replacement.replacementString());
     }
     return writer.toString();
-  }
-
-  /** The earliest position of any Tok in the Token, including leading whitespace. */
-  public static int startPosition(Token token) {
-    int min = token.getTok().getPosition();
-    for (Input.Tok tok : token.getToksBefore()) {
-      min = min(min, tok.getPosition());
-    }
-    return min;
   }
 
   /** The earliest non-whitespace Tok in the Token. */

@@ -60,20 +60,23 @@ public class SnippetFormatter {
   }
 
   private static final int INDENTATION_SIZE = 2;
-  private final Formatter formatter = new Formatter();
+  private final Formatter formatter;
   private static final CharMatcher NOT_WHITESPACE = CharMatcher.whitespace().negate();
 
-  public String createIndentationString(int indentationLevel) {
+  public SnippetFormatter() {
+    this(JavaFormatterOptions.defaultOptions());
+  }
+
+  public SnippetFormatter(JavaFormatterOptions formatterOptions) {
+    formatter = new Formatter(formatterOptions);
+  }
+
+  private static String createIndentationString(int indentationLevel) {
     Preconditions.checkArgument(
         indentationLevel >= 0,
         "Indentation level cannot be less than zero. Given: %s",
         indentationLevel);
-    int spaces = indentationLevel * INDENTATION_SIZE;
-    StringBuilder buf = new StringBuilder(spaces);
-    for (int i = 0; i < spaces; i++) {
-      buf.append(' ');
-    }
-    return buf.toString();
+    return " ".repeat(indentationLevel * INDENTATION_SIZE);
   }
 
   private static Range<Integer> offsetRange(Range<Integer> range, int offset) {
@@ -118,7 +121,7 @@ public class SnippetFormatter {
             replacement.length() - (wrapper.contents.length() - wrapper.offset - source.length()));
 
     return toReplacements(source, replacement).stream()
-        .filter(r -> rangeSet.encloses(r.getReplaceRange()))
+        .filter(r -> rangeSet.encloses(r.replaceRange()))
         .collect(toImmutableList());
   }
 
@@ -163,53 +166,38 @@ public class SnippetFormatter {
      * Synthesize a dummy class around the code snippet provided by Eclipse.  The dummy class is
      * correctly formatted -- the blocks use correct indentation, etc.
      */
-    switch (kind) {
-      case COMPILATION_UNIT:
-        {
-          SnippetWrapper wrapper = new SnippetWrapper();
-          for (int i = 1; i <= initialIndent; i++) {
-            wrapper.append("class Dummy {\n").append(createIndentationString(i));
-          }
-          wrapper.appendSource(source);
-          wrapper.closeBraces(initialIndent);
-          return wrapper;
+    return switch (kind) {
+      case COMPILATION_UNIT, CLASS_BODY_DECLARATIONS -> {
+        SnippetWrapper wrapper = new SnippetWrapper();
+        for (int i = 1; i <= initialIndent; i++) {
+          wrapper.append("class Dummy {\n").append(createIndentationString(i));
         }
-      case CLASS_BODY_DECLARATIONS:
-        {
-          SnippetWrapper wrapper = new SnippetWrapper();
-          for (int i = 1; i <= initialIndent; i++) {
-            wrapper.append("class Dummy {\n").append(createIndentationString(i));
-          }
-          wrapper.appendSource(source);
-          wrapper.closeBraces(initialIndent);
-          return wrapper;
+        wrapper.appendSource(source);
+        wrapper.closeBraces(initialIndent);
+        yield wrapper;
+      }
+      case STATEMENTS -> {
+        SnippetWrapper wrapper = new SnippetWrapper();
+        wrapper.append("class Dummy {\n").append(createIndentationString(1));
+        for (int i = 2; i <= initialIndent; i++) {
+          wrapper.append("{\n").append(createIndentationString(i));
         }
-      case STATEMENTS:
-        {
-          SnippetWrapper wrapper = new SnippetWrapper();
-          wrapper.append("class Dummy {\n").append(createIndentationString(1));
-          for (int i = 2; i <= initialIndent; i++) {
-            wrapper.append("{\n").append(createIndentationString(i));
-          }
-          wrapper.appendSource(source);
-          wrapper.closeBraces(initialIndent);
-          return wrapper;
+        wrapper.appendSource(source);
+        wrapper.closeBraces(initialIndent);
+        yield wrapper;
+      }
+      case EXPRESSION -> {
+        SnippetWrapper wrapper = new SnippetWrapper();
+        wrapper.append("class Dummy {\n").append(createIndentationString(1));
+        for (int i = 2; i <= initialIndent; i++) {
+          wrapper.append("{\n").append(createIndentationString(i));
         }
-      case EXPRESSION:
-        {
-          SnippetWrapper wrapper = new SnippetWrapper();
-          wrapper.append("class Dummy {\n").append(createIndentationString(1));
-          for (int i = 2; i <= initialIndent; i++) {
-            wrapper.append("{\n").append(createIndentationString(i));
-          }
-          wrapper.append("Object o = ");
-          wrapper.appendSource(source);
-          wrapper.append(";");
-          wrapper.closeBraces(initialIndent);
-          return wrapper;
-        }
-      default:
-        throw new IllegalArgumentException("Unknown snippet kind: " + kind);
-    }
+        wrapper.append("Object o = ");
+        wrapper.appendSource(source);
+        wrapper.append(";");
+        wrapper.closeBraces(initialIndent);
+        yield wrapper;
+      }
+    };
   }
 }

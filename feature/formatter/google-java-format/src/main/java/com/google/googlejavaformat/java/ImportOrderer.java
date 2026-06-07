@@ -63,13 +63,12 @@ public class ImportOrderer {
   }
 
   private String reorderImports() throws FormatterException {
-    int firstImportStart;
     Optional<Integer> maybeFirstImport = findIdentifier(0, IMPORT_OR_CLASS_START);
     if (!maybeFirstImport.isPresent() || !tokenAt(maybeFirstImport.get()).equals("import")) {
       // No imports, so nothing to do.
       return text;
     }
-    firstImportStart = maybeFirstImport.get();
+    int firstImportStart = maybeFirstImport.get();
     int unindentedFirstImportStart = unindent(firstImportStart);
 
     ImportsAndIndex imports = scanImports(firstImportStart);
@@ -122,18 +121,24 @@ public class ImportOrderer {
   /**
    * A {@link Comparator} that orders {@link Import}s by Google Style, defined at
    * https://google.github.io/styleguide/javaguide.html#s3.3.3-import-ordering-and-spacing.
+   *
+   * <p>Module imports are not allowed by Google Style, so we make an arbitrary choice about where
+   * to include them if they are present.
    */
   private static final Comparator<Import> GOOGLE_IMPORT_COMPARATOR =
-      Comparator.comparing(Import::isStatic, trueFirst()).thenComparing(Import::imported);
+      Comparator.comparing(Import::importType).thenComparing(Import::imported);
 
   /**
    * A {@link Comparator} that orders {@link Import}s by AOSP Style, defined at
    * https://source.android.com/setup/contribute/code-style#order-import-statements and implemented
    * in IntelliJ at
    * https://android.googlesource.com/platform/development/+/master/ide/intellij/codestyles/AndroidStyle.xml.
+   *
+   * <p>Module imports are not mentioned by Android Style, so we make an arbitrary choice about
+   * where to include them if they are present.
    */
   private static final Comparator<Import> AOSP_IMPORT_COMPARATOR =
-      Comparator.comparing(Import::isStatic, trueFirst())
+      Comparator.comparing(Import::importType)
           .thenComparing(Import::isAndroid, trueFirst())
           .thenComparing(Import::isThirdParty, trueFirst())
           .thenComparing(Import::isJava, trueFirst())
@@ -144,7 +149,7 @@ public class ImportOrderer {
    * Import}s based on Google style.
    */
   private static boolean shouldInsertBlankLineGoogle(Import prev, Import curr) {
-    return prev.isStatic() && !curr.isStatic();
+    return !prev.importType().equals(curr.importType());
   }
 
   /**
@@ -152,7 +157,7 @@ public class ImportOrderer {
    * Import}s based on AOSP style.
    */
   private static boolean shouldInsertBlankLineAosp(Import prev, Import curr) {
-    if (prev.isStatic() && !curr.isStatic()) {
+    if (!prev.importType().equals(curr.importType())) {
       return true;
     }
     // insert blank line between "com.android" from "com.anythingelse"
@@ -183,31 +188,28 @@ public class ImportOrderer {
     }
   }
 
-  /** An import statement. */
-  class Import {
-    private final String imported;
-    private final boolean isStatic;
-    private final String trailing;
+  private enum ImportType {
+    STATIC,
+    MODULE,
+    NORMAL
+  }
 
-    Import(String imported, String trailing, boolean isStatic) {
-      this.imported = imported;
-      this.trailing = trailing;
-      this.isStatic = isStatic;
-    }
-
-    /** The name being imported, for example {@code java.util.List}. */
-    String imported() {
-      return imported;
-    }
-
-    /** True if this is {@code import static}. */
-    boolean isStatic() {
-      return isStatic;
-    }
-
+  /**
+   * An import statement.
+   *
+   * @param imported the name being imported, for example {@code java.util.List}.
+   * @param trailing the {@code //} comment lines after the final {@code ;}, up to and including the
+   *     line terminator of the last one. Note: In case two imports were separated by a space (which
+   *     is disallowed by the style guide), the trailing whitespace of the first import does not
+   *     include a line terminator.
+   * @param importType the {@link ImportType} of the import.
+   * @param lineSeparator the line separator to use when formatting the import.
+   */
+  private record Import(
+      String imported, String trailing, ImportType importType, String lineSeparator) {
     /** The top-level package of the import. */
     String topLevel() {
-      return DOT_SPLITTER.split(imported()).iterator().next();
+      return DOT_SPLITTER.split(imported).iterator().next();
     }
 
     /** True if this is an Android import per AOSP style. */
@@ -218,27 +220,14 @@ public class ImportOrderer {
 
     /** True if this is a Java import per AOSP style. */
     boolean isJava() {
-      switch (topLevel()) {
-        case "java":
-        case "javax":
-          return true;
-        default:
-          return false;
-      }
-    }
-
-    /**
-     * The {@code //} comment lines after the final {@code ;}, up to and including the line
-     * terminator of the last one. Note: In case two imports were separated by a space (which is
-     * disallowed by the style guide), the trailing whitespace of the first import does not include
-     * a line terminator.
-     */
-    String trailing() {
-      return trailing;
+      return switch (topLevel()) {
+        case "java", "javax" -> true;
+        default -> false;
+      };
     }
 
     /** True if this is a third-party import per AOSP style. */
-    public boolean isThirdParty() {
+    boolean isThirdParty() {
       return !(isAndroid() || isJava());
     }
 
@@ -248,8 +237,10 @@ public class ImportOrderer {
     public String toString() {
       StringBuilder sb = new StringBuilder();
       sb.append("import ");
-      if (isStatic()) {
-        sb.append("static ");
+      switch (importType) {
+        case STATIC -> sb.append("static ");
+        case MODULE -> sb.append("module ");
+        case NORMAL -> {}
       }
       sb.append(imported()).append(';');
       if (trailing().trim().isEmpty()) {
@@ -269,15 +260,7 @@ public class ImportOrderer {
     return sb.toString();
   }
 
-  private static class ImportsAndIndex {
-    final ImmutableSortedSet<Import> imports;
-    final int index;
-
-    ImportsAndIndex(ImmutableSortedSet<Import> imports, int index) {
-      this.imports = imports;
-      this.index = index;
-    }
-  }
+  private record ImportsAndIndex(ImmutableSortedSet<Import> imports, int index) {}
 
   /**
    * Scans a sequence of import lines. The parsing uses this approximate grammar:
@@ -304,8 +287,13 @@ public class ImportOrderer {
       if (isSpaceToken(i)) {
         i++;
       }
-      boolean isStatic = tokenAt(i).equals("static");
-      if (isStatic) {
+      ImportType importType =
+          switch (tokenAt(i)) {
+            case "static" -> ImportType.STATIC;
+            case "module" -> ImportType.MODULE;
+            default -> ImportType.NORMAL;
+          };
+      if (!importType.equals(ImportType.NORMAL)) {
         i++;
         if (isSpaceToken(i)) {
           i++;
@@ -350,7 +338,7 @@ public class ImportOrderer {
         // Extra semicolons are not allowed by the JLS but are accepted by javac.
         i++;
       }
-      imports.add(new Import(importedName, trailing.toString(), isStatic));
+      imports.add(new Import(importedName, trailing.toString(), importType, lineSeparator));
       // Remember the position just after the import we just saw, before skipping blank lines.
       // If the next thing after the blank lines is not another import then we don't want to
       // include those blank lines in the text to be replaced.

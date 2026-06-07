@@ -46,7 +46,7 @@ class JavaCompileTask(val project: Project) : Task {
             return
         }
 
-        reporter.reportInfo("Compilingg")
+        reporter.reportInfo("Compiling")
 
         val size = javaFiles.size
         reporter.reportInfo("Compiling $size java ${if (size == 1) "file" else "files"}...")
@@ -68,11 +68,9 @@ class JavaCompileTask(val project: Project) : Task {
             val flags = Prefs.javacFlags
 
             val options = listOf(
-                "-XDstringConcat=inline",
-                "-proc:none",
-                "-source",
-                version,
-                "-target",
+//                "-XDstringConcat=inline",
+//                "-proc:none",
+                "--release",
                 version
             ) + if (flags.isNotEmpty()) flags.split(" ").toList() else listOf()
 

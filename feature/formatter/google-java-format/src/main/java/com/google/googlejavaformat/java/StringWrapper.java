@@ -14,15 +14,17 @@
 
 package com.google.googlejavaformat.java;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.Iterables.getLast;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static com.google.googlejavaformat.java.Trees.getEndPosition;
+import static com.google.googlejavaformat.java.Trees.getStartPosition;
+import static java.lang.Math.min;
 import static java.util.stream.Collectors.joining;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeMap;
 import com.google.googlejavaformat.Newlines;
@@ -33,17 +35,9 @@ import com.sun.source.tree.Tree;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
-import com.sun.tools.javac.file.JavacFileManager;
-import com.sun.tools.javac.parser.JavacParser;
-import com.sun.tools.javac.parser.ParserFactory;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Log;
-import com.sun.tools.javac.util.Options;
 import com.sun.tools.javac.util.Position;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -51,16 +45,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardLocation;
 
 /** Wraps string literals that exceed the column limit. */
 public final class StringWrapper {
+
+  private static final String TEXT_BLOCK_DELIMITER = "\"\"\"";
+
   /** Reflows long string literals in the given Java source code. */
   public static String wrap(String input, Formatter formatter) throws FormatterException {
     return StringWrapper.wrap(Formatter.MAX_LINE_LENGTH, input, formatter);
@@ -71,7 +63,7 @@ public final class StringWrapper {
    */
   static String wrap(final int columnLimit, String input, Formatter formatter)
       throws FormatterException {
-    if (!longLines(columnLimit, input)) {
+    if (!needWrapping(columnLimit, input)) {
       // fast path
       return input;
     }
@@ -110,24 +102,64 @@ public final class StringWrapper {
 
   private static TreeRangeMap<Integer, String> getReflowReplacements(
       int columnLimit, final String input) throws FormatterException {
-    JCTree.JCCompilationUnit unit = parse(input, /* allowStringFolding= */ false);
-    String separator = Newlines.guessLineSeparator(input);
+    return new Reflower(columnLimit, input).getReflowReplacements();
+  }
 
-    // Paths to string literals that extend past the column limit.
-    List<TreePath> toFix = new ArrayList<>();
-    final Position.LineMap lineMap = unit.getLineMap();
-    new TreePathScanner<Void, Void>() {
+  private static class Reflower {
+
+    private final String input;
+    private final int columnLimit;
+    private final String separator;
+    private final JCTree.JCCompilationUnit unit;
+    private final Position.LineMap lineMap;
+
+    Reflower(int columnLimit, String input) throws FormatterException {
+      this.columnLimit = columnLimit;
+      this.input = input;
+      this.separator = Newlines.guessLineSeparator(input);
+      this.unit = parse(input, /* allowStringFolding= */ false);
+      this.lineMap = unit.getLineMap();
+    }
+
+    TreeRangeMap<Integer, String> getReflowReplacements() {
+      // Paths to string literals that extend past the column limit.
+      List<TreePath> longStringLiterals = new ArrayList<>();
+      // Paths to text blocks to be re-indented.
+      List<Tree> textBlocks = new ArrayList<>();
+      new LongStringsAndTextBlockScanner(longStringLiterals, textBlocks)
+          .scan(new TreePath(unit), null);
+      TreeRangeMap<Integer, String> replacements = TreeRangeMap.create();
+      indentTextBlocks(replacements, textBlocks);
+      wrapLongStrings(replacements, longStringLiterals);
+      return replacements;
+    }
+
+    private class LongStringsAndTextBlockScanner extends TreePathScanner<Void, Void> {
+
+      private final List<TreePath> longStringLiterals;
+      private final List<Tree> textBlocks;
+
+      LongStringsAndTextBlockScanner(List<TreePath> longStringLiterals, List<Tree> textBlocks) {
+        this.longStringLiterals = longStringLiterals;
+        this.textBlocks = textBlocks;
+      }
+
       @Override
       public Void visitLiteral(LiteralTree literalTree, Void aVoid) {
         if (literalTree.getKind() != Kind.STRING_LITERAL) {
           return null;
         }
-        Tree parent = getCurrentPath().getParentPath().getLeaf();
-        if (parent instanceof MemberSelectTree
-            && ((MemberSelectTree) parent).getExpression().equals(literalTree)) {
+        int pos = getStartPosition(literalTree);
+        if (input.substring(pos, min(input.length(), pos + 3)).equals(TEXT_BLOCK_DELIMITER)) {
+          textBlocks.add(literalTree);
           return null;
         }
-        int endPosition = getEndPosition(unit, literalTree);
+        Tree parent = getCurrentPath().getParentPath().getLeaf();
+        if (parent instanceof MemberSelectTree memberSelectTree
+            && memberSelectTree.getExpression().equals(literalTree)) {
+          return null;
+        }
+        int endPosition = getEndPosition(literalTree, unit);
         int lineEnd = endPosition;
         while (Newlines.hasNewlineAt(input, lineEnd) == -1) {
           lineEnd++;
@@ -135,44 +167,95 @@ public final class StringWrapper {
         if (lineMap.getColumnNumber(lineEnd) - 1 <= columnLimit) {
           return null;
         }
-        toFix.add(getCurrentPath());
+        longStringLiterals.add(getCurrentPath());
         return null;
       }
-    }.scan(new TreePath(unit), null);
-
-    TreeRangeMap<Integer, String> replacements = TreeRangeMap.create();
-    for (TreePath path : toFix) {
-      // Find the outermost contiguous enclosing concatenation expression
-      TreePath enclosing = path;
-      while (enclosing.getParentPath().getLeaf().getKind() == Tree.Kind.PLUS) {
-        enclosing = enclosing.getParentPath();
-      }
-      // Is the literal being wrapped the first in a chain of concatenation expressions?
-      // i.e. `ONE + TWO + THREE`
-      // We need this information to handle continuation indents.
-      AtomicBoolean first = new AtomicBoolean(false);
-      // Finds the set of string literals in the concat expression that includes the one that needs
-      // to be wrapped.
-      List<Tree> flat = flatten(input, unit, path, enclosing, first);
-      // Zero-indexed start column
-      int startColumn = lineMap.getColumnNumber(getStartPosition(flat.get(0))) - 1;
-
-      // Handling leaving trailing non-string tokens at the end of the literal,
-      // e.g. the trailing `);` in `foo("...");`.
-      int end = getEndPosition(unit, getLast(flat));
-      int lineEnd = end;
-      while (Newlines.hasNewlineAt(input, lineEnd) == -1) {
-        lineEnd++;
-      }
-      int trailing = lineEnd - end;
-
-      // Get the original source text of the string literals, excluding `"` and `+`.
-      ImmutableList<String> components = stringComponents(input, unit, flat);
-      replacements.put(
-          Range.closedOpen(getStartPosition(flat.get(0)), getEndPosition(unit, getLast(flat))),
-          reflow(separator, columnLimit, startColumn, trailing, components, first.get()));
     }
-    return replacements;
+
+    private void indentTextBlocks(
+        TreeRangeMap<Integer, String> replacements, List<Tree> textBlocks) {
+      for (Tree tree : textBlocks) {
+        int startPosition = lineMap.getStartPosition(lineMap.getLineNumber(getStartPosition(tree)));
+        int endPosition = getEndPosition(tree, unit);
+        String text = input.substring(startPosition, endPosition);
+        int leadingWhitespace = CharMatcher.whitespace().negate().indexIn(text);
+
+        // Find the source code of the text block with incidental whitespace removed.
+        // The first line of the text block is always """, and it does not affect incidental
+        // whitespace.
+        ImmutableList<String> initialLines = text.lines().collect(toImmutableList());
+        String stripped = initialLines.stream().skip(1).collect(joining(separator)).stripIndent();
+        ImmutableList<String> lines = stripped.lines().collect(toImmutableList());
+        boolean deindent =
+            getLast(initialLines).stripTrailing().length()
+                == getLast(lines).stripTrailing().length();
+
+        String prefix = deindent ? "" : " ".repeat(leadingWhitespace);
+
+        StringBuilder output = new StringBuilder(prefix).append(initialLines.get(0).stripLeading());
+        for (int i = 0; i < lines.size(); i++) {
+          String line = lines.get(i);
+          String trimmed = line.stripTrailing();
+          output.append(separator);
+          if (!trimmed.isEmpty()) {
+            // Don't add incidental leading whitespace to empty lines
+            output.append(prefix);
+          }
+          if (i == lines.size() - 1) {
+            String withoutDelimiter =
+                trimmed
+                    .substring(0, trimmed.length() - TEXT_BLOCK_DELIMITER.length())
+                    .stripTrailing();
+            if (!withoutDelimiter.stripLeading().isEmpty()) {
+              output.append(withoutDelimiter).append('\\').append(separator).append(prefix);
+            }
+            // If the trailing line is just """, indenting it more than the prefix of incidental
+            // whitespace has no effect, and results in a javac text-blocks warning that 'trailing
+            // white space will be removed'.
+            output.append(TEXT_BLOCK_DELIMITER);
+          } else {
+            output.append(line);
+          }
+        }
+        replacements.put(Range.closedOpen(startPosition, endPosition), output.toString());
+      }
+    }
+
+    private void wrapLongStrings(
+        TreeRangeMap<Integer, String> replacements, List<TreePath> longStringLiterals) {
+      for (TreePath path : longStringLiterals) {
+        // Find the outermost contiguous enclosing concatenation expression
+        TreePath enclosing = path;
+        while (enclosing.getParentPath().getLeaf().getKind() == Kind.PLUS) {
+          enclosing = enclosing.getParentPath();
+        }
+        // Is the literal being wrapped the first in a chain of concatenation expressions?
+        // i.e. `ONE + TWO + THREE`
+        // We need this information to handle continuation indents.
+        AtomicBoolean first = new AtomicBoolean(false);
+        // Finds the set of string literals in the concat expression that includes the one that
+        // needs
+        // to be wrapped.
+        List<Tree> flat = flatten(input, unit, path, enclosing, first);
+        // Zero-indexed start column
+        int startColumn = lineMap.getColumnNumber(getStartPosition(flat.get(0))) - 1;
+
+        // Handling leaving trailing non-string tokens at the end of the literal,
+        // e.g. the trailing `);` in `foo("...");`.
+        int end = getEndPosition(getLast(flat), unit);
+        int lineEnd = end;
+        while (Newlines.hasNewlineAt(input, lineEnd) == -1) {
+          lineEnd++;
+        }
+        int trailing = lineEnd - end;
+
+        // Get the original source text of the string literals, excluding `"` and `+`.
+        ImmutableList<String> components = stringComponents(input, unit, flat);
+        replacements.put(
+            Range.closedOpen(getStartPosition(flat.get(0)), getEndPosition(getLast(flat), unit)),
+            reflow(separator, columnLimit, startColumn, trailing, components, first.get()));
+      }
+    }
   }
 
   /**
@@ -185,7 +268,7 @@ public final class StringWrapper {
     StringBuilder piece = new StringBuilder();
     for (Tree tree : flat) {
       // adjust for leading and trailing double quotes
-      String text = input.substring(getStartPosition(tree) + 1, getEndPosition(unit, tree) - 1);
+      String text = input.substring(getStartPosition(tree) + 1, getEndPosition(tree, unit) - 1);
       int start = 0;
       for (int idx = 0; idx < text.length(); idx++) {
         if (CharMatcher.whitespace().matches(text.charAt(idx))) {
@@ -219,20 +302,22 @@ public final class StringWrapper {
     return result.build();
   }
 
-  static int hasEscapedWhitespaceAt(String input, int idx) {
-    return Stream.of("\\t")
-        .mapToInt(x -> input.startsWith(x, idx) ? x.length() : -1)
-        .filter(x -> x != -1)
-        .findFirst()
-        .orElse(-1);
+  private static int hasEscapedWhitespaceAt(String input, int idx) {
+    if (input.startsWith("\\t", idx)) {
+      return 2;
+    }
+    return -1;
   }
 
-  static int hasEscapedNewlineAt(String input, int idx) {
-    return Stream.of("\\r\\n", "\\r", "\\n")
-        .mapToInt(x -> input.startsWith(x, idx) ? x.length() : -1)
-        .filter(x -> x != -1)
-        .findFirst()
-        .orElse(-1);
+  private static int hasEscapedNewlineAt(String input, int idx) {
+    int offset = 0;
+    if (input.startsWith("\\r", idx)) {
+      offset += 2;
+    }
+    if (input.startsWith("\\n", idx)) {
+      offset += 2;
+    }
+    return offset > 0 ? offset : -1;
   }
 
   /**
@@ -264,7 +349,7 @@ public final class StringWrapper {
       List<String> line = new ArrayList<>();
       // If we know this is going to be the last line, then remove a bit of width to account for the
       // trailing characters.
-      if (input.stream().mapToInt(String::length).sum() <= width) {
+      if (totalLengthLessThanOrEqual(input, width)) {
         // This isn’t quite optimal, but arguably good enough. See b/179561701
         width -= trailing;
       }
@@ -295,6 +380,17 @@ public final class StringWrapper {
                 "\""));
   }
 
+  private static boolean totalLengthLessThanOrEqual(Iterable<String> input, int length) {
+    int total = 0;
+    for (String s : input) {
+      total += s.length();
+      if (total > length) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * Flattens the given binary expression tree, and extracts the subset that contains the given path
    * and any adjacent nodes that are also string literals.
@@ -312,7 +408,7 @@ public final class StringWrapper {
     todo.add(parent.getLeaf());
     while (!todo.isEmpty()) {
       Tree first = todo.removeFirst();
-      if (first.getKind() == Tree.Kind.PLUS) {
+      if (first.getKind() == Kind.PLUS) {
         BinaryTree bt = (BinaryTree) first;
         todo.addFirst(bt.getRightOperand());
         todo.addFirst(bt.getLeftOperand());
@@ -328,12 +424,12 @@ public final class StringWrapper {
     int startIdx = idx;
     int endIdx = idx + 1;
     while (startIdx > 0
-        && flat.get(startIdx - 1).getKind() == Tree.Kind.STRING_LITERAL
+        && flat.get(startIdx - 1).getKind() == Kind.STRING_LITERAL
         && noComments(input, unit, flat.get(startIdx - 1), flat.get(startIdx))) {
       startIdx--;
     }
     while (endIdx < flat.size()
-        && flat.get(endIdx).getKind() == Tree.Kind.STRING_LITERAL
+        && flat.get(endIdx).getKind() == Kind.STRING_LITERAL
         && noComments(input, unit, flat.get(endIdx - 1), flat.get(endIdx))) {
       endIdx++;
     }
@@ -345,27 +441,22 @@ public final class StringWrapper {
   private static boolean noComments(
       String input, JCTree.JCCompilationUnit unit, Tree one, Tree two) {
     return STRING_CONCAT_DELIMITER.matchesAllOf(
-        input.subSequence(getEndPosition(unit, one), getStartPosition(two)));
+        input.subSequence(getEndPosition(one, unit), getStartPosition(two)));
   }
 
-  public static final CharMatcher STRING_CONCAT_DELIMITER =
+  private static final CharMatcher STRING_CONCAT_DELIMITER =
       CharMatcher.whitespace().or(CharMatcher.anyOf("\"+"));
 
-  private static int getEndPosition(JCTree.JCCompilationUnit unit, Tree tree) {
-    return ((JCTree) tree).getEndPosition(unit.endPositions);
-  }
-
-  private static int getStartPosition(Tree tree) {
-    return ((JCTree) tree).getStartPosition();
-  }
-
-  /** Returns true if any lines in the given Java source exceed the column limit. */
-  private static boolean longLines(int columnLimit, String input) {
+  /**
+   * Returns true if any lines in the given Java source exceed the column limit, or contain a {@code
+   * """} that could indicate a text block.
+   */
+  private static boolean needWrapping(int columnLimit, String input) {
     // TODO(cushon): consider adding Newlines.lineIterable?
     Iterator<String> it = Newlines.lineIterator(input);
     while (it.hasNext()) {
       String line = it.next();
-      if (line.length() > columnLimit) {
+      if (line.length() > columnLimit || line.contains(TEXT_BLOCK_DELIMITER)) {
         return true;
       }
     }
@@ -375,35 +466,11 @@ public final class StringWrapper {
   /** Parses the given Java source. */
   private static JCTree.JCCompilationUnit parse(String source, boolean allowStringFolding)
       throws FormatterException {
-    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+    List<Diagnostic<? extends JavaFileObject>> errorDiagnostics = new ArrayList<>();
     Context context = new Context();
-    context.put(DiagnosticListener.class, diagnostics);
-    Options.instance(context).put("--enable-preview", "true");
-    Options.instance(context).put("allowStringFolding", Boolean.toString(allowStringFolding));
-    JCTree.JCCompilationUnit unit;
-    JavacFileManager fileManager = new JavacFileManager(context, true, UTF_8);
-    try {
-      fileManager.setLocation(StandardLocation.PLATFORM_CLASS_PATH, ImmutableList.of());
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-    SimpleJavaFileObject sjfo =
-        new SimpleJavaFileObject(URI.create("source"), JavaFileObject.Kind.SOURCE) {
-          @Override
-          public CharSequence getCharContent(boolean ignoreEncodingErrors) {
-            return source;
-          }
-        };
-    Log.instance(context).useSource(sjfo);
-    ParserFactory parserFactory = ParserFactory.instance(context);
-    JavacParser parser =
-        parserFactory.newParser(
-            source, /* keepDocComments= */ true, /* keepEndPos= */ true, /* keepLineMap= */ true);
-    unit = parser.parseCompilationUnit();
-    unit.sourcefile = sjfo;
-    Iterable<Diagnostic<? extends JavaFileObject>> errorDiagnostics =
-        Iterables.filter(diagnostics.getDiagnostics(), Formatter::errorDiagnostic);
-    if (!Iterables.isEmpty(errorDiagnostics)) {
+    JCTree.JCCompilationUnit unit =
+        Trees.parse(context, errorDiagnostics, allowStringFolding, source);
+    if (!errorDiagnostics.isEmpty()) {
       // error handling is done during formatting
       throw FormatterException.fromJavacDiagnostics(errorDiagnostics);
     }

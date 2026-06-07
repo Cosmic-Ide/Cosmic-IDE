@@ -62,6 +62,7 @@ android {
         exclude(group = "org.jetbrains", module = "annotations-java5")
         exclude(group = "com.google.j2objc", module = "j2objc-annotations")
         exclude(group = "com.google.errorprone", module = "error_prone_annotations")
+        exclude(group = "com.atlassian.commonmark", module = "commonmark")
     }
 
     packaging.jniLibs.apply {
@@ -140,48 +141,46 @@ fun getGitCommit(): String {
 
 configurations.all {
     resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.12.0")
-    resolutionStrategy.force("com.google.guava:guava:33.4.8-android")
+    resolutionStrategy.force("com.google.guava:guava:33.6.0-android")
     exclude(group = "commons-logging", module = "commons-logging")
 }
 
 dependencies {
-    implementation("com.android.tools:r8:8.9.35")
+    implementation("com.android.tools:r8:9.1.31")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.9")
 
     //noinspection GradleDependency
     implementation("com.github.Cosmic-Ide:DependencyResolver:6e8b426647")
-    implementation("com.google.android.material:material:1.14.0-alpha01")
-    implementation("com.google.code.gson:gson:2.13.1")
+    implementation("com.google.android.material:material:1.14.0")
+    implementation("com.google.code.gson:gson:2.14.0")
 
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
 
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("androidx.core:core-ktx:1.16.0")
-    implementation("androidx.core:core-splashscreen:1.1.0-rc01")
+    implementation("androidx.core:core-ktx:1.19.0")
+    implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("androidx.documentfile:documentfile:1.1.0")
-    implementation("androidx.fragment:fragment-ktx:1.8.8")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.1")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-beta01")
+    implementation("androidx.fragment:fragment-ktx:1.8.9")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
-    implementation("androidx.activity:activity-ktx:1.10.1")
+    implementation("androidx.activity:activity-ktx:1.13.0")
     implementation("androidx.startup:startup-runtime:1.2.0")
 
-    val editorVersion = "0.23.5"
-    //noinspection GradleDependency
-    implementation("io.github.Rosemoe.sora-editor:editor:$editorVersion")
-    //noinspection GradleDependency
-    implementation("io.github.Rosemoe.sora-editor:language-treesitter:$editorVersion")
-    implementation("io.github.Rosemoe.sora-editor:language-textmate:$editorVersion")
-    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.1")
-    implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.3.1")
-    implementation("com.itsaky.androidide.treesitter:tree-sitter-kotlin:4.3.1")
+    implementation(platform("io.github.rosemoe:editor-bom:0.24.5"))
+    implementation("io.github.rosemoe:editor:")
+    implementation("io.github.rosemoe:language-treesitter")
+    implementation("io.github.rosemoe:language-textmate")
+    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.2")
+    implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.3.2")
+    implementation("com.itsaky.androidide.treesitter:tree-sitter-kotlin:4.3.2")
 
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
-    implementation("com.github.sya-ri:kgit:1.1.0")
+    implementation("com.github.sya-ri:kgit:1.2.0")
 
     // markwon
     val markwonVersion = "4.6.2"
@@ -193,7 +192,7 @@ dependencies {
     implementation("de.maxr1998:modernandroidpreferences:2.4.0-beta2")
 
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
 

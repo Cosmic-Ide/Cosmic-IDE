@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 public final class OpsBuilder {
 
-  /** @return the actual size of the AST node at position, including comments. */
+  /** Returns the actual size of the AST node at position, including comments. */
   public int actualSize(int position, int length) {
     Token startToken = input.getPositionTokenMap().get(position);
     int start = startToken.getTok().getPosition();
@@ -57,7 +57,7 @@ public final class OpsBuilder {
     return end - start;
   }
 
-  /** @return the start column of the token at {@code position}, including leading comments. */
+  /** Returns the start column of the token at {@code position}, including leading comments. */
   public Integer actualStartColumn(int position) {
     Token startToken = input.getPositionTokenMap().get(position);
     int start = startToken.getTok().getPosition();
@@ -138,11 +138,10 @@ public final class OpsBuilder {
 
       @Override
       public BlankLineWanted merge(BlankLineWanted other) {
-        if (!(other instanceof ConditionalBlankLine)) {
+        if (!(other instanceof ConditionalBlankLine conditionalBlankLine)) {
           return other;
         }
-        return new ConditionalBlankLine(
-            Iterables.concat(this.tags, ((ConditionalBlankLine) other).tags));
+        return new ConditionalBlankLine(Iterables.concat(this.tags, conditionalBlankLine.tags));
       }
     }
   }
@@ -150,7 +149,7 @@ public final class OpsBuilder {
   private final Input input;
   private final List<Op> ops = new ArrayList<>();
   private final Output output;
-  private static final Indent.Const ZERO = Indent.Const.ZERO;
+  private static final Const ZERO = Const.ZERO;
 
   private int tokenI = 0;
   private int inputPosition = Integer.MIN_VALUE;
@@ -223,12 +222,12 @@ public final class OpsBuilder {
    */
   public final void sync(int inputPosition) {
     if (inputPosition > this.inputPosition) {
-      ImmutableList<? extends Input.Token> tokens = input.getTokens();
+      ImmutableList<? extends Token> tokens = input.getTokens();
       int tokensN = tokens.size();
       this.inputPosition = inputPosition;
       if (tokenI < tokensN && inputPosition > tokens.get(tokenI).getTok().getPosition()) {
         // Found a missing input token. Insert it and mark it missing (usually not good).
-        Input.Token token = tokens.get(tokenI++);
+        Token token = tokens.get(tokenI++);
         throw new FormattingError(
             diagnostic(String.format("did not generate token \"%s\"", token.getTok().getText())));
       }
@@ -239,10 +238,10 @@ public final class OpsBuilder {
   public final void drain() {
     int inputPosition = input.getText().length() + 1;
     if (inputPosition > this.inputPosition) {
-      ImmutableList<? extends Input.Token> tokens = input.getTokens();
+      ImmutableList<? extends Token> tokens = input.getTokens();
       int tokensN = tokens.size();
       while (tokenI < tokensN && inputPosition > tokens.get(tokenI).getTok().getPosition()) {
-        Input.Token token = tokens.get(tokenI++);
+        Token token = tokens.get(tokenI++);
         add(
             Doc.Token.make(
                 token,
@@ -269,14 +268,14 @@ public final class OpsBuilder {
     add(CloseOp.make());
   }
 
-  /** Return the text of the next {@link Input.Token}, or absent if there is none. */
+  /** Return the text of the next {@link Token}, or absent if there is none. */
   public final Optional<String> peekToken() {
     return peekToken(0);
   }
 
-  /** Return the text of an upcoming {@link Input.Token}, or absent if there is none. */
+  /** Return the text of an upcoming {@link Token}, or absent if there is none. */
   public final Optional<String> peekToken(int skip) {
-    ImmutableList<? extends Input.Token> tokens = input.getTokens();
+    ImmutableList<? extends Token> tokens = input.getTokens();
     int idx = tokenI + skip;
     return idx < tokens.size()
         ? Optional.of(tokens.get(idx).getTok().getOriginalText())
@@ -284,11 +283,11 @@ public final class OpsBuilder {
   }
 
   /**
-   * Returns the {@link Input.Tok}s starting at the current source position, which are satisfied by
+   * Returns the {@link Tok}s starting at the current source position, which are satisfied by
    * the given predicate.
    */
-  public ImmutableList<Tok> peekTokens(int startPosition, Predicate<Input.Tok> predicate) {
-    ImmutableList<? extends Input.Token> tokens = input.getTokens();
+  public ImmutableList<Tok> peekTokens(int startPosition, Predicate<Tok> predicate) {
+    ImmutableList<? extends Token> tokens = input.getTokens();
     Preconditions.checkState(
         tokens.get(tokenI).getTok().getPosition() == startPosition,
         "Expected the current token to be at position %s, found: %s",
@@ -316,7 +315,7 @@ public final class OpsBuilder {
         token,
         Doc.Token.RealOrImaginary.IMAGINARY,
         ZERO,
-        /* breakAndIndentTrailingComment=  */ Optional.empty());
+        /* breakAndIndentTrailingComment= */ Optional.empty());
   }
 
   public final void token(
@@ -324,7 +323,7 @@ public final class OpsBuilder {
       Doc.Token.RealOrImaginary realOrImaginary,
       Indent plusIndentCommentsBefore,
       Optional<Indent> breakAndIndentTrailingComment) {
-    ImmutableList<? extends Input.Token> tokens = input.getTokens();
+    ImmutableList<? extends Token> tokens = input.getTokens();
     if (token.equals(peekToken().orElse(null))) { // Found the input token. Output it.
       add(
           Doc.Token.make(
@@ -359,7 +358,7 @@ public final class OpsBuilder {
           op.substring(i, i + 1),
           Doc.Token.RealOrImaginary.REAL,
           ZERO,
-          /* breakAndIndentTrailingComment=  */ Optional.empty());
+          /* breakAndIndentTrailingComment= */ Optional.empty());
     }
   }
 
@@ -427,7 +426,7 @@ public final class OpsBuilder {
    * @param plusIndent extra indent if taken
    */
   public final void breakOp(Doc.FillMode fillMode, String flat, Indent plusIndent) {
-    breakOp(fillMode, flat, plusIndent, /* optionalTag=  */ Optional.empty());
+    breakOp(fillMode, flat, plusIndent, /* optionalTag= */ Optional.empty());
   }
 
   /**
@@ -472,8 +471,8 @@ public final class OpsBuilder {
     output.blankLine(getI(input.getTokens().get(tokenI)), wanted);
   }
 
-  private static int getI(Input.Token token) {
-    for (Input.Tok tok : token.getToksBefore()) {
+  private static int getI(Token token) {
+    for (Tok tok : token.getToksBefore()) {
       if (tok.getIndex() >= 0) {
         return tok.getIndex();
       }
@@ -495,14 +494,14 @@ public final class OpsBuilder {
     int opsN = ops.size();
     for (int i = 0; i < opsN; i++) {
       Op op = ops.get(i);
-      if (op instanceof Doc.Token) {
+      if (op instanceof Doc.Token tokenOp) {
         /*
          * Token ops can have associated non-tokens, including comments, which we need to insert.
          * They can also cause line breaks, so we insert them before or after the current level,
          * when possible.
          */
-        Doc.Token tokenOp = (Doc.Token) op;
-        Input.Token token = tokenOp.getToken();
+
+        Token token = tokenOp.getToken();
         int j = i; // Where to insert toksBefore before.
         while (0 < j && ops.get(j - 1) instanceof OpenOp) {
           --j;
@@ -520,7 +519,7 @@ public final class OpsBuilder {
           boolean space = false; // Do we need an extra space after a previous "/*" comment?
           boolean lastWasComment = false; // Was the last thing we output a comment?
           boolean allowBlankAfterLastComment = false;
-          for (Input.Tok tokBefore : token.getToksBefore()) {
+          for (Tok tokBefore : token.getToksBefore()) {
             if (tokBefore.isNewline()) {
               newlines++;
             } else if (tokBefore.isComment()) {
@@ -552,7 +551,7 @@ public final class OpsBuilder {
             tokOps.put(j, SPACE);
           }
           // Now we've seen the Token; output the toksAfter.
-          for (Input.Tok tokAfter : token.getToksAfter()) {
+          for (Tok tokAfter : token.getToksAfter()) {
             if (tokAfter.isComment()) {
               boolean breakAfter =
                   tokAfter.isJavadocComment()
@@ -582,7 +581,7 @@ public final class OpsBuilder {
            */
           int newlines = 0;
           boolean lastWasComment = false;
-          for (Input.Tok tokBefore : token.getToksBefore()) {
+          for (Tok tokBefore : token.getToksBefore()) {
             if (tokBefore.isNewline()) {
               newlines++;
             } else if (tokBefore.isComment()) {
@@ -594,7 +593,7 @@ public final class OpsBuilder {
             }
             tokOps.put(j, Doc.Tok.make(tokBefore));
           }
-          for (Input.Tok tokAfter : token.getToksAfter()) {
+          for (Tok tokAfter : token.getToksAfter()) {
             tokOps.put(k + 1, Doc.Tok.make(tokAfter));
           }
         }
@@ -616,8 +615,8 @@ public final class OpsBuilder {
       Op op = ops.get(i);
       if (afterForcedBreak
           && (op instanceof Doc.Space
-              || (op instanceof Doc.Break
-                  && ((Doc.Break) op).getPlusIndent() == 0
+              || (op instanceof Doc.Break b
+                  && b.getPlusIndent() == 0
                   && " ".equals(((Doc) op).getFlat())))) {
         continue;
       }
@@ -636,10 +635,10 @@ public final class OpsBuilder {
   }
 
   private static boolean isForcedBreak(Op op) {
-    return op instanceof Doc.Break && ((Doc.Break) op).isForced();
+    return op instanceof Doc.Break b && b.isForced();
   }
 
-  private static List<Op> makeComment(Input.Tok comment) {
+  private static List<Op> makeComment(Tok comment) {
     return comment.isSlashStarComment()
         ? ImmutableList.of(Doc.Tok.make(comment))
         : ImmutableList.of(Doc.Tok.make(comment), Doc.Break.makeForced());

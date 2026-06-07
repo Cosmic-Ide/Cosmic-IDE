@@ -16,6 +16,9 @@
 
 package com.google.googlejavaformat.java;
 
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Iterables.getLast;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
@@ -26,12 +29,12 @@ import com.google.googlejavaformat.Input.Token;
 import com.sun.tools.javac.parser.Tokens.TokenKind;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.lang.model.element.Modifier;
+import org.jspecify.annotations.Nullable;
 
 /** Fixes sequences of modifiers to be in JLS order. */
 final class ModifierOrderer {
@@ -40,6 +43,57 @@ final class ModifierOrderer {
   static JavaInput reorderModifiers(String text) throws FormatterException {
     return reorderModifiers(
         new JavaInput(text), ImmutableList.of(Range.closedOpen(0, text.length())));
+  }
+
+  /**
+   * A class that contains the tokens corresponding to a modifier. This is usually a single token
+   * (e.g. for {@code public}), but may be multiple tokens for modifiers containing {@code -} (e.g.
+   * {@code non-sealed}).
+   */
+  private record ModifierTokens(ImmutableList<Token> tokens, Modifier modifier)
+      implements Comparable<ModifierTokens> {
+
+    static ModifierTokens create(ImmutableList<Token> tokens) {
+      return new ModifierTokens(tokens, asModifier(tokens));
+    }
+
+    static ModifierTokens empty() {
+      return new ModifierTokens(ImmutableList.of(), null);
+    }
+
+    boolean isEmpty() {
+      return tokens.isEmpty() || modifier == null;
+    }
+
+    private Token first() {
+      return tokens.get(0);
+    }
+
+    private Token last() {
+      return getLast(tokens);
+    }
+
+    int startPosition() {
+      return first().getTok().getPosition();
+    }
+
+    int endPosition() {
+      return last().getTok().getPosition() + last().getTok().getText().length();
+    }
+
+    ImmutableList<? extends Tok> getToksBefore() {
+      return first().getToksBefore();
+    }
+
+    ImmutableList<? extends Tok> getToksAfter() {
+      return last().getToksAfter();
+    }
+
+    @Override
+    public int compareTo(ModifierTokens o) {
+      checkState(!isEmpty()); // empty ModifierTokens are filtered out prior to sorting
+      return modifier.compareTo(o.modifier);
+    }
   }
 
   /**
@@ -57,43 +111,37 @@ final class ModifierOrderer {
     Iterator<? extends Token> it = javaInput.getTokens().iterator();
     TreeRangeMap<Integer, String> replacements = TreeRangeMap.create();
     while (it.hasNext()) {
-      Token token = it.next();
-      if (!tokenRanges.contains(token.getTok().getIndex())) {
-        continue;
-      }
-      Modifier mod = asModifier(token);
-      if (mod == null) {
+      ModifierTokens tokens = getModifierTokens(it);
+      if (tokens.isEmpty()
+          || !tokens.tokens().stream()
+              .allMatch(token -> tokenRanges.contains(token.getTok().getIndex()))) {
         continue;
       }
 
-      List<Token> modifierTokens = new ArrayList<>();
-      List<Modifier> mods = new ArrayList<>();
+      List<ModifierTokens> modifierTokens = new ArrayList<>();
 
-      int begin = token.getTok().getPosition();
-      mods.add(mod);
-      modifierTokens.add(token);
+      int begin = tokens.startPosition();
+      modifierTokens.add(tokens);
 
       int end = -1;
       while (it.hasNext()) {
-        token = it.next();
-        mod = asModifier(token);
-        if (mod == null) {
+        tokens = getModifierTokens(it);
+        if (tokens.isEmpty()) {
           break;
         }
-        mods.add(mod);
-        modifierTokens.add(token);
-        end = token.getTok().getPosition() + token.getTok().length();
+        modifierTokens.add(tokens);
+        end = tokens.endPosition();
       }
 
-      if (!Ordering.natural().isOrdered(mods)) {
-        Collections.sort(mods);
+      if (!Ordering.natural().isOrdered(modifierTokens)) {
+        List<ModifierTokens> sorted = Ordering.natural().sortedCopy(modifierTokens);
         StringBuilder replacement = new StringBuilder();
-        for (int i = 0; i < mods.size(); i++) {
+        for (int i = 0; i < sorted.size(); i++) {
           if (i > 0) {
             addTrivia(replacement, modifierTokens.get(i).getToksBefore());
           }
-          replacement.append(mods.get(i));
-          if (i < (modifierTokens.size() - 1)) {
+          replacement.append(sorted.get(i).modifier());
+          if (i < (sorted.size() - 1)) {
             addTrivia(replacement, modifierTokens.get(i).getToksAfter());
           }
         }
@@ -109,49 +157,65 @@ final class ModifierOrderer {
     }
   }
 
+  private static @Nullable ModifierTokens getModifierTokens(Iterator<? extends Token> it) {
+    Token token = it.next();
+    ImmutableList.Builder<Token> result = ImmutableList.builder();
+    result.add(token);
+    if (!token.getTok().getText().equals("non")) {
+      return ModifierTokens.create(result.build());
+    }
+    if (!it.hasNext()) {
+      return ModifierTokens.empty();
+    }
+    Token dash = it.next();
+    result.add(dash);
+    if (!dash.getTok().getText().equals("-") || !it.hasNext()) {
+      return ModifierTokens.empty();
+    }
+    result.add(it.next());
+    return ModifierTokens.create(result.build());
+  }
+
+  private static @Nullable Modifier asModifier(ImmutableList<Token> tokens) {
+    if (tokens.size() == 1) {
+      return asModifier(tokens.get(0));
+    }
+    Modifier modifier = asModifier(getLast(tokens));
+    if (modifier == null) {
+      return null;
+    }
+    return Modifier.valueOf("NON_" + modifier.name());
+  }
+
   /**
-   * Returns the given token as a {@link javax.lang.model.element.Modifier}, or {@code null} if it
+   * Returns the given token as a {@link Modifier}, or {@code null} if it
    * is not a modifier.
    */
-  private static Modifier asModifier(Token token) {
+  private static @Nullable Modifier asModifier(Token token) {
     TokenKind kind = ((JavaInput.Tok) token.getTok()).kind();
-    if (kind != null) {
-      switch (kind) {
-        case PUBLIC:
-          return Modifier.PUBLIC;
-        case PROTECTED:
-          return Modifier.PROTECTED;
-        case PRIVATE:
-          return Modifier.PRIVATE;
-        case ABSTRACT:
-          return Modifier.ABSTRACT;
-        case STATIC:
-          return Modifier.STATIC;
-        case DEFAULT:
-          return Modifier.DEFAULT;
-        case FINAL:
-          return Modifier.FINAL;
-        case TRANSIENT:
-          return Modifier.TRANSIENT;
-        case VOLATILE:
-          return Modifier.VOLATILE;
-        case SYNCHRONIZED:
-          return Modifier.SYNCHRONIZED;
-        case NATIVE:
-          return Modifier.NATIVE;
-        case STRICTFP:
-          return Modifier.STRICTFP;
-        default: // fall out
-      }
+    if (kind == null) {
+      return null;
     }
-    switch (token.getTok().getText()) {
-      case "non-sealed":
-        return Modifier.valueOf("NON_SEALED");
-      case "sealed":
-        return Modifier.valueOf("SEALED");
-      default:
-        return null;
-    }
+    return switch (kind) {
+      case PUBLIC -> Modifier.PUBLIC;
+      case PROTECTED -> Modifier.PROTECTED;
+      case PRIVATE -> Modifier.PRIVATE;
+      case ABSTRACT -> Modifier.ABSTRACT;
+      case STATIC -> Modifier.STATIC;
+      case DEFAULT -> Modifier.DEFAULT;
+
+      case FINAL -> Modifier.FINAL;
+      case TRANSIENT -> Modifier.TRANSIENT;
+      case VOLATILE -> Modifier.VOLATILE;
+      case SYNCHRONIZED -> Modifier.SYNCHRONIZED;
+      case NATIVE -> Modifier.NATIVE;
+      case STRICTFP -> Modifier.STRICTFP;
+      default ->
+          switch (token.getTok().getText()) {
+            case "sealed" -> Modifier.SEALED;
+            default -> null;
+          };
+    };
   }
 
   /** Applies replacements to the given string. */
@@ -170,4 +234,6 @@ final class ModifierOrderer {
     }
     return new JavaInput(sb.toString());
   }
+
+  private ModifierOrderer() {}
 }

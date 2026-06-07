@@ -1,11 +1,4 @@
 /*
- * This file is part of Cosmic IDE.
- * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
  *  This file is part of CodeAssist.
  *
  *  CodeAssist is free software: you can redistribute it and/or modify
@@ -29,7 +22,6 @@ import com.sun.source.tree.LineMap;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
-import com.sun.tools.javac.tree.EndPosTable;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 import com.tyron.javacompletion.logging.JLogger;
@@ -95,13 +87,13 @@ public abstract class PositionContext {
             Module module, FileScope inputFileScope, int position) {
         JCCompilationUnit compilationUnit = inputFileScope.getCompilationUnit().get();
         EntityScope scopeAtPosition = inputFileScope.getEntityScopeAt(position - 1);
-        PositionAstScanner scanner = new PositionAstScanner(compilationUnit.endPositions, position);
+        PositionAstScanner scanner = new PositionAstScanner(position);
         logger.fine("Starting PositionAstScanner, position: %s", position);
         TreePath treePath = scanner.scan(compilationUnit, null);
         logger.fine("TreePath for position: %s", TreePathFormatter.formatTreePath(treePath));
 
         return new AutoValue_PositionContext(
-                scopeAtPosition, module, inputFileScope, treePath, position, compilationUnit.endPositions);
+                scopeAtPosition, module, inputFileScope, treePath, position);
     }
 
     public abstract EntityScope getScopeAtPosition();
@@ -121,17 +113,13 @@ public abstract class PositionContext {
      */
     public abstract int getPosition();
 
-    public abstract EndPosTable getEndPosTable();
-
     /**
      * A {@link TreePathScanner} that returns the tree path enclosing the given position.
      */
     private static class PositionAstScanner extends TreePathScanner<TreePath, Void> {
-        private final EndPosTable endPosTable;
         private final int position;
 
-        private PositionAstScanner(EndPosTable endPosTable, int position) {
-            this.endPosTable = endPosTable;
+        private PositionAstScanner(int position) {
             this.position = position;
         }
 
@@ -143,7 +131,7 @@ public abstract class PositionContext {
 
             JCTree jcTree = (JCTree) tree;
             int startPosition = jcTree.getStartPosition();
-            int endPosition = jcTree.getEndPosition(endPosTable);
+            int endPosition = jcTree.getEndPosition();
             boolean positionInNodeRange =
                     (startPosition < 0 || startPosition <= position)
                             && (position < endPosition || endPosition < 0);
@@ -151,7 +139,7 @@ public abstract class PositionContext {
                     "PositionAstScanner: visiting node: %s, start: %s, end: %s.%s",
                     tree.accept(new TreePathFormatter.TreeFormattingVisitor(), null),
                     jcTree.getStartPosition(),
-                    jcTree.getEndPosition(endPosTable),
+                    jcTree.getEndPosition(),
                     positionInNodeRange ? " ✔" : "");
             if (!positionInNodeRange) {
                 return null;

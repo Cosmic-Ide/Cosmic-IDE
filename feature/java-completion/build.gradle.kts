@@ -47,7 +47,7 @@ dependencies {
         exclude(group = "com.google.guava", module = "guava")
     }
     implementation("org.javassist:javassist:3.30.2-GA")
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
+    implementation("com.github.PranavPurwar:javac-android:27.23")
     implementation(projects.feature.project)
     implementation(projects.common)
     implementation(projects.util)

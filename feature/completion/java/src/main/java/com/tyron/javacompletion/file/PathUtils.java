@@ -25,7 +25,6 @@ package com.tyron.javacompletion.file;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.itsaky.androidide.zipfs2.JarFileSystemProvider;
 import com.tyron.javacompletion.logging.JLogger;
 
 import java.io.IOException;
@@ -169,7 +168,7 @@ public class PathUtils {
             throw new IOException(e);
         }
         Path path = null;
-        try (FileSystem fs = new JarFileSystemProvider().newFileSystem(uri, ImmutableMap.of() /* env */)) {
+        try (FileSystem fs = new jdk.nio.zipfs.ZipFileSystemProvider().newFileSystem(uri, ImmutableMap.of() /* env */)) {
             path = fs.getPath("/");
         } catch (IOException e) {
             e.printStackTrace();

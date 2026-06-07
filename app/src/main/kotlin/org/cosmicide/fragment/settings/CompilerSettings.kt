@@ -21,8 +21,7 @@ import org.jetbrains.kotlin.config.LanguageVersion
 
 class CompilerSettings(private val activity: FragmentActivity) : SettingsProvider {
 
-    private val javaVersionValues: Array<String>
-        get() = activity.resources.getStringArray(R.array.java_version_entries)
+    private val javaVersionValues: Array<String> = (8..27).map { it.toString() }.toTypedArray()
 
     private val kotlinVersionValues = arrayOf(
         LanguageVersion.KOTLIN_1_4,
@@ -64,7 +63,7 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
             singleChoice(PreferenceKeys.COMPILER_JAVA_VERSIONS, javaVersionItems) {
                 title = activity.getString(R.string.java_version)
                 summary = activity.getString(R.string.java_version_desc)
-                initialSelection = "17"
+                initialSelection = "27"
             }
 
             singleChoice(PreferenceKeys.COMPILER_KOTLIN_VERSION, kotlinVersionItems) {

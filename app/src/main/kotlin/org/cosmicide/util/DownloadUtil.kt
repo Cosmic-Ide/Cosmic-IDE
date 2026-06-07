@@ -12,47 +12,71 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.cosmicide.common.Analytics
 import java.io.File
+import java.io.IOException
 
-class Download(val url: String, val callback: (percent: Int) -> Unit) {
+class Download(
+    private val client: OkHttpClient,
+    val url: String,
+    private val callback: (percent: Int) -> Unit
+) {
 
-    var totalBytes = 0.0
-    var downloadedBytes = 0L
+    private var totalBytes = -1L
+    private var downloadedBytes = 0L
 
+    /**
+     * Downloads the file synchronously.
+     * Note: Must be called from a background thread to prevent Android NetworkOnMainThreadException.
+     */
+    @Throws(IOException::class)
     fun start(file: File) {
         Analytics.logEvent("download", mapOf("url" to url, "file" to file.absolutePath))
+
         val request = Request.Builder()
             .url(url)
             .build()
 
-        val response = OkHttpClient().newCall(request).execute()
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("Unexpected HTTP code: ${response.code} for URL: $url")
+            }
 
-        if (!response.isSuccessful) {
-            throw Exception("Unexpected code $response")
-        }
+            val body = response.body ?: throw IOException("Response body is null for URL: $url")
+            totalBytes = body.contentLength()
 
-        totalBytes = response.body!!.contentLength().toDouble()
-        if (totalBytes <= 0) {
-            totalBytes = response.body!!.source().buffer.size.toDouble()
-        }
-        Log.d("Download", "Downloading $url to $file ($totalBytes B)")
-        file.outputStream().use { out ->
-            response.body!!.byteStream().buffered().use { input ->
-                val buffer = ByteArray(BUFFER_SIZE)
-                var bytesRead = input.read(buffer)
+            Log.d(
+                TAG,
+                "Downloading $url to ${file.absolutePath} (Size: ${if (totalBytes > 0) "$totalBytes B" else "Unknown"})"
+            )
 
-                while (bytesRead != -1) {
-                    out.write(buffer, 0, bytesRead)
-                    downloadedBytes += bytesRead
-                    bytesRead = input.read(buffer)
+            file.parentFile?.mkdirs()
 
-                    val progress = ((downloadedBytes.toDouble() / totalBytes) * 100).toInt()
-                    callback(progress)
+            file.outputStream().use { out ->
+                body.byteStream().use { input ->
+                    val buffer = ByteArray(BUFFER_SIZE)
+                    var bytesRead: Int
+                    var lastProgress = -1
+
+                    while (input.read(buffer).also { bytesRead = it } != -1) {
+                        out.write(buffer, 0, bytesRead)
+                        downloadedBytes += bytesRead
+
+                        if (totalBytes > 0) {
+                            val progress = ((downloadedBytes * 100) / totalBytes).toInt()
+                            if (progress != lastProgress) {
+                                lastProgress = progress
+                                callback(progress)
+                            }
+                        } else {
+                            callback(-1)
+                        }
+                    }
                 }
             }
         }
     }
 
     companion object {
-        private const val BUFFER_SIZE = 512
+        private const val TAG = "Download"
+        private const val BUFFER_SIZE = 8192
     }
 }

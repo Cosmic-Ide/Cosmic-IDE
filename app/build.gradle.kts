@@ -62,6 +62,7 @@ android {
         exclude(group = "org.jetbrains", module = "annotations-java5")
         exclude(group = "com.google.j2objc", module = "j2objc-annotations")
         exclude(group = "com.google.errorprone", module = "error_prone_annotations")
+        exclude(group = "io.github.itsaky", module = "nb-javac-android")
         exclude(group = "com.atlassian.commonmark", module = "commonmark")
     }
 
@@ -177,7 +178,7 @@ dependencies {
     implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.3.2")
     implementation("com.itsaky.androidide.treesitter:tree-sitter-kotlin:4.3.2")
 
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
+    implementation("com.github.PranavPurwar:javac-android:27.23")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.2.202306221912-r")
     implementation("com.github.sya-ri:kgit:1.2.0")

@@ -81,7 +81,7 @@ object Prefs {
         get() = prefs.getString("javac_flags", "") ?: ""
 
     val compilerJavaVersion: Int
-        get() = Integer.parseInt(prefs.getString("java_version", "17") ?: "17")
+        get() = Integer.parseInt(prefs.getString("java_version", "27") ?: "27")
 
     val kotlinVersion: String
         get() = prefs.getString("kotlin_version", "2.1") ?: "2.1"

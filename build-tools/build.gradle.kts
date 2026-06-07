@@ -48,8 +48,8 @@ dependencies {
     implementation(projects.util)
     implementation(projects.feature.javaCompletion)
     implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("io.github.rosemoe:editor:0.24.5")
+    implementation("com.github.PranavPurwar:javac-android:27.23")
     implementation("com.google.guava:guava:33.6.0-android")
     implementation("com.android.tools:r8:9.1.31")
 }

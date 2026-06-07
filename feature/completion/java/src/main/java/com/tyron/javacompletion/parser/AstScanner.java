@@ -52,7 +52,6 @@ import com.sun.source.tree.WhileLoopTree;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.TreeScanner;
 import com.sun.tools.javac.tree.DocCommentTable;
-import com.sun.tools.javac.tree.EndPosTable;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
@@ -94,7 +93,6 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
     private final IndexOptions indexOptions;
     private FileScope fileScope = null;
     private List<String> currentQualifiers = new ArrayList<>();
-    private EndPosTable endPosTable = null;
     private DocCommentTable docComments = null;
     private NestedRangeMapBuilder<EntityScope> scopeRangeBuilder = null;
     private String filename = null;
@@ -149,7 +147,6 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
                 FileScope.createFromSource(
                         filename, this.currentQualifiers, compilationUnit, content.length());
         this.scopeRangeBuilder = new NestedRangeMapBuilder<>();
-        this.endPosTable = compilationUnit.endPositions;
         this.docComments = compilationUnit.docComments;
         addScopeRange(compilationUnit, this.fileScope);
 
@@ -183,7 +180,6 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         // Cleanup
         this.currentQualifiers.clear();
         this.scopeRangeBuilder = null;
-        this.endPosTable = null;
         return null;
     }
 
@@ -458,7 +454,7 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         checkArgument(node instanceof JCTree, "%s is not a JCTree", node);
         JCTree jcTree = (JCTree) node;
         int start = jcTree.getStartPosition();
-        int end = jcTree.getEndPosition(endPosTable);
+        int end = jcTree.getEndPosition();
         if (end < 0) {
             // The file is syntactically incorrect, likely incomplete blocks. Use
             // length of 1 to avoid overlapping.
@@ -541,10 +537,10 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
             JCTree node, String name, List<? extends JCTree> precedentNodes) {
         int start = node.getStartPosition();
         for (JCTree precedentNode : precedentNodes) {
-            start = Math.max(start, precedentNode.getEndPosition(endPosTable));
+            start = Math.max(start, precedentNode.getEndPosition());
         }
         start = content.indexOf(name, start);
-        if (start > -1 && start < node.getEndPosition(endPosTable)) {
+        if (start > -1 && start < node.getEndPosition()) {
             return Range.closed(start, start + name.length());
         }
 

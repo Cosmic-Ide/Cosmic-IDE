@@ -20,7 +20,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
-import com.itsaky.androidide.config.JavacConfigProvider
+import com.sun.tools.javac.ConfigProvider
 import de.robv.android.xposed.XC_MethodHook
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
@@ -97,10 +97,11 @@ class App : Application() {
             HiddenApiBypass.addHiddenApiExemptions("L")
         }
 
+        ConfigProvider.setJavaHome(FileUtil.dataDir.resolve("jdk-27").absolutePath)
+
         DynamicColors.applyToActivitiesIfAvailable(this)
 
         extractFiles()
-        disableModules()
 
         loadTextmateTheme()
 
@@ -202,10 +203,6 @@ class App : Application() {
         }
         val digest = md.digest()
         return BigInteger(1, digest).toString(16)
-    }
-
-    fun disableModules() {
-        JavacConfigProvider.disableModules()
     }
 
     fun loadTextmateTheme() {

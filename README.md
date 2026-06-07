@@ -95,10 +95,7 @@ We would like to thank the following projects and their maintainers for their wo
 
 - [Iyxan23](https://github.com/Iyxan23) for the app icon!
 - [Sora Editor](https://github.com/Rosemoe/sora-editor) licensed under the GNU Lesser General Public License v2.1
-- [CodeAssist Kotlin code completion](https://github.com/tyron12233/CodeAssist/tree/main/kotlin-completion) licensed under GNU GPL-v3
-- [NB Javac Android](https://github.com/AndroidIDEOfficial/nb-javac-android) licensed under GNU GPL-v2
-- [Android Tree Sitter](https://github.com/AndroidIDEOfficial/android-tree-sitter) licensed under LGPL-v2.1
-- [SSVM](https://github.com/xxDark/SSVM) licensed under the MIT License
+- [CodeAssist](https://github.com/tyron12233/CodeAssist/tree/main/kotlin-completion) licensed under GNU GPL-v3
 - [ModernAndroidPreferences](https://github.com/Maxr1998/ModernAndroidPreferences) licensed under the Apache License 2.0
 - [TreeView](https://github.com/lzhiyong/TreeView) licensed under the Apache License 2.0
 - and many more.

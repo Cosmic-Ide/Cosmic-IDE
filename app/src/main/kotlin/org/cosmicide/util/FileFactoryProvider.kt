@@ -15,10 +15,12 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.LightVirtualFile
-import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.common.Prefs
+import org.jetbrains.kotlin.K1Deprecation
+import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.cli.jvm.compiler.setupIdeaStandaloneExecution
 import org.jetbrains.kotlin.config.AnalysisFlags
 import org.jetbrains.kotlin.config.ApiVersion
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
@@ -29,6 +31,7 @@ import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
 import org.jetbrains.kotlin.psi.KtFile
 
+@Suppress("DEPRECATION_ERROR")
 object FileFactoryProvider {
     const val TAG = "FileFactoryProvider"
 
@@ -40,6 +43,7 @@ object FileFactoryProvider {
             Log.i(TAG, "JavaCoreApplicationEnvironment disposed")
         })
 
+    @OptIn(K1Deprecation::class)
     val kotlinEnv = KotlinCoreEnvironment.createForProduction(
         {
             Log.i(TAG, "KotlinCoreEnvironment disposed")
@@ -53,7 +57,6 @@ object FileFactoryProvider {
                 LanguageVersion.fromVersionString(Prefs.kotlinVersion)!!,
                 ApiVersion.createByLanguageVersion(LanguageVersion.fromVersionString(Prefs.kotlinVersion)!!),
                 mapOf(
-                    AnalysisFlags.extendedCompilerChecks to false,
                     AnalysisFlags.ideMode to true,
                     AnalysisFlags.skipMetadataVersionCheck to true,
                     AnalysisFlags.skipPrereleaseCheck to true
@@ -72,7 +75,9 @@ object FileFactoryProvider {
     }
 
     init {
-        CompletionProvider.registerExtensions(env.project.extensionArea)
+        setIdeaIoUseFallback()
+        setupIdeaStandaloneExecution()
+//        CompletionProvider.registerExtensions(env.project.extensionArea)
     }
 
     fun getPsiJavaFile(fileName: String, code: String): PsiJavaFile {

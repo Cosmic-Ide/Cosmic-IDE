@@ -29,5 +29,5 @@ android {
 }
 
 dependencies {
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
+    implementation("com.github.PranavPurwar:kotlinc-android:2.3.21")
 }

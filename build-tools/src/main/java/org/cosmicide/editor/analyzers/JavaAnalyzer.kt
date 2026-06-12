@@ -7,6 +7,7 @@
 
 package org.cosmicide.editor.analyzers
 
+import android.util.Log
 import com.sun.tools.javac.api.JavacTool
 import com.sun.tools.javac.file.JavacFileManager
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticDetail
@@ -29,18 +30,21 @@ class JavaAnalyzer(
     val editor: CodeEditor,
     val project: Project,
     val compilerOptions: List<String> = mutableListOf()
-) {
+) : AutoCloseable {
     private val args by lazy {
         listOf(
             "-XDstringConcat=inline",
             "-XDcompilePolicy=byfile",
             "-XD-Xprefer=source",
             "-XDide",
+            "-XDev",
             "-XDsuppressAbortOnBadClassFile",
             "-XDshould-stop.at=GENERATE",
             "-XDdiags.formatterOptions=-source",
             "-XDdiags.layout=%L%m|%L%m|%L%m",
             "-XDbreakDocCommentParsingOnError=false",
+            "-XDallowStringFolding=false",
+            "-XDshould-stop.at=FLOW",
             "-Xlint:cast",
             "-Xlint:deprecation",
             "-Xlint:empty",
@@ -89,6 +93,7 @@ class JavaAnalyzer(
             addAll(compilerOptions)
         }
 
+        try {
         tool.getTask(System.out.writer(), standardFileManager, diagnostics, copy, null, toCompile)
             .apply {
                 parse()
@@ -101,6 +106,9 @@ class JavaAnalyzer(
                     }
                 }
             }
+        } catch (e: Exception) {
+            Log.e("JavaAnalyzer", "Error during parsing", e)
+        }
     }
 
 
@@ -185,5 +193,13 @@ class JavaAnalyzer(
         }
 
         return sourceFiles
+    }
+
+    override fun close() {
+        try {
+            standardFileManager.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

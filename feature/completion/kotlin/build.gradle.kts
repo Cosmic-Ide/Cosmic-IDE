@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
+    implementation("com.github.PranavPurwar:kotlinc-android:2.3.21")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("io.github.rosemoe:editor:0.24.5")
     implementation("com.google.guava:guava:33.6.0-android")
@@ -49,4 +49,5 @@ dependencies {
     implementation(projects.feature.project)
     implementation(projects.common)
     implementation(projects.util)
+    implementation(projects.feature.codeNavigation)
 }

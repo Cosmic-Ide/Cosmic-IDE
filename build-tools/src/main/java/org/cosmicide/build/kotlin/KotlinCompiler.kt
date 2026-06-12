@@ -99,7 +99,7 @@ class KotlinCompiler(val project: Project) : Task {
                         reporter.reportError(diagnostic.toString())
                     }
 
-                    CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> reporter.reportWarning(
+                    CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING, CompilerMessageSeverity.FIXED_WARNING -> reporter.reportWarning(
                         diagnostic.toString()
                     )
 

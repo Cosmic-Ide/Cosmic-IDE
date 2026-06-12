@@ -8,8 +8,8 @@
 package org.cosmicide.build
 
 import com.sun.tools.javap.JavapTask
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
+import java.io.PrintWriter
+import java.io.StringWriter
 
 /**
  * A utility object for disassembling Java class files using the javap tool.
@@ -24,14 +24,15 @@ object Javap {
     fun disassemble(classPath: String): String {
         val args = arrayOf("-c", "-l", "-constants", "-verbose", classPath)
 
-        val outputStream = ByteArrayOutputStream()
-        val printStream = PrintStream(outputStream)
-
-        val javapTask = JavapTask()
-        javapTask.handleOptions(args)
-        javapTask.setLog(printStream)
-        javapTask.run()
-
-        return outputStream.toString()
+        return StringWriter().use { stringWriter ->
+            PrintWriter(stringWriter).use { printWriter ->
+                JavapTask().apply {
+                    handleOptions(args)
+                    setLog(printWriter)
+                    run()
+                }
+                stringWriter.toString()
+            }
+        }
     }
 }

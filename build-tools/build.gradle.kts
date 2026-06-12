@@ -47,7 +47,7 @@ dependencies {
     implementation(projects.feature.project)
     implementation(projects.util)
     implementation(projects.feature.javaCompletion)
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
+    implementation("com.github.PranavPurwar:kotlinc-android:2.3.21")
     implementation("io.github.rosemoe:editor:0.24.5")
     implementation("com.github.PranavPurwar:javac-android:27.23")
     implementation("com.google.guava:guava:33.6.0-android")

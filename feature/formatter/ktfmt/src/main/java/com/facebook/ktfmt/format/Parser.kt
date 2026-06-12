@@ -26,6 +26,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.LightVirtualFile
+import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.psi.KtFile
@@ -51,7 +52,7 @@ object Parser {
         val disposable = Disposer.newDisposable()
         val configuration = CompilerConfiguration()
         configuration.put(
-            CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+            CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY,
             PrintingMessageCollector(System.err, PLAIN_RELATIVE_PATHS, false)
         )
         env =

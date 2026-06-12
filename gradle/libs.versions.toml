@@ -1,0 +1,8 @@
+[versions]
+kotlin = "2.4.0"
+jetbrainsKotlinJvm = "2.4.0"
+
+[plugins]
+
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }

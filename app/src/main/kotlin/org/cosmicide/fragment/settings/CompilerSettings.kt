@@ -24,14 +24,13 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
     private val javaVersionValues: Array<String> = (8..27).map { it.toString() }.toTypedArray()
 
     private val kotlinVersionValues = arrayOf(
-        LanguageVersion.KOTLIN_1_4,
-        LanguageVersion.KOTLIN_1_5,
-        LanguageVersion.KOTLIN_1_6,
-        LanguageVersion.KOTLIN_1_7,
-        LanguageVersion.KOTLIN_1_8,
         LanguageVersion.KOTLIN_1_9,
         LanguageVersion.KOTLIN_2_0,
-        LanguageVersion.KOTLIN_2_1
+        LanguageVersion.KOTLIN_2_1,
+        LanguageVersion.KOTLIN_2_2,
+        LanguageVersion.KOTLIN_2_3,
+        LanguageVersion.KOTLIN_2_4,
+        LanguageVersion.KOTLIN_2_5
     )
     private val javaVersionItems: List<SelectionItem<String>>
         get() = javaVersionValues.zip(javaVersionValues)

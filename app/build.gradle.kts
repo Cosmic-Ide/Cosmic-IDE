@@ -7,6 +7,7 @@
 
 plugins {
     id("com.android.application")
+//    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -105,6 +106,7 @@ android {
     }
     buildFeatures {
         buildConfig = true
+//        compose = true
     }
 
     flavorDimensions += "environment"
@@ -171,7 +173,7 @@ dependencies {
     implementation("androidx.startup:startup-runtime:1.2.0")
 
     implementation(platform("io.github.rosemoe:editor-bom:0.24.5"))
-    implementation("io.github.rosemoe:editor:")
+    implementation("io.github.rosemoe:editor")
     implementation("io.github.rosemoe:language-treesitter")
     implementation("io.github.rosemoe:language-textmate")
     implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.2")
@@ -192,10 +194,13 @@ dependencies {
     implementation("com.aliucord:Aliuhook:1.1.4")
     implementation("de.maxr1998:modernandroidpreferences:2.4.0-beta2")
 
-    implementation("com.github.Cosmic-Ide.kotlinc-android:kotlinc-android:fce2462f00")
+    implementation("com.github.PranavPurwar:kotlinc-android:2.3.21")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
+    implementation("com.facebook:ktfmt:0.63") {
+        isTransitive = false
+    }
 
     val shizukuVersion = "13.1.5"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")
@@ -203,14 +208,13 @@ dependencies {
     // Add this line if you want to support Shizuku
     implementation("dev.rikka.shizuku:provider:$shizukuVersion")
 
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
 
     implementation(projects.buildTools)
     implementation(projects.common)
     implementation(projects.feature.completion.java)
     implementation(projects.feature.completion.kotlin)
     implementation(projects.feature.formatter.googleJavaFormat)
-    implementation(projects.feature.formatter.ktfmt)
     implementation(projects.feature.javaCompletion)
     implementation(projects.feature.project)
     implementation(projects.feature.codeNavigation)
@@ -218,6 +222,12 @@ dependencies {
     implementation(projects.util)
     implementation(projects.jgit)
     implementation(projects.feature.treeView)
+
+//    implementation(platform("androidx.compose:compose-bom:2026.05.01"))
+
+//    implementation("androidx.compose.material3:material3")
+
+//    implementation("androidx.activity:activity-compose:1.13.0")
 
     // jgit uses some methods like `transferTo` are only available from Android 13 onwards
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")

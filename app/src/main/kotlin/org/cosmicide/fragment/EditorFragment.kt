@@ -14,7 +14,6 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
@@ -24,11 +23,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.widget.treeview.Node
+import com.tyron.kotlin.completion.KotlinFile
 import com.widget.treeview.OnTreeItemClickListener
 import com.widget.treeview.TreeUtils.toNodeList
 import com.widget.treeview.TreeViewAdapter
-import dev.pranav.navigation.KtNavigationProvider
 import dev.pranav.navigation.NavigationProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -507,12 +505,14 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             is Language.Kotlin -> {
                 val ktEnv = (editor.editor.editorLanguage as KotlinLanguage).kotlinEnvironment
 
-                val analysis = ktEnv.analysis
-                if (analysis == null) {
-                    CommonUtils.showSnackBar(binding.root, "File analysis not completed yet")
-                    return
-                }
-                symbols = KtNavigationProvider.parseAnalysisContext(analysis)
+                val ktFile = FileFactoryProvider.getKtPsiFile(
+                    editor.file.name, editor.editor.text.toString()
+                )
+
+//                symbols = ktEnv.getNavigationItems(ktFile)
+
+                symbols = ktEnv.getNavigationItemsLazy(KotlinFile(editor.file.name, ktFile))
+                    .toMutableList()
 
                 if (symbols.isEmpty()) {
                     CommonUtils.showSnackBar(binding.root, "No navigation symbols found")

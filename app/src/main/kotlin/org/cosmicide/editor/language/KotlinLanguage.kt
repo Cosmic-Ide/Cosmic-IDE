@@ -118,7 +118,6 @@ class KotlinLanguage(
                 Log.e(TAG, "Failed to fetch code completions", e)
             }
         }
-        kotlinEnvironment.analysis = null
     }
 
     companion object {

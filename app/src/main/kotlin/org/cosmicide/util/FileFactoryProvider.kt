@@ -43,7 +43,7 @@ object FileFactoryProvider {
             Log.i(TAG, "JavaCoreApplicationEnvironment disposed")
         })
 
-    @OptIn(K1Deprecation::class)
+    @OptIn(K1Deprecation::class, CompilerConfiguration.Internals::class)
     val kotlinEnv = KotlinCoreEnvironment.createForProduction(
         {
             Log.i(TAG, "KotlinCoreEnvironment disposed")

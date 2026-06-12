@@ -707,7 +707,7 @@ data class KotlinEnvironment(val kotlinEnvironment: KotlinCoreEnvironment) {
             "kotlin.reflect.jvm.internal"
         )
 
-        @OptIn(K1Deprecation::class)
+        @OptIn(K1Deprecation::class, CompilerConfiguration.Internals::class)
         fun with(classpath: List<File>): KotlinEnvironment {
             setIdeaIoUseFallback()
             setupIdeaStandaloneExecution()

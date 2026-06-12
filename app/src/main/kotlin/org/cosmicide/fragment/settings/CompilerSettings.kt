@@ -24,7 +24,6 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
     private val javaVersionValues: Array<String> = (8..27).map { it.toString() }.toTypedArray()
 
     private val kotlinVersionValues = arrayOf(
-        LanguageVersion.KOTLIN_1_9,
         LanguageVersion.KOTLIN_2_0,
         LanguageVersion.KOTLIN_2_1,
         LanguageVersion.KOTLIN_2_2,
@@ -68,7 +67,7 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
             singleChoice(PreferenceKeys.COMPILER_KOTLIN_VERSION, kotlinVersionItems) {
                 title = "Kotlin Version"
                 summary = "Select the Kotlin version to use"
-                initialSelection = LanguageVersion.KOTLIN_2_1.versionString
+                initialSelection = LanguageVersion.KOTLIN_2_4.versionString
             }
 
             editText(PreferenceKeys.COMPILER_JAVAC_FLAGS) {

@@ -65,7 +65,7 @@ class CompletionProvider {
     companion object {
         val logger: Logger = Logger.getLogger(CompletionProvider::javaClass.name)
 
-        @OptIn(K1Deprecation::class)
+        @OptIn(K1Deprecation::class, CompilerConfiguration.Internals::class)
         val environment = KotlinCoreEnvironment.createProjectEnvironmentForTests(
             {},
             CompilerConfiguration().apply {

@@ -41,7 +41,7 @@ android {
     }
 }
 dependencies {
-    implementation("com.github.PranavPurwar:kotlinc-android:2.3.21")
+    implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
     implementation("com.github.javaparser:javaparser-core:3.28.2")
     implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.9") {
         exclude(group = "com.google.guava", module = "guava")

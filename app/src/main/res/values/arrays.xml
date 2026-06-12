@@ -13,6 +13,7 @@
         <item>--skip-removing-unused-imports</item>
         <item>--skip-reflowing-long-strings</item>
         <item>--skip-javadoc-formatting</item>
+        <item>--skip-reordering-modifiers</item>
     </string-array>
 
     <string-array name="gjf_styles">

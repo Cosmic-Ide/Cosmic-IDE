@@ -82,7 +82,6 @@
       <module name="CosmicIDE-Rewrite.util.test" target="17" />
       <module name="CosmicIDE.feature.aliuhook" target="21" />
       <module name="CosmicIDE.feature.appwrite" target="21" />
-      <module name="CosmicIDE.feature.formatter.ktfmt" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

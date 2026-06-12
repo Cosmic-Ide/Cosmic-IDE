@@ -1,4 +1,20 @@
 /*
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Copyright (c) Tor Norbye.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +39,7 @@ class Table(
     private val widths: List<Int>,
     private val rows: List<Row>,
     private val align: List<Align>,
-    private val original: List<String>
+    private val original: List<String>,
 ) {
     fun original(): List<String> {
         return original
@@ -54,7 +70,7 @@ class Table(
                     if (align[column] == Align.CENTER && i > 0) {
                         String.format(
                             "%-${width}s",
-                            String.format("%${cell.length + (width - cell.length) / 2}s", cell)
+                            String.format("%${cell.length + (width - cell.length) / 2}s", cell),
                         )
                     } else if (align[column] == Align.RIGHT && i > 0) {
                         String.format("%${width}s", cell)
@@ -110,7 +126,7 @@ class Table(
         fun getTable(
             lines: List<String>,
             start: Int,
-            lineContent: (String) -> String
+            lineContent: (String) -> String,
         ): Pair<Table, Int>? {
             if (start > lines.size - 2) {
                 return null
@@ -139,10 +155,12 @@ class Table(
             }
 
             val rowsAndDivider = rows + dividerRow
-            if (rowsAndDivider.all {
-                    val first = it.cells.firstOrNull()
+            if (
+                rowsAndDivider.all { row ->
+                    val first = row.cells.firstOrNull()
                     first != null && first.isBlank()
-                }) {
+                }
+            ) {
                 rowsAndDivider.forEach { if (it.cells.isNotEmpty()) it.cells.removeAt(0) }
             }
 
@@ -196,11 +214,12 @@ class Table(
                     count++
                 } else if (c.isWhitespace() || c == ':') {
                     continue
-                } else if (c == '-' &&
+                } else if (
+                    c == '-' &&
                     (s.startsWith("--", i) ||
                             s.startsWith("-:", i) ||
-                            i > 1 && s.startsWith(":-:", i - 2) ||
-                            i > 1 && s.startsWith(":--", i - 2))
+                            (i > 1 && s.startsWith(":-:", i - 2)) ||
+                            (i > 1 && s.startsWith(":--", i - 2)))
                 ) {
                     while (i < s.length && s[i] == '-') {
                         i++
@@ -263,10 +282,10 @@ class Table(
     enum class Align {
         LEFT,
         RIGHT,
-        CENTER
+        CENTER,
     }
 
     class Row {
-        val cells = mutableListOf<String>()
+        val cells: MutableList<String> = mutableListOf()
     }
 }

@@ -48,7 +48,7 @@ object RedundantElementManager {
                     }
 
                     redundantSemicolonDetector.takeElement(element)
-                    if (options.manageTrailingCommas) {
+                    if (options.trailingCommaManagementStrategy.removeRedundantTrailingCommas) {
                         trailingCommaDetector.takeElement(element)
                     }
                     super.visitElement(element)
@@ -72,13 +72,15 @@ object RedundantElementManager {
                     redundantImportDetector.takeReferenceExpression(expression)
                     super.visitReferenceExpression(expression)
                 }
-            })
+            }
+        )
 
-        val result = StringBuilder(code)
         val elementsToRemove =
             redundantSemicolonDetector.getRedundantSemicolonElements() +
                     redundantImportDetector.getRedundantImportElements() +
                     trailingCommaDetector.getTrailingCommaElements()
+        if (elementsToRemove.isEmpty()) return code
+        val result = StringBuilder(code)
 
         for (element in elementsToRemove.sortedByDescending(PsiElement::endOffset)) {
             // Don't insert extra newlines when the semicolon is already a line terminator
@@ -108,10 +110,12 @@ object RedundantElementManager {
                     trailingCommaSuggestor.takeElement(element)
                     super.visitElement(element)
                 }
-            })
+            }
+        )
 
-        val result = StringBuilder(code)
         val suggestionElements = trailingCommaSuggestor.getTrailingCommaSuggestions()
+        if (suggestionElements.isEmpty()) return code
+        val result = StringBuilder(code)
 
         for (element in suggestionElements.sortedByDescending(PsiElement::endOffset)) {
             result.insert(element.endOffset, ',')
@@ -122,6 +126,6 @@ object RedundantElementManager {
 
     private fun PsiElement?.containsNewline(): Boolean {
         if (this !is PsiWhiteSpace) return false
-        return this.text.contains('\n')
+        return this.textContains('\n')
     }
 }

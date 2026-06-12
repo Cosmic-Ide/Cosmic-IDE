@@ -21,7 +21,7 @@
     </string-array>
 
     <string-array name="ktfmt_styles">
-        <item>dropbox</item>
+        <item>meta</item>
         <item>google</item>
         <item>kotlinlang</item>
     </string-array>

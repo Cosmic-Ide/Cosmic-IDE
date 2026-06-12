@@ -1,4 +1,20 @@
 /*
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Copyright 2015 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -24,20 +40,22 @@ import com.google.common.base.Strings
 import com.google.googlejavaformat.CommentsHelper
 import com.google.googlejavaformat.Input.Tok
 import com.google.googlejavaformat.Newlines
-import com.google.googlejavaformat.java.Formatter
+import java.util.ArrayList
 import java.util.regex.Pattern
 
 /** `KDocCommentsHelper` extends [CommentsHelper] to rewrite KDoc comments. */
-class KDocCommentsHelper(private val lineSeparator: String, maxLineLength: Int) : CommentsHelper {
+class KDocCommentsHelper(private val lineSeparator: String, private val maxLineLength: Int) :
+    CommentsHelper {
 
     private val kdocFormatter =
         KDocFormatter(
-            KDocFormattingOptions(maxLineLength, maxLineLength).also {
-                it.allowParamBrackets = true // TODO Do we want this?
-                it.convertMarkup = false
-                it.nestedListIndent = 4
-                it.optimal = false // Use greedy line breaking for predictability.
-            })
+            KDocFormattingOptions(maxLineLength, maxLineLength).apply {
+                allowParamBrackets = true // TODO Do we want this?
+                convertMarkup = false
+                nestedListIndent = 4
+                optimal = false // Use greedy line breaking for predictability.
+            }
+        )
 
     override fun rewrite(tok: Tok, maxWidth: Int, column0: Int): String {
         if (!tok.isComment) {
@@ -118,8 +136,8 @@ class KDocCommentsHelper(private val lineSeparator: String, maxLineLength: Int) 
                 result.add(line)
                 continue
             }
-            while (line.length + column0 > Formatter.MAX_LINE_LENGTH) {
-                var idx = Formatter.MAX_LINE_LENGTH - column0
+            while (line.length + column0 > maxLineLength) {
+                var idx = maxLineLength - column0
                 // only break on whitespace characters, and ignore the leading `// `
                 while (idx >= 2 && !CharMatcher.whitespace().matches(line[idx])) {
                     idx--

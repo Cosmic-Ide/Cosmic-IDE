@@ -1,4 +1,20 @@
 /*
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Copyright (c) Tor Norbye.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,7 +63,7 @@ class KDocFormatter(private val options: KDocFormattingOptions) {
             val width =
                 min(
                     options.maxLineWidth - firstIndentSize - commentType.singleLineOverhead(),
-                    options.maxCommentWidth
+                    options.maxCommentWidth,
                 )
             val suffix = if (commentType.suffix.isEmpty()) "" else " ${commentType.suffix}"
             if (trimmed.length <= width) {
@@ -57,7 +73,7 @@ class KDocFormatter(private val options: KDocFormattingOptions) {
                 val nextLineWidth =
                     min(
                         options.maxLineWidth - indentSize - commentType.singleLineOverhead(),
-                        options.maxCommentWidth
+                        options.maxCommentWidth,
                     )
                 if (trimmed.length <= nextLineWidth) {
                     return "$prefix $trimmed$suffix"
@@ -92,7 +108,7 @@ class KDocFormatter(private val options: KDocFormattingOptions) {
             }
 
             val lineWithoutIndent = options.maxLineWidth - commentType.lineOverhead()
-            val quoteAdjustment = if (paragraph.quoted) 2 else 0
+            val quoteAdjustment = if (paragraph.quoted > 0) 2 * paragraph.quoted else 0
             val maxLineWidth =
                 min(options.maxCommentWidth, lineWithoutIndent - indentSize) - quoteAdjustment
             val firstMaxLineWidth =
@@ -115,8 +131,10 @@ class KDocFormatter(private val options: KDocFormattingOptions) {
                 } else {
                     sb.append(hangingIndent)
                 }
-                if (paragraph.quoted) {
-                    sb.append("> ")
+                if (paragraph.quoted > 0) {
+                    for (q in 0 until paragraph.quoted) {
+                        sb.append("> ")
+                    }
                 }
                 if (line.isEmpty()) {
                     // Remove trailing spaces which can happen when we have a paragraph
@@ -134,7 +152,7 @@ class KDocFormatter(private val options: KDocFormattingOptions) {
             }
             sb.append("*/")
         } else if (sb.endsWith(lineSeparator)) {
-            @Suppress("ReturnValueIgnored") sb.removeSuffix(lineSeparator)
+            @Suppress("NoOp", "ReturnValueIgnored") sb.removeSuffix(lineSeparator)
         }
 
         val formatted =

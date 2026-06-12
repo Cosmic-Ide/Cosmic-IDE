@@ -76,7 +76,10 @@ internal class RedundantImportDetector(val enabled: Boolean) {
                 // Property delegation operators
                 "getValue",
                 "setValue",
-                "provideDelegate"
+                "provideDelegate",
+                // assign operator - Gradle compiler plugin
+                // https://blog.gradle.org/simpler-kotlin-dsl-property-assignment
+                "assign",
             )
 
         private val COMPONENT_OPERATOR_REGEX = Regex("component\\d+")
@@ -138,12 +141,11 @@ internal class RedundantImportDetector(val enabled: Boolean) {
 
             val links = kdocSection.getChildrenOfType<KDocLink>() + tagLinks
 
-            val references =
-                links.flatMap { link ->
-                    link.getChildrenOfType<KDocName>().mapNotNull {
-                        it.getQualifiedName().firstOrNull()?.trim('[', ']')
-                    }
+            val references = links.flatMap { link ->
+                link.getChildrenOfType<KDocName>().mapNotNull {
+                    it.getQualifiedName().firstOrNull()?.trim('[', ']')
                 }
+            }
 
             usedReferences += references
         }
@@ -163,11 +165,17 @@ internal class RedundantImportDetector(val enabled: Boolean) {
         val identifierCounts =
             importCleanUpCandidates.groupBy { it.identifier }.mapValues { it.value.size }
 
-        return importCleanUpCandidates.filter {
-            val isUsed = it.identifier in usedReferences
-            val isFromThisPackage = it.importedFqName?.parent() == thisPackage
-            val hasAlias = it.alias != null
-            val isOverload = requireNotNull(identifierCounts[it.identifier]) > 1
+        return importCleanUpCandidates.filter { importCandidate ->
+            val isUsed = importCandidate.identifier in usedReferences
+            val importedFqName = importCandidate.importedFqName
+            // For backtick-escaped full-path imports (e.g., import `foo.bar.baz`), the PSI creates
+            // a single-segment FqName whose short name contains dots. Its parent() returns ROOT,
+            // which would incorrectly match the default package. Detect and exclude this case.
+            val isBracketEscapedPath =
+                importedFqName?.shortName()?.asString()?.contains('.') == true
+            val isFromThisPackage = !isBracketEscapedPath && importedFqName?.parent() == thisPackage
+            val hasAlias = importCandidate.alias != null
+            val isOverload = requireNotNull(identifierCounts[importCandidate.identifier]) > 1
             // Remove if...
             !isUsed || (isFromThisPackage && !hasAlias && !isOverload)
         }
@@ -175,5 +183,12 @@ internal class RedundantImportDetector(val enabled: Boolean) {
 
     /** The imported short name, possibly an alias name, if any. */
     private inline val KtImportDirective.identifier: String?
-        get() = importPath?.importedName?.identifier?.trim('`')
+        get() {
+            val name = importPath?.importedName?.identifier?.trim('`') ?: return null
+            // When the entire import path is backtick-escaped (e.g., import `foo.bar.baz`),
+            // the PSI treats it as a single name containing dots rather than a dot-qualified
+            // expression. Extract the last segment to match reference expressions in the code body.
+            val dotIndex = name.lastIndexOf('.')
+            return if (dotIndex >= 0) name.substring(dotIndex + 1) else name
+        }
 }

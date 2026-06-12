@@ -194,13 +194,10 @@ dependencies {
     implementation("com.aliucord:Aliuhook:1.1.4")
     implementation("de.maxr1998:modernandroidpreferences:2.4.0-beta2")
 
-    implementation("com.github.PranavPurwar:kotlinc-android:2.3.21")
+    implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
-    implementation("com.facebook:ktfmt:0.63") {
-        isTransitive = false
-    }
 
     val shizukuVersion = "13.1.5"
     implementation("dev.rikka.shizuku:api:$shizukuVersion")
@@ -215,6 +212,7 @@ dependencies {
     implementation(projects.feature.completion.java)
     implementation(projects.feature.completion.kotlin)
     implementation(projects.feature.formatter.googleJavaFormat)
+    implementation(projects.feature.formatter.ktfmt)
     implementation(projects.feature.javaCompletion)
     implementation(projects.feature.project)
     implementation(projects.feature.codeNavigation)

@@ -1,10 +1,30 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.facebook.ktfmt.format
 
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtCollectionLiteralExpression
 import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtEnumEntry
 import org.jetbrains.kotlin.psi.KtFunctionLiteral
 import org.jetbrains.kotlin.psi.KtLambdaExpression
 import org.jetbrains.kotlin.psi.KtParameterList
@@ -29,10 +49,9 @@ object TrailingCommas {
         }
 
         private fun isTrailingComma(element: PsiElement): Boolean {
-            if (element.text != ",") {
+            if (element !is LeafPsiElement || element.elementType != KtTokens.COMMA) {
                 return false
             }
-
             return extractManagedList(element.parent)?.trailingComma == element
         }
     }
@@ -59,20 +78,29 @@ object TrailingCommas {
          * ```
          */
         fun takeElement(element: KtElement) {
-            if (!element.text.contains("\n")) {
-                return // Only suggest trailing commas where there is already a line break
-            }
-
             when (element) {
+                is KtEnumEntry, // Only suggest on the KtClassBody container
                 is KtWhenEntry -> return
+
                 is KtParameterList -> {
                     if (element.parent is KtFunctionLiteral && element.parent.parent is KtLambdaExpression) {
                         return // Never add trailing commas to lambda param lists
                     }
                 }
+
+                is KtClassBody -> {
+                    EnumEntryList.extractChildList(element)?.also {
+                        if (it.terminatingSemicolon != null) {
+                            return // Never add a trailing comma after there is already a terminating semicolon
+                        }
+                    }
+                }
             }
 
             val list = extractManagedList(element) ?: return
+            if (!element.textContains('\n')) {
+                return // Only suggest trailing commas where there is already a line break
+            }
             if (list.items.size <= 1) {
                 return // Never insert commas to single-element lists
             }
@@ -97,6 +125,18 @@ object TrailingCommas {
             }
 
             is KtWhenEntry -> ManagedList(element.conditions.toList(), element.trailingComma)
+            is KtEnumEntry -> {
+                EnumEntryList.extractParentList(element).let {
+                    ManagedList(it.enumEntries, it.trailingComma)
+                }
+            }
+
+            is KtClassBody -> {
+                EnumEntryList.extractChildList(element)?.let {
+                    ManagedList(it.enumEntries, it.trailingComma)
+                }
+            }
+
             else -> null
         }
     }

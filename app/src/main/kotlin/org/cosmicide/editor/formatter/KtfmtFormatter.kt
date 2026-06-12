@@ -17,7 +17,7 @@ import kotlin.io.path.writeText
 object ktfmtFormatter {
     fun formatCode(code: String): String {
         val file = createTempFile("file", ".kt").apply { writeText(code) }
-        val args = listOf("--style", Prefs.ktfmtStyle, file.toAbsolutePath().toString())
+        val args = listOf("--${Prefs.ktfmtStyle}-style", file.toAbsolutePath().toString())
 
         Main(System.`in`, System.out, System.err, args.toTypedArray()).run()
         val formattedCode = file.readText()

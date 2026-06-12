@@ -32,4 +32,5 @@ dependencies {
     implementation(projects.feature.formatter.googleJavaFormat)
     implementation("com.github.PranavPurwar:kotlinc-android:2.3.21")
     implementation("com.google.guava:guava:33.6.0-android")
+    implementation("org.ec4j.core:ec4j-core:1.2.0")
 }

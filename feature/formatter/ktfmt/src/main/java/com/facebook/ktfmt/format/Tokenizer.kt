@@ -17,12 +17,16 @@
 package com.facebook.ktfmt.format
 
 import java.util.regex.Pattern
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtFunctionLiteral
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
@@ -42,23 +46,55 @@ class Tokenizer(private val fileText: String, val file: KtFile) : KtTreeVisitorV
         private val WHITESPACE_NEWLINE_REGEX: Pattern = Pattern.compile("\\R|( )+")
     }
 
-    val toks = mutableListOf<KotlinTok>()
-    var index = 0
+    val toks: MutableList<KotlinTok> = mutableListOf()
+    var index: Int = 0
+        private set
+
+    override fun visitBinaryExpression(expression: KtBinaryExpression) {
+        // In Kotlin 2.2.0+ this implementation in KtVisitor was changed to only visit
+        // the inner KtStringTemplateExpression expressions, omitting the operator tokens
+        // This overrides it to restore the previous impl and visit all parts of the expression,
+        // which we need in order to populate expected toks correctly
+        // See
+        // https://github.com/JetBrains/kotlin/commit/f33566e0d7883ca3c56d2552cc4da0cbf6ad966a#diff-5693f3044b6ae4210db1194385fdb3dd8efd8751a49f8a72deaccc025ad8c48e
+        return visitExpression(expression)
+    }
 
     override fun visitElement(element: PsiElement) {
-        val startIndex = element.startOffset
+        // Do not materialize text/text ranges when it's non needed -- e.g. for KtFile, composite
+        // PsiElement(...) etc.
+        val elementText by lazy(LazyThreadSafetyMode.NONE) { element.text }
+        val originalText by
+        lazy(LazyThreadSafetyMode.NONE) {
+            fileText.substring(element.startOffset, element.endOffset)
+        }
         when (element) {
             is PsiComment -> {
+                if (elementText.startsWith("/*") && !elementText.endsWith("*/")) {
+                    throw ParseError(
+                        "Unclosed comment",
+                        StringUtil.offsetToLineColumn(fileText, element.startOffset),
+                    )
+                }
+                // Treat block comments inside statement-less lambda bodies as tokens so the
+                // visitor can position them with proper break structure. Without this, the
+                // comment attaches as toksAfter of `{` and stays on the same line when the
+                // lambda breaks.
+                val isBlockComment = elementText.startsWith("/*")
+                val parentBlock = element.parent as? KtBlockExpression
+                val isInLambdaBody = parentBlock?.parent is KtFunctionLiteral
+                val bodyHasNoStatements = parentBlock != null && parentBlock.children.isEmpty()
+                val treatAsToken = isBlockComment && isInLambdaBody && bodyHasNoStatements
                 toks.add(
                     KotlinTok(
-                        index,
-                        fileText.substring(startIndex, element.endOffset),
-                        element.text,
-                        startIndex,
-                        0,
-                        false,
-                        KtTokens.EOF
-                    )
+                        index = index,
+                        originalText = originalText,
+                        text = elementText,
+                        position = element.startOffset,
+                        column = 0,
+                        isToken = treatAsToken,
+                        kind = KtTokens.EOF,
+                    ),
                 )
                 index++
                 return
@@ -67,54 +103,54 @@ class Tokenizer(private val fileText: String, val file: KtFile) : KtTreeVisitorV
             is KtStringTemplateExpression -> {
                 toks.add(
                     KotlinTok(
-                        index,
-                        WhitespaceTombstones.replaceTrailingWhitespaceWithTombstone(
-                            fileText.substring(startIndex, element.endOffset)
-                        ),
-                        element.text,
-                        startIndex,
-                        0,
-                        true,
-                        KtTokens.EOF
-                    )
+                        index = index,
+                        originalText =
+                            WhitespaceTombstones.replaceTrailingWhitespaceWithTombstone(
+                                originalText,
+                            ),
+                        text = elementText,
+                        position = element.startOffset,
+                        column = 0,
+                        isToken = true,
+                        kind = KtTokens.EOF,
+                    ),
                 )
                 index++
                 return
             }
 
             is LeafPsiElement -> {
-                val elementText = element.text
-                val endIndex = element.endOffset
                 if (element is PsiWhiteSpace) {
                     val matcher = WHITESPACE_NEWLINE_REGEX.matcher(elementText)
                     while (matcher.find()) {
                         val text = matcher.group()
                         toks.add(
                             KotlinTok(
-                                -1,
-                                fileText.substring(
-                                    startIndex + matcher.start(),
-                                    startIndex + matcher.end()
-                                ),
-                                text,
-                                startIndex + matcher.start(),
-                                0,
-                                false,
-                                KtTokens.EOF
-                            )
+                                index = -1,
+                                originalText =
+                                    fileText.substring(
+                                        element.startOffset + matcher.start(),
+                                        element.startOffset + matcher.end(),
+                                    ),
+                                text = text,
+                                position = element.startOffset + matcher.start(),
+                                column = 0,
+                                isToken = false,
+                                kind = KtTokens.EOF,
+                            ),
                         )
                     }
                 } else {
                     toks.add(
                         KotlinTok(
-                            index,
-                            fileText.substring(startIndex, endIndex),
-                            elementText,
-                            startIndex,
-                            0,
-                            true,
-                            KtTokens.EOF
-                        )
+                            index = index,
+                            originalText = originalText,
+                            text = elementText,
+                            position = element.startOffset,
+                            column = 0,
+                            isToken = true,
+                            kind = KtTokens.EOF,
+                        ),
                     )
                     index++
                 }

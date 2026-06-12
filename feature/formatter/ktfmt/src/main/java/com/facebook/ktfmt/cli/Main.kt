@@ -20,19 +20,37 @@ import com.facebook.ktfmt.format.Formatter
 import com.facebook.ktfmt.format.ParseError
 import com.google.googlejavaformat.FormattingError
 import java.io.BufferedReader
+import java.io.BufferedWriter
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.io.PrintStream
+import java.nio.charset.StandardCharsets.UTF_8
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.exitProcess
+
+private const val EXIT_CODE_FAILURE = 1
+private const val EXIT_CODE_SUCCESS = 0
+private const val UTF8_BOM = "\uFEFF"
+
+private val USAGE =
+    """
+    |Usage:
+    |  ktfmt [OPTIONS] File1.kt File2.kt ...
+    |  ktfmt @ARGFILE
+    |
+    |For more details see `ktfmt --help`
+    |"""
+        .trimMargin()
 
 class Main(
     private val input: InputStream,
     private val out: PrintStream,
     private val err: PrintStream,
-    args: Array<String>
+    private val inputArgs: Array<String>,
 ) {
     companion object {
         @JvmStatic
@@ -52,67 +70,64 @@ class Main(
             }
             val result = mutableListOf<File>()
             for (arg in args) {
-                if (arg == "-") {
-                    error(
-                        "Error: '-', which causes ktfmt to read from stdin, should not be mixed with file name"
-                    )
-                }
                 result.addAll(
                     File(arg).walkTopDown().filter {
                         it.isFile && (it.extension == "kt" || it.extension == "kts")
-                    })
+                    }
+                )
             }
             return result
         }
     }
 
-    private val parsedArgs: ParsedArgs = ParsedArgs.processArgs(err, args)
-
     fun run(): Int {
+        val parsedArgs =
+            when (val processArgs = ParsedArgs.processArgs(inputArgs)) {
+                is ParseResult.Ok -> processArgs.parsedValue
+                is ParseResult.ShowMessage -> {
+                    out.println(processArgs.message)
+                    return EXIT_CODE_SUCCESS
+                }
+
+                is ParseResult.Error -> {
+                    err.println(processArgs.errorMessage)
+                    return EXIT_CODE_FAILURE
+                }
+            }
         if (parsedArgs.fileNames.isEmpty()) {
-            err.println(
-                "Usage: ktfmt [--dropbox-style | --google-style | --kotlinlang-style] [--dry-run] [--set-exit-if-changed] [--stdin-name=<name>] [--do-not-remove-unused-imports] File1.kt File2.kt ..."
-            )
-            err.println("Or: ktfmt @file")
-            return 1
+            err.println(USAGE)
+            return EXIT_CODE_FAILURE
         }
 
         if (parsedArgs.fileNames.size == 1 && parsedArgs.fileNames[0] == "-") {
+            // Format code read from stdin
             return try {
-                val alreadyFormatted = format(null)
-                if (!alreadyFormatted && parsedArgs.setExitIfChanged) 1 else 0
-            } catch (e: Exception) {
-                1
+                val alreadyFormatted = format(null, parsedArgs)
+                if (!alreadyFormatted && parsedArgs.setExitIfChanged) EXIT_CODE_FAILURE
+                else EXIT_CODE_SUCCESS
+            } catch (_: Exception) {
+                EXIT_CODE_FAILURE
             }
-        } else if (parsedArgs.stdinName != null) {
-            err.println("Error: --stdin-name can only be used with stdin")
-            return 1
         }
 
-        val files: List<File>
-        try {
-            files = expandArgsToFileNames(parsedArgs.fileNames)
-        } catch (e: java.lang.IllegalStateException) {
-            err.println(e.message)
-            return 1
-        }
+        val files: List<File> = expandArgsToFileNames(parsedArgs.fileNames)
 
         if (files.isEmpty()) {
             err.println("Error: no .kt files found")
-            return 1
+            return EXIT_CODE_FAILURE
         }
 
-        val retval = AtomicInteger(0)
+        val returnCode = AtomicInteger(EXIT_CODE_SUCCESS)
         files.parallelStream().forEach {
             try {
-                if (!format(it) && parsedArgs.setExitIfChanged) {
-                    retval.set(1)
+                if (!format(it, parsedArgs) && parsedArgs.setExitIfChanged) {
+                    returnCode.set(EXIT_CODE_FAILURE)
                 }
-            } catch (e: Exception) {
-                retval.set(1)
+            } catch (_: Exception) {
+                returnCode.set(EXIT_CODE_FAILURE)
             }
         }
-        return retval.get()
+        return returnCode.get()
     }
 
     /**
@@ -124,35 +139,42 @@ class Main(
      * @param file The file to format. If null, the code is read from <stdin>.
      * @return true iff input is valid and already formatted.
      */
-    private fun format(file: File?): Boolean {
-        val fileName = file?.toString() ?: parsedArgs.stdinName ?: "<stdin>"
+    private fun format(file: File?, args: ParsedArgs): Boolean {
+        val fileName = file?.toString() ?: args.stdinName ?: "<stdin>"
         try {
-            val code = file?.readText() ?: BufferedReader(InputStreamReader(input)).readText()
-            val formattedCode = Formatter.format(parsedArgs.formattingOptions, code)
+            val formattingOptions =
+                if (file == null || !args.editorConfig) args.formattingOptions
+                else EditorConfigResolver.resolveFormattingOptions(file, args.formattingOptions)
+            val bytes = if (file == null) input else FileInputStream(file)
+            val code =
+                BufferedReader(InputStreamReader(bytes, UTF_8)).readText().removePrefix(UTF8_BOM)
+            val formattedCode = Formatter.format(formattingOptions, code)
             val alreadyFormatted = code == formattedCode
 
             // stdin
             if (file == null) {
-                if (parsedArgs.dryRun) {
+                if (args.dryRun) {
                     if (!alreadyFormatted) {
                         out.println(fileName)
                     }
                 } else {
-                    out.print(formattedCode)
+                    BufferedWriter(OutputStreamWriter(out, UTF_8)).use { it.write(formattedCode) }
                 }
                 return alreadyFormatted
             }
 
-            if (parsedArgs.dryRun) {
+            if (args.dryRun) {
                 if (!alreadyFormatted) {
                     out.println(fileName)
                 }
             } else {
                 // TODO(T111284144): Add tests
                 if (!alreadyFormatted) {
-                    file.writeText(formattedCode)
+                    file.writeText(formattedCode, UTF_8)
                 }
-                err.println("Done formatting $fileName")
+                if (!args.quiet) {
+                    err.println("Done formatting $fileName")
+                }
             }
 
             return alreadyFormatted
@@ -160,18 +182,14 @@ class Main(
             err.println("Error formatting $fileName: ${e.message}; skipping.")
             throw e
         } catch (e: ParseError) {
-            handleParseError(fileName, e)
+            err.println("$fileName:${e.message}")
             throw e
         } catch (e: FormattingError) {
             for (diagnostic in e.diagnostics()) {
-                System.err.println("$fileName:$diagnostic")
+                err.println("$fileName:$diagnostic")
             }
             e.printStackTrace(err)
             throw e
         }
-    }
-
-    private fun handleParseError(fileName: String, e: ParseError) {
-        err.println("$fileName:${e.message}")
     }
 }

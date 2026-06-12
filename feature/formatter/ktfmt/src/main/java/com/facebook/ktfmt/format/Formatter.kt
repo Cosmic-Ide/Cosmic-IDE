@@ -17,8 +17,6 @@
 package com.facebook.ktfmt.format
 
 import com.facebook.ktfmt.debughelpers.printOps
-import com.facebook.ktfmt.format.FormattingOptions.Style.DROPBOX
-import com.facebook.ktfmt.format.FormattingOptions.Style.GOOGLE
 import com.facebook.ktfmt.format.RedundantElementManager.addRedundantElements
 import com.facebook.ktfmt.format.RedundantElementManager.dropRedundantElements
 import com.facebook.ktfmt.format.WhitespaceTombstones.indexOfWhitespaceTombstone
@@ -45,18 +43,27 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 object Formatter {
 
     @JvmField
+    val META_FORMAT =
+        FormattingOptions(
+            blockIndent = 2,
+            continuationIndent = 4,
+            trailingCommaManagementStrategy = TrailingCommaManagementStrategy.ONLY_ADD,
+        )
+
+    @JvmField
     val GOOGLE_FORMAT =
         FormattingOptions(
-            style = GOOGLE, blockIndent = 2, continuationIndent = 2, manageTrailingCommas = true
+            blockIndent = 2,
+            continuationIndent = 2,
         )
 
     /** A format that attempts to reflect https://kotlinlang.org/docs/coding-conventions.html. */
     @JvmField
     val KOTLINLANG_FORMAT =
-        FormattingOptions(style = GOOGLE, blockIndent = 4, continuationIndent = 4)
-
-    @JvmField
-    val DROPBOX_FORMAT = FormattingOptions(style = DROPBOX, blockIndent = 4, continuationIndent = 4)
+        FormattingOptions(
+            blockIndent = 4,
+            continuationIndent = 4,
+        )
 
     private val MINIMUM_KOTLIN_VERSION = KotlinVersion(1, 4)
 
@@ -66,7 +73,7 @@ object Formatter {
      */
     @JvmStatic
     @Throws(FormatterException::class, ParseError::class)
-    fun format(code: String): String = format(FormattingOptions(), code)
+    fun format(code: String): String = format(META_FORMAT, code)
 
     /**
      * format formats the Kotlin code given in 'code' with 'removeUnusedImports' and returns it as a
@@ -75,7 +82,7 @@ object Formatter {
     @JvmStatic
     @Throws(FormatterException::class, ParseError::class)
     fun format(code: String, removeUnusedImports: Boolean): String =
-        format(FormattingOptions(removeUnusedImports = removeUnusedImports), code)
+        format(META_FORMAT.copy(removeUnusedImports = removeUnusedImports), code)
 
     /**
      * format formats the Kotlin code given in 'code' with the 'maxWidth' and returns it as a string.
@@ -95,9 +102,16 @@ object Formatter {
             .let { convertLineSeparators(it) }
             .let { sortedAndDistinctImports(it) }
             .let { dropRedundantElements(it, options) }
-            .let { prettyPrint(it, options, "\n") }
             .let { addRedundantElements(it, options) }
-            .let { convertLineSeparators(it, Newlines.guessLineSeparator(kotlinCode)!!) }
+            .let { prettyPrint(it, options, lineSeparator = "\n") }
+            .let { addRedundantElements(it, options) }
+            .let { MultilineStringFormatter(options.continuationIndent).format(it) }
+            .let {
+                convertLineSeparators(
+                    it,
+                    checkNotNull(Newlines.guessLineSeparator(kotlinCode))
+                )
+            }
             .let { if (shebang.isEmpty()) it else shebang + "\n" + it }
     }
 
@@ -161,7 +175,7 @@ object Formatter {
             throw ParseError(
                 "ktfmt does not support code which contains one of {\\u0003, \\u0004, \\u0005} character" +
                         "; escape it",
-                StringUtil.offsetToLineColumn(code, index)
+                StringUtil.offsetToLineColumn(code, index),
             )
         }
     }
@@ -184,7 +198,7 @@ object Formatter {
             } else if (element !is KtImportDirective && element !is PsiWhiteSpace) {
                 throw ParseError(
                     "Imports not contiguous: " + element.text,
-                    StringUtil.offsetToLineColumn(code, element.startOffset)
+                    StringUtil.offsetToLineColumn(code, element.startOffset),
                 )
             }
             element = element.nextSibling
@@ -202,6 +216,7 @@ object Formatter {
         return code.replaceRange(
             importList.startOffset,
             importList.endOffset,
-            importsWithComments.joinToString(separator = "\n") { imprt -> imprt.text } + "\n")
+            importsWithComments.joinToString(separator = "\n") { imprt -> imprt.text } + "\n",
+        )
     }
 }

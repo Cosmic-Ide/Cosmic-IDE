@@ -16,7 +16,6 @@
 
 package com.facebook.ktfmt.format
 
-import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer.PLAIN_RELATIVE_PATHS
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
@@ -34,6 +33,7 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 /** Parser parses a Kotlin file given as a string and returns its parse tree. */
+@OptIn(CompilerConfiguration.Internals::class)
 object Parser {
 
     /**
@@ -53,26 +53,29 @@ object Parser {
         val configuration = CompilerConfiguration()
         configuration.put(
             CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            PrintingMessageCollector(System.err, PLAIN_RELATIVE_PATHS, false)
+            PrintingMessageCollector(System.err, PLAIN_RELATIVE_PATHS, false),
         )
         env =
+            @Suppress("OPT_IN_USAGE_ERROR") // KotlinCoreEnvironment.createForProduction
             KotlinCoreEnvironment.createForProduction(
-                disposable, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES
+                disposable,
+                configuration,
+                EnvironmentConfigFiles.JVM_CONFIG_FILES,
             )
     }
 
     fun parse(code: String): KtFile {
         val virtualFile = LightVirtualFile("temp.kts", KotlinFileType.INSTANCE, code)
         val ktFile = PsiManager.getInstance(env.project).findFile(virtualFile) as KtFile
-        ktFile.collectDescendantsOfType<PsiErrorElement>().let {
-            if (it.isNotEmpty()) throwParseError(code, it[0])
-        }
+        val descendants = ktFile.collectDescendantsOfType<PsiErrorElement>()
+        if (descendants.isNotEmpty()) throwParseError(code, descendants[0])
         return ktFile
     }
 
     private fun throwParseError(fileContents: String, error: PsiErrorElement): Nothing {
         throw ParseError(
-            error.errorDescription, StringUtil.offsetToLineColumn(fileContents, error.startOffset)
+            error.errorDescription,
+            StringUtil.offsetToLineColumn(fileContents, error.startOffset),
         )
     }
 }

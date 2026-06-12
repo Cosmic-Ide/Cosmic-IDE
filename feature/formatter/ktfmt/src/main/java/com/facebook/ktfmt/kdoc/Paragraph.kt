@@ -38,8 +38,8 @@ class Paragraph(private val task: FormattingTask) {
     private val options: KDocFormattingOptions
         get() = task.options
 
-    var content = StringBuilder()
-    val text
+    var content: StringBuilder = StringBuilder()
+    val text: String
         get() = content.toString()
 
     var prev: Paragraph? = null
@@ -71,11 +71,8 @@ class Paragraph(private val task: FormattingTask) {
     /** Is this paragraph specifying a kdoc tag like @param? */
     var doc = false
 
-    /**
-     * Is this line quoted? (In the future make this an int such that we can support additional
-     * levels.)
-     */
-    var quoted = false
+    /** The quote depth of this paragraph. 0 = not quoted, 1 = `>`, 2 = `> >`, etc. */
+    var quoted = 0
 
     /** Is this line part of a table? */
     var table = false
@@ -252,7 +249,8 @@ class Paragraph(private val task: FormattingTask) {
                     sb.append(']')
                     i = end + 1
                     continue
-                } else if (s.startsWith("@link", i, true)
+                } else if (
+                    s.startsWith("@link", i, true)
                     // @linkplain is similar to @link, but kdoc does *not* render a [symbol]
                     // into a {@linkplain} in HTML, so converting these would change the output.
                     && !s.startsWith("@linkplain", i, true)
@@ -302,7 +300,8 @@ class Paragraph(private val task: FormattingTask) {
 
     fun reflow(firstLineMaxWidth: Int, maxLineWidth: Int): List<String> {
         val lineWidth = maxLineWidth - getIndentSize(indent, options)
-        val hangingIndentSize = getIndentSize(hangingIndent, options) - if (quoted) 2 else 0 // "> "
+        val hangingIndentSize =
+            getIndentSize(hangingIndent, options) - if (quoted > 0) 2 * quoted else 0
         if (text.length < (firstLineMaxWidth - hangingIndentSize)) {
             return listOf(text.collapseSpaces())
         }
@@ -347,9 +346,10 @@ class Paragraph(private val task: FormattingTask) {
     }
 
     private fun reflow(words: List<String>, lineWidth: Int, hangingIndentSize: Int): List<String> {
-        if (options.alternate ||
+        if (
+            options.alternate ||
             !options.optimal ||
-            hanging && hangingIndentSize > 0 ||
+            (hanging && hangingIndentSize > 0) ||
             // An unbreakable long word may make other lines shorter and won't look good
             words.any { it.length > lineWidth }
         ) {
@@ -391,14 +391,15 @@ class Paragraph(private val task: FormattingTask) {
                     reflowOptimal(lineWidth - hangingIndentSize, words.subList(0, lastWord))
                 if (newLines.size < lines.size) {
                     val newLongestLine = newLines.maxOf(maxLine)
-                    if (newLongestLine > longestLine &&
+                    if (
+                        newLongestLine > longestLine &&
                         newLines.subList(0, newLines.size - 1).any { it.length > longestLine }
                     ) {
                         return newLines +
                                 reflowGreedy(
                                     lineWidth - hangingIndentSize,
                                     options,
-                                    words.subList(lastWord, words.size)
+                                    words.subList(lastWord, words.size),
                                 )
                     }
                     break
@@ -422,7 +423,8 @@ class Paragraph(private val task: FormattingTask) {
         // Can we start a new line with this without interpreting it in a special
         // way?
 
-        if (word.startsWith("#") ||
+        if (
+            word.startsWith("#") ||
             word.startsWith("```") ||
             word.isDirectiveMarker() ||
             word.startsWith("@") || // interpreted as a tag
@@ -433,15 +435,15 @@ class Paragraph(private val task: FormattingTask) {
         }
 
         if (prev == "@sample") {
-            return false // https://github.com/facebookincubator/ktfmt/issues/310
+            return false // https://github.com/facebook/ktfmt/issues/310
         }
 
         if (!word.first().isLetter()) {
             val wordWithSpace = "$word " // for regex matching in below checks
-            if (wordWithSpace.isListItem() && !word.equals(
+            if ((wordWithSpace.isListItem() && !word.equals(
                     "<li>",
                     true
-                ) || wordWithSpace.isQuoted()
+                )) || wordWithSpace.isQuoted()
             ) {
                 return false
             }
@@ -480,7 +482,7 @@ class Paragraph(private val task: FormattingTask) {
         val end = words.size
         while (from < end) {
             val start =
-                if (from == 0 && (quoted || hanging && !text.isKDocTag())) {
+                if (from == 0 && (quoted > 0 || (hanging && !text.isKDocTag()))) {
                     from + 2
                 } else {
                     from + 1
@@ -623,7 +625,7 @@ class Paragraph(private val task: FormattingTask) {
     private fun reflowGreedy(
         lineWidth: Int,
         options: KDocFormattingOptions,
-        words: List<String>
+        words: List<String>,
     ): List<String> {
         // Greedy implementation
 

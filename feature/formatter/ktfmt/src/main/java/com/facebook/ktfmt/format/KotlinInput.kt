@@ -83,7 +83,7 @@ class KotlinInput(private val text: String, file: KtFile) : Input() {
             tokenRangeSet.add(
                 characterRangeToTokenRange(
                     characterRange.lowerEndpoint(),
-                    characterRange.upperEndpoint() - characterRange.lowerEndpoint()
+                    characterRange.upperEndpoint() - characterRange.lowerEndpoint(),
                 )
             )
         }
@@ -106,7 +106,7 @@ class KotlinInput(private val text: String, file: KtFile) : Input() {
                 String.format(
                     "error: invalid length %d, offset + length (%d) is outside the file",
                     length,
-                    requiredLength
+                    requiredLength,
                 )
             )
         }
@@ -125,12 +125,16 @@ class KotlinInput(private val text: String, file: KtFile) : Input() {
             EMPTY_RANGE
         } else
             Range.closedOpen(
-                enclosed.iterator().next().tok.index, getLast(enclosed).getTok().getIndex() + 1
+                enclosed.iterator().next().tok.index,
+                getLast(enclosed).getTok().getIndex() + 1,
             )
     }
 
-    private fun makePositionToColumnMap(toks: List<KotlinTok>) =
-        ImmutableMap.copyOf(toks.map { it.position to it.column }.toMap())
+    private fun makePositionToColumnMap(toks: List<KotlinTok>): ImmutableMap<Int, Int> {
+        val builder = ImmutableMap.builderWithExpectedSize<Int, Int>(toks.size)
+        toks.forEach { builder.put(it.position, it.column) }
+        return builder.build()
+    }
 
     private fun buildToks(file: KtFile, fileText: String): ImmutableList<KotlinTok> {
         val tokenizer = Tokenizer(fileText, file)
@@ -227,9 +231,9 @@ class KotlinInput(private val text: String, file: KtFile) : Input() {
 
     override fun getText(): String = text
 
-    override fun getLineNumber(inputPosition: Int) =
+    override fun getLineNumber(inputPosition: Int): Int =
         StringUtil.offsetToLineColumn(text, inputPosition).line + 1
 
-    override fun getColumnNumber(inputPosition: Int) =
+    override fun getColumnNumber(inputPosition: Int): Int =
         StringUtil.offsetToLineColumn(text, inputPosition).column
 }

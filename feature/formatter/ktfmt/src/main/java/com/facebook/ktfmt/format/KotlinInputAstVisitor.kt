@@ -16,6 +16,8 @@
 
 package com.facebook.ktfmt.format
 
+import com.facebook.ktfmt.util.CONTEXT_PARAMETER_LIST
+import com.facebook.ktfmt.util.listToVisit
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
 import com.google.googlejavaformat.Doc
@@ -23,13 +25,14 @@ import com.google.googlejavaformat.FormattingError
 import com.google.googlejavaformat.Indent
 import com.google.googlejavaformat.Indent.Const.ZERO
 import com.google.googlejavaformat.OpsBuilder
-import com.google.googlejavaformat.Output
 import com.google.googlejavaformat.Output.BreakTag
 import java.util.ArrayDeque
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.stubs.PsiFileStubImpl
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtAnnotatedExpression
@@ -37,6 +40,7 @@ import org.jetbrains.kotlin.psi.KtAnnotation
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtAnnotationUseSiteTarget
 import org.jetbrains.kotlin.psi.KtArrayAccessExpression
+import org.jetbrains.kotlin.psi.KtBackingField
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtBlockExpression
@@ -44,6 +48,7 @@ import org.jetbrains.kotlin.psi.KtBreakExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCallableReferenceExpression
 import org.jetbrains.kotlin.psi.KtCatchClause
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtClassInitializer
 import org.jetbrains.kotlin.psi.KtClassLiteralExpression
@@ -123,7 +128,6 @@ import org.jetbrains.kotlin.psi.KtWhenConditionWithExpression
 import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.kotlin.psi.KtWhileExpression
 import org.jetbrains.kotlin.psi.psiUtil.children
-import org.jetbrains.kotlin.psi.psiUtil.getNextSiblingIgnoringWhitespace
 import org.jetbrains.kotlin.psi.psiUtil.getPrevSiblingIgnoringWhitespace
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.psi.psiUtil.startsWithComment
@@ -133,10 +137,8 @@ import org.jetbrains.kotlin.psi.stubs.impl.KotlinPlaceHolderStubImpl
 /** An AST visitor that builds a stream of {@link Op}s to format. */
 class KotlinInputAstVisitor(
     private val options: FormattingOptions,
-    private val builder: OpsBuilder
+    private val builder: OpsBuilder,
 ) : KtTreeVisitorVoid() {
-
-    private val isGoogleStyle = options.style == FormattingOptions.Style.GOOGLE
 
     /** Standard indentation for a block */
     private val blockIndent: Indent.Const = Indent.Const.make(options.blockIndent, 1)
@@ -169,7 +171,7 @@ class KotlinInputAstVisitor(
         builder.block(ZERO) {
             visitFunctionLikeExpression(
                 contextReceiverList =
-                function.getStubOrPsiChild(KtStubElementTypes.CONTEXT_RECEIVER_LIST),
+                    function.getStubOrPsiChild(CONTEXT_PARAMETER_LIST) as? KtContextReceiverList,
                 modifierList = function.modifierList,
                 keyword = "fun",
                 typeParameters = function.typeParameterList,
@@ -259,7 +261,7 @@ class KotlinInputAstVisitor(
         visitEachCommaSeparated(
             typeArgumentList.arguments,
             typeArgumentList.trailingComma != null,
-            wrapInBlock = !isGoogleStyle,
+            wrapInBlock = !options.manageTrailingCommas,
             prefix = "<",
             postfix = ">",
         )
@@ -374,7 +376,6 @@ class KotlinInputAstVisitor(
             }
 
             if (typeConstraintList != null) {
-                builder.space()
                 visit(typeConstraintList)
             }
             if (bodyExpression is KtBlockExpression) {
@@ -401,8 +402,8 @@ class KotlinInputAstVisitor(
         }
     }
 
-    private fun genSym(): Output.BreakTag {
-        return Output.BreakTag()
+    private fun genSym(): BreakTag {
+        return BreakTag()
     }
 
     private fun emitBracedBlock(
@@ -455,13 +456,18 @@ class KotlinInputAstVisitor(
                 typeConstraintList = property.typeConstraintList,
                 delegate = property.delegate,
                 initializer = property.initializer,
-                accessors = property.accessors
+                accessors = property.accessors,
+                backingField = property.fieldDeclaration,
             )
         }
         builder.guessToken(";")
         if (property.parent !is KtWhenExpression) {
             builder.forcedBreak()
         }
+    }
+
+    fun visitBackingField(backingField: KtBackingField) {
+        emitBackingField(backingField)
     }
 
     /**
@@ -485,14 +491,9 @@ class KotlinInputAstVisitor(
             }
 
             receiver is KtStringTemplateExpression -> {
-                val isMultiline = receiver.text.contains('\n')
                 builder.block(expressionBreakIndent) {
                     visit(receiver)
-                    builder.breakOp(
-                        if (isMultiline) Doc.FillMode.FORCED else Doc.FillMode.UNIFIED,
-                        "",
-                        ZERO
-                    )
+                    builder.breakOp(Doc.FillMode.UNIFIED, "", ZERO)
                     builder.token(expression.operationSign.value)
                     visit(expression.selectorExpression)
                 }
@@ -672,7 +673,7 @@ class KotlinInputAstVisitor(
      */
     private fun computeGroupingInfo(
         parts: List<KtExpression>,
-        useBlockLikeLambdaStyle: Boolean
+        useBlockLikeLambdaStyle: Boolean,
     ): List<GroupingInfo> {
         val groupingInfos = List(parts.size) { GroupingInfo() }
         var lastIndexToOpen = 0
@@ -684,7 +685,8 @@ class KotlinInputAstVisitor(
                         (receiverExpression as? KtQualifiedExpression)?.selectorExpression
                             ?: receiverExpression
                     val current = checkNotNull(part.selectorExpression)
-                    if (lastIndexToOpen == 0 &&
+                    if (
+                        lastIndexToOpen == 0 &&
                         shouldGroupPartWithPrevious(parts, part, index, previous, current)
                     ) {
                         // this and the previous items should be grouped for better style
@@ -720,7 +722,7 @@ class KotlinInputAstVisitor(
         part: KtExpression,
         index: Int,
         previous: KtExpression,
-        current: KtExpression
+        current: KtExpression,
     ): Boolean {
         // this is the second, and the first is short, avoid `.` "hanging in air"
         if (index == 1 && previous.text.length < options.continuationIndent) {
@@ -731,21 +733,24 @@ class KotlinInputAstVisitor(
             return true
         }
         // this and the previous part are a package name, type name, or property
-        if (previous is KtSimpleNameExpression &&
+        if (
+            previous is KtSimpleNameExpression &&
             current is KtSimpleNameExpression &&
             part is KtDotQualifiedExpression
         ) {
             return true
         }
         // this is `Foo` in `com.facebook.Foo`, so everything before it is a package name
-        if (current.text.first().isUpperCase() &&
+        if (
+            current.text.first().isUpperCase() &&
             current is KtSimpleNameExpression &&
             part is KtDotQualifiedExpression
         ) {
             return true
         }
         // this is the `foo()` in `com.facebook.Foo.foo()` or in `Foo.foo()`
-        if (current is KtCallExpression &&
+        if (
+            current is KtCallExpression &&
             (previous !is KtCallExpression) &&
             previous.text?.firstOrNull()?.isUpperCase() == true
         ) {
@@ -756,34 +761,6 @@ class KotlinInputAstVisitor(
         return current is KtCallExpression &&
                 previous !is KtCallExpression &&
                 index == parts.indices.last
-    }
-
-    /** Returns true if the expression represents an invocation that is also a lambda */
-    private fun KtExpression.isLambda(): Boolean {
-        return extractCallExpression(this)?.lambdaArguments?.isNotEmpty() ?: false
-    }
-
-    /** Does this list have parens with only whitespace between them? */
-    private fun KtParameterList.hasEmptyParens(): Boolean {
-        val left = this.leftParenthesis ?: return false
-        val right = this.rightParenthesis ?: return false
-        return left.getNextSiblingIgnoringWhitespace() == right
-    }
-
-    /** Does this list have parens with only whitespace between them? */
-    private fun KtValueArgumentList.hasEmptyParens(): Boolean {
-        val left = this.leftParenthesis ?: return false
-        val right = this.rightParenthesis ?: return false
-        return left.getNextSiblingIgnoringWhitespace() == right
-    }
-
-    /**
-     * emitQualifiedExpression formats call expressions that are either part of a qualified
-     * expression, or standing alone. This method makes it easier to handle both cases uniformly.
-     */
-    private fun extractCallExpression(expression: KtExpression): KtCallExpression? {
-        val ktExpression = (expression as? KtQualifiedExpression)?.selectorExpression ?: expression
-        return ktExpression as? KtCallExpression
     }
 
     override fun visitCallExpression(callExpression: KtCallExpression) {
@@ -831,12 +808,20 @@ class KotlinInputAstVisitor(
                     }
                 }
             }
-            if (lambdaArguments.isNotEmpty()) {
-                builder.space()
-                visitArgumentInternal(
-                    lambdaArguments.single(),
-                    wrapInBlock = false,
-                    brokeBeforeBrace = brokeBeforeBrace,
+            when (lambdaArguments.size) {
+                0 -> {}
+                1 -> {
+                    builder.space()
+                    visitArgumentInternal(
+                        lambdaArguments.single(),
+                        wrapInBlock = false,
+                        brokeBeforeBrace = brokeBeforeBrace,
+                    )
+                }
+
+                else -> throw ParseError(
+                    "Maximum one trailing lambda is allowed",
+                    lambdaArguments[1]
                 )
             }
         }
@@ -874,8 +859,8 @@ class KotlinInputAstVisitor(
             leadingBreak = !hasEmptyParens && hasTrailingComma
             breakAfterPrefix = false
         } else {
-            wrapInBlock = !isGoogleStyle
-            breakBeforePostfix = isGoogleStyle && !hasEmptyParens
+            wrapInBlock = !options.manageTrailingCommas
+            breakBeforePostfix = options.manageTrailingCommas && !hasEmptyParens
             leadingBreak = !hasEmptyParens
             breakAfterPrefix = !hasEmptyParens
         }
@@ -920,8 +905,10 @@ class KotlinInputAstVisitor(
 
         val valueParams = lambdaExpression.valueParameters
         val hasParams = valueParams.isNotEmpty()
-        val statements = (lambdaExpression.bodyExpression ?: fail()).children
-        val hasStatements = statements.isNotEmpty()
+        val bodyExpression = lambdaExpression.bodyExpression ?: fail()
+        val expressionStatements = bodyExpression.children
+        val hasStatements = expressionStatements.isNotEmpty()
+        val hasComments = bodyExpression.children().any { it is PsiComment }
         val hasArrow = lambdaExpression.functionLiteral.arrow != null
 
         fun ifBrokeBeforeBrace(onTrue: Indent, onFalse: Indent): Indent {
@@ -959,27 +946,57 @@ class KotlinInputAstVisitor(
                 }
                 builder.token("->")
             }
-            builder.breakOp(Doc.FillMode.UNIFIED, "", bracePlusZeroIndent)
+        }
+
+        if (hasParams || hasArrow || hasStatements || hasComments) {
+            builder.breakOp(Doc.FillMode.UNIFIED, " ", bracePlusZeroIndent)
         }
 
         if (hasStatements) {
-            builder.breakOp(Doc.FillMode.UNIFIED, " ", bracePlusBlockIndent)
+            builder.breakOp(Doc.FillMode.UNIFIED, "", bracePlusBlockIndent)
             builder.block(bracePlusBlockIndent) {
                 builder.blankLineWanted(OpsBuilder.BlankLineWanted.NO)
-                if (statements.size == 1 &&
-                    statements.first() !is KtReturnExpression &&
-                    lambdaExpression.bodyExpression?.startsWithComment() != true
+
+                val shouldForceMultiline =
+                    options.preserveLambdaBreaks && hasSourceNewlineInLambdaBody(lambdaExpression)
+
+                if (
+                    !shouldForceMultiline &&
+                    expressionStatements.size == 1 &&
+                    expressionStatements.first() !is KtReturnExpression &&
+                    !bodyExpression.startsWithComment()
                 ) {
-                    visitStatement(statements[0])
+                    visitStatement(expressionStatements[0])
                 } else {
-                    visitStatements(statements)
+                    visitStatements(expressionStatements)
                 }
+                builder.breakOp(Doc.FillMode.UNIFIED, " ", bracePlusZeroIndent)
+            }
+        } else if (hasComments) {
+            val blockComments =
+                bodyExpression.children().filter { it is PsiComment && it.text.startsWith("/*") }
+                    .toList()
+            builder.breakOp(Doc.FillMode.UNIFIED, "", bracePlusBlockIndent)
+            builder.block(bracePlusBlockIndent) {
+                builder.fenceComments()
+                builder.blankLineWanted(OpsBuilder.BlankLineWanted.NO)
+                if (blockComments.size == 1) {
+                    builder.token(blockComments[0].text)
+                } else {
+                    for ((i, comment) in blockComments.withIndex()) {
+                        if (i > 0) {
+                            builder.forcedBreak()
+                        }
+                        builder.token(comment.text)
+                    }
+                }
+                builder.breakOp(Doc.FillMode.UNIFIED, " ", bracePlusZeroIndent)
             }
         }
 
-        if (hasParams || hasArrow || hasStatements) {
+        if (hasParams || hasArrow || hasStatements || hasComments) {
             // If we had to break in the body, ensure there is a break before the closing brace
-            builder.breakOp(Doc.FillMode.UNIFIED, " ", bracePlusZeroIndent)
+            builder.breakOp(Doc.FillMode.UNIFIED, "", bracePlusZeroIndent)
         }
         builder.block(bracePlusZeroIndent) {
             builder.fenceComments()
@@ -1106,7 +1123,7 @@ class KotlinInputAstVisitor(
         prefix: String? = null,
         postfix: String? = null,
         breakAfterPrefix: Boolean = true,
-        breakBeforePostfix: Boolean = isGoogleStyle,
+        breakBeforePostfix: Boolean = options.manageTrailingCommas,
     ): BreakTag? {
         val breakAfterLastElement = hasTrailingComma || (postfix != null && breakBeforePostfix)
         val nameTag = if (breakAfterLastElement) null else genSym()
@@ -1263,7 +1280,8 @@ class KotlinInputAstVisitor(
             val isFirst = leftExpression === leftMostExpression
 
             when (leftExpression.operationToken) {
-                KtTokens.RANGE -> {
+                KtTokens.RANGE,
+                KtTokens.RANGE_UNTIL -> {
                     if (isFirst) {
                         builder.open(expressionBreakIndent)
                     }
@@ -1285,12 +1303,38 @@ class KotlinInputAstVisitor(
                         builder.open(expressionBreakIndent)
                     }
                     builder.token(leftExpression.operationReference.text)
-                    builder.breakOp(Doc.FillMode.UNIFIED, " ", ZERO)
+                    val fillMode =
+                        if (hasLineBreakingCommentBefore(leftExpression.operationReference))
+                            Doc.FillMode.INDEPENDENT
+                        else Doc.FillMode.UNIFIED
+                    builder.breakOp(fillMode, " ", ZERO)
                 }
             }
             visit(leftExpression.right)
         }
         builder.close()
+    }
+
+    /**
+     * Checks if a line-breaking comment precedes [element] in the PSI tree.
+     *
+     * Line comments (`//`) always force a break. Block comments (`/* */`) only count if they are on
+     * their own line (preceded by whitespace with a newline). Inline block comments like `x /*tag*/
+     * ||` do not force a break and should not trigger INDEPENDENT fill mode.
+     */
+    private fun hasLineBreakingCommentBefore(element: PsiElement): Boolean {
+        var prev = element.prevSibling
+        while (prev is PsiWhiteSpace) {
+            prev = prev.prevSibling
+        }
+        if (prev !is PsiComment) return false
+
+        // Line comments always force a line break
+        if (prev.text.startsWith("//")) return true
+
+        // Block comments force a break only if on their own line
+        val beforeComment = prev.prevSibling
+        return beforeComment is PsiWhiteSpace && beforeComment.text.contains('\n')
     }
 
     override fun visitPostfixExpression(expression: KtPostfixExpression) {
@@ -1300,7 +1344,8 @@ class KotlinInputAstVisitor(
             val operator = expression.operationReference.text
 
             visit(baseExpression)
-            if (baseExpression is KtPostfixExpression &&
+            if (
+                baseExpression is KtPostfixExpression &&
                 baseExpression.operationReference.text.last() == operator.first()
             ) {
                 builder.space()
@@ -1316,7 +1361,8 @@ class KotlinInputAstVisitor(
             val operator = expression.operationReference.text
 
             builder.token(operator)
-            if (baseExpression is KtPrefixExpression &&
+            if (
+                baseExpression is KtPrefixExpression &&
                 operator.last() == baseExpression.operationReference.text.first()
             ) {
                 builder.space()
@@ -1336,7 +1382,7 @@ class KotlinInputAstVisitor(
 
     internal enum class DeclarationKind {
         FIELD,
-        PARAMETER
+        PARAMETER,
     }
 
     /**
@@ -1358,7 +1404,8 @@ class KotlinInputAstVisitor(
         typeConstraintList: KtTypeConstraintList? = null,
         initializer: KtExpression?,
         delegate: KtPropertyDelegate? = null,
-        accessors: List<KtPropertyAccessor>? = null
+        accessors: List<KtPropertyAccessor>? = null,
+        backingField: KtBackingField? = null,
     ): Int {
         val verticalAnnotationBreak = genSym()
 
@@ -1405,7 +1452,6 @@ class KotlinInputAstVisitor(
 
             // For example `where T : Int` in a generic method
             if (typeConstraintList != null) {
-                builder.space()
                 visit(typeConstraintList)
                 builder.space()
             }
@@ -1438,28 +1484,45 @@ class KotlinInputAstVisitor(
                 }
             }
         }
-        // for example `private set` or `get = 2 * field`
-        if (accessors?.isNotEmpty() == true) {
+        // for example `field = value`, `private set`, or `get = 2 * field`
+        val propertyComponents =
+            buildList {
+                if (backingField != null) {
+                    add(backingField)
+                }
+                if (accessors != null) {
+                    addAll(accessors)
+                }
+            }
+                .sortedBy { it.startOffset }
+        if (propertyComponents.isNotEmpty()) {
             builder.block(blockIndent) {
-                for (accessor in accessors) {
+                for (component in propertyComponents) {
                     builder.forcedBreak()
                     // The semicolon must come after the newline, or the output code will not parse.
                     builder.guessToken(";")
 
-                    builder.block(ZERO) {
-                        visitFunctionLikeExpression(
-                            contextReceiverList = null,
-                            modifierList = accessor.modifierList,
-                            keyword = accessor.namePlaceholder.text,
-                            typeParameters = null,
-                            receiverTypeReference = null,
-                            name = null,
-                            parameterList = getParameterListWithBugFixes(accessor),
-                            typeConstraintList = null,
-                            bodyExpression = accessor.bodyBlockExpression
-                                ?: accessor.bodyExpression,
-                            typeOrDelegationCall = accessor.returnTypeReference,
-                        )
+                    when (component) {
+                        is KtPropertyAccessor -> {
+                            builder.block(ZERO) {
+                                visitFunctionLikeExpression(
+                                    contextReceiverList = null,
+                                    modifierList = component.modifierList,
+                                    keyword = component.namePlaceholder.text,
+                                    typeParameters = null,
+                                    receiverTypeReference = null,
+                                    name = null,
+                                    parameterList = getParameterListWithBugFixes(component),
+                                    typeConstraintList = null,
+                                    bodyExpression = component.bodyBlockExpression
+                                        ?: component.bodyExpression,
+                                    typeOrDelegationCall = component.returnTypeReference,
+                                )
+                            }
+                        }
+
+                        is KtBackingField -> emitBackingField(component)
+                        else -> error("Unexpected property component: ${component::class}")
                     }
                 }
             }
@@ -1474,15 +1537,52 @@ class KotlinInputAstVisitor(
         return 0
     }
 
-    // Bug in Kotlin 1.9.10: KtProperyAccessor is the direct parent of the left and right paren
+    private fun emitBackingField(backingField: KtBackingField) {
+        builder.sync(backingField)
+        builder.block(ZERO) {
+            builder.block(ZERO) { builder.token(backingField.namePlaceholder.text) }
+
+            val type = backingField.returnTypeReference
+            if (type != null) {
+                builder.block(expressionBreakIndent) {
+                    builder.token(":")
+                    builder.breakOp(Doc.FillMode.UNIFIED, " ", ZERO)
+                    visit(type)
+                }
+            }
+
+            val initializer = backingField.initializer
+            if (initializer != null) {
+                builder.space()
+                builder.token("=")
+                if (isLambdaOrScopingFunction(initializer)) {
+                    visitLambdaOrScopingFunction(initializer)
+                } else {
+                    builder.breakOp(Doc.FillMode.UNIFIED, " ", expressionBreakIndent)
+                    builder.block(expressionBreakIndent) {
+                        builder.fenceComments()
+                        visit(initializer)
+                    }
+                }
+            }
+        }
+    }
+
+    // Bug in Kotlin 1.9.10: KtPropertyAccessor is the direct parent of the left and right paren
     // elements. Also parameterList is always null for getters. As a workaround, we create our own
     // fake KtParameterList.
+    // TODO: won't need this after https://youtrack.jetbrains.com/issue/KT-70922
     private fun getParameterListWithBugFixes(accessor: KtPropertyAccessor): KtParameterList? {
         if (accessor.bodyExpression == null && accessor.bodyBlockExpression == null) return null
 
+        val stub = accessor.stub ?: PsiFileStubImpl(accessor.containingFile)
+
         return object :
             KtParameterList(
-                KotlinPlaceHolderStubImpl(accessor.stub, KtStubElementTypes.VALUE_PARAMETER_LIST)
+                KotlinPlaceHolderStubImpl(
+                    stub,
+                    KtStubElementTypes.VALUE_PARAMETER_LIST
+                )
             ) {
             override fun getParameters(): List<KtParameter> {
                 return accessor.valueParameters
@@ -1493,11 +1593,11 @@ class KotlinInputAstVisitor(
             }
 
             override fun getLeftParenthesis(): PsiElement? {
-                return accessor.leftParenthesis
+                return accessor.parameterList?.leftParenthesis
             }
 
             override fun getRightParenthesis(): PsiElement? {
-                return accessor.rightParenthesis
+                return accessor.parameterList?.rightParenthesis
             }
         }
     }
@@ -1510,6 +1610,7 @@ class KotlinInputAstVisitor(
      * 1. '... = { ... }' is a lambda expression
      * 2. '... = Runnable { ... }' is considered a scoping function
      * 3. '... = scope { ... }' '... = apply { ... }' is a scoping function
+     * 4. '... = scope.launch { ... }' is a dot-qualified scoping function
      *
      * but not:
      * 1. '... = foo() { ... }' due to the empty parenthesis
@@ -1522,8 +1623,12 @@ class KotlinInputAstVisitor(
         }
 
         var carry = expression
+        if (carry is KtQualifiedExpression && carry.receiverExpression is KtSimpleNameExpression) {
+            carry = carry.selectorExpression
+        }
         if (carry is KtCallExpression) {
-            if (carry.valueArgumentList?.leftParenthesis == null &&
+            if (
+                carry.valueArgumentList?.leftParenthesis == null &&
                 carry.lambdaArguments.isNotEmpty() &&
                 carry.typeArgumentList?.arguments.isNullOrEmpty()
             ) {
@@ -1542,6 +1647,20 @@ class KotlinInputAstVisitor(
         return false
     }
 
+    /**
+     * Returns true if the source code contains a newline anywhere inside the body of
+     * [lambdaExpression] — that is, between the opening `{` and the closing `}` of the function
+     * literal. Used by [FormattingOptions.preserveLambdaBreaks] to keep user-authored multi-line
+     * lambdas multi-line.
+     */
+    private fun hasSourceNewlineInLambdaBody(lambdaExpression: KtLambdaExpression): Boolean {
+        val functionLiteral = lambdaExpression.functionLiteral
+        for (child in functionLiteral.node.children()) {
+            if (child.psi is PsiWhiteSpace && child.textContains('\n')) return true
+        }
+        return false
+    }
+
     /** See [isLambdaOrScopingFunction] for examples. */
     private fun visitLambdaOrScopingFunction(expr: PsiElement?) {
         val breakToExpr = genSym()
@@ -1553,6 +1672,11 @@ class KotlinInputAstVisitor(
         )
 
         var carry = expr
+        if (carry is KtQualifiedExpression && carry.receiverExpression is KtSimpleNameExpression) {
+            visit(carry.receiverExpression)
+            builder.token(carry.operationSign.value)
+            carry = carry.selectorExpression
+        }
         if (carry is KtCallExpression) {
             visit(carry.calleeExpression)
             builder.space()
@@ -1573,7 +1697,7 @@ class KotlinInputAstVisitor(
     override fun visitClassOrObject(classOrObject: KtClassOrObject) {
         builder.sync(classOrObject)
         val contextReceiverList =
-            classOrObject.getStubOrPsiChild(KtStubElementTypes.CONTEXT_RECEIVER_LIST)
+            classOrObject.getStubOrPsiChild(CONTEXT_PARAMETER_LIST) as? KtContextReceiverList
         val modifierList = classOrObject.modifierList
         builder.block(ZERO) {
             if (contextReceiverList != null) {
@@ -1602,13 +1726,14 @@ class KotlinInputAstVisitor(
                     visit(superTypes)
                 }
             }
-            builder.space()
             val typeConstraintList = classOrObject.typeConstraintList
             if (typeConstraintList != null) {
                 if (superTypes?.entries?.lastOrNull() is KtDelegatedSuperTypeEntry) {
-                    builder.forcedBreak()
+                    builder.forcedBreak(expressionBreakIndent)
                 }
                 visit(typeConstraintList)
+                builder.space()
+            } else if (classOrObject.body != null) {
                 builder.space()
             }
             visit(classOrObject.body)
@@ -1646,7 +1771,7 @@ class KotlinInputAstVisitor(
             val delegationCall = constructor.getDelegationCall()
             visitFunctionLikeExpression(
                 contextReceiverList =
-                constructor.getStubOrPsiChild(KtStubElementTypes.CONTEXT_RECEIVER_LIST),
+                    constructor.getStubOrPsiChild(CONTEXT_PARAMETER_LIST) as? KtContextReceiverList,
                 modifierList = constructor.modifierList,
                 keyword = "constructor",
                 typeParameters = null,
@@ -1752,17 +1877,26 @@ class KotlinInputAstVisitor(
         builder.forcedBreak()
     }
 
-    /** Example `context(Logger, Raise<Error>)` */
-    override fun visitContextReceiverList(contextReceiverList: KtContextReceiverList) {
+    /**
+     * Example `context(logger: Logger, raise: Raise<Error>)`
+     *
+     * Note this also supports the legacy receiver format of `context(Logger, Raise<Error>)` for
+     * backward compatibility and for function types
+     */
+    private fun handleContextReceiverList(contextReceiverList: KtContextReceiverList) {
         builder.sync(contextReceiverList)
         builder.token("context")
         visitEachCommaSeparated(
-            contextReceiverList.contextReceivers(),
+            contextReceiverList.listToVisit(),
             prefix = "(",
             postfix = ")",
             breakAfterPrefix = false,
             breakBeforePostfix = false,
         )
+    }
+
+    override fun visitContextReceiverList(contextReceiverList: KtContextReceiverList) {
+        handleContextReceiverList(contextReceiverList)
         builder.forcedBreak()
     }
 
@@ -1774,6 +1908,13 @@ class KotlinInputAstVisitor(
         for (child in list.node.children()) {
             val psi = child.psi
             if (psi is PsiWhiteSpace) {
+                continue
+            }
+
+            // In Kotlin 2.3+, context receiver lists are children of the modifier list.
+            // Handle them directly to avoid issues with the visitor dispatch.
+            if (psi is KtContextReceiverList) {
+                visitContextReceiverList(psi)
                 continue
             }
 
@@ -1832,6 +1973,7 @@ class KotlinInputAstVisitor(
                         expression.parent is KtBlockExpression -> builder.forcedBreak()
 
                 baseExpression is KtLambdaExpression -> builder.space()
+                baseExpression is KtReturnExpression -> builder.forcedBreak()
                 else -> builder.breakOp(Doc.FillMode.UNIFIED, " ", ZERO)
             }
 
@@ -1878,7 +2020,7 @@ class KotlinInputAstVisitor(
     /** For example, 'field' in @field:[Inject Named("WEB_VIEW")] */
     override fun visitAnnotationUseSiteTarget(
         annotationTarget: KtAnnotationUseSiteTarget,
-        data: Void?
+        data: Void?,
     ): Void? {
         builder.token(annotationTarget.getAnnotationUseSiteTarget().renderName)
         return null
@@ -1899,13 +2041,13 @@ class KotlinInputAstVisitor(
             annotationEntry.calleeExpression,
             null, // Type-arguments are included in the annotation's callee expression.
             annotationEntry.valueArgumentList,
-            listOf()
+            listOf(),
         )
     }
 
     override fun visitFileAnnotationList(
         fileAnnotationList: KtFileAnnotationList,
-        data: Void?
+        data: Void?,
     ): Void? {
         for (child in fileAnnotationList.node.children()) {
             if (child is PsiElement) {
@@ -1953,13 +2095,17 @@ class KotlinInputAstVisitor(
                 Optional.of(blockIndent)
             )
 
-            expression.entries.forEach { whenEntry ->
+            expression.entries.forEachIndexed { index, whenEntry ->
                 builder.block(blockIndent) {
+                    if (index != 0) {
+                        // preserve new line if there's one
+                        builder.blankLineWanted(OpsBuilder.BlankLineWanted.PRESERVE)
+                    }
                     builder.forcedBreak()
-                    if (whenEntry.isElse) {
-                        builder.token("else")
-                    } else {
-                        builder.block(ZERO) {
+                    builder.block(ZERO) {
+                        if (whenEntry.elseKeyword != null) {
+                            builder.token("else")
+                        } else {
                             val conditions = whenEntry.conditions
                             for ((index, condition) in conditions.withIndex()) {
                                 visit(condition)
@@ -1969,11 +2115,23 @@ class KotlinInputAstVisitor(
                                 }
                             }
                         }
+                        whenEntry.guard?.let { guard ->
+                            builder.space()
+                            emitKeywordWithCondition(
+                                "if",
+                                guard.getExpression(),
+                                surroundConditionWithParens = false,
+                            )
+                        }
                     }
                     val whenExpression = whenEntry.expression
-                    builder.space()
+                    if (whenEntry.trailingComma != null) {
+                        builder.forcedBreak()
+                    } else {
+                        builder.space()
+                    }
                     builder.token("->")
-                    if (whenExpression is KtBlockExpression) {
+                    if (whenExpression is KtBlockExpression || whenExpression is KtLambdaExpression) {
                         builder.space()
                         visit(whenExpression)
                     } else {
@@ -1993,14 +2151,15 @@ class KotlinInputAstVisitor(
     override fun visitClassBody(body: KtClassBody) {
         builder.sync(body)
         emitBracedBlock(body) { children ->
-            val (enumEntries, nonEnumEntryMembers) = children.partition { it is KtEnumEntry }
+            val enumEntryList = EnumEntryList.extractChildList(body)
+            val members = children.filter { it !is KtEnumEntry }
 
-            if (enumEntries.isNotEmpty()) {
+            if (enumEntryList != null) {
                 builder.block(ZERO) {
                     builder.breakOp(Doc.FillMode.UNIFIED, "", ZERO)
-                    for (value in enumEntries) {
+                    for (value in enumEntryList.enumEntries) {
                         visit(value)
-                        if (builder.peekToken() == Optional.of(",")) {
+                        if (builder.peekToken().getOrNull() == ",") {
                             builder.token(",")
                             builder.forcedBreak()
                         }
@@ -2008,14 +2167,20 @@ class KotlinInputAstVisitor(
                 }
                 builder.guessToken(";")
 
-                if (nonEnumEntryMembers.isNotEmpty()) {
+                if (members.isNotEmpty()) {
                     builder.forcedBreak()
                     builder.blankLineWanted(OpsBuilder.BlankLineWanted.YES)
+                }
+            } else {
+                val parent = body.parent
+                if (parent is KtClass && parent.isEnum() && children.isNotEmpty()) {
+                    builder.token(";")
+                    builder.forcedBreak()
                 }
             }
 
             var prev: PsiElement? = null
-            for (curr in nonEnumEntryMembers) {
+            for (curr in members) {
                 val blankLineBetweenMembers =
                     when {
                         prev == null -> OpsBuilder.BlankLineWanted.PRESERVE
@@ -2073,7 +2238,10 @@ class KotlinInputAstVisitor(
                 builder.block(ZERO) { visit(expression.then) }
             } else {
                 builder.breakOp(Doc.FillMode.INDEPENDENT, " ", expressionBreakIndent)
-                builder.block(expressionBreakIndent) { visit(expression.then) }
+                builder.block(expressionBreakIndent) {
+                    builder.fenceComments()
+                    visit(expression.then)
+                }
             }
 
             if (expression.elseKeyword != null) {
@@ -2120,7 +2288,7 @@ class KotlinInputAstVisitor(
                 visitEachCommaSeparated(
                     expression.indexExpressions,
                     expression.trailingComma != null,
-                    wrapInBlock = true
+                    wrapInBlock = true,
                 )
             }
         }
@@ -2141,7 +2309,9 @@ class KotlinInputAstVisitor(
             builder.breakOp(Doc.FillMode.UNIFIED, "", expressionBreakIndent)
             builder.block(expressionBreakIndent) {
                 visitEachCommaSeparated(
-                    destructuringDeclaration.entries, hasTrailingComma, wrapInBlock = true
+                    destructuringDeclaration.entries,
+                    hasTrailingComma,
+                    wrapInBlock = true,
                 )
             }
         }
@@ -2202,7 +2372,7 @@ class KotlinInputAstVisitor(
                 hasTrailingComma = list.trailingComma != null,
                 prefix = "<",
                 postfix = ">",
-                wrapInBlock = !isGoogleStyle,
+                wrapInBlock = !options.manageTrailingCommas,
             )
         }
     }
@@ -2222,10 +2392,15 @@ class KotlinInputAstVisitor(
 
     /** Example `where T : View, T : Listener` */
     override fun visitTypeConstraintList(list: KtTypeConstraintList) {
-        builder.token("where")
-        builder.space()
+        builder.block(expressionBreakIndent) {
+            builder.breakOp(Doc.FillMode.INDEPENDENT, " ", ZERO)
+            builder.token("where")
+            builder.block(expressionBreakIndent) {
+                builder.breakOp(Doc.FillMode.UNIFIED, " ", ZERO)
         builder.sync(list)
-        visitEachCommaSeparated(list.constraints)
+                visitEachCommaSeparated(list.constraints, wrapInBlock = false)
+            }
+        }
     }
 
     /** Example `T : Foo` */
@@ -2315,7 +2490,7 @@ class KotlinInputAstVisitor(
                     valOrVarKeyword = parameter.valOrVarKeyword?.text,
                     name = parameter.nameIdentifier?.text,
                     type = typeReference,
-                    initializer = parameter.defaultValue
+                    initializer = parameter.defaultValue,
                 )
             }
         }
@@ -2349,7 +2524,7 @@ class KotlinInputAstVisitor(
                 receiverExpression.calleeExpression,
                 receiverExpression.typeArgumentList,
                 receiverExpression.valueArgumentList,
-                receiverExpression.lambdaArguments
+                receiverExpression.lambdaArguments,
             )
         } else {
             visit(receiverExpression)
@@ -2360,6 +2535,12 @@ class KotlinInputAstVisitor(
 
     override fun visitFunctionType(type: KtFunctionType) {
         builder.sync(type)
+
+        type.contextReceiverList?.let { functionTypeContextReceiverList ->
+            handleContextReceiverList(functionTypeContextReceiverList)
+            builder.space()
+        }
+
         val receiver = type.receiver
         if (receiver != null) {
             visit(receiver)
@@ -2390,7 +2571,8 @@ class KotlinInputAstVisitor(
         visit(expression.leftHandSide)
         if (!openGroupBeforeLeft) builder.open(ZERO)
         val parent = expression.parent
-        if (parent is KtValueArgument ||
+        if (
+            parent is KtValueArgument ||
             parent is KtParenthesizedExpression ||
             parent is KtContainerNode
         ) {
@@ -2434,7 +2616,7 @@ class KotlinInputAstVisitor(
                 expression.trailingComma != null,
                 prefix = "[",
                 postfix = "]",
-                wrapInBlock = !isGoogleStyle
+                wrapInBlock = !options.manageTrailingCommas,
             )
         }
     }
@@ -2490,9 +2672,9 @@ class KotlinInputAstVisitor(
             visit(enumEntry.modifierList)
             builder.token(enumEntry.nameIdentifier?.text ?: fail())
             enumEntry.initializerList?.initializers?.forEach { visit(it) }
-            enumEntry.body?.let {
+            enumEntry.body?.let { enumBody ->
                 builder.space()
-                visit(it)
+                visit(enumBody)
             }
         }
     }
@@ -2580,8 +2762,8 @@ class KotlinInputAstVisitor(
                 builder.blankLineWanted(OpsBuilder.BlankLineWanted.PRESERVE)
             } else if (lastChildIsContextReceiver) {
                 builder.blankLineWanted(OpsBuilder.BlankLineWanted.NO)
-            } else if (child !is PsiComment &&
-                (childGetsBlankLineBefore || lastChildHadBlankLineBefore)
+            } else if (
+                child !is PsiComment && (childGetsBlankLineBefore || lastChildHadBlankLineBefore)
             ) {
                 builder.blankLineWanted(OpsBuilder.BlankLineWanted.YES)
             }
@@ -2620,7 +2802,7 @@ class KotlinInputAstVisitor(
             token,
             Doc.Token.RealOrImaginary.REAL,
             plusIndentCommentsBefore,
-            /* breakAndIndentTrailingComment */ Optional.empty()
+            /* breakAndIndentTrailingComment */ Optional.empty(),
         )
     }
 
@@ -2633,7 +2815,11 @@ class KotlinInputAstVisitor(
      * @param plusIndent the block level to pass to the block
      * @param block a code block to be run in this block level
      */
-    private fun OpsBuilder.block(plusIndent: Indent, isEnabled: Boolean = true, block: () -> Unit) {
+    private fun OpsBuilder.block(
+        plusIndent: Indent = ZERO,
+        isEnabled: Boolean = true,
+        block: () -> Unit,
+    ) {
         if (isEnabled) {
             open(plusIndent)
         }
@@ -2648,7 +2834,7 @@ class KotlinInputAstVisitor(
         sync(psiElement.startOffset)
     }
 
-    /** Prevent susequent comments from being moved ahead of this point, into parent [Level]s. */
+    /** Prevent subsequent comments from being moved ahead of this point, into parent [Level]s. */
     private fun OpsBuilder.fenceComments() {
         addAll(FenceCommentsOp.AS_LIST)
     }
@@ -2668,8 +2854,17 @@ class KotlinInputAstVisitor(
         element?.accept(this)
     }
 
-    /** Emits a key word followed by a condition, e.g. `if (b)` or `while (c < d )` */
-    private fun emitKeywordWithCondition(keyword: String, condition: KtExpression?) {
+    /**
+     * Emits a key word followed by a condition, e.g. `if (b)` or `while (c < d )`
+     *
+     * @param surroundConditionWithParens a flag to control whether parens surrounds the condition.
+     *   For example, guard conditions do not use parens.
+     */
+    private fun emitKeywordWithCondition(
+        keyword: String,
+        condition: KtExpression?,
+        surroundConditionWithParens: Boolean = true,
+    ) {
         if (condition == null) {
             builder.token(keyword)
             return
@@ -2678,8 +2873,10 @@ class KotlinInputAstVisitor(
         builder.block(ZERO) {
             builder.token(keyword)
             builder.space()
-            builder.token("(")
-            if (isGoogleStyle) {
+            if (surroundConditionWithParens) {
+                builder.token("(")
+            }
+            if (options.manageTrailingCommas) {
                 builder.block(expressionBreakIndent) {
                     builder.breakOp(Doc.FillMode.UNIFIED, "", ZERO)
                     visit(condition)
@@ -2689,6 +2886,8 @@ class KotlinInputAstVisitor(
                 builder.block(ZERO) { visit(condition) }
             }
         }
-        builder.token(")")
+        if (surroundConditionWithParens) {
+            builder.token(")")
+    }
     }
 }

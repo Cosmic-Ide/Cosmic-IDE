@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
+    implementation("com.github.PranavPurwar:kotlinc-android:8a8572b26b")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("io.github.rosemoe:editor:0.24.6")
     implementation("com.google.guava:guava:33.6.0-android")

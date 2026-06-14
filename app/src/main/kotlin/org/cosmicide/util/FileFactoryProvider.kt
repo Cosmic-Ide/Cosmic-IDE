@@ -16,6 +16,7 @@ import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.LightVirtualFile
 import org.cosmicide.common.Prefs
+import org.cosmicide.completion.java.parser.CompletionProvider
 import org.jetbrains.kotlin.K1Deprecation
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
@@ -77,7 +78,7 @@ object FileFactoryProvider {
     init {
         setIdeaIoUseFallback()
         setupIdeaStandaloneExecution()
-//        CompletionProvider.registerExtensions(env.project.extensionArea)
+        CompletionProvider.registerExtensions(env.project.extensionArea)
     }
 
     fun getPsiJavaFile(fileName: String, code: String): PsiJavaFile {

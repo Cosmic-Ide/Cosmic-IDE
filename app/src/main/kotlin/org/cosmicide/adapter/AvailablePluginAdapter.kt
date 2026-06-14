@@ -76,7 +76,7 @@ class AvailablePluginAdapter(private val listener: OnPluginEventListener) :
      * @param itemBinding The [NewPluginItemBinding] object for the item view.
      * @param listener The [OnPluginEventListener] for handling user interactions with the item view.
      */
-    inner class ViewHolder(
+    class ViewHolder(
         itemBinding: NewPluginItemBinding,
         private val listener: OnPluginEventListener
     ) : BindableViewHolder<Plugin, NewPluginItemBinding>(itemBinding) {

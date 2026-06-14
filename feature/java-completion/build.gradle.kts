@@ -41,11 +41,12 @@ android {
     }
 }
 dependencies {
-    implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
+    implementation("com.github.PranavPurwar:kotlinc-android:8a8572b26b")
     implementation("com.github.javaparser:javaparser-core:3.28.2")
     implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.9") {
         exclude(group = "com.google.guava", module = "guava")
     }
+    implementation("org.jetbrains:annotations:26.1.0")
     implementation("org.javassist:javassist:3.30.2-GA")
     implementation("com.github.PranavPurwar:javac-android:27.23")
     implementation(projects.feature.project)

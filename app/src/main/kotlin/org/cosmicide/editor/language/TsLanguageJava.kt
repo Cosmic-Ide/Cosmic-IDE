@@ -18,7 +18,6 @@ import io.github.rosemoe.sora.editor.ts.TsAnalyzeManager
 import io.github.rosemoe.sora.editor.ts.TsLanguage
 import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
 import io.github.rosemoe.sora.editor.ts.TsThemeBuilder
-import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.text.CharPosition
@@ -28,7 +27,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.common.Prefs
-import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.editor.EditorCompletionItem
 import org.cosmicide.project.Project
 import java.io.File
@@ -43,7 +41,7 @@ class TsLanguageJava(
     val file: File
 ) : TsLanguage(languageSpec, Prefs.useSpaces.not(), themeDescription) {
 
-    private lateinit var completionProvider: CompletionProvider
+//    private lateinit var completionProvider: CompletionProvider
 
     private lateinit var completions: JavaCompletions
     private val path = file.toPath()
@@ -51,7 +49,7 @@ class TsLanguageJava(
     init {
         if (Prefs.experimentalJavaCompletion) {
             CoroutineScope(Dispatchers.IO).launch {
-                completionProvider = CompletionProvider()
+//                completionProvider = CompletionProvider()
             }
         } else {
             completions = JavaCompletions()
@@ -97,20 +95,20 @@ class TsLanguageJava(
 
             val text = editor.text.toString()
 
-            if (Prefs.experimentalJavaCompletion) {
-                val items = completionProvider.complete(text, file.name, position.index)
-                publisher.setComparator(Comparator<CompletionItem> { o1, o2 ->
-                    // if the first letter of the label is lowercase, then its most likely a module/package
-                    if (o1.label[0].isLowerCase() && o2.label[0].isUpperCase()) {
-                        return@Comparator -1
-                    } else if (o1.label[0].isUpperCase() && o2.label[0].isLowerCase()) {
-                        return@Comparator 1
-                    }
-                    return@Comparator o1.label.toString().compareTo(o2.label.toString())
-                })
-                publisher.addItems(items)
-                return
-            }
+//            if (Prefs.experimentalJavaCompletion) {
+//                val items = completionProvider.complete(text, file.name, position.index)
+//                publisher.setComparator(Comparator<CompletionItem> { o1, o2 ->
+//                    // if the first letter of the label is lowercase, then its most likely a module/package
+//                    if (o1.label[0].isLowerCase() && o2.label[0].isUpperCase()) {
+//                        return@Comparator -1
+//                    } else if (o1.label[0].isUpperCase() && o2.label[0].isLowerCase()) {
+//                        return@Comparator 1
+//                    }
+//                    return@Comparator o1.label.toString().compareTo(o2.label.toString())
+//                })
+//                publisher.addItems(items)
+//                return
+//            }
             completions.updateFileContent(path, text)
             val result = completions.getCompletions(path, position.line, position.column)
             result.completionCandidates.forEach { candidate ->

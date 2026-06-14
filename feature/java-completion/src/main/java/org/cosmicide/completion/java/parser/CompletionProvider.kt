@@ -14,8 +14,7 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.extensions.ExtensionPoint
-import com.intellij.openapi.extensions.Extensions
-import com.intellij.openapi.extensions.impl.ExtensionsAreaImpl
+import com.intellij.openapi.extensions.ExtensionsArea
 import com.intellij.openapi.vfs.impl.VirtualFileManagerImpl
 import com.intellij.psi.JavaTokenType
 import com.intellij.psi.PsiClass
@@ -32,7 +31,7 @@ import com.intellij.psi.PsiImportStaticStatement
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiJavaToken
 import com.intellij.psi.PsiReferenceExpression
-import com.intellij.psi.PsiType
+import com.intellij.psi.PsiTypes
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.augment.PsiAugmentProvider
 import com.intellij.psi.codeStyle.CodeStyleManager
@@ -48,6 +47,7 @@ import org.cosmicide.editor.EditorCompletionItem
 import org.cosmicide.rewrite.util.FileUtil
 import org.jetbrains.kotlin.K1Deprecation
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
+import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.cli.jvm.compiler.setupIdeaStandaloneExecution
 import org.jetbrains.kotlin.config.ApiVersion
@@ -63,10 +63,10 @@ import java.util.logging.Logger
 class CompletionProvider {
 
     companion object {
-        val logger: Logger = Logger.getLogger(CompletionProvider::javaClass.name)
+        val logger: Logger = Logger.getLogger(CompletionProvider::class.java.name)
 
         @OptIn(K1Deprecation::class, CompilerConfiguration.Internals::class)
-        val environment = KotlinCoreEnvironment.createProjectEnvironmentForTests(
+        val environment = KotlinCoreEnvironment.createForProduction(
             {},
             CompilerConfiguration().apply {
                 put(JVMConfigurationKeys.NO_JDK, true)
@@ -90,7 +90,9 @@ class CompletionProvider {
                         langFeatures
                     )
                 )
-            })
+            },
+            configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES
+        )
 //            JavaCoreProjectEnvironment({ logger.info("JavaCoreProjectEnvironment disposed") },
 //                JavaCoreApplicationEnvironment { logger.info("JavaCoreApplicationEnvironment disposed") })
 
@@ -161,7 +163,7 @@ class CompletionProvider {
         )
 
         @Suppress("DEPRECATION")
-        fun registerExtensions(extensionArea: ExtensionsAreaImpl) {
+        fun registerExtensions(extensionArea: ExtensionsArea) {
             if (!extensionArea.hasExtensionPoint("com.intellij.virtualFileManagerListener")) {
                 extensionArea.registerExtensionPoint(
                     "com.intellij.virtualFileManagerListener",
@@ -169,44 +171,43 @@ class CompletionProvider {
                     ExtensionPoint.Kind.INTERFACE
                 )
             }
-            if (extensionArea.hasExtensionPoint("com.intellij.java.elementFinder").not()) {
+            if (!extensionArea.hasExtensionPoint("com.intellij.java.elementFinder")) {
                 extensionArea.registerExtensionPoint(
                     "com.intellij.java.elementFinder",
                     PsiElementFinder::class.java.name,
                     ExtensionPoint.Kind.INTERFACE
                 )
             }
-            val rootArea = Extensions.getRootArea()
-            if (rootArea.hasExtensionPoint("com.intellij.treeCopyHandler").not()) {
-                rootArea.registerExtensionPoint(
+            if (!extensionArea.hasExtensionPoint("com.intellij.treeCopyHandler")) {
+                extensionArea.registerExtensionPoint(
                     "com.intellij.treeCopyHandler",
                     TreeCopyHandler::class.java.name,
                     ExtensionPoint.Kind.INTERFACE
                 )
             }
-            if (rootArea.hasExtensionPoint("com.intellij.codeStyleManager").not()) {
-                rootArea.registerExtensionPoint(
+            if (!extensionArea.hasExtensionPoint("com.intellij.codeStyleManager")) {
+                extensionArea.registerExtensionPoint(
                     "com.intellij.codeStyleManager",
                     CodeStyleManager::class.java.name,
                     ExtensionPoint.Kind.INTERFACE
                 )
             }
-            if (rootArea.hasExtensionPoint("com.intellij.psiElementFactory").not()) {
-                rootArea.registerExtensionPoint(
+            if (!extensionArea.hasExtensionPoint("com.intellij.psiElementFactory")) {
+                extensionArea.registerExtensionPoint(
                     "com.intellij.psiElementFactory",
                     PsiElementFactory::class.java.name,
                     ExtensionPoint.Kind.INTERFACE
                 )
             }
-            if (rootArea.hasExtensionPoint("com.intellij.lang.psiAugmentProvider").not()) {
-                rootArea.registerExtensionPoint(
+            if (!extensionArea.hasExtensionPoint("com.intellij.lang.psiAugmentProvider")) {
+                extensionArea.registerExtensionPoint(
                     "com.intellij.lang.psiAugmentProvider",
                     PsiAugmentProvider::class.java.name,
                     ExtensionPoint.Kind.INTERFACE
                 )
             }
-            if (rootArea.hasExtensionPoint("com.intellij.psiElementFinder").not()) {
-                rootArea.registerExtensionPoint(
+            if (!extensionArea.hasExtensionPoint("com.intellij.psiElementFinder")) {
+                extensionArea.registerExtensionPoint(
                     "com.intellij.psiElementFinder",
                     PsiElementFinder::class.java.name,
                     ExtensionPoint.Kind.INTERFACE
@@ -218,11 +219,11 @@ class CompletionProvider {
     init {
         setIdeaIoUseFallback()
         setupIdeaStandaloneExecution()
-//        registerExtensions(environment.project.extensionArea)
+        registerExtensions(environment.project.extensionArea)
     }
 
     fun complete(source: String?, fileName: String?, index: Int): List<EditorCompletionItem> {
-        environment.addJarToClassPath(FileUtil.classpathDir.resolve("android.jar"))
+//        environment.addJarToClassPath(FileUtil.classpathDir.resolve("android.jar"))
         val psiFile = fileFactory.createFileFromText(
             fileName!!,
             JavaLanguage.INSTANCE,
@@ -294,7 +295,7 @@ class CompletionProvider {
             val qualifier = referenceExpr.qualifierExpression
             if (qualifier != null) {
                 val resolvedType = qualifier.type
-                if (resolvedType != null && resolvedType != PsiType.NULL && resolvedType.getCanonicalText() != "null") {
+                if (resolvedType != null && resolvedType != PsiTypes.nullType() && resolvedType.getCanonicalText() != "null") {
                     // Instance variable completion (e.g., target.)
                     val ctClass = symbolCacher.getClass(resolvedType.getCanonicalText())
                     if (ctClass != null) {

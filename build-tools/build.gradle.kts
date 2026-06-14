@@ -47,7 +47,10 @@ dependencies {
     implementation(projects.feature.project)
     implementation(projects.util)
     implementation(projects.feature.javaCompletion)
-    implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
+    implementation("com.github.PranavPurwar:kotlinc-android:8a8572b26b")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:2.4.0") {
+        exclude(group = "org.jline", module = "jline")
+    }
     implementation("io.github.rosemoe:editor:0.24.6")
     implementation("com.github.PranavPurwar:javac-android:27.23")
     implementation("com.google.guava:guava:33.6.0-android")

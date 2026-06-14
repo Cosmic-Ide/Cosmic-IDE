@@ -29,5 +29,5 @@ android {
 }
 
 dependencies {
-    implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
+    implementation("com.github.PranavPurwar:kotlinc-android:8a8572b26b")
 }

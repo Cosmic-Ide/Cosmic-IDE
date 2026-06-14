@@ -30,7 +30,7 @@ android {
 
 dependencies {
     implementation(projects.feature.formatter.googleJavaFormat)
-    implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
+    implementation("com.github.PranavPurwar:kotlinc-android:8a8572b26b")
     implementation("com.google.guava:guava:33.6.0-android")
     implementation("org.ec4j.core:ec4j-core:1.2.0")
 }

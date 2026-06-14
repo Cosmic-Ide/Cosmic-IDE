@@ -7,8 +7,8 @@
 
 package org.cosmicide.rewrite.plugin.api
 
-import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
+import top.canyie.pine.Pine
 
 /**
  * A hook that can be registered with the HookManager.
@@ -41,6 +41,6 @@ open class Hook(
         )
     )
 
-    open fun before(param: MethodHookParam) = run {}
-    open fun after(param: MethodHookParam) = run {}
+    open fun before(param: Pine.CallFrame) = run {}
+    open fun after(param: Pine.CallFrame) = run {}
 }

@@ -172,7 +172,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.13.0")
     implementation("androidx.startup:startup-runtime:1.2.0")
 
-    implementation(platform("io.github.rosemoe:editor-bom:0.24.5"))
+    implementation(platform("io.github.rosemoe:editor-bom:0.24.6"))
     implementation("io.github.rosemoe:editor")
     implementation("io.github.rosemoe:language-treesitter")
     implementation("io.github.rosemoe:language-textmate")
@@ -191,7 +191,7 @@ dependencies {
     implementation("io.noties.markwon:html:$markwonVersion")
     implementation("io.noties.markwon:linkify:$markwonVersion")
 
-    implementation("com.aliucord:Aliuhook:1.1.4")
+    implementation("top.canyie.pine:core:0.3.0")
     implementation("de.maxr1998:modernandroidpreferences:2.4.0-beta2")
 
     implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
@@ -205,7 +205,7 @@ dependencies {
     // Add this line if you want to support Shizuku
     implementation("dev.rikka.shizuku:provider:$shizukuVersion")
 
-    implementation("com.squareup.okhttp3:okhttp:5.3.2")
+    implementation("com.squareup.okhttp3:okhttp:5.4.0")
 
     implementation(projects.buildTools)
     implementation(projects.common)

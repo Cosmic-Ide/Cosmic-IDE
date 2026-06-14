@@ -8,8 +8,8 @@
 package org.cosmicide.rewrite.plugin.api
 
 import android.content.Context
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge
+import top.canyie.pine.Pine
+import top.canyie.pine.callback.MethodHook
 import java.lang.ref.WeakReference
 import java.lang.reflect.Member
 
@@ -20,38 +20,27 @@ object HookManager {
 
     @JvmStatic
     fun registerHook(hook: Hook) =
-        XposedBridge.hookMethod(
+        Pine.hook(
             hook.type.getDeclaredMethod(hook.method, *hook.argTypes),
-            object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    hook.before(param)
+            object : MethodHook() {
+                override fun beforeCall(callFrame: Pine.CallFrame) {
+                    hook.before(callFrame)
                 }
 
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    hook.after(param)
+                override fun afterCall(callFrame: Pine.CallFrame) {
+                    hook.after(callFrame)
                 }
-            })
+            }
+        )
 
     @JvmStatic
     fun invokeOriginal(method: Member, obj: Any?, vararg args: Any) =
-        XposedBridge.invokeOriginalMethod(method, obj, args)
+        Pine.invokeOriginalMethod(method, obj, *args)
 
     @JvmStatic
-    fun isHooked(method: Member) = XposedBridge.isHooked(method)
+    fun isHooked(method: Member) = Pine.isHooked(method)
 
-    @JvmStatic
-    fun hookAllConstructors(clazz: Class<*>, callback: XC_MethodHook) =
-        XposedBridge.hookAllConstructors(clazz, callback)
+    fun disableHiddenApiRestrictions() = Pine.disableHiddenApiPolicy(true, true)
 
-    @JvmStatic
-    fun hookAllMethods(clazz: Class<*>, methodName: String, callback: XC_MethodHook) =
-        XposedBridge.hookAllMethods(clazz, methodName, callback)
-
-    fun deoptimizeMethod(member: Member) = XposedBridge.deoptimizeMethod(member)
-
-    fun disableHiddenApiRestrictions() = XposedBridge.disableHiddenApiRestrictions()
-
-    fun disableProfileSaver() = XposedBridge.disableProfileSaver()
-
-    fun makeClassInheritable(clazz: Class<*>) = XposedBridge.makeClassInheritable(clazz)
+    fun disableProfileSaver() = Pine.disableProfileSaver()
 }

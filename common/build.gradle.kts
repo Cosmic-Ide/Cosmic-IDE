@@ -54,7 +54,7 @@ dependencies {
 
     implementation("com.google.android.material:material:1.14.0")
 
-    api("io.github.rosemoe:editor:0.24.5")
-    api("io.github.rosemoe:language-treesitter:0.24.5")
-    api("io.github.rosemoe:language-textmate:0.24.5")
+    api("io.github.rosemoe:editor:0.24.6")
+    api("io.github.rosemoe:language-treesitter:0.24.6")
+    api("io.github.rosemoe:language-textmate:0.24.6")
 }

@@ -13,6 +13,7 @@ import android.app.UiModeManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
@@ -21,11 +22,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.sun.tools.javac.ConfigProvider
-import de.robv.android.xposed.XC_MethodHook
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
 import org.cosmicide.fragment.PluginsFragment
@@ -34,10 +36,9 @@ import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.FileUtil
 import org.lsposed.hiddenapibypass.HiddenApiBypass
-import rikka.sui.Sui
+import top.canyie.pine.Pine
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.InputStream
 import java.lang.ref.WeakReference
 import java.math.BigInteger
@@ -221,7 +222,7 @@ class App : Application() {
                 argTypes = arrayOf(Int::class.java),
                 type = System::class.java
             ) {
-                override fun before(param: XC_MethodHook.MethodHookParam) {
+                override fun before(param: Pine.CallFrame) {
                     System.err.println("System.exit() called!")
                     // Setting result to null bypasses the original method call.
                     param.result = null
@@ -237,14 +238,13 @@ class App : Application() {
                 ),
                 type = LinearLayoutManager::class.java
             ) {
-                override fun before(param: XC_MethodHook.MethodHookParam) {
+                override fun before(param: Pine.CallFrame) {
                     try {
                         // Call the original method.
                         HookManager.invokeOriginal(
                             param.method,
                             param.thisObject,
-                            param.args[0],
-                            param.args[1]
+                            *param.args
                         )
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -267,7 +267,7 @@ class App : Application() {
             argTypes = arrayOf(String::class.java),
             type = Logger::class.java
         ) {
-            override fun before(param: XC_MethodHook.MethodHookParam) {
+            override fun before(param: Pine.CallFrame) {
                 println(param.args[0])
             }
         })

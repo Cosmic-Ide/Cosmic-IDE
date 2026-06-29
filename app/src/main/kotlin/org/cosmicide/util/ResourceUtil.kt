@@ -7,7 +7,9 @@
 
 package org.cosmicide.util
 
+import org.cosmicide.App
 import org.cosmicide.rewrite.util.FileUtil
+import java.io.File
 
 object ResourceUtil {
 
@@ -19,9 +21,37 @@ object ResourceUtil {
         for (resource in resources) {
             val file = FileUtil.dataDir.resolve(resource)
             if (!file.exists()) {
-                missing.add(resource)
+                if (!App.instance.get()!!.filesDir.resolve(resource).exists())
+                    missing.add(resource)
             }
         }
         return missing
+    }
+
+    fun isJdkMissing(): Boolean {
+        val context = App.instance.get()
+        return context!!.jdks().isEmpty()
+    }
+
+    fun isKotlinMissing(): Boolean {
+        val kotlinTargetDir = File(FileUtil.dataDir, "kotlinc")
+        return !kotlinTargetDir.exists() || kotlinTargetDir.listFiles()?.isEmpty() == true
+    }
+
+    fun isJdtlsMissing(): Boolean {
+        val context = App.instance.get() ?: return true
+        val jdtlsTargetDir = File(context.filesDir, "jdtls")
+        return !jdtlsTargetDir.exists() || jdtlsTargetDir.listFiles()?.isEmpty() == true
+    }
+
+    /**
+     * Determines whether any essential item (standard resource or toolchain component)
+     * is missing, signifying that setup is required.
+     */
+    fun isEnvironmentIncomplete(): Boolean {
+        return missingResources().isNotEmpty() ||
+                isJdkMissing() ||
+                isKotlinMissing() ||
+                isJdtlsMissing()
     }
 }

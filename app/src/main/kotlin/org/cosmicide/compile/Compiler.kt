@@ -60,7 +60,7 @@ class Compiler(
     fun compile(release: Boolean = false) {
         compileKotlinCode()
         compileJavaCode()
-        convertClassFilesToDexFormat()
+//        convertClassFilesToDexFormat()
         if (release) {
             compileJar()
         }

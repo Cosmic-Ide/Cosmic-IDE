@@ -36,7 +36,6 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.BuildConfig
 import org.cosmicide.R
 import org.cosmicide.extension.copyToClipboard
-import org.cosmicide.fragment.InstallResourcesFragment
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
@@ -232,9 +231,9 @@ class AboutSettings(private val activity: FragmentActivity) : SettingsProvider {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(activity, "Cache cleared", Toast.LENGTH_LONG).show()
 
-                            activity.supportFragmentManager.commit {
-                                replace(R.id.fragment_container, InstallResourcesFragment())
-                            }
+//                            activity.supportFragmentManager.commit {
+//                                replace(R.id.fragment_container, InstallResourcesFragment())
+//                            }
                         }
                     }
                     true

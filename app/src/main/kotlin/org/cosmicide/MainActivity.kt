@@ -9,27 +9,25 @@ package org.cosmicide
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.color.DynamicColors
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import kotlinx.coroutines.launch
-import org.cosmicide.common.Prefs
 import org.cosmicide.databinding.ActivityMainBinding
-import org.cosmicide.fragment.InstallResourcesFragment
-import org.cosmicide.fragment.ProjectFragment
+import org.cosmicide.ui.IDENavigation
+import org.cosmicide.ui.editor.resolveTheme
+import org.cosmicide.ui.theme.IDETheme
 import org.cosmicide.util.CommonUtils
 import org.cosmicide.util.MaterialEditorTheme
-import org.cosmicide.util.ResourceUtil
 import org.cosmicide.util.awaitBinderReceived
 import org.cosmicide.util.isShizukuInstalled
 import org.eclipse.tm4e.core.registry.IThemeSource
@@ -50,35 +48,44 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         enableEdgeToEdge()
-        loadEditorThemes()
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
-            val imeInset =
-                ViewCompat.getRootWindowInsets(view)!!.getInsets(WindowInsetsCompat.Type.ime())
+        System.loadLibrary("android-tree-sitter")
 
-            val systemBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+//            val imeInset =
+//                ViewCompat.getRootWindowInsets(view)!!.getInsets(WindowInsetsCompat.Type.ime())
+//
+//            val systemBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+//
+//            view.setPadding(
+//                systemBarInsets.left,
+//                systemBarInsets.top,
+//                systemBarInsets.right,
+//                if (imeInset.bottom > 0) 0 else systemBarInsets.bottom
+//            )
+//
+//            WindowInsetsCompat.CONSUMED
+//        }
 
-            view.setPadding(
-                systemBarInsets.left,
-                systemBarInsets.top,
-                systemBarInsets.right,
-                if (imeInset.bottom > 0) 0 else systemBarInsets.bottom
-            )
+        //setContentView(binding.root)
 
-            WindowInsetsCompat.CONSUMED
+        setContent {
+            IDETheme {
+                loadEditorThemes(MaterialTheme.colorScheme)
+
+                IDENavigation()
+            }
         }
 
-        setContentView(binding.root)
-
-        if (ResourceUtil.missingResources().isNotEmpty()) {
-            supportFragmentManager.commit {
-                replace(binding.fragmentContainer.id, InstallResourcesFragment())
-            }
-        } else {
-            supportFragmentManager.commit {
-                replace(binding.fragmentContainer.id, ProjectFragment())
-            }
-        }
+//        if (ResourceUtil.missingResources().isNotEmpty()) {
+//            supportFragmentManager.commit {
+//                replace(binding.fragmentContainer.id, InstallResourcesFragment())
+//            }
+//        } else {
+//            supportFragmentManager.commit {
+//                replace(binding.fragmentContainer.id, ProjectFragment())
+//            }
+//        }
 
         Shizuku.addRequestPermissionResultListener(listener)
 
@@ -114,21 +121,40 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadEditorThemes() {
+    private fun loadEditorThemes(colorScheme: ColorScheme) {
+        val themes = arrayOf("darcula.json", "QuietLight.tmTheme.json")
         val themeRegistry = ThemeRegistry.getInstance()
-        themeRegistry.loadTheme(loadTheme("darcula.json", "darcula"))
-        themeRegistry.loadTheme(loadTheme("QuietLight.tmTheme.json", "QuietLight"))
 
-        App.instance.get()!!.applyThemeBasedOnConfiguration()
+        themes.forEach { name ->
+            themeRegistry.loadTheme(
+                ThemeModel(
+                    IThemeSource.fromInputStream(
+                        resolveTheme(this, colorScheme, name), name, null
+                    ), name.substringBefore('.')
+                ).apply {
+                    isDark = name.substringBefore('.') == "darcula"
+                }
+            )
+        }
+
+        applyThemeBasedOnConfiguration()
     }
 
-
-    private fun loadTheme(fileName: String, themeName: String): ThemeModel {
-        val inputStream =
-            MaterialEditorTheme.resolveTheme(this, fileName)
-        val source = IThemeSource.fromInputStream(inputStream, fileName, null)
-        return ThemeModel(source, themeName)
+    fun Context.applyThemeBasedOnConfiguration() {
+        val themeName =
+            when (AppCompatDelegate.getDefaultNightMode()) {
+                AppCompatDelegate.MODE_NIGHT_YES -> "darcula"
+                AppCompatDelegate.MODE_NIGHT_NO -> "light"
+                else -> {
+                    when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                        Configuration.UI_MODE_NIGHT_YES -> "darcula"
+                        else -> "light"
+                    }
+                }
+            }
+        ThemeRegistry.getInstance().setTheme(themeName)
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

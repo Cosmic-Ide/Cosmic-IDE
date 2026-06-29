@@ -9,7 +9,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlinx.serialization)
+
 }
 
 java {
@@ -26,4 +28,5 @@ kotlin {
 dependencies {
     implementation("com.squareup:javapoet:1.13.0")
     implementation("com.squareup:kotlinpoet:2.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 }

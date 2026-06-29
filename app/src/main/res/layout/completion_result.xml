@@ -10,19 +10,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:padding="4dp">
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="12dp"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/result_item_icon"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:padding="4dp"
         android:contentDescription="@string/completion_type"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        tools:src="@android:drawable/ic_menu_edit" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8sp"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
         android:orientation="vertical">
 
         <TextView
@@ -31,8 +36,10 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_medium"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            tools:text="Completion result title" />
+            android:ellipsize="end"
+            android:textSize="15sp"
+            android:textColor="?attr/colorOnSurface"
+            tools:text="myMethod" />
 
         <TextView
             android:id="@+id/result_item_desc"
@@ -40,9 +47,22 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/noto_sans_mono"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:ellipsize="end"
+            android:textSize="12sp"
             android:textColor="?attr/colorOnSurfaceVariant"
-            tools:text="Identifier" />
+            tools:text="MyClass" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/result_item_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:fontFamily="@font/noto_sans_mono"
+        tools:text="void" />
 
 </LinearLayout>

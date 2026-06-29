@@ -25,7 +25,9 @@ import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -33,6 +35,8 @@ import com.google.android.material.snackbar.Snackbar
 import dev.pranav.jgit.tasks.Credentials
 import dev.pranav.jgit.tasks.cloneRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.observeOn
+import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.R
@@ -230,13 +234,17 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
     }
 
     private fun observeViewModelProjects() {
-        viewModel.projects.observe(viewLifecycleOwner) { projects ->
-            projectAdapter.submitList(projects)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.projects.collect { projects ->
+                    projectAdapter.submitList(projects)
 
-            if (projects.isEmpty() && binding.switcher.currentView != binding.noProjects) {
-                binding.switcher.showNext()
-            } else if (projects.isNotEmpty() && binding.switcher.currentView != binding.projectList) {
-                binding.switcher.showPrevious()
+                    if (projects.isEmpty() && binding.switcher.currentView != binding.noProjects) {
+                        binding.switcher.showNext()
+                    } else if (projects.isNotEmpty() && binding.switcher.currentView != binding.projectList) {
+                        binding.switcher.showPrevious()
+                    }
+                }
             }
         }
     }

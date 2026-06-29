@@ -6,8 +6,9 @@
  */
 
 plugins {
-    id("com.android.application")
-//    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -73,7 +74,6 @@ android {
 
     configurations.all {
         resolutionStrategy.force("com.squareup.okhttp3:okhttp:4.12.0")
-        resolutionStrategy.force("androidx.window:window:1.0.0-alpha09")
     }
 
     packaging {
@@ -106,7 +106,7 @@ android {
     }
     buildFeatures {
         buildConfig = true
-//        compose = true
+        compose = true
     }
 
     flavorDimensions += "environment"
@@ -165,8 +165,8 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("androidx.documentfile:documentfile:1.1.0")
     implementation("androidx.fragment:fragment-ktx:1.8.9")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.activity:activity-ktx:1.13.0")
@@ -176,6 +176,10 @@ dependencies {
     implementation("io.github.rosemoe:editor")
     implementation("io.github.rosemoe:language-treesitter")
     implementation("io.github.rosemoe:language-textmate")
+    implementation("io.github.rosemoe:editor-lsp")
+
+    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0")
+
     implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.2")
     implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.3.2")
     implementation("com.itsaky.androidide.treesitter:tree-sitter-kotlin:4.3.2")
@@ -191,10 +195,11 @@ dependencies {
     implementation("io.noties.markwon:html:$markwonVersion")
     implementation("io.noties.markwon:linkify:$markwonVersion")
 
+    //noinspection Aligned16KB
     implementation("top.canyie.pine:core:0.3.0")
     implementation("de.maxr1998:modernandroidpreferences:2.4.0-beta2")
 
-    implementation("com.github.PranavPurwar:kotlinc-android:2.4.0")
+    implementation("com.github.PranavPurwar:kotlinc-android:8a8572b26b")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
@@ -217,15 +222,30 @@ dependencies {
     implementation(projects.feature.project)
     implementation(projects.feature.codeNavigation)
     implementation(projects.feature.genai)
+    implementation(projects.feature.sdkManager)
     implementation(projects.util)
     implementation(projects.jgit)
     implementation(projects.feature.treeView)
+    implementation(projects.exec)
 
-//    implementation(platform("androidx.compose:compose-bom:2026.05.01"))
+    implementation(platform("androidx.compose:compose-bom:2026.06.00"))
 
-//    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.5.0-alpha22")
+    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
+    implementation("androidx.compose.material:material-icons-core:1.7.8")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("androidx.compose.material3.adaptive:adaptive-navigation:1.3.0-rc01")
+    implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha04")
+    implementation("androidx.navigation3:navigation3-ui:1.2.0-alpha04")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.11.0")
 
-//    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("me.saket.cascade:cascade-compose:2.3.0")
+
+    implementation("io.ktor:ktor-client-core:3.5.1")
+    implementation("io.ktor:ktor-client-content-negotiation:3.5.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.1")
+    implementation("io.ktor:ktor-client-cio:3.5.1")
 
     // jgit uses some methods like `transferTo` are only available from Android 13 onwards
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")

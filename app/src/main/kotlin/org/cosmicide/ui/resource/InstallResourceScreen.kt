@@ -1,0 +1,325 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package org.cosmicide.ui.resource
+
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.Download
+import org.cosmicide.util.ResourceUtil
+import java.io.File
+import java.io.InputStream
+import java.util.Locale
+import java.util.zip.GZIPInputStream
+import java.util.zip.ZipInputStream
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InstallResourcesScreen(
+    onMoveToJdkManager: () -> Unit
+) {
+    val client = remember { HttpClient(CIO) }
+    val scope = rememberCoroutineScope()
+
+    val rawUrl = "https://github.com/Cosmic-Ide/binaries/raw/main/"
+    val kotlinUrl =
+        "https://github.com/JetBrains/kotlin/releases/download/v2.4.0/kotlin-compiler-2.4.0.zip"
+    val jdtlsUrl =
+        "https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz"
+    val kotlinLspUrl = "https://github.com/fwcd/kotlin-language-server/releases/download/1.3.13/server.zip"
+
+    var isRunning by remember { mutableStateOf(false) }
+    var statusText by remember { mutableStateOf("Ready to configure environment assets.") }
+    var progressDetailsText by remember { mutableStateOf("Foundational resources will be deployed.") }
+    var currentProgress by remember { mutableFloatStateOf(0f) }
+
+    val context = LocalContext.current
+
+    val onProgressUpdate: (Long, Long) -> Unit = { downloaded, total ->
+        val downloadedMB = downloaded / (1024f * 1024f)
+        if (total > 0) {
+            currentProgress = downloaded.toFloat() / total
+            val totalMB = total / (1024f * 1024f)
+            val percent = ((downloaded * 100) / total).toInt()
+            progressDetailsText = String.format(
+                Locale.getDefault(), "%.1f MB / %.1f MB (%d%%)", downloadedMB, totalMB, percent
+            )
+        } else {
+            currentProgress = -1f
+            progressDetailsText =
+                String.format(Locale.getDefault(), "%.1f MB downloaded", downloadedMB)
+        }
+    }
+
+    val runSetupChain = {
+        isRunning = true
+        scope.launch {
+            val missingResources = withContext(Dispatchers.IO) { ResourceUtil.missingResources() }
+            if (missingResources.isNotEmpty()) {
+                statusText = "Downloading Core Internal Resources..."
+                for (res in missingResources) {
+                    val success = installResource(
+                        client,
+                        rawUrl + res.substringAfterLast('/'),
+                        File(FileUtil.dataDir, res),
+                        onProgressUpdate
+                    )
+                    if (!success) {
+                        statusText = "Failed to sync core internal resources."
+                        isRunning = false
+                        return@launch
+                    }
+                }
+            }
+
+            val kotlinTargetDir = File(FileUtil.dataDir, "kotlinc")
+            if (!kotlinTargetDir.exists() || kotlinTargetDir.listFiles()?.isEmpty() == true) {
+                statusText = "Downloading Kotlin Compiler..."
+                val kotlinArchiveFile = File(FileUtil.dataDir, "kotlin_compiler.zip")
+
+                val downloadSuccess =
+                    installResource(client, kotlinUrl, kotlinArchiveFile, onProgressUpdate)
+                if (!downloadSuccess) {
+                    statusText = "Network failure downloading Kotlin Compiler."
+                    isRunning = false
+                    return@launch
+                }
+
+                statusText = "Extracting Kotlin Compiler package..."
+                currentProgress = -1f
+                progressDetailsText = "Expanding archive structures onto local storage..."
+                val extractionSuccess =
+                    withContext(Dispatchers.IO) { extractZip(kotlinArchiveFile, FileUtil.dataDir) }
+                if (kotlinArchiveFile.exists()) kotlinArchiveFile.delete()
+
+                if (!extractionSuccess) {
+                    statusText = "Failed to unpack Kotlin Compiler package."
+                    isRunning = false
+                    return@launch
+                }
+            }
+
+            val jdtlsTargetDir = context.filesDir.resolve("jdtls")
+            if (!jdtlsTargetDir.exists() || jdtlsTargetDir.listFiles()?.isEmpty() == true) {
+                jdtlsTargetDir.mkdirs()
+                statusText = "Downloading Eclipse JDT Language Server..."
+                val jdtlsArchiveFile = context.cacheDir.resolve("jdtls_archive.tar.gz")
+
+                val downloadSuccess =
+                    installResource(client, jdtlsUrl, jdtlsArchiveFile, onProgressUpdate)
+                if (!downloadSuccess) {
+                    statusText = "Network failure downloading language components."
+                    isRunning = false
+                    return@launch
+                }
+
+                statusText = "Deploying Language Server architecture..."
+                currentProgress = -1f
+                progressDetailsText = "Extracting runtime distribution components..."
+                val extractionSuccess = withContext(Dispatchers.IO) {
+                    extractTarGzFolder(jdtlsArchiveFile, jdtlsTargetDir, null)
+                }
+                if (jdtlsArchiveFile.exists()) jdtlsArchiveFile.delete()
+
+                if (!extractionSuccess) {
+                    statusText = "Failed to deploy Language Server environment."
+                    isRunning = false
+                    return@launch
+                }
+            }
+
+            statusText = "Workspace environment initialized!"
+            isRunning = false
+            onMoveToJdkManager()
+        }
+
+        Unit
+    }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Environment Init", fontWeight = FontWeight.Bold) }
+            )
+        }) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = statusText,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = progressDetailsText,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            AnimatedVisibility(visible = isRunning) {
+                if (currentProgress >= 0f) {
+                    LinearProgressIndicator(
+                        progress = { currentProgress },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                    )
+                } else {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = runSetupChain,
+                enabled = !isRunning,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                shapes = ButtonDefaults.shapes()
+            ) {
+                Icon(Icons.Default.PlayArrow, null)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text("Initialize Workspace Environment")
+            }
+        }
+    }
+}
+
+private suspend fun installResource(
+    client: HttpClient, url: String, destinationFile: File, onProgressUpdate: (Long, Long) -> Unit
+): Boolean = withContext(Dispatchers.IO) {
+    try {
+        if (destinationFile.exists()) destinationFile.delete()
+        Download(client, url, onProgressUpdate).start(destinationFile)
+        true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
+    }
+}
+
+fun extractTarGzFolder(tarGzFile: File, targetDir: File, filterPrefix: String?): Boolean {
+    return runCatching {
+        GZIPInputStream(tarGzFile.inputStream().buffered()).use { gisIn ->
+            val header = ByteArray(512)
+            while (gisIn.readFully(header) && header[0].toInt() != 0) {
+                val name = String(header, 0, 100).trim { it <= ' ' || it.code == 0 }
+                if (name.isEmpty() || (filterPrefix != null && !name.startsWith(filterPrefix))) continue
+
+                val fileSize = String(header, 124, 12).trim { it <= ' ' || it.code == 0 }.toLongOrNull(8) ?: 0L
+                val entryFile = File(targetDir, name)
+
+                if (name.endsWith("/")) {
+                    entryFile.mkdirs()
+                } else {
+                    entryFile.parentFile?.mkdirs()
+                    entryFile.outputStream().use { fos ->
+                        gisIn.copyToLimit(fos, fileSize)
+                    }
+                }
+
+                val padding = (512 - (fileSize % 512)) % 512
+                gisIn.skipFully(padding)
+            }
+        }
+        true
+    }.getOrDefault(false)
+}
+
+private fun extractZip(zipFile: File, targetDir: File): Boolean {
+    return runCatching {
+        ZipInputStream(zipFile.inputStream().buffered()).use { zis ->
+            generateSequence { zis.nextEntry }.forEach { entry ->
+                val newFile = File(targetDir, entry.name)
+                if (entry.isDirectory) {
+                    newFile.mkdirs()
+                } else {
+                    newFile.parentFile?.mkdirs()
+                    newFile.outputStream().use { fos ->
+                        zis.copyTo(fos)
+                    }
+                }
+                zis.closeEntry()
+            }
+        }
+        true
+    }.getOrDefault(false)
+}
+
+private fun InputStream.readFully(buffer: ByteArray): Boolean {
+    var offset = 0
+    while (offset < buffer.size) {
+        val read = read(buffer, offset, buffer.size - offset)
+        if (read == -1) break
+        offset += read
+    }
+    return offset == buffer.size
+}
+
+private fun InputStream.copyToLimit(out: java.io.OutputStream, limit: Long) {
+    val buffer = ByteArray(8192)
+    var remaining = limit
+    while (remaining > 0) {
+        val toRead = minOf(remaining, buffer.size.toLong()).toInt()
+        val read = read(buffer, 0, toRead)
+        if (read == -1) break
+        out.write(buffer, 0, read)
+        remaining -= read
+    }
+}
+
+private fun InputStream.skipFully(amount: Long) {
+    var remaining = amount
+    while (remaining > 0) {
+        val skipped = skip(remaining)
+        if (skipped <= 0) {
+            if (read() == -1) break
+            remaining--
+        } else {
+            remaining -= skipped
+        }
+    }
+}

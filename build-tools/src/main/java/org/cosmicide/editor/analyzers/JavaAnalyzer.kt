@@ -64,6 +64,7 @@ class JavaAnalyzer(
             diagnostics, Locale.getDefault(), Charset.defaultCharset()
         )
     }
+    private var lastClasspath: List<File>? = null
 
     init {
         standardFileManager.setLocation(
@@ -78,17 +79,16 @@ class JavaAnalyzer(
     fun analyze() {
         val version = Prefs.compilerJavaVersion
         val toCompile = getSourceFiles()
+        if (toCompile.isEmpty()) return
 
         with(standardFileManager) {
-            setLocation(StandardLocation.CLASS_PATH, getClasspath())
+            updateClasspathIfNeeded()
             autoClose = false
         }
 
         val copy = args.toMutableList()
         copy.apply {
-            add("-source")
-            add(version.toString())
-            add("-target")
+            add("--release")
             add(version.toString())
             addAll(compilerOptions)
         }
@@ -180,19 +180,27 @@ class JavaAnalyzer(
         return classpath
     }
 
-    private fun getSourceFiles(): List<JavaFileObject> {
-        val sourceFiles = mutableListOf<JavaFileObject>()
+    private fun updateClasspathIfNeeded() {
+        val currentClasspath = getClasspath()
+        if (currentClasspath != lastClasspath) {
+            standardFileManager.setLocation(StandardLocation.CLASS_PATH, currentClasspath)
+            lastClasspath = currentClasspath
+        }
+    }
 
-        project.srcDir.walk().forEach {
-            if (it.extension == "java") {
-                val cache = Cache.getCache(it)
-                if (cache == null || cache.lastModified < it.lastModified()) {
-                    sourceFiles.add(Cache.saveCache(it))
-                }
-            }
+    private fun getSourceFiles(): List<JavaFileObject> {
+        val allFiles = project.srcDir.walk().filter { it.extension == "java" }.toList()
+        val dirtyFiles = allFiles.filter { file ->
+            val cache = Cache.getCache(file)
+            cache == null || cache.lastModified < file.lastModified()
         }
 
-        return sourceFiles
+        // If any file changed, recompile everything to ensure stability
+        return if (dirtyFiles.isNotEmpty()) {
+            allFiles.map { Cache.saveCache(it) }
+        } else {
+            emptyList()
+        }
     }
 
     override fun close() {

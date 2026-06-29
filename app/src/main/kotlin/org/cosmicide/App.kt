@@ -7,6 +7,7 @@
 
 package org.cosmicide
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.app.UiModeManager
@@ -17,6 +18,7 @@ import android.os.StrictMode
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,8 +28,6 @@ import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
 import org.cosmicide.fragment.PluginsFragment
@@ -35,15 +35,13 @@ import org.cosmicide.rewrite.plugin.api.Hook
 import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.plugin.api.PluginLoader
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.jdksDir
 import org.lsposed.hiddenapibypass.HiddenApiBypass
+import rikka.sui.Sui
 import top.canyie.pine.Pine
 import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
 import java.lang.ref.WeakReference
-import java.math.BigInteger
 import java.net.URL
-import java.security.MessageDigest
 import java.time.ZonedDateTime
 import java.util.Locale
 import java.util.TimeZone
@@ -60,6 +58,7 @@ class App : Application() {
         lateinit var instance: WeakReference<App>
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate() {
         super.onCreate()
 
@@ -94,15 +93,18 @@ class App : Application() {
 
         loadPlugins()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            HiddenApiBypass.addHiddenApiExemptions("L")
-        }
+        HiddenApiBypass.addHiddenApiExemptions()
 
-        ConfigProvider.setJavaHome(FileUtil.dataDir.resolve("jdk-27").absolutePath)
+        val jdkDir = jdksDir().resolve("jdk-" + Prefs.currentJDK)
+        ConfigProvider.setJavaHome(jdkDir.absolutePath)
+
+        Log.d("App", "JDK set to: ${ConfigProvider.getJavaHome()}")
+
+        extractGlibcAssetsOnce()
+//        compileJavaSource()
+//        executeJavaClass()
 
         DynamicColors.applyToActivitiesIfAvailable(this)
-
-        extractFiles()
 
         loadTextmateTheme()
 
@@ -115,6 +117,8 @@ class App : Application() {
         } else {
             AppCompatDelegate.setDefaultNightMode(if (theme == UiModeManager.MODE_NIGHT_AUTO) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM else theme)
         }
+
+        StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectLeakedRegistrationObjects().penaltyLog().build())
 
         // iterate through each activity and apply theme
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
@@ -138,72 +142,45 @@ class App : Application() {
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
     }
 
+    @SuppressLint("SetWorldReadable")
+    fun extractGlibcAssetsOnce() {
+        val targetDir = File(filesDir, "glibc")
+
+        // If the directory already exists and has files, don't waste time extracting again
+        if (targetDir.exists() && targetDir.listFiles()?.isNotEmpty() == true) {
+            return
+        }
+
+        targetDir.mkdirs()
+
+        try {
+            // List all the .so files inside your app's assets/glibc folder
+            val assetManager = assets
+            val files = assetManager.list("glibc") ?: return
+
+            for (fileName in files) {
+                val assetFile = "glibc/$fileName"
+                val outputFile = File(targetDir, fileName)
+
+                assetManager.open(assetFile).use { inputStream ->
+                    outputFile.outputStream().use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+                // Optional: Explicitly make sure the permissions layout allows reading
+                outputFile.setReadable(true, false)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun getTheme(theme: String): Int {
         return when (theme) {
             "light" -> UiModeManager.MODE_NIGHT_NO
             "dark" -> UiModeManager.MODE_NIGHT_YES
             else -> UiModeManager.MODE_NIGHT_AUTO
         }
-    }
-
-    /**
-     * Extracts kotlin stdlib and stdlib-common from assets.
-     */
-    fun extractFiles() {
-        extractAsset(
-            "kotlin-stdlib-1.9.0.jar",
-            FileUtil.classpathDir.resolve("kotlin-stdlib-1.9.0.jar")
-        )
-        extractAsset(
-            "kotlin-stdlib-common-1.9.0.jar",
-            FileUtil.classpathDir.resolve("kotlin-stdlib-common-1.9.0.jar")
-        )
-
-        extractAsset(
-            "android.jar",
-            FileUtil.classpathDir.resolve("android.jar")
-        )
-
-        extractAsset(
-            "core-lambda-stubs.jar",
-            FileUtil.classpathDir.resolve("core-lambda-stubs.jar")
-        )
-    }
-
-    fun extractAsset(assetName: String, targetFile: File) {
-        if (targetFile.exists() && assetNeedsUpdate(assetName, targetFile)) {
-            targetFile.delete()
-        }
-
-        try {
-            assets.open(assetName).use { inputStream ->
-                targetFile.outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            }
-        } catch (e: FileNotFoundException) {
-            Log.e("App", "Failed to extract asset: $assetName", e)
-        }
-    }
-
-    fun assetNeedsUpdate(assetName: String, targetFile: File): Boolean {
-        val assetInputStream = assets.open(assetName)
-        FileInputStream(targetFile).use { targetFileInputStream ->
-            val assetChecksum = calculateChecksum(assetInputStream)
-            val targetFileChecksum = calculateChecksum(targetFileInputStream)
-            return assetChecksum != targetFileChecksum
-        }
-    }
-
-    fun calculateChecksum(inputStream: InputStream): String {
-        val md = MessageDigest.getInstance("SHA-256")
-        val buffer = ByteArray(8192)
-        var bytesRead: Int
-        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-            md.update(buffer, 0, bytesRead)
-        }
-        val digest = md.digest()
-        return BigInteger(1, digest).toString(16)
     }
 
     fun loadTextmateTheme() {
@@ -281,29 +258,6 @@ class App : Application() {
         } catch (_: Exception) {
             ""
         }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-
-        if (Prefs.isInitialized) {
-            applyThemeBasedOnConfiguration()
-        }
-    }
-
-    fun applyThemeBasedOnConfiguration() {
-        val themeName =
-            when (getTheme(Prefs.appTheme)) {
-                AppCompatDelegate.MODE_NIGHT_YES -> "darcula"
-                AppCompatDelegate.MODE_NIGHT_NO -> "QuietLight"
-                else -> {
-                    when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                        Configuration.UI_MODE_NIGHT_YES -> "darcula"
-                        else -> "QuietLight"
-                    }
-                }
-            }
-        ThemeRegistry.getInstance().setTheme(themeName)
     }
 
     fun loadPlugins() {

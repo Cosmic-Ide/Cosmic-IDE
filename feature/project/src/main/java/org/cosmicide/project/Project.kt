@@ -7,8 +7,14 @@
 
 package org.cosmicide.project
 
+import kotlinx.serialization.KSerializer
 import java.io.File
-import java.io.Serializable
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 /**
  * Represents a project.
@@ -16,10 +22,11 @@ import java.io.Serializable
  * @property root The root directory of the project.
  * @property language The programming language used in the project.
  */
+@Serializable
 data class Project(
-    val root: File,
+    @Serializable(with = FileSerializer::class) val root: File,
     val language: Language
-) : Serializable {
+): java.io.Serializable {
 
     /**
      * The name of the project, derived from the root directory.
@@ -38,22 +45,42 @@ data class Project(
     /**
      * The build directory of the project.
      */
+    @Serializable(with = FileSerializer::class)
     val buildDir = File(root, "build")
 
     /**
      * The cache directory of the project.
      */
+    @Serializable(with = FileSerializer::class)
     val cacheDir = File(buildDir, "cache")
 
     /**
      * The binary directory of the project.
      */
+    @Serializable(with = FileSerializer::class)
     val binDir = File(buildDir, "bin")
 
     /**
      * The library directory of the project.
      */
+    @Serializable(with = FileSerializer::class)
     val libDir = File(root, "libs")
+
+    var runtimeArgs = listOf<String>()
+        get() {
+            val f = cacheDir.resolve("jre.txt")
+            if (f.exists()) {
+                return f.readLines().toMutableList()
+            }
+
+            return listOf()
+        }
+        set(value) {
+            val f = cacheDir.resolve("jre.txt")
+            f.parentFile.mkdirs()
+            f.writeText(value.joinToString("\n"))
+            field = value
+        }
 
     var args = listOf<String>()
         get() {
@@ -66,6 +93,7 @@ data class Project(
         }
         set(value) {
             val f = cacheDir.resolve("args.txt")
+            f.parentFile.mkdirs()
             f.writeText(value.joinToString("\n"))
             field = value
         }
@@ -81,5 +109,18 @@ data class Project(
         } else {
             throw IllegalStateException("Cannot delete directory: ${root.absolutePath}")
         }
+    }
+}
+
+object FileSerializer : KSerializer<File> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("java.io.File", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: File) {
+        encoder.encodeString(value.absolutePath)
+    }
+
+    override fun deserialize(decoder: Decoder): File {
+        return File(decoder.decodeString())
     }
 }

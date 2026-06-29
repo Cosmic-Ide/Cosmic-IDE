@@ -7,17 +7,18 @@
 
 package org.cosmicide.util
 
+import android.content.Context
 import android.os.Build
 import androidx.fragment.app.Fragment
 import java.io.File
 
 
 // Android 14+ doesn't allow loading writable dex files: https://developer.android.com/about/versions/14/behavior-changes-14#safer-dynamic-code-loading
-fun Fragment.makeDexReadOnlyIfNeeded(dexFile: File): File {
+fun makeDexReadOnlyIfNeeded(dexFile: File, cacheDir: File): File {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         return dexFile
     }
-    val target = requireContext().cacheDir.resolve(dexFile.name)
+    val target = cacheDir.resolve(dexFile.name)
     if (target.exists()) {
         target.delete()
     }

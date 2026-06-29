@@ -47,39 +47,39 @@ class TsLanguageJava(
     private val path = file.toPath()
 
     init {
-        if (Prefs.experimentalJavaCompletion) {
-            CoroutineScope(Dispatchers.IO).launch {
-//                completionProvider = CompletionProvider()
-            }
-        } else {
-            completions = JavaCompletions()
-            CoroutineScope(Dispatchers.IO).launch {
-                val options = JavaCompletionOptionsImpl(
-                    "${project.binDir.absolutePath}/autocomplete.log",
-                    Level.ALL,
-                    emptyList(),
-                    emptyList()
-                )
-                completions.initialize(URI("file://" + project.root.absolutePath), options)
-                completions.openFile(path, editor.text.toString())
-            }
-        }
+//        if (Prefs.experimentalJavaCompletion) {
+//            CoroutineScope(Dispatchers.IO).launch {
+////                completionProvider = CompletionProvider()
+//            }
+//        } else {
+//            completions = JavaCompletions()
+//            CoroutineScope(Dispatchers.IO).launch {
+//                val options = JavaCompletionOptionsImpl(
+//                    "${project.binDir.absolutePath}/autocomplete.log",
+//                    Level.ALL,
+//                    emptyList(),
+//                    emptyList()
+//                )
+//                completions.initialize(URI("file://" + project.root.absolutePath), options)
+//                completions.openFile(path, editor.text.toString())
+//            }
+//        }
     }
 
     fun onConfigurationChanged() {
-        if (!completions.mInitialized) {
-            completions.initialize(
-                URI("file://" + project.root.absolutePath), JavaCompletionOptionsImpl(
-                    "${project.binDir.absolutePath}/autocomplete.log",
-                    Level.ALL,
-                    emptyList(),
-                    emptyList()
-                )
-            )
-            completions.openFile(path, editor.text.toString())
-        }
+//        if (!completions.mInitialized) {
+//            completions.initialize(
+//                URI("file://" + project.root.absolutePath), JavaCompletionOptionsImpl(
+//                    "${project.binDir.absolutePath}/autocomplete.log",
+//                    Level.ALL,
+//                    emptyList(),
+//                    emptyList()
+//                )
+//            )
+//            completions.openFile(path, editor.text.toString())
+//        }
     }
-
+/*
     override fun requireAutoComplete(
         content: ContentReference,
         position: CharPosition,
@@ -144,13 +144,13 @@ class TsLanguageJava(
             }
         }
     }
-
+*/
     override fun destroy() {
         super.destroy()
 
-        if (Prefs.experimentalJavaCompletion.not()) {
-            completions.shutdown()
-        }
+//        if (Prefs.experimentalJavaCompletion.not()) {
+//            completions.shutdown()
+//        }
     }
 
 

@@ -36,6 +36,9 @@ object Prefs {
     val useFastJarFs: Boolean
         get() = prefs.getBoolean("use_fastjarfs", true)
 
+    val currentJDK: String
+        get() = prefs.getString("current_jdk", "system") ?: "system"
+
     val stickyScroll: Boolean
         get() = prefs.getBoolean("sticky_scroll", false)
 
@@ -95,8 +98,8 @@ object Prefs {
     val disableSymbolsView: Boolean
         get() = prefs.getBoolean("disable_symbols_view", false)
 
-    val experimentalJavaCompletion: Boolean
-        get() = prefs.getBoolean("experimental_java_completion", false)
+    val useJdtLS: Boolean
+        get() = prefs.getBoolean("jdt_ls", true)
 
     val gitUsername: String
         get() = prefs.getString("git_username", "") ?: ""
@@ -134,8 +137,8 @@ object Prefs {
 
     val editorFontSize: Float
         get() = runCatching {
-            prefs.getString("font_size", "14")?.toFloatOrNull()?.coerceIn(1f, 32f) ?: 14f
-        }.getOrElse { 16f }
+            prefs.getString("font_size", "12")?.toFloatOrNull()?.coerceIn(1f, 32f) ?: 12f
+        }.getOrElse { 12f }
 
     val geminiApiKey: String
         get() = prefs.getString("gemini_api_key", "") ?: ""

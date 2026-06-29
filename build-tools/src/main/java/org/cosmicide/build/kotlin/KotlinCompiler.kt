@@ -13,6 +13,7 @@ import org.cosmicide.build.util.getSourceFiles
 import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.common.Prefs
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.util.FileUtil
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
@@ -24,14 +25,7 @@ import java.io.File
 class KotlinCompiler(val project: Project) : Task {
 
     val args: K2JVMCompilerArguments by lazy {
-        K2JVMCompilerArguments().apply {
-            noReflect = true
-            noStdlib = true
-            noJdk = true
-            newInference = true
-            useFirLT = true
-            useFirIC = true
-        }
+        K2JVMCompilerArguments()
     }
 
     override fun execute(reporter: BuildReporter) {
@@ -41,7 +35,8 @@ class KotlinCompiler(val project: Project) : Task {
             return
         }
 
-        val kotlinHomeDir = project.binDir.resolve("kotlin").apply { mkdirs() }
+        val kotlinHomeDir = File(FileUtil.dataDir, "kotlinc")
+        val cacheDir = project.binDir.resolve("kotlin").apply { mkdirs() }
         val classOutput = project.binDir.resolve("classes").apply { mkdirs() }
         val classpathFiles = collectClasspathFiles()
 
@@ -59,17 +54,21 @@ class KotlinCompiler(val project: Project) : Task {
             useFastJarFileSystem = Prefs.useFastJarFs
             languageVersion = Prefs.kotlinVersion
             apiVersion = Prefs.kotlinVersion
-            jvmTarget = Prefs.compilerJavaVersion.toString()
-            script = false
+            jdkHome = com.sun.tools.javac.ConfigProvider.getJavaHome()
+            jdkRelease = "26" // Prefs.compilerJavaVersion.toString()
+            backendThreads = "${Runtime.getRuntime().availableProcessors()}"
         }
 
         val collector = createMessageCollector(reporter)
 
-        makeJvmIncrementally(kotlinHomeDir, listOf(project.srcDir), args, collector)
+        makeJvmIncrementally(cacheDir, listOf(project.srcDir), args, collector)
     }
 
     fun collectClasspathFiles(): List<File> {
-        return project.libDir.walk().filter(File::isFile).toList()
+        val kotlinBuiltin = listOf("kotlin-stdlib", "kotlin-reflect", "kotlin-script-runtime", "kotlinx-coroutines-core-jvm")
+
+        return project.libDir.walk().filter(File::isFile).toList() +
+                FileUtil.dataDir.resolve("kotlinc/lib/").listFiles { it.nameWithoutExtension in kotlinBuiltin }?.toList().orEmpty()
     }
 
     fun getKotlinCompilerPlugins(): List<File> {

@@ -46,8 +46,6 @@ class JavaCompileTask(val project: Project) : Task {
             return
         }
 
-        reporter.reportInfo("Compiling")
-
         val size = javaFiles.size
         reporter.reportInfo("Compiling $size java ${if (size == 1) "file" else "files"}...")
 
@@ -61,17 +59,16 @@ class JavaCompileTask(val project: Project) : Task {
 
         fileManager.use { fm ->
             fm.setLocation(StandardLocation.CLASS_OUTPUT, listOf(output))
-            fm.setLocation(StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath())
+//            fm.setLocation(StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath())
             fm.setLocation(StandardLocation.CLASS_PATH, getClasspath(project))
             fm.setLocation(StandardLocation.SOURCE_PATH, javaFiles)
-            
+
             val flags = Prefs.javacFlags
 
             val options = listOf(
-//                "-XDstringConcat=inline",
-//                "-proc:none",
                 "--release",
-                version
+                "26"
+                //version
             ) + if (flags.isNotEmpty()) flags.split(" ").toList() else listOf()
 
             val task = tool.getTask(

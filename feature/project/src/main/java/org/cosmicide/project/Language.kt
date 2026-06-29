@@ -10,13 +10,17 @@ package org.cosmicide.project
 import org.cosmicide.project.templates.javaClass
 import org.cosmicide.project.templates.kotlinClass
 import java.io.Serializable
+import java.util.Locale
 
 /**
  * A sealed class representing a programming language.
  *
  * @property extension the file extension associated with the language
  */
+@kotlinx.serialization.Serializable
 sealed class Language(val extension: String) : Serializable {
+
+    abstract val name: String
 
     /**
      * Generates the content of a class file for the language.
@@ -30,7 +34,10 @@ sealed class Language(val extension: String) : Serializable {
     /**
      * An object representing the Java programming language.
      */
+    @kotlinx.serialization.Serializable
     object Java : Language("java") {
+        override val name = "Java"
+
         override fun classFileContent(name: String, packageName: String): String {
             return javaClass(
                 name, packageName, """
@@ -43,7 +50,10 @@ sealed class Language(val extension: String) : Serializable {
     /**
      * An object representing the Kotlin programming language.
      */
+    @kotlinx.serialization.Serializable
     object Kotlin : Language("kt") {
+        override val name = "Kotlin"
+
         override fun classFileContent(name: String, packageName: String): String {
             return kotlinClass(
                 name, packageName, """

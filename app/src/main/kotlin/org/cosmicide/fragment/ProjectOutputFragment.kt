@@ -9,7 +9,6 @@ package org.cosmicide.fragment
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.android.tools.smali.dexlib2.Opcodes
@@ -19,11 +18,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.R
 import org.cosmicide.common.BaseBindingFragment
+import org.cosmicide.common.Prefs
 import org.cosmicide.databinding.FragmentCompileInfoBinding
 import org.cosmicide.editor.EditorInputStream
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.util.ProjectHandler
+import org.cosmicide.util.jdksDir
 import org.cosmicide.util.makeDexReadOnlyIfNeeded
 import java.io.OutputStream
 import java.io.PrintStream
@@ -33,6 +35,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
     val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
     var isRunning: Boolean = false
+    var currentProcess: Process? = null
 
     override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
 
@@ -55,6 +58,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
                 R.id.cancel -> {
                     parentFragmentManager.commit {
+                        stopCurrentProcess()
                         remove(this@ProjectOutputFragment)
                     }
                     true
@@ -110,7 +114,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             ProjectHandler.clazz = null
         }
 
-        runClass(index)
+        runGlibcJavaClass(index)
     }
 
     fun runClass(className: String) = lifecycleScope.launch(Dispatchers.IO) {
@@ -130,12 +134,14 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         System.setErr(systemOut)
         System.setIn(EditorInputStream(binding.infoEditor))
 
+        val cacheDir = requireContext().cacheDir
+
         val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
 
-        loader.loadDex(makeDexReadOnlyIfNeeded(project.binDir.resolve("classes.dex")))
+        loader.loadDex(makeDexReadOnlyIfNeeded(project.binDir.resolve("classes.dex"), cacheDir))
 
         project.buildDir.resolve("libs").listFiles()?.filter { it.extension == "dex" }?.forEach {
-            loader.loadDex(makeDexReadOnlyIfNeeded(it))
+            loader.loadDex(makeDexReadOnlyIfNeeded(it, cacheDir))
         }
 
         runCatching {
@@ -170,6 +176,97 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             systemOut.close()
             System.`in`.close()
             isRunning = false
+        }
+    }
+
+    private fun stopCurrentProcess() {
+        try {
+            currentProcess?.destroyForcibly()
+        } catch (_: Exception) {}
+        currentProcess = null
+        isRunning = false
+    }
+
+    private fun runGlibcJavaClass(className: String) {
+        val context = requireContext().applicationContext
+        val nativeLibDir = context.applicationInfo.nativeLibraryDir
+        val appDir = context.filesDir
+        val glibcPath = appDir.resolve("glibc").absolutePath
+
+        val jdkDir = context.jdksDir().resolve("jdk-" + Prefs.currentJDK)
+        val javaBinary = jdkDir.resolve("bin/java").absolutePath
+        val executableLinker = "$nativeLibDir/libld_linux.so"
+
+        val kotlinBuiltin = listOf("kotlin-stdlib", "kotlin-reflect", "kotlin-script-runtime", "kotlinx-coroutines-core-jvm")
+
+        val classpath = mutableListOf(
+            project.binDir.resolve("classes").absolutePath
+        )
+
+        FileUtil.dataDir.resolve("kotlinc/lib/").listFiles { it.nameWithoutExtension in kotlinBuiltin }?.forEach {
+            classpath.add(it.absolutePath)
+        }
+
+        project.buildDir.resolve("libs").listFiles()?.filter { it.extension == "jar" }?.forEach {
+            classpath.add(it.absolutePath)
+        }
+
+        val command = mutableListOf(
+            executableLinker,
+            "--library-path",
+            glibcPath,
+            javaBinary,
+            "-cp",
+            classpath.joinToString(":"),
+            className
+        )
+
+        if (project.args.isNotEmpty()) {
+            command.addAll(project.args)
+        }
+
+        val processBuilder = ProcessBuilder(command).apply {
+            environment().apply {
+                clear()
+                put("PATH", "$jdkDir:/system/bin")
+                put("LD_LIBRARY_PATH", glibcPath)
+
+                directory(project.root)
+
+                redirectErrorStream(true)
+            }
+        }
+
+        try {
+            val process = processBuilder.start()
+            currentProcess = process
+
+            process.inputStream.bufferedReader().use { reader ->
+                    val buffer = CharArray(1024)
+                    var readCount: Int
+
+                    while (reader.read(buffer).also { readCount = it } != -1) {
+                        val outputChunk = String(buffer, 0, readCount)
+                        appendOutput(outputChunk)
+                    }
+            }
+
+            val exitCode = process.waitFor()
+            appendOutput("\n--- Process finished with exit code $exitCode ---")
+
+        } catch (e: Exception) {
+            appendOutput("\nProcess runtime engine crash: ${e.message}\n")
+            e.printStackTrace()
+        } finally {
+            isRunning = false
+            currentProcess = null
+        }
+    }
+
+    private fun appendOutput(text: String) {
+        lifecycleScope.launch {
+            val editorText = binding.infoEditor.text
+            editorText.insert(editorText.lineCount - 1, editorText.getColumnCount(editorText.lineCount - 1), text)
         }
     }
 }

@@ -15,7 +15,7 @@ object PreferenceKeys {
     // Compiler
     const val COMPILER_USE_FJFS = "use_fast_jar_file_system"
     const val COMPILER_USE_K2 = "use_k2"
-    const val COMPILER_USE_SSVM = "use_ssvm"
+    const val COMPILER_CURRENT_JDK = "current_jdk"
     const val COMPILER_JAVA_VERSIONS = "java_versions"
     const val COMPILER_JAVAC_FLAGS = "javac_flags"
     const val COMPILER_KOTLIN_VERSION = "kotlin_version"
@@ -31,6 +31,7 @@ object PreferenceKeys {
     const val EDITOR_NON_PRINTABLE_SYMBOLS_SHOW = "non_printable_symbols_show"
     const val EDITOR_LINE_NUMBERS_SHOW = "line_numbers_show"
     const val EDITOR_DOUBLE_CLICK_CLOSE = "double_click_close"
+    const val EDITOR_JDT_LS = "jdt_ls"
     const val EDITOR_EXP_JAVA_COMPLETION = "experimental_java_completion"
     const val KOTLIN_REALTIME_ERRORS = "kotlin_realtime_errors"
     const val EDITOR_FONT = "editor_font"

@@ -2,70 +2,25 @@ package org.cosmicide.ui.editor
 
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Redo
 import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -82,15 +37,16 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.subscribeAlways
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.saket.cascade.CascadeDropdownMenu
 import org.cosmicide.build.dex.D8Task
+import org.cosmicide.common.Prefs
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.model.EditorViewModel
 import org.cosmicide.project.Project
 import org.cosmicide.util.ProjectHandler
+import org.cosmicide.util.jdksDir
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -195,6 +151,7 @@ fun EditorScreen(
             topBar = {
                 Column {
                     EditorToolbar(
+                        project = project,
                         file = activeFile,
                         editor = editor,
                         onOpenDrawer = { scope.launch { drawerState.open() } },
@@ -588,6 +545,7 @@ fun EmptyWorkspaceState(onOpenDrawer: () -> Unit) {
 )
 @Composable
 fun EditorToolbar(
+    project: Project,
     file: File?,
     editor: CodeEditor,
     onOpenDrawer: () -> Unit,
@@ -597,6 +555,7 @@ fun EditorToolbar(
     var showGoToLineDialog by remember { mutableStateOf(false) }
     var showProgramArgsDialog by remember { mutableStateOf(false) }
     var showJREArgsDialog by remember { mutableStateOf(false) }
+    var showCustomCommandDialog by remember { mutableStateOf(false) }
 
     val undoManager = editor.text.undoManager
     var canUndo by remember { mutableStateOf(undoManager.canUndo()) }
@@ -684,7 +643,11 @@ fun EditorToolbar(
                                 showMenu = false
                             })
                             DropdownMenuItem(text = { Text("Runtime Arguments") }, onClick = {
-                                showProgramArgsDialog = true
+                                showJREArgsDialog = true
+                                showMenu = false
+                            })
+                            DropdownMenuItem(text = { Text("Custom Command") }, onClick = {
+                                showCustomCommandDialog = true
                                 showMenu = false
                             })
                         }
@@ -725,8 +688,6 @@ fun EditorToolbar(
         )
     }
 
-    val project = ProjectHandler.getProject()!!
-
     if (showProgramArgsDialog) {
         ProgramArgumentDialog(
             title = "Program Arguments",
@@ -750,6 +711,13 @@ fun EditorToolbar(
             onDismiss = {
                 showJREArgsDialog = false
             }
+        )
+    }
+
+    if (showCustomCommandDialog) {
+        CustomCommandDialog(
+            project = project,
+            onDismiss = { showCustomCommandDialog = false }
         )
     }
 }
@@ -793,6 +761,153 @@ fun GoToLineDialog(lineCount: Int, onDismiss: () -> Unit, onConfirm: (Int) -> Un
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun CustomCommandDialog(
+    project: Project,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val outputScrollState = rememberScrollState()
+
+    var commandInput by remember { mutableStateOf("") }
+    var outputLog by remember { mutableStateOf("Ready in ${project.root.absolutePath}\n") }
+    var isRunning by remember { mutableStateOf(false) }
+    var currentProcess by remember { mutableStateOf<Process?>(null) }
+
+    fun appendOutput(chunk: String) {
+        scope.launch(Dispatchers.Main) {
+            outputLog += chunk
+        }
+    }
+
+    LaunchedEffect(outputLog) {
+        outputScrollState.scrollTo(outputScrollState.maxValue)
+    }
+
+    DisposableEffect(currentProcess) {
+        onDispose {
+            currentProcess?.takeIf { it.isAlive }?.destroyForcibly()
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = { if (!isRunning) onDismiss() },
+        title = { Text("Custom Command") },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = commandInput,
+                    onValueChange = { commandInput = it },
+                    label = { Text("Command") },
+                    placeholder = { Text("java -version") },
+                    singleLine = true,
+                    enabled = !isRunning,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.size(12.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 180.dp, max = 320.dp)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                        .padding(12.dp)
+                        .verticalScroll(outputScrollState)
+                ) {
+                    SelectionContainer {
+                        Text(
+                            text = outputLog,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontFamily = FontFamily.Monospace,
+                                lineHeight = 16.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textDecoration =
+                        )
+                    }
+                }
+
+                if (isRunning) {
+                    Spacer(modifier = Modifier.size(12.dp))
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val submittedCommand = commandInput.trim()
+                    if (submittedCommand.isEmpty() || isRunning) return@Button
+
+                    isRunning = true
+                    outputLog = "Executing: $submittedCommand\n\n"
+
+                    scope.launch(Dispatchers.IO) {
+                        try {
+                            val jdkDir = context.jdksDir().resolve("jdk-" + Prefs.currentJDK)
+                            val pathEntries = LinuxProcessRunner.toolchainPathEntries(context, jdkDir)
+                            val commandParts = LinuxProcessRunner.parseCommandLine(submittedCommand)
+                            val binary = LinuxProcessRunner.resolveExecutable(
+                                commandName = commandParts.first(),
+                                workingDir = project.root,
+                                pathEntries = pathEntries
+                            )
+                            val tempDir = context.cacheDir
+                            val runnerConfig = LinuxProcessRunner.Configuration(
+                                binary = binary,
+                                arguments = commandParts.drop(1),
+                                workingDir = project.root,
+                                environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
+                                    context,
+                                    jdkDir
+                                ) + mapOf(
+                                    "TMPDIR" to tempDir.absolutePath,
+                                    "TMP" to tempDir.absolutePath,
+                                    "TEMP" to tempDir.absolutePath
+                                ),
+                                pathEntries = pathEntries
+                            )
+
+                            LinuxProcessRunner.execute(
+                                context = context,
+                                config = runnerConfig,
+                                onOutputReceived = ::appendOutput,
+                                onProcessStarted = { process ->
+                                    scope.launch(Dispatchers.Main) {
+                                        currentProcess = process
+                                    }
+                                }
+                            )
+                        } catch (e: Exception) {
+                            appendOutput("\nExecution failed: ${e.message}\n")
+                        } finally {
+                            withContext(Dispatchers.Main) {
+                                currentProcess = null
+                                isRunning = false
+                            }
+                        }
+                    }
+                },
+                enabled = commandInput.isNotBlank() && !isRunning,
+                shapes = ButtonDefaults.shapes()
+            ) {
+                Text("Run")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss,
+                enabled = !isRunning
+            ) {
+                Text("Close")
             }
         }
     )

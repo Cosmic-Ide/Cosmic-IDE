@@ -25,14 +25,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.BuildConfig
-import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.ui.settings.components.PreferenceItem
-import org.cosmicide.ui.settings.components.SingleChoicePreference
 import org.cosmicide.ui.settings.components.SwitchPreference
 import org.cosmicide.util.jdksDir
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -212,49 +209,42 @@ fun TerminalExecutionDialog(
 
                         scope.launch(Dispatchers.IO) {
                             try {
-                                val parts = commandInput.trim().split("\\s+".toRegex())
-                                val binaryPath = parts[0]
-                                val args = if (parts.size > 1) parts.drop(1) else emptyList()
-
-                                val nativeLibDir = context.applicationInfo.nativeLibraryDir
-                                val appDir = context.filesDir
-                                val glibcPath = appDir.resolve("glibc").absolutePath
-                                val executableLinker = "$nativeLibDir/libld_linux.so"
                                 val jdkDir = context.jdksDir().resolve("jdk-" + Prefs.currentJDK)
+                                val workingDir = context.filesDir
+                                val pathEntries = LinuxProcessRunner.toolchainPathEntries(context, jdkDir)
+                                val commandParts = LinuxProcessRunner.parseCommandLine(commandInput.trim())
+                                val binary = LinuxProcessRunner.resolveExecutable(
+                                    commandName = commandParts.first(),
+                                    workingDir = workingDir,
+                                    pathEntries = pathEntries
+                                )
+                                val tempDir = context.cacheDir
+                                val runnerConfig = LinuxProcessRunner.Configuration(
+                                    binary = binary,
+                                    arguments = commandParts.drop(1),
+                                    workingDir = workingDir,
+                                    environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
+                                        context,
+                                        jdkDir
+                                    ) + mapOf(
+                                        "TMPDIR" to tempDir.absolutePath,
+                                        "TMP" to tempDir.absolutePath,
+                                        "TEMP" to tempDir.absolutePath
+                                    ),
+                                    pathEntries = pathEntries
+                                )
 
-                                val command = mutableListOf(
-                                    executableLinker, "--library-path", glibcPath,
-                                    binaryPath
-                                ).apply {
-                                    addAll(args)
-                                }
-
-                                val processBuilder = ProcessBuilder(command).apply {
-                                    environment().apply {
-                                        clear()
-                                        put("PATH", "/system/bin")
-                                        put("JAVA_HOME", jdkDir.absolutePath)
-                                        put("LD_LIBRARY_PATH", glibcPath)
-                                    }
-                                    directory(context.filesDir)
-                                    redirectErrorStream(true)
-                                }
-
-                                val process = processBuilder.start()
-
-                                process.inputStream.bufferedReader().useLines { lines ->
-                                    lines.forEach { line ->
+                                LinuxProcessRunner.execute(
+                                    context = context,
+                                    config = runnerConfig,
+                                    onOutputReceived = { outputChunk ->
                                         scope.launch(Dispatchers.Main) {
-                                            outputLog += line + "\n"
+                                            outputLog += outputChunk
                                             outputScrollState.animateScrollTo(outputScrollState.maxValue)
                                         }
-                                    }
-                                }
-
-                                val exitCode = process.waitFor()
-                                withContext(Dispatchers.Main) {
-                                    outputLog += "\n--- Process finished with exit code $exitCode ---"
-                                }
+                                    },
+                                    onProcessStarted = {}
+                                )
                             } catch (e: Exception) {
                                 withContext(Dispatchers.Main) {
                                     outputLog += "\nExecution Fault: ${e.message}\n"

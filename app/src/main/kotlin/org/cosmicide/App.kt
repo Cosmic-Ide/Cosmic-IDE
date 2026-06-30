@@ -11,7 +11,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.app.UiModeManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
@@ -26,7 +25,6 @@ import com.google.android.material.color.DynamicColors
 import com.sun.tools.javac.ConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
-import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
@@ -43,9 +41,9 @@ import java.io.File
 import java.lang.ref.WeakReference
 import java.net.URL
 import java.time.ZonedDateTime
-import java.util.Locale
-import java.util.TimeZone
+import java.util.*
 import java.util.logging.Logger
+import kotlin.jvm.java
 
 class App : Application() {
 
@@ -146,11 +144,6 @@ class App : Application() {
     fun extractGlibcAssetsOnce() {
         val targetDir = File(filesDir, "glibc")
 
-        // If the directory already exists and has files, don't waste time extracting again
-        if (targetDir.exists() && targetDir.listFiles()?.isNotEmpty() == true) {
-            return
-        }
-
         targetDir.mkdirs()
 
         try {
@@ -161,6 +154,7 @@ class App : Application() {
             for (fileName in files) {
                 val assetFile = "glibc/$fileName"
                 val outputFile = File(targetDir, fileName)
+                if (outputFile.exists()) continue
 
                 assetManager.open(assetFile).use { inputStream ->
                     outputFile.outputStream().use { outputStream ->

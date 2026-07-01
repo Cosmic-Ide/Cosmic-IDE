@@ -1,18 +1,45 @@
 package org.cosmicide.ui.output
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
@@ -40,7 +67,7 @@ import org.cosmicide.util.jdksDir
 import org.jetbrains.org.objectweb.asm.ClassReader
 import org.jetbrains.org.objectweb.asm.tree.ClassNode
 import java.io.File
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.roundToLong
@@ -56,7 +83,7 @@ fun ProjectOutputScreen(
     val project = remember {
         ProjectHandler.getProject() ?: throw IllegalStateException("No project set")
     }
-    val jdkDir = remember { context.jdksDir().resolve("jdk-" + Prefs.currentJDK) }
+    val jdkDir = remember { context.jdksDir().resolve(Prefs.currentJDK) }
 
     val editorState = remember { CodeEditorState() }
     var isRunning by remember { mutableStateOf(false) }
@@ -125,8 +152,6 @@ fun ProjectOutputScreen(
                 val javaArgs = mutableListOf(
                     "-Djava.io.tmpdir=${tempDir.absolutePath}",
                     "-Djdk.lang.Process.launchMechanism=FORK",
-                    "-Dsun.net.spi.nameservice.provider.1=dns,sun",
-                    "-Dnetworkaddress.cache.ttl=0",
                     "-XX:+UsePerfData",
                     *(project.runtimeArgs.toTypedArray()),
                     "-cp",
@@ -139,12 +164,7 @@ fun ProjectOutputScreen(
                 val runnerConfig = LinuxProcessRunner.Configuration(
                     binary = jdkDir.resolve("bin/java"),
                     arguments = javaArgs,
-                    workingDir = project.root,
-                    environmentOverrides = mapOf(
-                        "TMPDIR" to tempDir.absolutePath,
-                        "TMP" to tempDir.absolutePath,
-                        "TEMP" to tempDir.absolutePath
-                    )
+                    workingDir = project.root
                 )
 
                 LinuxProcessRunner.execute(context, runnerConfig, appendOutput) { process ->
@@ -238,7 +258,10 @@ fun LiveGraph(
     modifier: Modifier = Modifier,
     maxValue: Long? = null
 ) {
-    Canvas(modifier = modifier.fillMaxWidth().height(120.dp).padding(16.dp)) {
+    Canvas(modifier = modifier
+        .fillMaxWidth()
+        .height(120.dp)
+        .padding(16.dp)) {
         val allValues = series.flatMap { it.data }
         if (allValues.isEmpty()) return@Canvas
 
@@ -341,14 +364,6 @@ fun MemoryInstrumentationPane(
             activeHeapJstatProcess.getAndSet(null)?.destroyForcibly()
             activeClassJstatProcess.getAndSet(null)?.destroyForcibly()
         }
-    }
-
-    LaunchedEffect(samplerStatus) {
-        Log.d("jstat", samplerStatus)
-    }
-
-    LaunchedEffect(classSamplerStatus) {
-        Log.d("jstat-class", classSamplerStatus)
     }
 
     LaunchedEffect(process) {
@@ -618,7 +633,6 @@ fun MemoryInstrumentationPane(
 
             JstatModeSelector(
                 selectedMode = selectedJstatViewMode,
-                activeSamplerMode = activeSamplerMode,
                 onModeSelected = { mode ->
                     selectedJstatViewMode = mode
                     if (mode != JstatViewMode.Raw) {
@@ -687,10 +701,11 @@ fun MemoryInstrumentationPane(
 @Composable
 private fun JstatModeSelector(
     selectedMode: JstatViewMode,
-    activeSamplerMode: JstatViewMode,
     onModeSelected: (JstatViewMode) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 6.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -751,7 +766,9 @@ private fun ProcessMemoryTab(
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Legend("RSS", MaterialTheme.colorScheme.primary)
@@ -761,7 +778,9 @@ private fun ProcessMemoryTab(
             series = listOf(
                 GraphSeries("RSS", residentMemoryHistory, MaterialTheme.colorScheme.primary)
             ),
-            modifier = Modifier.fillMaxWidth().height(92.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(92.dp)
         )
     }
 }
@@ -785,7 +804,9 @@ private fun JvmHeapMemoryTab(
                     )
 
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         MetricText("Eden", formatKb(sample.edenUsedKb))
@@ -837,7 +858,9 @@ private fun JvmHeapMemoryTab(
                     )
 
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         MetricText("Eden", formatPercent(sample.edenUtilPercent))
@@ -872,7 +895,9 @@ private fun JvmHeapMemoryTab(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Legend(
@@ -890,7 +915,9 @@ private fun JvmHeapMemoryTab(
                     GraphSeries("Eden", edenHistory, Color(0xFF43A047)),
                     GraphSeries("Old", oldHistory, Color(0xFFFFA000))
                 ),
-                modifier = Modifier.fillMaxWidth().height(92.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(92.dp),
                 maxValue = if (sample.layout == JstatSampleLayout.UtilizationPercent) 100L else null
             )
         } ?: Text(
@@ -919,7 +946,9 @@ private fun JvmGcTab(
 
         currentHeapSample?.let { sample ->
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 MetricText("Young GC", sample.youngGcCount.toString())
@@ -929,7 +958,9 @@ private fun JvmGcTab(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 MetricText("Total GC", formatSeconds(sample.totalGcTimeSeconds))
@@ -946,7 +977,9 @@ private fun JvmGcTab(
 
             if (sample.concurrentGcCount > 0L || sample.concurrentGcTimeSeconds > 0.0) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     MetricText("Concurrent GC", sample.concurrentGcCount.toString())
@@ -974,7 +1007,9 @@ private fun JvmGcTab(
 
             if (sample.layout == JstatSampleLayout.MemoryKb) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Legend("Allocation rate", MaterialTheme.colorScheme.primary)
@@ -988,7 +1023,9 @@ private fun JvmGcTab(
                             color = MaterialTheme.colorScheme.primary
                         )
                     ),
-                    modifier = Modifier.fillMaxWidth().height(92.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(92.dp)
                 )
             }
         } ?: Text(
@@ -1032,7 +1069,9 @@ private fun JvmRuntimeTab(
             when (sample.layout) {
                 JstatSampleLayout.MemoryKb -> {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         MetricText("Metaspace", formatKb(sample.metaspaceUsedKb))
@@ -1059,7 +1098,9 @@ private fun JvmRuntimeTab(
 
                 JstatSampleLayout.UtilizationPercent -> {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         MetricText("Metaspace", formatPercent(sample.metaspaceUtilPercent))
@@ -1091,7 +1132,9 @@ private fun JvmRuntimeTab(
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Legend(
@@ -1104,7 +1147,9 @@ private fun JvmRuntimeTab(
                 series = listOf(
                     GraphSeries("Metaspace", metaspaceHistory, Color(0xFF5E35B1))
                 ),
-                modifier = Modifier.fillMaxWidth().height(92.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(92.dp),
                 maxValue = if (sample.layout == JstatSampleLayout.UtilizationPercent) 100L else null
             )
         } ?: Text(
@@ -1133,7 +1178,9 @@ private fun JvmRuntimeTab(
 
         currentClassSample?.let { sample ->
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 MetricText("Loaded", sample.loadedClasses.toString())
@@ -1144,7 +1191,9 @@ private fun JvmRuntimeTab(
 
             if (loadedClassHistory.isNotEmpty()) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Legend("Loaded classes", MaterialTheme.colorScheme.primary)
@@ -1158,7 +1207,9 @@ private fun JvmRuntimeTab(
                             color = MaterialTheme.colorScheme.primary
                         )
                     ),
-                    modifier = Modifier.fillMaxWidth().height(92.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(92.dp)
                 )
             }
         } ?: Text(
@@ -1197,7 +1248,9 @@ private fun RawJstatTab(
                 modifier = Modifier.padding(top = 8.dp)
             )
         } else {
-            Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)) {
                 rawJstatLines.forEach { line ->
                     Text(
                         text = line,
@@ -1258,7 +1311,9 @@ private fun UsageBarRaw(
     fraction: Float,
     color: Color
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -1318,7 +1373,9 @@ private fun MetricText(label: String, value: String) {
 @Composable
 private fun Legend(label: String, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Canvas(modifier = Modifier.width(10.dp).height(10.dp)) {
+        Canvas(modifier = Modifier
+            .width(10.dp)
+            .height(10.dp)) {
             drawCircle(color)
         }
 
@@ -1467,7 +1524,6 @@ private fun sampleJstatHeap(
                 val trimmed = line.trim()
                 if (trimmed.isEmpty()) continue
 
-                Log.d("jstat", trimmed)
                 onRawLine(trimmed)
 
                 val header = headerLine
@@ -1542,8 +1598,6 @@ private fun sampleJstatClasses(
                 val line = reader.readLine() ?: break
                 val trimmed = line.trim()
                 if (trimmed.isEmpty()) continue
-
-                Log.d("jstat-class", trimmed)
 
                 val header = headerLine
                 val sample = header?.let { parseJstatClassSample(it, trimmed) }

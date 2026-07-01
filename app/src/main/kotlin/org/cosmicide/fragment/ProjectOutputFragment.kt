@@ -193,7 +193,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         val appDir = context.filesDir
         val glibcPath = appDir.resolve("glibc").absolutePath
 
-        val jdkDir = context.jdksDir().resolve("jdk-" + Prefs.currentJDK)
+        val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
         val javaBinary = jdkDir.resolve("bin/java").absolutePath
         val executableLinker = "$nativeLibDir/libld_linux.so"
 

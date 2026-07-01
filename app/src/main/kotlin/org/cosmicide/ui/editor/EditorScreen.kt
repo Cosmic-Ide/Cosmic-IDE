@@ -830,7 +830,6 @@ fun CustomCommandDialog(
                                 lineHeight = 16.sp
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textDecoration =
                         )
                     }
                 }
@@ -852,7 +851,7 @@ fun CustomCommandDialog(
 
                     scope.launch(Dispatchers.IO) {
                         try {
-                            val jdkDir = context.jdksDir().resolve("jdk-" + Prefs.currentJDK)
+                            val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
                             val pathEntries = LinuxProcessRunner.toolchainPathEntries(context, jdkDir)
                             val commandParts = LinuxProcessRunner.parseCommandLine(submittedCommand)
                             val binary = LinuxProcessRunner.resolveExecutable(
@@ -868,10 +867,6 @@ fun CustomCommandDialog(
                                 environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
                                     context,
                                     jdkDir
-                                ) + mapOf(
-                                    "TMPDIR" to tempDir.absolutePath,
-                                    "TMP" to tempDir.absolutePath,
-                                    "TEMP" to tempDir.absolutePath
                                 ),
                                 pathEntries = pathEntries
                             )

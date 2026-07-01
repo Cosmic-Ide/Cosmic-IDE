@@ -8,6 +8,11 @@ import android.os.Process as AndroidProcess
 
 object LinuxProcessRunner {
 
+    private const val RUNTIME_USER = "cosmicide"
+    private const val JSTAT_SAMPLE_INTERVAL_MS = 1000
+
+    private val DefaultDnsServers = listOf("1.1.1.1", "8.8.8.8")
+
     data class Configuration(
         val binary: File,
         val arguments: List<String>,
@@ -16,13 +21,25 @@ object LinuxProcessRunner {
         val pathEntries: List<File> = emptyList()
     )
 
+    private data class GlibcRuntime(
+        val tempDir: File,
+        val appDir: File,
+        val glibcPath: String,
+        val customLinker: String,
+        val combinedPreload: String,
+        val runtimeUser: String,
+        val resolvConf: File,
+        val hostsFile: File,
+        val nsswitchConf: File,
+        val gaiConf: File,
+        val passwdFile: File,
+        val groupFile: File
+    )
+
     /**
      * Spawns an arbitrary GNU/Linux binary inside the custom glibc environment layer.
      */
-    fun start(
-        context: Context,
-        config: Configuration
-    ): Process {
+    fun start(context: Context, config: Configuration): Process {
         return createProcessBuilder(context, config).start()
     }
 
@@ -47,10 +64,7 @@ object LinuxProcessRunner {
         onOutputReceived("\n--- Process finished with exit code $exitCode ---")
     }
 
-    fun toolchainPathEntries(
-        context: Context,
-        jdkDir: File
-    ): List<File> {
+    fun toolchainPathEntries(context: Context, jdkDir: File): List<File> {
         return buildList {
             add(jdkDir.resolve("bin"))
             if (FileUtil.isInitialized) {
@@ -60,10 +74,7 @@ object LinuxProcessRunner {
         }
     }
 
-    fun toolchainEnvironment(
-        context: Context,
-        jdkDir: File
-    ): Map<String, String> {
+    fun toolchainEnvironment(context: Context, jdkDir: File): Map<String, String> {
         return buildMap {
             put("JAVA_HOME", jdkDir.absolutePath)
             if (FileUtil.isInitialized) {
@@ -75,7 +86,7 @@ object LinuxProcessRunner {
 
     fun parseCommandLine(commandLine: String): List<String> {
         val result = mutableListOf<String>()
-        val current = kotlin.text.StringBuilder()
+        val current = StringBuilder()
         var quote: Char? = null
         var escaping = false
 
@@ -111,18 +122,14 @@ object LinuxProcessRunner {
 
         if (escaping) current.append('\\')
         if (quote != null) {
-            throw kotlin.IllegalArgumentException("Unclosed quote in command")
+            throw IllegalArgumentException("Unclosed quote in command")
         }
         if (current.isNotEmpty()) result.add(current.toString())
 
         return result
     }
 
-    fun resolveExecutable(
-        commandName: String,
-        workingDir: File,
-        pathEntries: List<File>
-    ): File {
+    fun resolveExecutable(commandName: String, workingDir: File, pathEntries: List<File>): File {
         val commandFile = File(commandName)
 
         if (commandFile.isAbsolute) return commandFile
@@ -136,7 +143,7 @@ object LinuxProcessRunner {
             .asSequence()
             .map { it.resolve(commandName) }
             .firstOrNull { it.isFile }
-            ?: throw kotlin.IllegalArgumentException("Command not found: $commandName")
+            ?: throw IllegalArgumentException("Command not found: $commandName")
     }
 
     fun startJstatGcSampler(
@@ -177,187 +184,203 @@ object LinuxProcessRunner {
         pid: Int,
         workingDir: File
     ): Process {
-        val tempDir = context.cacheDir
-        val appDir = context.filesDir
-        val glibcPath = appDir.resolve("glibc").absolutePath
-        val nativeLibDir = context.applicationInfo.nativeLibraryDir
-
-        val runtimeUser = "cosmicide"
-        val runtimeUid = AndroidProcess.myUid()
-
-        val resolvConf = tempDir.resolve("resolv.conf")
-        val nsswitchConf = tempDir.resolve("nsswitch.conf")
-        val passwdFile = tempDir.resolve("passwd")
-        val groupFile = tempDir.resolve("group")
-
-        if (!resolvConf.exists()) {
-            val dns = listOf("8.8.8.8", "1.1.1.1")
-            resolvConf.bufferedWriter().use { writer ->
-                dns.forEach { ip -> writer.write("nameserver $ip\n") }
-            }
-        }
-
-        if (!nsswitchConf.exists()) {
-            nsswitchConf.writeText("passwd: files\ngroup: files\nhosts: files dns\n")
-        }
-
-        if (!passwdFile.exists()) {
-            passwdFile.writeText("$runtimeUser:x:$runtimeUid:$runtimeUid:Cosmic IDE:${appDir.absolutePath}:/system/bin/sh\n")
-        }
-
-        if (!groupFile.exists()) {
-            groupFile.writeText("$runtimeUser:x:$runtimeUid:\n")
-        }
-
-        val nssWrapper = appDir.resolve("glibc/libnss_wrapper.so").absolutePath
-        val pathRedirect = "$nativeLibDir/libpath_redirect.so"
-        val combinedPreload = "$nssWrapper:$pathRedirect"
-
-        val customLinker = "$nativeLibDir/libld_linux.so"
-
-        val command = mutableListOf(
-            customLinker,
-            "--library-path",
-            glibcPath,
-            "--preload",
-            combinedPreload,
-            jdkDir.resolve("bin/jstat").absolutePath,
-            "-J-Djava.io.tmpdir=${tempDir.absolutePath}",
-            option,
-            pid.toString(),
-            "1000"
-        )
-
-        return ProcessBuilder(command).apply {
-            directory(workingDir)
-            environment().apply {
-                clear()
-
-                put("PATH", "${jdkDir.resolve("bin").absolutePath}:/system/bin")
-                put("LD_LIBRARY_PATH", glibcPath)
-                put("HOME", appDir.absolutePath)
-                put("USER", runtimeUser)
-                put("LOGNAME", runtimeUser)
-
-                put("TMPDIR", tempDir.absolutePath)
-                put("TMP", tempDir.absolutePath)
-                put("TEMP", tempDir.absolutePath)
-
-                put("LD_PRELOAD", combinedPreload)
-
-                put("RES_OPTIONS", "resolv-file=${resolvConf.absolutePath}")
-                put("NSS_WEAK_ROUTE_CONFIG", nsswitchConf.absolutePath)
-                put("NSS_WRAPPER_PASSWD", passwdFile.absolutePath)
-                put("NSS_WRAPPER_GROUP", groupFile.absolutePath)
-                put("GLIBC_TUNABLES", "glibc.rtld.optional_dirs=$glibcPath")
-            }
-            redirectErrorStream(true)
-        }.start()
-    }
-
-    data class JstatGcSample(
-        val edenUsedKb: Long,
-        val oldUsedKb: Long,
-        val edenCapacityKb: Long,
-        val oldCapacityKb: Long
-    ) {
-        val liveHeapUsedKb: Long = edenUsedKb + oldUsedKb
-    }
-
-    fun parseJstatGcSample(headerLine: String, valueLine: String): JstatGcSample? {
-        val headers = headerLine.trim().split(Regex("\\s+"))
-        val values = valueLine.trim().split(Regex("\\s+"))
-        if (headers.isEmpty() || headers.size > values.size) return null
-
-        val row = headers.zip(values).toMap()
-        return JstatGcSample(
-            edenUsedKb = row["EU"]?.toDoubleOrNull()?.toLong() ?: return null,
-            oldUsedKb = row["OU"]?.toDoubleOrNull()?.toLong() ?: return null,
-            edenCapacityKb = row["EC"]?.toDoubleOrNull()?.toLong() ?: 0L,
-            oldCapacityKb = row["OC"]?.toDoubleOrNull()?.toLong() ?: 0L
+        return start(
+            context = context,
+            config = Configuration(
+                binary = jdkDir.resolve("bin/jstat"),
+                arguments = listOf(
+                    "-J-Djava.io.tmpdir=${context.cacheDir.absolutePath}",
+                    option,
+                    pid.toString(),
+                    JSTAT_SAMPLE_INTERVAL_MS.toString()
+                ),
+                workingDir = workingDir,
+                environmentOverrides = mapOf("JAVA_HOME" to jdkDir.absolutePath)
+            )
         )
     }
 
-    private fun createProcessBuilder(
-        context: Context,
-        config: Configuration
-    ): ProcessBuilder {
-        val tempDir = context.cacheDir
-        val appDir = context.filesDir
-        val glibcPath = appDir.resolve("glibc").absolutePath
-
-        val nativeLibDir = context.applicationInfo.nativeLibraryDir
-        val customLinker = "$nativeLibDir/libld_linux.so"
-        val nssWrapper = appDir.resolve("glibc/libnss_wrapper.so").absolutePath
-        val pathRedirect = "$nativeLibDir/libpath_redirect.so"
-        val combinedPreload = "$nssWrapper:$pathRedirect"
-
-        val resolvConf = tempDir.resolve("resolv.conf")
-        val nsswitchConf = tempDir.resolve("nsswitch.conf")
-        val passwdFile = tempDir.resolve("passwd")
-        val groupFile = tempDir.resolve("group")
-        val runtimeUser = "cosmicide"
-        val runtimeUid = AndroidProcess.myUid()
-        val dns = listOf("8.8.8.8", "1.1.1.1")
-
-        resolvConf.bufferedWriter().use { writer ->
-            dns.forEach { ip -> writer.write("nameserver $ip\n") }
-        }
-
-        nsswitchConf.writeText("passwd: files\ngroup: files\nhosts: files dns\n")
-        passwdFile.writeText("$runtimeUser:x:$runtimeUid:$runtimeUid:Cosmic IDE:${appDir.absolutePath}:/system/bin/sh\n")
-        groupFile.writeText("$runtimeUser:x:$runtimeUid:\n")
-
-        val command = mutableListOf(
-            customLinker,
-            "--library-path",
-            glibcPath
-        ).apply {
-            add("--preload")
-            add(combinedPreload)
-            add(config.binary.absolutePath)
-            addAll(config.arguments)
-        }
+    private fun createProcessBuilder(context: Context, config: Configuration): ProcessBuilder {
+        val runtime = prepareGlibcRuntime(context)
+        val command = runtime.wrapCommand(config.binary, config.arguments)
 
         return ProcessBuilder(command).apply {
-            environment().apply {
-                clear()
-
-                val binaryBinDir = config.binary.parentFile
-                val pathEntries = buildList {
-                    if (binaryBinDir != null) add(binaryBinDir)
-                    addAll(config.pathEntries)
-                    add(File("/system/bin"))
-                }
-                    .distinctBy { it.absolutePath }
-                    .joinToString(":") { it.absolutePath }
-
-                put("PATH", pathEntries)
-                put("LD_LIBRARY_PATH", glibcPath)
-                put("HOME", appDir.absolutePath)
-                put("USER", runtimeUser)
-                put("LOGNAME", runtimeUser)
-                put("LD_PRELOAD", combinedPreload)
-
-                put("RES_OPTIONS", "resolv-file=${resolvConf.absolutePath}")
-                put("NSS_WEAK_ROUTE_CONFIG", nsswitchConf.absolutePath)
-                put("NSS_WRAPPER_PASSWD", passwdFile.absolutePath)
-                put("NSS_WRAPPER_GROUP", groupFile.absolutePath)
-                put("GLIBC_TUNABLES", "glibc.rtld.optional_dirs=$glibcPath")
-
-                putAll(config.environmentOverrides)
-            }
             directory(config.workingDir)
             redirectErrorStream(true)
+
+            environment().apply {
+                clear()
+                putCommonGlibcEnvironment(runtime)
+                put("PATH", buildPath(config.binary, config.pathEntries))
+
+                // Keep this last so callers can intentionally override JAVA_HOME,
+                // TMPDIR, LD_LIBRARY_PATH, PATH, DNS_TRACE, etc. for special tool invocations.
+                putAll(config.environmentOverrides)
+            }
         }
+    }
+
+    private fun GlibcRuntime.wrapCommand(binary: File, arguments: List<String>): List<String> {
+        return buildList {
+            add(customLinker)
+            add("--library-path")
+            add(glibcPath)
+            add("--preload")
+            add(combinedPreload)
+            add(binary.absolutePath)
+            addAll(arguments)
+        }
+    }
+
+    private fun buildPath(binary: File, extraEntries: List<File>): String {
+        return buildList {
+            binary.parentFile?.let(::add)
+            addAll(extraEntries)
+            add(File("/system/bin"))
+        }.distinctBy { it.absolutePath }
+            .joinToString(":") { it.absolutePath }
+    }
+
+    private fun prepareGlibcRuntime(context: Context): GlibcRuntime {
+        val tempDir = context.cacheDir.apply { mkdirs() }
+        val appDir = context.filesDir
+        val glibcPath = appDir.resolve("glibc").absolutePath
+        val nativeLibDir = context.applicationInfo.nativeLibraryDir
+        val runtimeUid = AndroidProcess.myUid()
+
+        val resolvConf = tempDir.resolve("resolv.conf")
+        val hostsFile = tempDir.resolve("hosts")
+        val nsswitchConf = tempDir.resolve("nsswitch.conf")
+        val gaiConf = tempDir.resolve("gai.conf")
+        val passwdFile = tempDir.resolve("passwd")
+        val groupFile = tempDir.resolve("group")
+
+        writeRuntimeFiles(
+            appDir = appDir,
+            runtimeUid = runtimeUid,
+            resolvConf = resolvConf,
+            hostsFile = hostsFile,
+            nsswitchConf = nsswitchConf,
+            gaiConf = gaiConf,
+            passwdFile = passwdFile,
+            groupFile = groupFile
+        )
+
+        val pathRedirect = "$nativeLibDir/libpath_redirect.so"
+        val nssWrapper = appDir.resolve("glibc/libnss_wrapper.so").absolutePath
+
+        return GlibcRuntime(
+            tempDir = tempDir,
+            appDir = appDir,
+            glibcPath = glibcPath,
+            customLinker = "$nativeLibDir/libld_linux.so",
+            combinedPreload = listOf(pathRedirect, nssWrapper).joinToString(":"),
+            runtimeUser = RUNTIME_USER,
+            resolvConf = resolvConf,
+            hostsFile = hostsFile,
+            nsswitchConf = nsswitchConf,
+            gaiConf = gaiConf,
+            passwdFile = passwdFile,
+            groupFile = groupFile
+        )
+    }
+
+    private fun writeRuntimeFiles(
+        appDir: File,
+        runtimeUid: Int,
+        resolvConf: File,
+        hostsFile: File,
+        nsswitchConf: File,
+        gaiConf: File,
+        passwdFile: File,
+        groupFile: File
+    ) {
+        resolvConf.writeTextIfChanged(
+            buildString {
+                DefaultDnsServers.forEach { ip -> append("nameserver $ip\n") }
+                append("options timeout:2 attempts:2\n")
+            }
+        )
+
+        hostsFile.writeTextIfChanged(
+            """
+            127.0.0.1 localhost
+            ::1 localhost ip6-localhost ip6-loopback
+            """.trimIndent() + "\n"
+        )
+
+        nsswitchConf.writeTextIfChanged(
+            """
+            passwd: files
+            group: files
+            hosts: files dns
+            """.trimIndent() + "\n"
+        )
+
+        // Empty file is fine. It just prevents glibc from trying literal /etc/gai.conf.
+        gaiConf.writeTextIfChanged("")
+
+        passwdFile.writeTextIfChanged(
+            "$RUNTIME_USER:x:$runtimeUid:$runtimeUid:Cosmic IDE:${appDir.absolutePath}:/system/bin/sh\n"
+        )
+        groupFile.writeTextIfChanged("$RUNTIME_USER:x:$runtimeUid:\n")
+    }
+
+    private fun File.writeTextIfChanged(content: String) {
+        parentFile?.mkdirs()
+
+        val oldContent = try {
+            if (isFile) readText() else null
+        } catch (_: Exception) {
+            null
+        }
+
+        if (oldContent != content) {
+            writeText(content)
+        }
+    }
+
+    private fun MutableMap<String, String>.putCommonGlibcEnvironment(runtime: GlibcRuntime) {
+        put("LD_LIBRARY_PATH", runtime.glibcPath)
+
+        // --preload handles the initial custom-linker exec. LD_PRELOAD makes
+        // Java/Gradle child processes inherit the same compatibility layer.
+        put("LD_PRELOAD", runtime.combinedPreload)
+
+        put("HOME", runtime.appDir.absolutePath)
+        put("USER", runtime.runtimeUser)
+        put("LOGNAME", runtime.runtimeUser)
+
+        // TMPDIR is required by libpath_redirect for /tmp redirection. TMP/TEMP
+        // are kept for cross-platform Java/native tooling that probes them.
+        put("TMPDIR", runtime.tempDir.absolutePath)
+        put("TMP", runtime.tempDir.absolutePath)
+        put("TEMP", runtime.tempDir.absolutePath)
+
+        // libpath_redirect/dns_fallback read these directly. The optional /etc
+        // suffix redirects are only compatibility support for binaries that open
+        // Linux config paths themselves.
+        put("RESOLV_CONF_PATH", runtime.resolvConf.absolutePath)
+        put("HOSTS_PATH", runtime.hostsFile.absolutePath)
+        put("NSSWITCH_CONF_PATH", runtime.nsswitchConf.absolutePath)
+        put("GAI_CONF_PATH", runtime.gaiConf.absolutePath)
+
+        put("RES_OPTIONS", "attempts:2 timeout:2")
+
+        put("NSS_WRAPPER_PASSWD", runtime.passwdFile.absolutePath)
+        put("NSS_WRAPPER_GROUP", runtime.groupFile.absolutePath)
+
+        // Kept for compatibility with your custom glibc/nss routing layer.
+        put("NSS_WEAK_ROUTE_CONFIG", runtime.nsswitchConf.absolutePath)
+
+        put("GLIBC_TUNABLES", "glibc.rtld.optional_dirs=${runtime.glibcPath}")
     }
 
     fun getResidentMemoryKb(pid: Int): Long {
         return try {
-            val statm = File("/proc/$pid/statm").readText().split(" ")
-            if (statm.size < 2) return 0L
-            val pages = statm[1].toLong()
-            (pages * 4096) / 1024
+            val fields = File("/proc/$pid/statm").readText().split(' ')
+            val residentPages = fields.getOrNull(1)?.toLongOrNull() ?: return 0L
+            residentPages * PAGE_SIZE_BYTES / BYTES_PER_KB
         } catch (_: Exception) {
             0L
         }
@@ -392,7 +415,9 @@ object LinuxProcessRunner {
 
     fun getNativePid(process: Process): Int {
         return try {
-            val field: Field = process.javaClass.getDeclaredField("pid").apply { isAccessible = true }
+            val field: Field = (process as Any).javaClass.getDeclaredField("pid").apply {
+                isAccessible = true
+            }
             field.get(process) as Int
         } catch (_: Exception) {
             -1
@@ -419,7 +444,7 @@ object LinuxProcessRunner {
     }
 
     private fun childPidsOf(pid: Int): List<Int> {
-        val children = try {
+        val directChildren = try {
             File("/proc/$pid/task/$pid/children")
                 .readText()
                 .trim()
@@ -429,7 +454,7 @@ object LinuxProcessRunner {
             emptyList()
         }
 
-        if (children.isNotEmpty()) return children
+        if (directChildren.isNotEmpty()) return directChildren
 
         return try {
             File("/proc")
@@ -444,13 +469,12 @@ object LinuxProcessRunner {
 
     private fun getParentPid(pid: Int): Int? {
         return try {
-            File("/proc/$pid/status")
-                .useLines { lines ->
-                    lines.firstOrNull { it.startsWith("PPid:") }
-                        ?.substringAfter(':')
-                        ?.trim()
-                        ?.toIntOrNull()
-                }
+            File("/proc/$pid/status").useLines { lines ->
+                lines.firstOrNull { it.startsWith("PPid:") }
+                    ?.substringAfter(':')
+                    ?.trim()
+                    ?.toIntOrNull()
+            }
         } catch (_: Exception) {
             null
         }
@@ -479,9 +503,7 @@ object LinuxProcessRunner {
         if (executableName == "java") return true
 
         val command = readCommandLine(pid).firstOrNull().orEmpty()
-        if (command == "java" || command.endsWith("/bin/java")) return true
-
-        return hasLoadedJvm(pid)
+        return command == "java" || command.endsWith("/bin/java") || hasLoadedJvm(pid)
     }
 
     private fun readCommandLine(pid: Int): List<String> {
@@ -504,4 +526,7 @@ object LinuxProcessRunner {
             false
         }
     }
+
+    private const val PAGE_SIZE_BYTES = 4096L
+    private const val BYTES_PER_KB = 1024L
 }

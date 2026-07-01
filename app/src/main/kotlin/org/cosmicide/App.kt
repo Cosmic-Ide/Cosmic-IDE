@@ -41,9 +41,9 @@ import java.io.File
 import java.lang.ref.WeakReference
 import java.net.URL
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
 import java.util.logging.Logger
-import kotlin.jvm.java
 
 class App : Application() {
 
@@ -63,7 +63,6 @@ class App : Application() {
         if (FileUtil.isInitialized.not()) return
 
         Analytics.init(this@App)
-        Log.d("Analytics", "Sending event")
 
         Analytics.logEvent(
             "user_metrics",
@@ -93,7 +92,7 @@ class App : Application() {
 
         HiddenApiBypass.addHiddenApiExemptions()
 
-        val jdkDir = jdksDir().resolve("jdk-" + Prefs.currentJDK)
+        val jdkDir = jdksDir().resolve(Prefs.currentJDK)
         ConfigProvider.setJavaHome(jdkDir.absolutePath)
 
         Log.d("App", "JDK set to: ${ConfigProvider.getJavaHome()}")

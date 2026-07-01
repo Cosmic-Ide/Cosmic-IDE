@@ -71,7 +71,6 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
     }
 
     override fun createFragment(position: Int): Fragment {
-        Log.d("EditorAdapter", "createFragment: $position")
         val fragment = CodeEditorFragment().apply {
             arguments = Bundle().apply {
                 putSerializable("file", fileViewModel.files.value!![position])

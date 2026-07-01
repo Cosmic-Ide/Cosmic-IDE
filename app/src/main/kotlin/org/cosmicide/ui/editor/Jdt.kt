@@ -14,7 +14,6 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.common.Prefs
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.jdksDir
 import java.io.File
 import java.io.InputStream
@@ -32,7 +31,7 @@ suspend fun runJdtlsProcess(
         val nativeLibDir = context.applicationInfo.nativeLibraryDir
         val appDir = context.filesDir
         val glibcPath = appDir.resolve("glibc").absolutePath
-        val jdkDir = context.jdksDir().resolve("jdk-" + Prefs.currentJDK)
+        val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
         val javaBinary = jdkDir.resolve("bin/java").absolutePath
         val executableLinker = "$nativeLibDir/libld_linux.so"
         val codeCacheDir = context.codeCacheDir
@@ -101,7 +100,6 @@ suspend fun runJdtlsProcess(
         }
 
         try {
-            Log.d("CosmicIDE", "--- Launching Cascaded JDTLS Core ---")
             val process = processBuilder.start()
             streamStderrToLogcat(process.errorStream)
             Log.d("CosmicIDE", "JDTLS process started with PID: ${LinuxProcessRunner.getNativePid(process)}")

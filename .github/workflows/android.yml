@@ -23,6 +23,9 @@ jobs:
           java-version: '17'
 
       - name: Give permission to executable
+        run: bash ./scripts/build-glibc.sh
+
+      - name: Generate glibc.zip
         run: chmod +x gradlew
 
       - name: Setup Android SDK

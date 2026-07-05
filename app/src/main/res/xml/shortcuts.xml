@@ -7,17 +7,4 @@
 
 <shortcuts>
 
-    <!--
-    <shortcut
-        android:shortcutId="debug_mode"
-        android:enabled="true"
-        android:icon="@drawable/crash_ic_bug_report"
-        android:shortcutShortLabel="@string/open_debug_tools">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetPackage="org.cosmicide.rewrite"
-            android:targetClass="com.krishna.debug_tools.activity.ActivityDebugTools" />
-        <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
-    </shortcut>
-    -->
 </shortcuts>

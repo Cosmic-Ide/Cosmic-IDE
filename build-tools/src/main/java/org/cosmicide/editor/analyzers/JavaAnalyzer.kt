@@ -17,7 +17,7 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmicide.common.Prefs
 import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.FileUtil
 import java.io.File
 import java.nio.charset.Charset
 import java.util.Locale

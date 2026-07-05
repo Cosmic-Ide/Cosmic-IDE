@@ -48,7 +48,7 @@ dependencies {
     }
     implementation("org.jetbrains:annotations:26.1.0")
     implementation("org.javassist:javassist:3.30.2-GA")
-    implementation("com.github.PranavPurwar:javac-android:27.23")
+    implementation("com.github.PranavPurwar:javac-android:27.26")
     implementation(projects.feature.project)
     implementation(projects.common)
     implementation(projects.util)

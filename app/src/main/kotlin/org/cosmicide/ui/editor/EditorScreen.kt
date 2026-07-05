@@ -2,19 +2,70 @@ package org.cosmicide.ui.editor
 
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Redo
 import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,18 +108,17 @@ sealed class TreeDialogState {
     data class Delete(val target: File) : TreeDialogState()
 
     enum class CreateType(val title: String, val suffix: String = "") {
-        KOTLIN_CLASS("Create Kotlin Class", ".kt"),
-        JAVA_CLASS("Create Java Class", ".java"),
-        FOLDER("Create Folder"),
-        FILE("Create File")
+        KOTLIN_CLASS("Create Kotlin Class", ".kt"), JAVA_CLASS(
+            "Create Java Class",
+            ".java"
+        ),
+        FOLDER("Create Folder"), FILE("Create File")
     }
 }
 
 @Composable
 fun EditorScreen(
-    project: Project,
-    onCompile: () -> Unit,
-    viewModel: EditorViewModel = viewModel()
+    project: Project, onCompile: () -> Unit, viewModel: EditorViewModel = viewModel()
 ) {
     val state = remember { CodeEditorState() }
     val context = LocalContext.current
@@ -85,15 +135,15 @@ fun EditorScreen(
 
     DisposableEffect(project.name) {
         CoroutineScope(Dispatchers.IO).launch {
-        runJdtlsProcess(context, project) { process ->
-            val pid = LinuxProcessRunner.getNativePid(process)
-            while (process.isAlive) {
-                val mem = LinuxProcessRunner.getResidentMemoryKb(pid)
+            runJdtlsProcess(context, project) { process ->
+                val pid = LinuxProcessRunner.getNativePid(process)
+                while (process.isAlive) {
+                    val mem = LinuxProcessRunner.getResidentMemoryKb(pid)
 
-                println("JDT mem: " + mem)
-                Thread.sleep(5.seconds.inWholeMilliseconds)
+                    println("JDT mem: " + mem)
+                    Thread.sleep(5.seconds.inWholeMilliseconds)
+                }
             }
-        }
         }
 
         onDispose {
@@ -110,18 +160,34 @@ fun EditorScreen(
         viewModel.switchTab(newFile, editor.text.toString())
     }
 
+    val colorScheme = MaterialTheme.colorScheme
+
     LaunchedEffect(activeFile) {
         activeFile?.let { file ->
             val content = fileContentCache[file] ?: withContext(Dispatchers.IO) { file.readText() }
             viewModel.updateCache(file, content)
             editor.setText(content)
-            editor.applyEditorSettings(file)
+            editor.applyEditorSettings(file, colorScheme)
         }
     }
 
+    DisposableEffect(activeFile) {
+        editor.subscribeEvent(ContentChangeEvent::class.java) { _, unsubscribe ->
+            activeFile?.let { file ->
+                viewModel.updateCache(file, editor.text.toString())
+                file.writeText(editor.text.toString())
+            }
+
+            onDispose {
+                unsubscribe.unsubscribe()
+            }
+        }
+
+        onDispose { }
+    }
+
     ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
+        drawerState = drawerState, drawerContent = {
             ModalDrawerSheet {
                 Text(
                     text = "Project Explorer",
@@ -130,23 +196,18 @@ fun EditorScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
                 HorizontalDivider()
-                ProjectTreeView(
-                    rootDir = project.root,
-                    onFileClick = { file ->
-                        switchTab(file)
-                        scope.launch { drawerState.close() }
-                    },
-                    onExecuteFile = { file ->
-                        val executionPath =
-                            file.absolutePath.replace(project.srcDir.absolutePath + "/", "")
-                        ProjectHandler.clazz = executionPath.substringBeforeLast('.')
-                        onCompile()
-                        scope.launch { drawerState.close() }
-                    }
-                )
+                ProjectTreeView(rootDir = project.root, onFileClick = { file ->
+                    switchTab(file)
+                    scope.launch { drawerState.close() }
+                }, onExecuteFile = { file ->
+                    val executionPath =
+                        file.absolutePath.replace(project.srcDir.absolutePath + "/", "")
+                    ProjectHandler.clazz = executionPath.substringBeforeLast('.')
+                    onCompile()
+                    scope.launch { drawerState.close() }
+                })
             }
-        }
-    ) {
+        }) {
         Scaffold(
             topBar = {
                 Column {
@@ -163,31 +224,25 @@ fun EditorScreen(
                             selectedTabIndex = openFiles.indexOf(activeFile).coerceAtLeast(0),
                             edgePadding = 8.dp,
                             containerColor = MaterialTheme.colorScheme.surface,
-                            divider = { HorizontalDivider() }
-                        ) {
+                            divider = { HorizontalDivider() }) {
                             openFiles.forEach { file ->
                                 val isSelected = file == activeFile
                                 Tab(
-                                    selected = isSelected,
-                                    onClick = { switchTab(file) }
-                                ) {
+                                    selected = isSelected, onClick = { switchTab(file) }) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.padding(
-                                            horizontal = 12.dp,
-                                            vertical = 10.dp
+                                            horizontal = 12.dp, vertical = 10.dp
                                         )
                                     ) {
                                         Text(
-                                            file.name,
-                                            style = MaterialTheme.typography.labelMedium
+                                            file.name, style = MaterialTheme.typography.labelMedium
                                         )
                                         Spacer(Modifier.width(6.dp))
                                         IconButton(
                                             onClick = {
                                                 viewModel.closeTab(file)
-                                            },
-                                            modifier = Modifier.size(18.dp)
+                                            }, modifier = Modifier.size(18.dp)
                                         ) {
                                             Icon(
                                                 Icons.Default.Close,
@@ -202,8 +257,7 @@ fun EditorScreen(
                         HorizontalDivider(thickness = 1.dp)
                     }
                 }
-            }
-        ) { innerPadding ->
+            }) { innerPadding ->
             Box(
                 Modifier
                     .padding(innerPadding)
@@ -223,9 +277,7 @@ fun EditorScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProjectTreeView(
-    rootDir: File,
-    onFileClick: (File) -> Unit,
-    onExecuteFile: (File) -> Unit
+    rootDir: File, onFileClick: (File) -> Unit, onExecuteFile: (File) -> Unit
 ) {
     val context = LocalContext.current
     var expandedDirs by remember { mutableStateOf(setOf(rootDir)) }
@@ -278,14 +330,11 @@ fun ProjectTreeView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .combinedClickable(
-                            onClick = {
-                                if (file.isDirectory) toggleExpand(file) else onFileClick(file)
-                            },
-                            onLongClick = {
-                                contextMenuFile = file
-                            }
-                        )
+                        .combinedClickable(onClick = {
+                            if (file.isDirectory) toggleExpand(file) else onFileClick(file)
+                        }, onLongClick = {
+                            contextMenuFile = file
+                        })
                         .padding(vertical = 10.dp, horizontal = 16.dp)
                         .padding(start = (depth * 16).dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -320,45 +369,36 @@ fun ProjectTreeView(
 
                 if (contextMenuFile == file) {
                     CascadeDropdownMenu(
-                        expanded = true,
-                        onDismissRequest = { contextMenuFile = null }
-                    ) {
+                        expanded = true, onDismissRequest = { contextMenuFile = null }) {
                         if (file.isDirectory) {
                             // Nesting creation options inside a fluid sub-menu
-                            DropdownMenuItem(
-                                text = { Text("New...") },
-                                children = {
-                                    DropdownMenuItem(text = { Text("Kotlin Class") }, onClick = {
-                                        activeDialog = TreeDialogState.Create(
-                                            file,
-                                            TreeDialogState.CreateType.KOTLIN_CLASS
-                                        )
-                                        contextMenuFile = null
-                                    })
-                                    DropdownMenuItem(text = { Text("Java Class") }, onClick = {
-                                        activeDialog = TreeDialogState.Create(
-                                            file,
-                                            TreeDialogState.CreateType.JAVA_CLASS
-                                        )
-                                        contextMenuFile = null
-                                    })
-                                    HorizontalDivider()
-                                    DropdownMenuItem(text = { Text("Folder") }, onClick = {
-                                        activeDialog = TreeDialogState.Create(
-                                            file,
-                                            TreeDialogState.CreateType.FOLDER
-                                        )
-                                        contextMenuFile = null
-                                    })
-                                    DropdownMenuItem(text = { Text("File") }, onClick = {
-                                        activeDialog = TreeDialogState.Create(
-                                            file,
-                                            TreeDialogState.CreateType.FILE
-                                        )
-                                        contextMenuFile = null
-                                    })
-                                }
-                            )
+                            DropdownMenuItem(text = { Text("New...") }, children = {
+                                DropdownMenuItem(text = { Text("Kotlin Class") }, onClick = {
+                                    activeDialog = TreeDialogState.Create(
+                                        file, TreeDialogState.CreateType.KOTLIN_CLASS
+                                    )
+                                    contextMenuFile = null
+                                })
+                                DropdownMenuItem(text = { Text("Java Class") }, onClick = {
+                                    activeDialog = TreeDialogState.Create(
+                                        file, TreeDialogState.CreateType.JAVA_CLASS
+                                    )
+                                    contextMenuFile = null
+                                })
+                                HorizontalDivider()
+                                DropdownMenuItem(text = { Text("Folder") }, onClick = {
+                                    activeDialog = TreeDialogState.Create(
+                                        file, TreeDialogState.CreateType.FOLDER
+                                    )
+                                    contextMenuFile = null
+                                })
+                                DropdownMenuItem(text = { Text("File") }, onClick = {
+                                    activeDialog = TreeDialogState.Create(
+                                        file, TreeDialogState.CreateType.FILE
+                                    )
+                                    contextMenuFile = null
+                                })
+                            })
                         } else {
                             if (file.extension == "kt" || file.extension == "java") {
                                 DropdownMenuItem(text = { Text("Execute") }, onClick = {
@@ -379,9 +419,7 @@ fun ProjectTreeView(
                             DropdownMenuItem(text = { Text("Open External") }, onClick = {
                                 try {
                                     val uri = FileProvider.getUriForFile(
-                                        context,
-                                        "${context.packageName}.provider",
-                                        file
+                                        context, "${context.packageName}.provider", file
                                     )
                                     val intent = Intent(Intent.ACTION_VIEW).apply {
                                         setDataAndType(uri, "*/*")
@@ -403,8 +441,7 @@ fun ProjectTreeView(
                         })
                         DropdownMenuItem(text = {
                             Text(
-                                "Delete",
-                                color = MaterialTheme.colorScheme.error
+                                "Delete", color = MaterialTheme.colorScheme.error
                             )
                         }, onClick = {
                             activeDialog = TreeDialogState.Delete(file)
@@ -436,8 +473,7 @@ fun ProjectTreeView(
                     }
                     treeTrigger++
                     activeDialog = null
-                }
-            )
+                })
         }
 
         is TreeDialogState.Rename -> {
@@ -450,8 +486,7 @@ fun ProjectTreeView(
                     state.target.renameTo(state.target.parentFile!!.resolve(cleanName))
                     treeTrigger++
                     activeDialog = null
-                }
-            )
+                })
         }
 
         is TreeDialogState.Delete -> {
@@ -468,8 +503,7 @@ fun ProjectTreeView(
                 },
                 dismissButton = {
                     TextButton(onClick = { activeDialog = null }) { Text("Cancel") }
-                }
-            )
+                })
         }
 
         null -> {}
@@ -486,32 +520,25 @@ fun TreeInputDialog(
 ) {
     var text by remember { mutableStateOf(initialValue) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Name") },
-                suffix = if (suffix.isNotEmpty()) {
-                    { Text(suffix) }
-                } else null,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = { if (text.isNotBlank()) onConfirm(text) },
-                enabled = text.isNotBlank(),
-                shapes = ButtonDefaults.shapes()
-            ) { Text("Confirm") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = {
+        OutlinedTextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Name") },
+            suffix = if (suffix.isNotEmpty()) {
+                { Text(suffix) }
+            } else null,
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth())
+    }, confirmButton = {
+        Button(
+            onClick = { if (text.isNotBlank()) onConfirm(text) },
+            enabled = text.isNotBlank(),
+            shapes = ButtonDefaults.shapes()
+        ) { Text("Confirm") }
+    }, dismissButton = {
+        TextButton(onClick = onDismiss) { Text("Cancel") }
+    })
 }
 
 @Composable
@@ -556,6 +583,7 @@ fun EditorToolbar(
     var showProgramArgsDialog by remember { mutableStateOf(false) }
     var showJREArgsDialog by remember { mutableStateOf(false) }
     var showCustomCommandDialog by remember { mutableStateOf(false) }
+    var showStatsDialog by remember { mutableStateOf(false) }
 
     val undoManager = editor.text.undoManager
     var canUndo by remember { mutableStateOf(undoManager.canUndo()) }
@@ -579,103 +607,96 @@ fun EditorToolbar(
         editorContentHash = editor.text.toString().toByteArray().contentHashCode()
     }
 
-    TopAppBar(
-        title = {
-            Text(
-                text = file?.name ?: "Cosmic IDE",
-                style = MaterialTheme.typography.titleMediumEmphasized,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+    TopAppBar(title = {
+        Text(
+            text = file?.name ?: "Cosmic IDE",
+            style = MaterialTheme.typography.titleMediumEmphasized,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }, navigationIcon = {
+        IconButton(onClick = onOpenDrawer) {
+            Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
+        }
+    }, actions = {
+        IconButton(onClick = onCompile) {
+            Icon(
+                Icons.Filled.PlayArrow,
+                contentDescription = "Compile",
+                tint = MaterialTheme.colorScheme.onSurface
             )
-        },
-        navigationIcon = {
-            IconButton(onClick = onOpenDrawer) {
-                Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
-            }
-        },
-        actions = {
-            IconButton(onClick = onCompile) {
-                Icon(
-                    Icons.Filled.PlayArrow,
-                    contentDescription = "Compile",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-            IconButton(onClick = {
-                editor.undo()
-                canUndo = undoManager.canUndo()
-                canRedo = undoManager.canRedo()
-                editorContentHash = editor.text.toString().toByteArray().contentHashCode()
-            }, enabled = file != null) {
-                Icon(
-                    Icons.AutoMirrored.Filled.Undo,
-                    contentDescription = "Undo",
-                    tint = if (canUndo) MaterialTheme.colorScheme.onSurface else Color.Gray
-                )
-            }
-            IconButton(onClick = {
-                editor.redo()
-                canUndo = undoManager.canUndo()
-                canRedo = undoManager.canRedo()
-                editorContentHash = editor.text.toString().toByteArray().contentHashCode()
-            }, enabled = file != null) {
-                Icon(
-                    Icons.AutoMirrored.Filled.Redo,
-                    contentDescription = "Redo",
-                    tint = if (canRedo) MaterialTheme.colorScheme.onSurface else Color.Gray
-                )
+        }
+        IconButton(onClick = {
+            editor.undo()
+            canUndo = undoManager.canUndo()
+            canRedo = undoManager.canRedo()
+            editorContentHash = editor.text.toString().toByteArray().contentHashCode()
+        }, enabled = file != null) {
+            Icon(
+                Icons.AutoMirrored.Filled.Undo,
+                contentDescription = "Undo",
+                tint = if (canUndo) MaterialTheme.colorScheme.onSurface else Color.Gray
+            )
+        }
+        IconButton(onClick = {
+            editor.redo()
+            canUndo = undoManager.canUndo()
+            canRedo = undoManager.canRedo()
+            editorContentHash = editor.text.toString().toByteArray().contentHashCode()
+        }, enabled = file != null) {
+            Icon(
+                Icons.AutoMirrored.Filled.Redo,
+                contentDescription = "Redo",
+                tint = if (canRedo) MaterialTheme.colorScheme.onSurface else Color.Gray
+            )
+        }
+
+        Box {
+            IconButton(onClick = { showMenu = !showMenu }) {
+                Icon(Icons.Filled.MoreVert, contentDescription = "Editor Options")
             }
 
-            Box {
-                IconButton(onClick = { showMenu = !showMenu }) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = "Editor Options")
-                }
-
-                CascadeDropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Execution") },
-                        children = {
-                            DropdownMenuItem(text = { Text("Program Arguments") }, onClick = {
-                                showProgramArgsDialog = true
-                                showMenu = false
-                            })
-                            DropdownMenuItem(text = { Text("Runtime Arguments") }, onClick = {
-                                showJREArgsDialog = true
-                                showMenu = false
-                            })
-                            DropdownMenuItem(text = { Text("Custom Command") }, onClick = {
-                                showCustomCommandDialog = true
-                                showMenu = false
-                            })
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Navigation") },
-                        children = {
-                            DropdownMenuItem(text = { Text("Go To Line") }, onClick = {
-                                showGoToLineDialog = true
-                                showMenu = false
-                            })
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("File Options") },
-                        children = {
-                            DropdownMenuItem(text = { Text("View Statistics") }, onClick = {
-                                showMenu = false
-                            })
-                        }
-                    )
-                    DropdownMenuItem(text = { Text("Settings") }, onClick = {
+            CascadeDropdownMenu(
+                expanded = showMenu, onDismissRequest = { showMenu = false }) {
+                DropdownMenuItem(text = { Text("Execution") }, children = {
+                    DropdownMenuItem(text = { Text("Program Arguments") }, onClick = {
+                        showProgramArgsDialog = true
                         showMenu = false
                     })
-                }
+                    DropdownMenuItem(text = { Text("Runtime Arguments") }, onClick = {
+                        showJREArgsDialog = true
+                        showMenu = false
+                    })
+                    DropdownMenuItem(text = { Text("Custom Command") }, onClick = {
+                        showCustomCommandDialog = true
+                        showMenu = false
+                    })
+                })
+                DropdownMenuItem(text = { Text("Editor") }, children = {
+                    DropdownMenuItem(text = { Text("Format") }, onClick = {
+                        editor.formatCodeAsync()
+                        showMenu = false
+                    })
+                    DropdownMenuItem(text = { Text("Go To Line") }, onClick = {
+                        showGoToLineDialog = true
+                        showMenu = false
+                    })
+                    DropdownMenuItem(text = { Text("View Statistics") }, onClick = {
+                        showStatsDialog = true
+                        showMenu = false
+                    })
+                })
+                DropdownMenuItem(text = { Text("File Options") }, children = {
+                    DropdownMenuItem(text = { Text("View Statistics") }, onClick = {
+                        showMenu = false
+                    })
+                })
+                DropdownMenuItem(text = { Text("Settings") }, onClick = {
+                    showMenu = false
+                })
             }
         }
-    )
+    })
 
     if (showGoToLineDialog) {
         GoToLineDialog(
@@ -684,8 +705,7 @@ fun EditorToolbar(
             onConfirm = { lineNumber ->
                 editor.jumpToLine(lineNumber - 1)
                 showGoToLineDialog = false
-            }
-        )
+            })
     }
 
     if (showProgramArgsDialog) {
@@ -697,8 +717,7 @@ fun EditorToolbar(
             },
             onDismiss = {
                 showProgramArgsDialog = false
-            }
-        )
+            })
     }
 
     if (showJREArgsDialog) {
@@ -710,14 +729,18 @@ fun EditorToolbar(
             },
             onDismiss = {
                 showJREArgsDialog = false
-            }
-        )
+            })
     }
 
     if (showCustomCommandDialog) {
         CustomCommandDialog(
-            project = project,
-            onDismiss = { showCustomCommandDialog = false }
+            project = project, onDismiss = { showCustomCommandDialog = false })
+    }
+
+    if (showStatsDialog) {
+        Statistics(
+            content = editor.text,
+            onDismiss = { showStatsDialog = false }
         )
     }
 }
@@ -727,49 +750,41 @@ fun GoToLineDialog(lineCount: Int, onDismiss: () -> Unit, onConfirm: (Int) -> Un
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Go to Line") },
-        text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it.filter { char -> char.isDigit() } },
-                label = { Text("Line number") },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    val lineNumber = text.toIntOrNull()
-                    if (lineNumber != null && lineNumber in 1..lineCount) {
-                        onConfirm(lineNumber)
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Invalid line number. Must be between 1 and $lineCount.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                },
-                shapes = ButtonDefaults.shapes()
-            ) {
-                Text("Go")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
+    AlertDialog(onDismissRequest = onDismiss, title = { Text("Go to Line") }, text = {
+        OutlinedTextField(
+            value = text,
+            onValueChange = { text = it.filter { char -> char.isDigit() } },
+            label = { Text("Line number") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+    }, confirmButton = {
+        Button(
+            onClick = {
+                val lineNumber = text.toIntOrNull()
+                if (lineNumber != null && lineNumber in 1..lineCount) {
+                    onConfirm(lineNumber)
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Invalid line number. Must be between 1 and $lineCount.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }, shapes = ButtonDefaults.shapes()
+        ) {
+            Text("Go")
         }
-    )
+    }, dismissButton = {
+        TextButton(onClick = onDismiss) {
+            Text("Cancel")
+        }
+    })
 }
 
 @Composable
 fun CustomCommandDialog(
-    project: Project,
-    onDismiss: () -> Unit
+    project: Project, onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -826,8 +841,7 @@ fun CustomCommandDialog(
                         Text(
                             text = outputLog,
                             style = MaterialTheme.typography.bodySmall.copy(
-                                fontFamily = FontFamily.Monospace,
-                                lineHeight = 16.sp
+                                fontFamily = FontFamily.Monospace, lineHeight = 16.sp
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -852,21 +866,20 @@ fun CustomCommandDialog(
                     scope.launch(Dispatchers.IO) {
                         try {
                             val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
-                            val pathEntries = LinuxProcessRunner.toolchainPathEntries(context, jdkDir)
+                            val pathEntries =
+                                LinuxProcessRunner.toolchainPathEntries(context, jdkDir)
                             val commandParts = LinuxProcessRunner.parseCommandLine(submittedCommand)
                             val binary = LinuxProcessRunner.resolveExecutable(
                                 commandName = commandParts.first(),
                                 workingDir = project.root,
                                 pathEntries = pathEntries
                             )
-                            val tempDir = context.cacheDir
                             val runnerConfig = LinuxProcessRunner.Configuration(
                                 binary = binary,
                                 arguments = commandParts.drop(1),
                                 workingDir = project.root,
                                 environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
-                                    context,
-                                    jdkDir
+                                    context, jdkDir
                                 ),
                                 pathEntries = pathEntries
                             )
@@ -879,8 +892,7 @@ fun CustomCommandDialog(
                                     scope.launch(Dispatchers.Main) {
                                         currentProcess = process
                                     }
-                                }
-                            )
+                                })
                         } catch (e: Exception) {
                             appendOutput("\nExecution failed: ${e.message}\n")
                         } finally {
@@ -899,52 +911,39 @@ fun CustomCommandDialog(
         },
         dismissButton = {
             TextButton(
-                onClick = onDismiss,
-                enabled = !isRunning
+                onClick = onDismiss, enabled = !isRunning
             ) {
                 Text("Close")
             }
-        }
-    )
+        })
 }
 
 @Composable
 fun ProgramArgumentDialog(
-    title: String,
-    savedArgs: List<String>,
-    onSave: (List<String>) -> Unit,
-    onDismiss: () -> Unit
+    title: String, savedArgs: List<String>, onSave: (List<String>) -> Unit, onDismiss: () -> Unit
 ) {
     var args by remember { mutableStateOf(savedArgs.joinToString(" ")) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            OutlinedTextField(
-                value = args,
-                label = { Text(title) },
-                singleLine = true,
-                onValueChange = { args = it }
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onSave(args.split(' '))
-                    onDismiss()
-                },
-                shapes = ButtonDefaults.shapes()
-            ) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = {
+        OutlinedTextField(
+            value = args,
+            label = { Text(title) },
+            singleLine = true,
+            onValueChange = { args = it })
+    }, confirmButton = {
+        Button(
+            onClick = {
+                onSave(args.split(' '))
+                onDismiss()
+            }, shapes = ButtonDefaults.shapes()
+        ) {
+            Text("Save")
         }
-    )
+    }, dismissButton = {
+        TextButton(onClick = onDismiss) {
+            Text("Cancel")
+        }
+    })
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -1014,13 +1013,9 @@ private fun TextEditorContent(editor: CodeEditor) {
                 textAlign = TextAlign.End
             )
         }
-        AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { editor },
-            onRelease = {
-                editor.release()
-            }
-        )
+        AndroidView(modifier = Modifier.fillMaxSize(), factory = { editor }, onRelease = {
+            editor.release()
+        })
     }
 
     if (statsDialogShown) {

@@ -3,15 +3,16 @@ package org.cosmicide.ui.editor
 import android.content.Context
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.material.color.MaterialColors
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
@@ -27,15 +28,17 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.CodeEditor.FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE
 import io.github.rosemoe.sora.widget.CodeEditor.FLAG_DRAW_WHITESPACE_INNER
 import io.github.rosemoe.sora.widget.CodeEditor.FLAG_DRAW_WHITESPACE_LEADING
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.common.Prefs
+import org.cosmicide.editor.completion.CustomCompletionItemAdapter
+import org.cosmicide.editor.completion.CustomCompletionLayout
 import org.cosmicide.editor.language.KotlinLanguage
 import org.cosmicide.editor.language.TsLanguageJava
-import org.cosmicide.extension.setCompletionLayout
 import org.cosmicide.extension.setFont
 import org.cosmicide.util.ProjectHandler
 import org.eclipse.lsp4j.CodeLensOptions
@@ -86,11 +89,16 @@ fun CodeEditor(
     )
 }
 
-fun CodeEditor.applyEditorSettings(file: File) {
+fun CodeEditor.applyEditorSettings(file: File, theme: ColorScheme) {
     colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
-    setCompletionLayout()
-    setTooltipImprovements()
+    setTooltipImprovements(theme)
     setFont()
+
+    getComponent(EditorAutoCompletion::class.java).apply {
+        setAdapter(CustomCompletionItemAdapter(theme))
+        setLayout(CustomCompletionLayout())
+    }
+
     inputType = EditorInfo.TYPE_CLASS_TEXT or
             EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or
             EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS or
@@ -266,22 +274,21 @@ private fun CodeEditor.setEditorLanguage(file: File) {
 }
 
 
-private fun CodeEditor.setTooltipImprovements() {
+private fun CodeEditor.setTooltipImprovements(colorScheme: ColorScheme) {
     getComponent(EditorDiagnosticTooltipWindow::class.java).apply {
         setSize(500, 100)
         parentView.setBackgroundColor(
-            MaterialColors.getColor(
-                context,
-                com.google.android.material.R.attr.colorSurface,
-                null
-            )
+            colorScheme.surface.toArgb()
         )
     }
 }
 
 private fun createTextMateLanguage(): TextMateLanguage {
     MarkdownCodeHighlighterRegistry.global.withEditorHighlighter {
-        Pair(TextMateLanguage.create("source.java", false), TextMateColorScheme.create(ThemeRegistry.getInstance()))
+        Pair(
+            TextMateLanguage.create("source.java", false),
+            TextMateColorScheme.create(ThemeRegistry.getInstance())
+        )
     }
 
     return TextMateLanguage.create(

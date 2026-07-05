@@ -7,7 +7,7 @@
 
 package org.cosmicide.build.util
 
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.FileUtil
 import java.io.File
 
 /**

@@ -1,7 +1,6 @@
 package org.cosmicide.ui.editor
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -15,6 +14,7 @@ fun resolveTheme(context: Context, colorScheme: ColorScheme, fileName: String): 
     return applyAttributes(theme, colorScheme)
 }
 
+@Suppress("UNCHECKED_CAST")
 fun applyAttributes(stream: InputStream, colorScheme: ColorScheme): InputStream {
     val contents = stream.bufferedReader().readText()
 

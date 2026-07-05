@@ -30,7 +30,7 @@ suspend fun runJdtlsProcess(
     withContext(Dispatchers.IO) {
         val nativeLibDir = context.applicationInfo.nativeLibraryDir
         val appDir = context.filesDir
-        val glibcPath = appDir.resolve("glibc").absolutePath
+        val glibcPath = appDir.resolve("glibc/bin").absolutePath
         val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
         val javaBinary = jdkDir.resolve("bin/java").absolutePath
         val executableLinker = "$nativeLibDir/libld_linux.so"
@@ -44,8 +44,10 @@ suspend fun runJdtlsProcess(
         val sharedConfigDir = jdtlsDir.resolve("config_linux")
 
         // Separate local, writable configuration area to support cascading
-        val localConfigDir = File(context.cacheDir, "jdtls_local_config/${project.name}").apply { mkdirs() }
-        val workspaceDir = File(context.cacheDir, "jdtls_workspace/${project.name}").apply { mkdirs() }
+        val localConfigDir =
+            File(context.cacheDir, "jdtls_local_config/${project.name}").apply { mkdirs() }
+        val workspaceDir =
+            File(context.cacheDir, "jdtls_workspace/${project.name}").apply { mkdirs() }
 
         val command = mutableListOf(
             executableLinker, "--library-path", glibcPath,
@@ -53,9 +55,9 @@ suspend fun runJdtlsProcess(
             "-Djdk.xml.maxGeneralEntitySizeLimit=0",
             "-Djdk.xml.totalEntitySizeLimit=0",
             "-Djdk.lang.Process.launchMechanism=FORK",
-            "-Xshareclasses:name=jdt_ls_cache,cacheDir=${codeCacheDir.absolutePath}",
-            "-Xgcpolicy:gencon",
-            "-Xtune:virtualized",
+//            "-Xshareclasses:name=jdt_ls_cache,cacheDir=${codeCacheDir.absolutePath}",
+//            "-Xgcpolicy:gencon",
+//            "-Xtune:virtualized",
 
             "-Declipse.application=org.eclipse.jdt.ls.core.id1",
             "-Dosgi.bundles.defaultStartLevel=4",
@@ -102,7 +104,10 @@ suspend fun runJdtlsProcess(
         try {
             val process = processBuilder.start()
             streamStderrToLogcat(process.errorStream)
-            Log.d("CosmicIDE", "JDTLS process started with PID: ${LinuxProcessRunner.getNativePid(process)}")
+            Log.d(
+                "CosmicIDE",
+                "JDTLS process started with PID: ${LinuxProcessRunner.getNativePid(process)}"
+            )
 
             // write process logs to logcat without closing the stream (JDTLS keeps it open indefinitely)
             Thread {

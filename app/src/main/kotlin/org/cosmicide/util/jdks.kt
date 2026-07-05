@@ -14,11 +14,11 @@ fun Context.jdks(): List<JDKInfo> {
     val jdksDir = jdksDir()
 
     return jdksDir.listFiles { file -> file.isDirectory }?.mapNotNull { dir ->
-        val parts = dir.name.split("-", limit = 3)
+        val parts = dir.name.split("-", limit = 2)
         if (parts.size < 2) {
             null
         } else {
-            JDKInfo(parts[1], parts[2])
+            JDKInfo(parts[0], parts[1])
         }
     } ?: emptyList()
 }

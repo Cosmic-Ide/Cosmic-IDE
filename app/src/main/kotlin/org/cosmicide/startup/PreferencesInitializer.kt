@@ -10,7 +10,7 @@ package org.cosmicide.startup
 import android.content.Context
 import androidx.startup.Initializer
 import org.cosmicide.common.Prefs
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.FileUtil
 
 class PreferencesInitializer : Initializer<Unit> {
 

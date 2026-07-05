@@ -17,12 +17,12 @@ import io.github.rosemoe.sora.text.TextRange
  *
  * @property language The language to use for formatting.
  */
-class IdeFormatter(private val language: IdeLanguage) : AsyncFormatter() {
+open class IdeFormatter(private val language: IdeLanguage) : AsyncFormatter() {
 
-    override fun formatAsync(text: Content, range: TextRange): TextRange {
+    override fun formatAsync(text: Content, range: TextRange): TextRange? {
         val formattedText = language.formatCode(text)
         text.replace(0, text.length, formattedText)
-        return range
+        return null
     }
 
     override fun formatRegionAsync(text: Content, range1: TextRange, range2: TextRange): TextRange {

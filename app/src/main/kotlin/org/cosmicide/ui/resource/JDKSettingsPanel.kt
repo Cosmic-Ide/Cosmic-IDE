@@ -150,14 +150,12 @@ fun JdkSettingsPanel(
     }
 
     LaunchedEffect(Unit) {
-        foojayClient.fetchMaintainedDistributions()
-            .onSuccess { list ->
-                distributions = list
-                selectedDistro = list.find { it.apiParam == "semeru" } ?: list.firstOrNull()
-                refreshInstalledRegistry()
-                globalLoading = false
-            }
-            .onFailure { globalLoading = false }
+        foojayClient.fetchMaintainedDistributions().onSuccess { list ->
+            distributions = list
+            selectedDistro = list.find { it.apiParam == "semeru" } ?: list.firstOrNull()
+            refreshInstalledRegistry()
+            globalLoading = false
+        }.onFailure { globalLoading = false }
     }
 
     LaunchedEffect(selectedDistro) {
@@ -165,8 +163,10 @@ fun JdkSettingsPanel(
     }
 
     // Determine pending changes
-    val pendingInstalls = targetVersions.filter { it.value && installedVersions[it.key] != true }.keys
-    val pendingUninstalls = installedVersions.filter { it.value && targetVersions[it.key] != true }.keys
+    val pendingInstalls =
+        targetVersions.filter { it.value && installedVersions[it.key] != true }.keys
+    val pendingUninstalls =
+        installedVersions.filter { it.value && targetVersions[it.key] != true }.keys
     val hasPendingChanges = pendingInstalls.isNotEmpty() || pendingUninstalls.isNotEmpty()
 
     val executeTaskQueue = {
@@ -188,47 +188,72 @@ fun JdkSettingsPanel(
 
                 when (task.action) {
                     is JdkAction.Install -> {
-                        val hostOs = FoojayClient.OS.resolve(System.getProperty("os.name") ?: "linux")
-                        val hostArch = FoojayClient.Arch.resolve(System.getProperty("os.arch") ?: "aarch64")
+                        val hostOs =
+                            FoojayClient.OS.resolve(System.getProperty("os.name") ?: "linux")
+                        val hostArch =
+                            FoojayClient.Arch.resolve(System.getProperty("os.arch") ?: "aarch64")
 
                         taskQueue[i] = taskQueue[i].copy(message = "Resolving artifacts...")
 
-                        val resolveResult = foojayClient.resolveLatestArtifact(task.action.vendorParam, task.action.version, hostOs, hostArch)
+                        val resolveResult = foojayClient.resolveLatestArtifact(
+                            task.action.vendorParam, task.action.version, hostOs, hostArch
+                        )
                         if (resolveResult.isSuccess) {
                             val artifact = resolveResult.getOrNull()!!
                             val targetArchiveFile = context.cacheDir.resolve(artifact.filename)
 
                             taskQueue[i] = taskQueue[i].copy(message = "Downloading...")
 
-                            val downloadResult = foojayClient.downloadArtifactWithProgress(artifact, targetArchiveFile) { progress ->
-                                taskQueue[i] = taskQueue[i].copy(progress = progress / 100f, message = "Downloading ($progress%)")
+                            val downloadResult = foojayClient.downloadArtifactWithProgress(
+                                artifact, targetArchiveFile
+                            ) { progress ->
+                                taskQueue[i] = taskQueue[i].copy(
+                                    progress = progress / 100f, message = "Downloading ($progress%)"
+                                )
                             }
 
                             if (downloadResult.isSuccess && downloadResult.getOrNull() == true) {
-                                taskQueue[i] = taskQueue[i].copy(progress = -1f, message = "Extracting runtime...")
+                                taskQueue[i] = taskQueue[i].copy(
+                                    progress = -1f, message = "Extracting runtime..."
+                                )
                                 val targetDir = context.jdksDir().resolve(targetDirName)
                                 val extracted = extractTarGz(targetArchiveFile, targetDir)
 
                                 if (targetArchiveFile.exists()) targetArchiveFile.delete()
 
                                 if (extracted) {
-                                    taskQueue[i] = taskQueue[i].copy(status = TaskStatus.SUCCESS, message = "Installed successfully")
+                                    taskQueue[i] = taskQueue[i].copy(
+                                        status = TaskStatus.SUCCESS,
+                                        message = "Installed successfully"
+                                    )
                                 } else {
-                                    taskQueue[i] = taskQueue[i].copy(status = TaskStatus.ERROR, message = "Extraction failed")
+                                    taskQueue[i] = taskQueue[i].copy(
+                                        status = TaskStatus.ERROR, message = "Extraction failed"
+                                    )
                                 }
                             } else {
-                                taskQueue[i] = taskQueue[i].copy(status = TaskStatus.ERROR, message = "Download failed")
+                                taskQueue[i] = taskQueue[i].copy(
+                                    status = TaskStatus.ERROR, message = "Download failed"
+                                )
                             }
                         } else {
-                            taskQueue[i] = taskQueue[i].copy(status = TaskStatus.ERROR, message = "Resolution failed")
+                            taskQueue[i] = taskQueue[i].copy(
+                                status = TaskStatus.ERROR, message = "Resolution failed"
+                            )
                         }
                     }
+
                     is JdkAction.Uninstall -> {
-                        taskQueue[i] = taskQueue[i].copy(progress = -1f, message = "Deleting files...")
+                        taskQueue[i] =
+                            taskQueue[i].copy(progress = -1f, message = "Deleting files...")
                         withContext(Dispatchers.IO) {
                             context.jdksDir().resolve(targetDirName).deleteRecursively()
                         }
-                        taskQueue[i] = taskQueue[i].copy(status = TaskStatus.SUCCESS, progress = 1f, message = "Uninstalled successfully")
+                        taskQueue[i] = taskQueue[i].copy(
+                            status = TaskStatus.SUCCESS,
+                            progress = 1f,
+                            message = "Uninstalled successfully"
+                        )
                     }
                 }
             }
@@ -237,86 +262,91 @@ fun JdkSettingsPanel(
         }
     }
 
-    Scaffold(
-        topBar = {
-            LargeTopAppBar(
-                title = { Text("JDK Toolchains", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    if (isProcessingScreenActive && isAllTasksComplete) {
-                        IconButton(onClick = { isProcessingScreenActive = false }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
-                        }
-                    } else if (!isProcessingScreenActive) {
-                        IconButton(onClick = onDismissRequested) {
-                            Icon(Icons.Default.Close, "Close")
-                        }
+    Scaffold(topBar = {
+        LargeTopAppBar(
+            title = { Text("JDK Toolchains", fontWeight = FontWeight.Bold) },
+            navigationIcon = {
+                if (isProcessingScreenActive && isAllTasksComplete) {
+                    IconButton(onClick = { isProcessingScreenActive = false }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                     }
-                },
-                actions = {
-                    if (!isProcessingScreenActive) {
-                        IconButton(onClick = refreshInstalledRegistry) {
-                            Icon(Icons.Default.Refresh, "Refresh Sync")
-                        }
+                } else if (!isProcessingScreenActive) {
+                    IconButton(onClick = onDismissRequested) {
+                        Icon(Icons.Default.Close, "Close")
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
+                }
+            },
+            actions = {
+                if (!isProcessingScreenActive) {
+                    IconButton(onClick = refreshInstalledRegistry) {
+                        Icon(Icons.Default.Refresh, "Refresh Sync")
+                    }
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
             )
-        },
-        bottomBar = {
-            AnimatedVisibility(
-                visible = !isProcessingScreenActive && hasPendingChanges,
-                enter = slideInVertically { it } + fadeIn(),
-                exit = slideOutVertically { it } + fadeOut()
+        )
+    }, bottomBar = {
+        AnimatedVisibility(
+            visible = !isProcessingScreenActive && hasPendingChanges,
+            enter = slideInVertically { it } + fadeIn(),
+            exit = slideOutVertically { it } + fadeOut()) {
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                tonalElevation = 8.dp,
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    tonalElevation = 8.dp,
-                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding()
-                            .padding(horizontal = 24.dp, vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column {
+                        Text(
+                            "Pending Changes",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "${pendingInstalls.size} to install, ${pendingUninstalls.size} to remove",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Button(
+                        onClick = { executeTaskQueue() },
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                        shapes = ButtonDefaults.shapes()
                     ) {
-                        Column {
-                            Text("Pending Changes", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            Text(
-                                "${pendingInstalls.size} to install, ${pendingUninstalls.size} to remove",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        Button(
-                            onClick = { executeTaskQueue() },
-                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
-                            shapes = ButtonDefaults.shapes()
-                        ) {
-                            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text("Apply")
-                        }
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Apply")
                     }
                 }
             }
         }
-    ) { innerPadding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
+    }) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
 
             AnimatedContent(
-                targetState = isProcessingScreenActive,
-                transitionSpec = {
-                    slideInHorizontally(tween(400)) { if (targetState) it else -it } + fadeIn() togetherWith
-                            slideOutHorizontally(tween(400)) { if (targetState) -it else it } + fadeOut()
-                },
-                label = "Screen Transition"
+                targetState = isProcessingScreenActive, transitionSpec = {
+                    slideInHorizontally(tween(400)) { if (targetState) it else -it } + fadeIn() togetherWith slideOutHorizontally(
+                        tween(400)
+                    ) { if (targetState) -it else it } + fadeOut()
+                }, label = "Screen Transition"
             ) { isProcessing ->
                 if (isProcessing) {
                     ProcessingScreen(taskQueue, isAllTasksComplete) {
@@ -332,8 +362,7 @@ fun JdkSettingsPanel(
                         targetVersions = targetVersions,
                         onTargetToggled = { version, isTargeted ->
                             targetVersions[version] = isTargeted
-                        }
-                    )
+                        })
                 }
             }
         }
@@ -362,7 +391,8 @@ fun SelectionScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = selectedDistro?.name ?: if (globalLoading) "Loading vendors..." else "Select Vendor",
+                    value = selectedDistro?.name
+                        ?: if (globalLoading) "Loading vendors..." else "Select Vendor",
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Provider") },
@@ -375,22 +405,20 @@ fun SelectionScreen(
                 )
 
                 ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
+                    expanded = expanded, onDismissRequest = { expanded = false }) {
                     distributions.forEach { distro ->
                         DropdownMenuItem(
                             text = {
-                                Text(distro.name, fontWeight = if (distro == selectedDistro) FontWeight.Bold else FontWeight.Normal)
-                            },
-                            trailingIcon = if (distro.apiParam == "semeru") {
+                                Text(
+                                    distro.name,
+                                    fontWeight = if (distro == selectedDistro) FontWeight.Bold else FontWeight.Normal
+                                )
+                            }, trailingIcon = if (distro.apiParam == "semeru") {
                                 { Badge { Text("Recommended") } }
-                            } else null,
-                            onClick = {
+                            } else null, onClick = {
                                 onDistroSelected(distro)
                                 expanded = false
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -426,37 +454,50 @@ fun SelectionScreen(
                         val willBeRemoved = !isTargeted && isCurrentlyInstalled
 
                         ListItem(
-                            headlineContent = { Text("Java SE $version", fontWeight = FontWeight.SemiBold) },
-                            supportingContent = {
-                                if (willBeInstalled) Text("Marked for installation", color = MaterialTheme.colorScheme.primary)
-                                else if (willBeRemoved) Text("Marked for removal", color = MaterialTheme.colorScheme.error)
-                                else if (isCurrentlyInstalled) Text("Installed")
-                                else Text("Available for download")
-                            },
-                            leadingContent = {
-                                Checkbox(
-                                    checked = isTargeted,
-                                    onCheckedChange = { onTargetToggled(version, it) }
-                                )
-                            },
-                            trailingContent = {
-                                if (isCurrentlyInstalled && !willBeRemoved) {
-                                    Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.primary)
-                                }
-                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                            colors = ListItemDefaults.colors(
+                                .clip(RoundedCornerShape(12.dp)), leadingContent = {
+                                Checkbox(
+                                    checked = isTargeted,
+                                    onCheckedChange = { onTargetToggled(version, it) })
+                            }, trailingContent = {
+                                if (isCurrentlyInstalled && !willBeRemoved) {
+                                    Icon(
+                                        Icons.Rounded.CheckCircle,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }, supportingContent = {
+                                if (willBeInstalled) Text(
+                                    "Marked for installation",
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                else if (willBeRemoved) Text(
+                                    "Marked for removal", color = MaterialTheme.colorScheme.error
+                                )
+                                else if (isCurrentlyInstalled) Text("Installed")
+                                else Text("Available for download")
+                            }, colors = ListItemDefaults.colors(
                                 containerColor = when {
-                                    willBeInstalled -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                                    willBeRemoved -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                                    willBeInstalled -> MaterialTheme.colorScheme.primaryContainer.copy(
+                                        alpha = 0.3f
+                                    )
+
+                                    willBeRemoved -> MaterialTheme.colorScheme.errorContainer.copy(
+                                        alpha = 0.3f
+                                    )
+
                                     isCurrentlyInstalled -> MaterialTheme.colorScheme.surfaceContainer
                                     else -> Color.Transparent
                                 }
+                            ), elevation = ListItemDefaults.elevation()
+                        ) {
+                            Text(
+                                "Java SE $version", fontWeight = FontWeight.SemiBold
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -466,9 +507,7 @@ fun SelectionScreen(
 
 @Composable
 fun ProcessingScreen(
-    tasks: List<TaskState>,
-    isComplete: Boolean,
-    onDone: () -> Unit
+    tasks: List<TaskState>, isComplete: Boolean, onDone: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -483,15 +522,13 @@ fun ProcessingScreen(
         )
 
         LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(tasks) { _, task ->
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    shape = RoundedCornerShape(16.dp)
+                    ), shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
                         modifier = Modifier
@@ -507,9 +544,24 @@ fun ProcessingScreen(
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                                 )
-                                TaskStatus.IN_PROGRESS -> CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
-                                TaskStatus.SUCCESS -> Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.primary)
-                                TaskStatus.ERROR -> Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.error)
+
+                                TaskStatus.IN_PROGRESS -> CircularProgressIndicator(
+                                    modifier = Modifier.size(
+                                        24.dp
+                                    ), strokeWidth = 2.dp
+                                )
+
+                                TaskStatus.SUCCESS -> Icon(
+                                    Icons.Rounded.CheckCircle,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+
+                                TaskStatus.ERROR -> Icon(
+                                    Icons.Default.Warning,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
                             }
                         }
 
@@ -522,8 +574,16 @@ fun ProcessingScreen(
                                 is JdkAction.Uninstall -> "Uninstall JDK ${task.action.version}"
                             }
 
-                            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                            Text(task.message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                task.message,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
 
                             if (task.status == TaskStatus.IN_PROGRESS && task.progress >= 0f) {
                                 Spacer(modifier = Modifier.height(8.dp))
@@ -535,9 +595,11 @@ fun ProcessingScreen(
                                 )
                             } else if (task.status == TaskStatus.IN_PROGRESS && task.progress < 0f) {
                                 Spacer(modifier = Modifier.height(8.dp))
-                                LinearProgressIndicator(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(4.dp)))
+                                LinearProgressIndicator(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(4.dp))
+                                )
                             }
                         }
                     }
@@ -560,61 +622,62 @@ fun ProcessingScreen(
     }
 }
 
-private suspend fun extractTarGz(tarGz: File, targetDir: File): Boolean = withContext(Dispatchers.IO) {
-    if (!tarGz.exists()) return@withContext false
+private suspend fun extractTarGz(tarGz: File, targetDir: File): Boolean =
+    withContext(Dispatchers.IO) {
+        if (!tarGz.exists()) return@withContext false
 
-    try {
-        var rootPrefix: String? = null
-        val buffer = ByteArray(8192)
-        val header = ByteArray(512)
+        try {
+            var rootPrefix: String? = null
+            val buffer = ByteArray(8192)
+            val header = ByteArray(512)
 
-        GZIPInputStream(tarGz.inputStream()).use { gisin ->
+            GZIPInputStream(tarGz.inputStream()).use { gisin ->
 
-            while (gisin.readNBytes(header, 0, 512) == 512) {
-                if (header[0].toInt() == 0) break
+                while (gisin.readNBytes(header, 0, 512) == 512) {
+                    if (header[0].toInt() == 0) break
 
-                val rawName = header.readTarString(0, 100)
-                if (rawName.isEmpty()) continue
+                    val rawName = header.readTarString(0, 100)
+                    if (rawName.isEmpty()) continue
 
-                val size = header.readTarOctal(124, 12)
-                val cleanName = rawName.removePrefix("./")
+                    val size = header.readTarOctal(124, 12)
+                    val cleanName = rawName.removePrefix("./")
 
-                if (rootPrefix == null) {
-                    rootPrefix = cleanName.substringBefore('/')
-                }
-
-                val prefixWithSlash = "$rootPrefix/"
-                val strippedName = when {
-                    cleanName.startsWith(prefixWithSlash) -> cleanName.substring(prefixWithSlash.length)
-                    cleanName == rootPrefix -> ""
-                    else -> cleanName
-                }
-
-                if (strippedName.isNotEmpty()) {
-                    val targetFile = targetDir.resolve(strippedName)
-
-                    if (rawName.endsWith("/")) {
-                        targetFile.mkdirs()
-                    } else {
-                        targetFile.parentFile?.mkdirs()
-                        targetFile.outputStream().use { fos ->
-                            gisin.copyBounded(fos, size, buffer)
-                        }
+                    if (rootPrefix == null) {
+                        rootPrefix = cleanName.substringBefore('/')
                     }
-                } else {
-                    gisin.skipNBytes(size)
-                }
 
-                val padding = (512 - (size % 512)) % 512
-                gisin.skipNBytes(padding)
+                    val prefixWithSlash = "$rootPrefix/"
+                    val strippedName = when {
+                        cleanName.startsWith(prefixWithSlash) -> cleanName.substring(prefixWithSlash.length)
+                        cleanName == rootPrefix -> ""
+                        else -> cleanName
+                    }
+
+                    if (strippedName.isNotEmpty()) {
+                        val targetFile = targetDir.resolve(strippedName)
+
+                        if (rawName.endsWith("/")) {
+                            targetFile.mkdirs()
+                        } else {
+                            targetFile.parentFile?.mkdirs()
+                            targetFile.outputStream().use { fos ->
+                                gisin.copyBounded(fos, size, buffer)
+                            }
+                        }
+                    } else {
+                        gisin.skipNBytes(size)
+                    }
+
+                    val padding = (512 - (size % 512)) % 512
+                    gisin.skipNBytes(padding)
+                }
             }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
-        true
-    } catch (e: Exception) {
-        e.printStackTrace()
-        false
     }
-}
 
 private fun ByteArray.readTarString(offset: Int, length: Int) =
     String(this, offset, length).trim { it <= ' ' || it.code == 0 }

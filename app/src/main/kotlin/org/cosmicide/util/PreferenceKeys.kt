@@ -32,7 +32,6 @@ object PreferenceKeys {
     const val EDITOR_LINE_NUMBERS_SHOW = "line_numbers_show"
     const val EDITOR_DOUBLE_CLICK_CLOSE = "double_click_close"
     const val EDITOR_JDT_LS = "jdt_ls"
-    const val EDITOR_EXP_JAVA_COMPLETION = "experimental_java_completion"
     const val KOTLIN_REALTIME_ERRORS = "kotlin_realtime_errors"
     const val EDITOR_FONT = "editor_font"
     const val BRACKET_PAIR_AUTOCOMPLETE = "bracket_pair_autocomplete"
@@ -50,18 +49,6 @@ object PreferenceKeys {
     const val GIT_EMAIL = "git_email"
     const val GIT_API_KEY = "git_api_key"
 
-    // Plugins
-    const val AVAILABLE_PLUGINS = "available_plugins"
-    const val INSTALLED_PLUGINS = "installed_plugins"
     const val PLUGIN_REPOSITORY = "plugin_repository"
-    const val PLUGIN_SETTINGS = "plugin_settings"
 
-    // Gemini Pro
-    const val GEMINI_API_KEY = "gemini_api_key"
-    const val GEMINI_MODEL = "gemini_model"
-    const val TEMPERATURE = "temperature"
-    const val TOP_P = "top_p"
-    const val TOP_K = "top_k"
-    const val CANDIDATE_COUNT = "candidate_count"
-    const val MAX_TOKENS = "max_tokens"
 }

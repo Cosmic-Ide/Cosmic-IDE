@@ -19,7 +19,6 @@
 package com.tyron.kotlin.completion
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.TokenSet
 import com.tyron.kotlin.completion.codeInsight.ReferenceVariantsHelper
 import com.tyron.kotlin.completion.model.Analysis
 import com.tyron.kotlin.completion.util.IdeDescriptorRenderersScripting
@@ -39,7 +38,7 @@ import kotlinx.coroutines.sync.withLock
 import org.cosmicide.common.Prefs
 import org.cosmicide.editor.EditorCompletionItem
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.FileUtil
 import org.jetbrains.kotlin.K1Deprecation
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
@@ -197,7 +196,7 @@ data class KotlinEnvironment(val kotlinEnvironment: KotlinCoreEnvironment) {
         val cleanFile = file.kotlinFile
         val offset = try {
             file.offsetFor(line, character)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return emptyList()
         }
         val prefix = getPrefix(cleanFile, offset)
@@ -219,7 +218,7 @@ data class KotlinEnvironment(val kotlinEnvironment: KotlinCoreEnvironment) {
             .sortedWith(comparator)
             .mapNotNull { completionVariantFor(prefix, it) }
             .distinctBy { it.label }
-            .take(50) + keywordsCompletionVariants(KtTokens.KEYWORDS, prefix)
+            .take(50) + keywordsCompletionVariants(prefix)
     }
 
     private inline fun <reified T : PsiElement> PsiElement.findParentOrSelf(): T? {
@@ -241,12 +240,12 @@ data class KotlinEnvironment(val kotlinEnvironment: KotlinCoreEnvironment) {
     private class RelevanceComparator(private val prefix: String) :
         Comparator<DeclarationDescriptor> {
         override fun compare(a: DeclarationDescriptor, b: DeclarationDescriptor): Int {
-            val nameA = a.name.asString();
+            val nameA = a.name.asString()
             val nameB = b.name.asString()
-            val aStartsExact = nameA.startsWith(prefix);
+            val aStartsExact = nameA.startsWith(prefix)
             val bStartsExact = nameB.startsWith(prefix)
             if (aStartsExact != bStartsExact) return if (aStartsExact) -1 else 1
-            val scoreA = getDescriptorTypeScore(a);
+            val scoreA = getDescriptorTypeScore(a)
             val scoreB = getDescriptorTypeScore(b)
             if (scoreA != scoreB) return scoreA.compareTo(scoreB)
             if (nameA.length != nameB.length) return nameA.length.compareTo(nameB.length)
@@ -276,11 +275,10 @@ data class KotlinEnvironment(val kotlinEnvironment: KotlinCoreEnvironment) {
     }
 
     private fun keywordsCompletionVariants(
-        keywords: TokenSet,
         prefix: String
     ): List<CompletionItem> {
         if (prefix.isEmpty()) return emptyList()
-        return keywords.types.filterIsInstance<KtKeywordToken>()
+        return KtTokens.KEYWORDS.types.filterIsInstance<KtKeywordToken>()
             .filter { it.value.startsWith(prefix, ignoreCase = true) }
             .map {
                 EditorCompletionItem(it.value, "Keyword", prefix.length, it.value).kind(
@@ -353,7 +351,7 @@ data class KotlinEnvironment(val kotlinEnvironment: KotlinCoreEnvironment) {
             )
             componentProvider.getService(LazyTopDownAnalyzer::class.java)
                 .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files)
-            val moduleDescriptor = componentProvider!!.getService(ModuleDescriptor::class.java)
+            val moduleDescriptor = componentProvider.getService(ModuleDescriptor::class.java)
             AnalysisHandlerExtension.getInstances(project).find {
                 it.analysisCompleted(
                     project,
@@ -395,10 +393,10 @@ data class KotlinEnvironment(val kotlinEnvironment: KotlinCoreEnvironment) {
                 element,
                 DescriptorKindFilter.ALL,
                 { it.identifier.startsWith(prefix, ignoreCase = true) },
-                true,
-                true,
-                true,
-                null
+                filterOutJavaGettersAndSetters = true,
+                filterOutShadowed = true,
+                excludeNonInitializedVariable = true,
+                useReceiverType = null
             ).toList()
             else -> null
         }
@@ -417,7 +415,7 @@ data class KotlinEnvironment(val kotlinEnvironment: KotlinCoreEnvironment) {
         })
     }
 
-    private inner class VisibilityFilter(
+    private class VisibilityFilter(
         private val inDescriptor: DeclarationDescriptor,
         private val bindingContext: BindingContext,
         private val element: KtElement,

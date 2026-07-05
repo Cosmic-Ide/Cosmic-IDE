@@ -59,9 +59,9 @@ import org.cosmicide.common.Prefs
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.extension.setFont
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.ui.editor.CodeEditor
 import org.cosmicide.ui.editor.CodeEditorState
+import org.cosmicide.util.FileUtil
 import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.jdksDir
 import org.jetbrains.org.objectweb.asm.ClassReader
@@ -258,10 +258,12 @@ fun LiveGraph(
     modifier: Modifier = Modifier,
     maxValue: Long? = null
 ) {
-    Canvas(modifier = modifier
-        .fillMaxWidth()
-        .height(120.dp)
-        .padding(16.dp)) {
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(16.dp)
+    ) {
         val allValues = series.flatMap { it.data }
         if (allValues.isEmpty()) return@Canvas
 
@@ -431,7 +433,8 @@ fun MemoryInstrumentationPane(
                         }
 
                         jvmPid = pid
-                        samplerStatus = "Waiting for jstat ${activeSamplerMode.option} data for pid $pid..."
+                        samplerStatus =
+                            "Waiting for jstat ${activeSamplerMode.option} data for pid $pid..."
 
                         val failure = sampleJstatHeap(
                             context = context,
@@ -458,15 +461,18 @@ fun MemoryInstrumentationPane(
                                 emittedSample = true
 
                                 val previous = previousHeapSample
-                                currentAllocationRateKbPerSec = estimateAllocationRateKbPerSec(previous, sample)
-                                currentGcOverheadPercent = estimateGcOverheadPercent(previous, sample)
+                                currentAllocationRateKbPerSec =
+                                    estimateAllocationRateKbPerSec(previous, sample)
+                                currentGcOverheadPercent =
+                                    estimateGcOverheadPercent(previous, sample)
 
                                 previousHeapSample = sample
                                 currentHeapSample = sample
 
                                 edenHistory = (edenHistory + sample.edenGraphValue).takeLast(50)
                                 oldHistory = (oldHistory + sample.oldGraphValue).takeLast(50)
-                                metaspaceHistory = (metaspaceHistory + sample.metaspaceGraphValue).takeLast(50)
+                                metaspaceHistory =
+                                    (metaspaceHistory + sample.metaspaceGraphValue).takeLast(50)
                                 allocationRateHistory = (
                                         allocationRateHistory + currentAllocationRateKbPerSec.roundToLong()
                                         ).takeLast(50)
@@ -538,8 +544,10 @@ fun MemoryInstrumentationPane(
                             if (classSamplerGeneration.get() == generation) {
                                 emittedSample = true
                                 currentClassSample = sample
-                                loadedClassHistory = (loadedClassHistory + sample.loadedClasses).takeLast(50)
-                                classSamplerStatus = "Sampling class loading with jstat -class for pid $pid"
+                                loadedClassHistory =
+                                    (loadedClassHistory + sample.loadedClasses).takeLast(50)
+                                classSamplerStatus =
+                                    "Sampling class loading with jstat -class for pid $pid"
                             }
                         }
 
@@ -703,9 +711,11 @@ private fun JstatModeSelector(
     selectedMode: JstatViewMode,
     onModeSelected: (JstatViewMode) -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 6.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 6.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -1248,9 +1258,11 @@ private fun RawJstatTab(
                 modifier = Modifier.padding(top = 8.dp)
             )
         } else {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
                 rawJstatLines.forEach { line ->
                     Text(
                         text = line,
@@ -1311,9 +1323,11 @@ private fun UsageBarRaw(
     fraction: Float,
     color: Color
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 8.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -1373,9 +1387,11 @@ private fun MetricText(label: String, value: String) {
 @Composable
 private fun Legend(label: String, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Canvas(modifier = Modifier
-            .width(10.dp)
-            .height(10.dp)) {
+        Canvas(
+            modifier = Modifier
+                .width(10.dp)
+                .height(10.dp)
+        ) {
             drawCircle(color)
         }
 
@@ -1939,7 +1955,8 @@ private fun estimateAllocationRateKbPerSec(
     val estimatedAllocatedKb = if (edenDelta >= 0L) {
         edenDelta
     } else if (current.youngGcCount > previous.youngGcCount && previous.edenCapacityKb > 0L) {
-        val previousRemainingEden = (previous.edenCapacityKb - previous.edenUsedKb).coerceAtLeast(0L)
+        val previousRemainingEden =
+            (previous.edenCapacityKb - previous.edenUsedKb).coerceAtLeast(0L)
         previousRemainingEden + current.edenUsedKb
     } else {
         0L

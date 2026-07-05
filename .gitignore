@@ -87,3 +87,7 @@ lint/tmp/
 # lint/reports/
 /.idea/sonarlint/
 /.kotlin/
+
+# gpkg
+gpkg-cache/
+glibc/

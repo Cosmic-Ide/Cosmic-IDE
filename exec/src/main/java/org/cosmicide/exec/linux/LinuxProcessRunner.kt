@@ -1,7 +1,7 @@
 package org.cosmicide.exec.linux
 
 import android.content.Context
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.FileUtil
 import java.io.File
 import java.lang.reflect.Field
 import android.os.Process as AndroidProcess
@@ -24,9 +24,11 @@ object LinuxProcessRunner {
     private data class GlibcRuntime(
         val tempDir: File,
         val appDir: File,
+        val usrPath: String,
         val glibcPath: String,
         val customLinker: String,
         val combinedPreload: String,
+        val linkLibraryPath: String,
         val runtimeUser: String,
         val resolvConf: File,
         val hostsFile: File,
@@ -35,6 +37,10 @@ object LinuxProcessRunner {
         val passwdFile: File,
         val groupFile: File
     )
+
+    private enum class ExecutableKind {
+        ELF, SHELL_SCRIPT, UNSUPPORTED
+    }
 
     /**
      * Spawns an arbitrary GNU/Linux binary inside the custom glibc environment layer.
@@ -71,6 +77,7 @@ object LinuxProcessRunner {
                 add(FileUtil.dataDir.resolve("kotlinc/bin"))
             }
             add(context.filesDir.resolve("jdtls/bin"))
+            add(context.filesDir.resolve("glibc/usr/bin"))
         }
     }
 
@@ -138,35 +145,21 @@ object LinuxProcessRunner {
             return workingDir.resolve(commandName).canonicalFile
         }
 
-        return pathEntries
-            .plus(File("/system/bin"))
-            .asSequence()
-            .map { it.resolve(commandName) }
+        return pathEntries.plus(File("/system/bin")).asSequence().map { it.resolve(commandName) }
             .firstOrNull { it.isFile }
             ?: throw IllegalArgumentException("Command not found: $commandName")
     }
 
     fun startJstatGcSampler(
-        context: Context,
-        jdkDir: File,
-        option: String = "-gccause",
-        pid: Int,
-        workingDir: File
+        context: Context, jdkDir: File, option: String = "-gccause", pid: Int, workingDir: File
     ): Process {
         return startJstatSampler(
-            context = context,
-            jdkDir = jdkDir,
-            option = option,
-            pid = pid,
-            workingDir = workingDir
+            context = context, jdkDir = jdkDir, option = option, pid = pid, workingDir = workingDir
         )
     }
 
     fun startJstatClassSampler(
-        context: Context,
-        jdkDir: File,
-        pid: Int,
-        workingDir: File
+        context: Context, jdkDir: File, pid: Int, workingDir: File
     ): Process {
         return startJstatSampler(
             context = context,
@@ -178,15 +171,10 @@ object LinuxProcessRunner {
     }
 
     private fun startJstatSampler(
-        context: Context,
-        jdkDir: File,
-        option: String,
-        pid: Int,
-        workingDir: File
+        context: Context, jdkDir: File, option: String, pid: Int, workingDir: File
     ): Process {
         return start(
-            context = context,
-            config = Configuration(
+            context = context, config = Configuration(
                 binary = jdkDir.resolve("bin/jstat"),
                 arguments = listOf(
                     "-J-Djava.io.tmpdir=${context.cacheDir.absolutePath}",
@@ -211,7 +199,7 @@ object LinuxProcessRunner {
             environment().apply {
                 clear()
                 putCommonGlibcEnvironment(runtime)
-                put("PATH", buildPath(config.binary, config.pathEntries))
+                put("PATH", buildPath(runtime, config.binary, config.pathEntries))
 
                 // Keep this last so callers can intentionally override JAVA_HOME,
                 // TMPDIR, LD_LIBRARY_PATH, PATH, DNS_TRACE, etc. for special tool invocations.
@@ -221,30 +209,231 @@ object LinuxProcessRunner {
     }
 
     private fun GlibcRuntime.wrapCommand(binary: File, arguments: List<String>): List<String> {
+        val target = resolveInitialGlibcTarget(binary.absoluteFile)
+
+        return when (target.executableKind()) {
+            ExecutableKind.ELF -> linkerCommand(target, arguments)
+
+            ExecutableKind.SHELL_SCRIPT -> {
+                val shell = resolveShellForScript(target)
+                linkerCommand(shell, listOf(target.absolutePath) + arguments)
+            }
+
+            ExecutableKind.UNSUPPORTED -> {
+                throw IllegalArgumentException(
+                    "Unsupported executable: ${target.absolutePath}. " + "Expected a readable ELF binary or a readable shell script with a sh/bash shebang."
+                )
+            }
+        }
+    }
+
+    private fun GlibcRuntime.linkerCommand(program: File, arguments: List<String>): List<String> {
         return buildList {
             add(customLinker)
             add("--library-path")
-            add(glibcPath)
+            add(linkLibraryDirs().joinToString(":") { it.absolutePath })
             add("--preload")
             add(combinedPreload)
-            add(binary.absolutePath)
+            add(program.absolutePath)
             addAll(arguments)
         }
     }
 
-    private fun buildPath(binary: File, extraEntries: List<File>): String {
+    private fun GlibcRuntime.resolveInitialGlibcTarget(binary: File): File {
+        if (!binary.isAndroidSystemPath()) return binary
+
+        val replacement = glibcBinReplacementFor(binary)
+        if (replacement != null) return replacement
+
+        throw IllegalArgumentException(
+            "Refusing to launch Android system executable through glibc ld-linux: ${binary.absolutePath}. " + "No readable glibc replacement exists at ${
+                File(
+                    glibcPath
+                ).resolve("bin").resolve(binary.name).absolutePath
+            }."
+        )
+    }
+
+    private fun GlibcRuntime.glibcBinReplacementFor(binary: File): File? {
+        val replacement = File(glibcPath).resolve("bin").resolve(binary.name).absoluteFile
+
+        return replacement.takeIf { it.executableKind() != ExecutableKind.UNSUPPORTED }
+    }
+
+    private fun GlibcRuntime.gccFrontendDirs(): List<File> {
+        val gccRoot = File(glibcPath).resolve("lib/gcc")
+        if (!gccRoot.isDirectory) return emptyList()
+
+        return try {
+            gccRoot.walkTopDown().maxDepth(4).filter { dir ->
+                dir.isDirectory && (dir.resolve("cc1").exists() || dir.resolve("cc1plus")
+                    .exists() || dir.resolve("f951").exists() || dir.resolve("lto1").exists())
+            }.map { it.absoluteFile }.toList()
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun buildPath(runtime: GlibcRuntime, binary: File, extraEntries: List<File>): String {
+        val usrBin = File(runtime.usrPath).resolve("bin")
+        val glibcBin = File(runtime.glibcPath).resolve("bin")
+
         return buildList {
-            binary.parentFile?.let(::add)
+            // Keep the target directory first for project-local tools like ./gradlew,
+            // but do not put /system/bin before the relocated GNU/Linux tools.
+            binary.parentFile?.takeUnless { it.isAndroidSystemPath() }?.let(::add)
+
             addAll(extraEntries)
+            add(glibcBin)
+            add(usrBin)
+            addAll(runtime.gccFrontendDirs())
             add(File("/system/bin"))
-        }.distinctBy { it.absolutePath }
-            .joinToString(":") { it.absolutePath }
+        }.distinctBy { it.absolutePath }.joinToString(":") { it.absolutePath }
+    }
+
+    private fun GlibcRuntime.defaultShell(): File {
+        return firstUsableShell(
+            listOf(
+                File(glibcPath).resolve("bin/bash"), File(glibcPath).resolve("bin/sh")
+            )
+        ) ?: File(glibcPath).resolve("bin/bash")
+    }
+
+    private fun GlibcRuntime.resolveShellForScript(script: File): File {
+        val requestedShell = script.readShebangLine()?.shellNameFromShebang()
+        val binDir = File(glibcPath).resolve("bin")
+
+        val candidates = buildList {
+            when (requestedShell) {
+                "bash" -> {
+                    add(binDir.resolve("bash"))
+                    add(binDir.resolve("sh"))
+                }
+
+                "sh", "dash", "ash", "ksh", "zsh" -> {
+                    add(binDir.resolve(requestedShell))
+                    add(binDir.resolve("sh"))
+                    add(binDir.resolve("bash"))
+                }
+
+                else -> {
+                    add(binDir.resolve("sh"))
+                    add(binDir.resolve("bash"))
+                }
+            }
+        }
+
+        val shPath = binDir.resolve("sh").absolutePath
+        val bashPath = binDir.resolve("bash").absolutePath
+
+        return firstUsableShell(candidates) ?: throw IllegalArgumentException(
+            "Shell script ${script.absolutePath} needs a glibc shell, " + "but neither $shPath nor $bashPath is usable."
+        )
+    }
+
+    private fun firstUsableShell(candidates: List<File>): File? {
+        return candidates.asSequence().map { it.absoluteFile }.distinctBy { it.absolutePath }
+            .firstOrNull { it.isElfFile() }
+    }
+
+    private fun File.executableKind(): ExecutableKind {
+        return when {
+            isElfFile() -> ExecutableKind.ELF
+            isSupportedShellScriptFile() -> ExecutableKind.SHELL_SCRIPT
+            else -> ExecutableKind.UNSUPPORTED
+        }
+    }
+
+    private fun File.isElfFile(): Boolean {
+        // Do not check executable permission here. The kernel executes customLinker;
+        // ld-linux only needs to read/map the target ELF.
+        return try {
+            inputStream().use { input ->
+                val magic = ByteArray(4)
+                input.read(magic) == 4 && magic[0] == 0x7F.toByte() && magic[1] == 'E'.code.toByte() && magic[2] == 'L'.code.toByte() && magic[3] == 'F'.code.toByte()
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun File.isSupportedShellScriptFile(): Boolean {
+        // Do not check executable permission here either. We run scripts as:
+        // ld-linux ... glibc/bin/sh <script>, so the script only needs to be readable.
+        return readShebangLine()?.shellNameFromShebang() != null
+    }
+
+    private fun File.readShebangLine(maxBytes: Int = 512): String? {
+        return try {
+            inputStream().use { input ->
+                val buffer = ByteArray(maxBytes)
+                val count = input.read(buffer)
+                if (count <= 0) return null
+
+                val text = buffer.copyOf(count).toString(Charsets.UTF_8)
+
+                text.lineSequence().firstOrNull()?.takeIf { it.startsWith("#!") }
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun String.shellNameFromShebang(): String? {
+        if (!startsWith("#!")) return null
+
+        val parts = removePrefix("#!").trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+
+        if (parts.isEmpty()) return null
+
+        val interpreter = File(parts[0]).name
+        if (interpreter.isKnownShellName()) return interpreter
+
+        if (interpreter != "env") return null
+
+        var index = 1
+        while (index < parts.size) {
+            val part = parts[index]
+
+            if (part == "-S") {
+                index++
+                continue
+            }
+
+            if (part.startsWith("-")) {
+                index++
+                continue
+            }
+
+            val command = File(part).name
+            return command.takeIf { it.isKnownShellName() }
+        }
+
+        return null
+    }
+
+    private fun String.isKnownShellName(): Boolean {
+        return this == "sh" || this == "bash" || this == "dash" || this == "ash" || this == "ksh" || this == "zsh"
+    }
+
+    private fun File.isAndroidSystemPath(): Boolean {
+        val path = absolutePath
+        return path.startsWith("/system/") || path.startsWith("/apex/") || path.startsWith("/vendor/") || path.startsWith(
+            "/odm/"
+        ) || path.startsWith("/product/")
     }
 
     private fun prepareGlibcRuntime(context: Context): GlibcRuntime {
         val tempDir = context.cacheDir.apply { mkdirs() }
-        val appDir = context.filesDir
-        val glibcPath = appDir.resolve("glibc").absolutePath
+        val realAppDir = context.filesDir
+        val appDir = realAppDir.resolve("glibc")
+        appDir.resolve("home").mkdirs()
+        val usrRoot = appDir.resolve("usr")
+        val glibcRoot = usrRoot
+        val usrPath = usrRoot.absolutePath
+        val glibcPath = usrRoot.absolutePath
+        val glibcLib = usrRoot.resolve("lib")
+        val usrLib = usrRoot.resolve("lib")
         val nativeLibDir = context.applicationInfo.nativeLibraryDir
         val runtimeUid = AndroidProcess.myUid()
 
@@ -267,11 +456,12 @@ object LinuxProcessRunner {
         )
 
         val pathRedirect = "$nativeLibDir/libpath_redirect.so"
-        val nssWrapper = appDir.resolve("glibc/libnss_wrapper.so").absolutePath
+        val nssWrapper = glibcRoot.resolve("lib/libnss_wrapper.so").absolutePath
 
         return GlibcRuntime(
             tempDir = tempDir,
             appDir = appDir,
+            usrPath = usrPath,
             glibcPath = glibcPath,
             customLinker = "$nativeLibDir/libld_linux.so",
             combinedPreload = listOf(pathRedirect, nssWrapper).joinToString(":"),
@@ -281,7 +471,14 @@ object LinuxProcessRunner {
             nsswitchConf = nsswitchConf,
             gaiConf = gaiConf,
             passwdFile = passwdFile,
-            groupFile = groupFile
+            groupFile = groupFile,
+            linkLibraryPath = listOf(
+                glibcLib,
+                usrLib,
+                glibcRoot
+            ).filter { it.exists() || it == glibcLib }
+                .distinctBy { it.absolutePath }
+                .joinToString(":") { it.absolutePath },
         )
     }
 
@@ -299,8 +496,7 @@ object LinuxProcessRunner {
             buildString {
                 DefaultDnsServers.forEach { ip -> append("nameserver $ip\n") }
                 append("options timeout:2 attempts:2\n")
-            }
-        )
+            })
 
         hostsFile.writeTextIfChanged(
             """
@@ -321,7 +517,7 @@ object LinuxProcessRunner {
         gaiConf.writeTextIfChanged("")
 
         passwdFile.writeTextIfChanged(
-            "$RUNTIME_USER:x:$runtimeUid:$runtimeUid:Cosmic IDE:${appDir.absolutePath}:/system/bin/sh\n"
+            "$RUNTIME_USER:x:$runtimeUid:$runtimeUid:Cosmic IDE:${appDir.resolve("home").absolutePath}:/system/bin/sh\n"
         )
         groupFile.writeTextIfChanged("$RUNTIME_USER:x:$runtimeUid:\n")
     }
@@ -340,16 +536,34 @@ object LinuxProcessRunner {
         }
     }
 
-    private fun MutableMap<String, String>.putCommonGlibcEnvironment(runtime: GlibcRuntime) {
-        put("LD_LIBRARY_PATH", runtime.glibcPath)
+    private fun GlibcRuntime.linkLibraryDirs(): List<File> {
+        val usrRoot = File(usrPath)
+        val glibcRoot = File(glibcPath)
 
+        return buildList {
+            add(glibcRoot.resolve("lib"))
+            add(usrRoot.resolve("lib"))
+            add(glibcRoot)
+            addAll(gccFrontendDirs())
+        }.filter { it.exists() }
+            .distinctBy { it.absolutePath }
+    }
+
+    private fun MutableMap<String, String>.putCommonGlibcEnvironment(runtime: GlibcRuntime) {
+        put(
+            "LD_LIBRARY_PATH",
+            runtime.linkLibraryDirs().joinToString(":") { it.absolutePath }
+        )
         // --preload handles the initial custom-linker exec. LD_PRELOAD makes
         // Java/Gradle child processes inherit the same compatibility layer.
         put("LD_PRELOAD", runtime.combinedPreload)
 
-        put("HOME", runtime.appDir.absolutePath)
+        // Only path-bearing value exec_wrap.c cannot infer by itself.
+        // Behavior toggles live as compile-time constants at the top of exec_wrap.c.
+        put("HOME", runtime.appDir.resolve("home").absolutePath)
         put("USER", runtime.runtimeUser)
         put("LOGNAME", runtime.runtimeUser)
+        put("SHELL", runtime.defaultShell().absolutePath)
 
         // TMPDIR is required by libpath_redirect for /tmp redirection. TMP/TEMP
         // are kept for cross-platform Java/native tooling that probes them.
@@ -365,7 +579,7 @@ object LinuxProcessRunner {
         put("NSSWITCH_CONF_PATH", runtime.nsswitchConf.absolutePath)
         put("GAI_CONF_PATH", runtime.gaiConf.absolutePath)
 
-        put("RES_OPTIONS", "attempts:2 timeout:2")
+        put("RES_OPTIONS", "attempts:1 timeout:1")
 
         put("NSS_WRAPPER_PASSWD", runtime.passwdFile.absolutePath)
         put("NSS_WRAPPER_GROUP", runtime.groupFile.absolutePath)
@@ -373,7 +587,33 @@ object LinuxProcessRunner {
         // Kept for compatibility with your custom glibc/nss routing layer.
         put("NSS_WEAK_ROUTE_CONFIG", runtime.nsswitchConf.absolutePath)
 
-        put("GLIBC_TUNABLES", "glibc.rtld.optional_dirs=${runtime.glibcPath}")
+        // Make paths baked into Termux/gpkg binaries resolve against the app-private
+        // files directory. runtime.appDir is the fake Termux files root: <app>/files/glibc.
+        put("APP_FILES_DIR", runtime.appDir.absolutePath)
+        put("TERMUX_PREFIX", File(runtime.usrPath).absolutePath)
+
+        val gccFrontendPath = runtime.gccFrontendDirs()
+            .joinToString(":") { it.absolutePath }
+
+        if (gccFrontendPath.isNotEmpty()) {
+            put("COMPILER_PATH", gccFrontendPath)
+        }
+
+        val binDir = File(runtime.glibcPath).resolve("bin")
+        put("CC", binDir.resolve("gcc").absolutePath)
+        put("CXX", binDir.resolve("g++").absolutePath)
+        put("AR", binDir.resolve("ar").absolutePath)
+        put("RANLIB", binDir.resolve("ranlib").absolutePath)
+        put("STRIP", binDir.resolve("strip").absolutePath)
+        put("MAKE", binDir.resolve("make").absolutePath)
+        put("CMAKE_C_COMPILER", binDir.resolve("gcc").absolutePath)
+        put("CMAKE_CXX_COMPILER", binDir.resolve("g++").absolutePath)
+        put("CMAKE_MAKE_PROGRAM", binDir.resolve("make").absolutePath)
+
+        put(
+            "LIBRARY_PATH",
+            runtime.linkLibraryDirs().joinToString(":") { it.absolutePath }
+        )
     }
 
     fun getResidentMemoryKb(pid: Int): Long {
@@ -445,10 +685,7 @@ object LinuxProcessRunner {
 
     private fun childPidsOf(pid: Int): List<Int> {
         val directChildren = try {
-            File("/proc/$pid/task/$pid/children")
-                .readText()
-                .trim()
-                .split(Regex("\\s+"))
+            File("/proc/$pid/task/$pid/children").readText().trim().split(Regex("\\s+"))
                 .mapNotNull { it.toIntOrNull() }
         } catch (_: Exception) {
             emptyList()
@@ -457,11 +694,8 @@ object LinuxProcessRunner {
         if (directChildren.isNotEmpty()) return directChildren
 
         return try {
-            File("/proc")
-                .listFiles()
-                ?.mapNotNull { it.name.toIntOrNull() }
-                ?.filter { childPid -> getParentPid(childPid) == pid }
-                .orEmpty()
+            File("/proc").listFiles()?.mapNotNull { it.name.toIntOrNull() }
+                ?.filter { childPid -> getParentPid(childPid) == pid }.orEmpty()
         } catch (_: Exception) {
             emptyList()
         }
@@ -470,9 +704,7 @@ object LinuxProcessRunner {
     private fun getParentPid(pid: Int): Int? {
         return try {
             File("/proc/$pid/status").useLines { lines ->
-                lines.firstOrNull { it.startsWith("PPid:") }
-                    ?.substringAfter(':')
-                    ?.trim()
+                lines.firstOrNull { it.startsWith("PPid:") }?.substringAfter(':')?.trim()
                     ?.toIntOrNull()
             }
         } catch (_: Exception) {
@@ -508,10 +740,7 @@ object LinuxProcessRunner {
 
     private fun readCommandLine(pid: Int): List<String> {
         return try {
-            File("/proc/$pid/cmdline")
-                .readText()
-                .split('\u0000')
-                .filter { it.isNotBlank() }
+            File("/proc/$pid/cmdline").readText().split('\u0000').filter { it.isNotBlank() }
         } catch (_: Exception) {
             emptyList()
         }

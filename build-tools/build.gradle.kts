@@ -52,7 +52,7 @@ dependencies {
         exclude(group = "org.jline", module = "jline")
     }
     implementation("io.github.rosemoe:editor:0.24.6")
-    implementation("com.github.PranavPurwar:javac-android:27.23")
+    implementation("com.github.PranavPurwar:javac-android:27.26")
     implementation("com.google.guava:guava:33.6.0-android")
     implementation("com.android.tools:r8:9.1.31")
 }

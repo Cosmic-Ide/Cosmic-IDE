@@ -15,11 +15,14 @@ import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticDetail
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
+import io.github.rosemoe.sora.lang.format.Formatter
 import io.github.rosemoe.sora.langs.textmate.IdeLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.CharPosition
+import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.ContentReference
+import io.github.rosemoe.sora.text.TextRange
 import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +31,7 @@ import org.cosmicide.common.Prefs
 import org.cosmicide.project.Project
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import java.io.File
+import com.facebook.ktfmt.format.Formatter as KtfmtFormatter
 
 /**
  * A custom implementation of an IDE language for Kotlin.
@@ -116,6 +120,34 @@ class KotlinLanguage(
         } catch (e: Throwable) {
             if (e !is InterruptedException && e !is ProcessCanceledException) {
                 Log.e(TAG, "Failed to fetch code completions", e)
+            }
+        }
+    }
+
+    override fun getFormatter(): Formatter {
+        return object : IdeFormatter(this) {
+            override fun format(
+                text: Content,
+                cursorRange: TextRange
+            ) {
+                val formattingOptions = if (Prefs.ktfmtStyle == "google") {
+                    KtfmtFormatter.GOOGLE_FORMAT
+                } else if (Prefs.ktfmtStyle == "meta") {
+                    KtfmtFormatter.META_FORMAT
+                } else {
+                    KtfmtFormatter.KOTLINLANG_FORMAT
+                }
+                val originalText = text.toString()
+                val formattedText = KtfmtFormatter.format(formattingOptions, originalText)
+                text.replace(0, text.length, formattedText)
+            }
+
+            override fun formatRegion(
+                text: Content,
+                rangeToFormat: TextRange,
+                cursorRange: TextRange
+            ) {
+                format(text, cursorRange)
             }
         }
     }

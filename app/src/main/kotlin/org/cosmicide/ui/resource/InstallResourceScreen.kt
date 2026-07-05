@@ -7,13 +7,34 @@
 
 package org.cosmicide.ui.resource
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,13 +42,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.util.Download
+import org.cosmicide.util.FileUtil
 import org.cosmicide.util.ResourceUtil
 import java.io.File
 import java.io.InputStream
@@ -48,7 +69,8 @@ fun InstallResourcesScreen(
         "https://github.com/JetBrains/kotlin/releases/download/v2.4.0/kotlin-compiler-2.4.0.zip"
     val jdtlsUrl =
         "https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz"
-    val kotlinLspUrl = "https://github.com/fwcd/kotlin-language-server/releases/download/1.3.13/server.zip"
+    val kotlinLspUrl =
+        "https://github.com/fwcd/kotlin-language-server/releases/download/1.3.13/server.zip"
 
     var isRunning by remember { mutableStateOf(false) }
     var statusText by remember { mutableStateOf("Ready to configure environment assets.") }
@@ -249,7 +271,8 @@ fun extractTarGzFolder(tarGzFile: File, targetDir: File, filterPrefix: String?):
                 val name = String(header, 0, 100).trim { it <= ' ' || it.code == 0 }
                 if (name.isEmpty() || (filterPrefix != null && !name.startsWith(filterPrefix))) continue
 
-                val fileSize = String(header, 124, 12).trim { it <= ' ' || it.code == 0 }.toLongOrNull(8) ?: 0L
+                val fileSize =
+                    String(header, 124, 12).trim { it <= ' ' || it.code == 0 }.toLongOrNull(8) ?: 0L
                 val entryFile = File(targetDir, name)
 
                 if (name.endsWith("/")) {

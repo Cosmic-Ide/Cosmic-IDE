@@ -32,7 +32,7 @@ import com.tyron.javacompletion.model.Module;
 import com.tyron.javacompletion.options.IndexOptions;
 import com.tyron.javacompletion.storage.IndexStore;
 
-import org.cosmicide.rewrite.util.FileUtil;
+import org.cosmicide.util.FileUtil;
 
 import java.io.BufferedReader;
 import java.net.URI;

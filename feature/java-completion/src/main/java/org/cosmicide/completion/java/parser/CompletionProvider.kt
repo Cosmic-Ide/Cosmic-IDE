@@ -44,7 +44,7 @@ import org.cosmicide.common.Prefs
 import org.cosmicide.completion.java.parser.cache.SymbolCacher
 import org.cosmicide.completion.java.parser.cache.qualifiedName
 import org.cosmicide.editor.EditorCompletionItem
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.FileUtil
 import org.jetbrains.kotlin.K1Deprecation
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles

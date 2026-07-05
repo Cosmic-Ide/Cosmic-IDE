@@ -10,10 +10,7 @@ package org.cosmicide.extension
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import org.cosmicide.R
-import org.cosmicide.editor.completion.CustomCompletionItemAdapter
-import org.cosmicide.editor.completion.CustomCompletionLayout
 import org.cosmicide.common.Prefs
 
 /**
@@ -26,11 +23,4 @@ fun CodeEditor.setFont() {
         ResourcesCompat.getFont(context, R.font.noto_sans_mono)
     }
     isHighlightCurrentLine = true
-}
-
-fun CodeEditor.setCompletionLayout() {
-    getComponent(EditorAutoCompletion::class.java).apply {
-        setAdapter(CustomCompletionItemAdapter())
-        setLayout(CustomCompletionLayout())
-    }
 }

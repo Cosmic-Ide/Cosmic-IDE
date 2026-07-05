@@ -18,28 +18,21 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.color.DynamicColors
 import com.sun.tools.javac.ConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
-import org.cosmicide.fragment.PluginsFragment
-import org.cosmicide.rewrite.plugin.api.Hook
-import org.cosmicide.rewrite.plugin.api.HookManager
-import org.cosmicide.rewrite.plugin.api.PluginLoader
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.plugin.api.Hook
+import org.cosmicide.plugin.api.HookManager
+import org.cosmicide.util.FileUtil
 import org.cosmicide.util.jdksDir
+import org.cosmicide.util.unzip
 import org.lsposed.hiddenapibypass.HiddenApiBypass
-import rikka.sui.Sui
 import top.canyie.pine.Pine
 import java.io.File
 import java.lang.ref.WeakReference
-import java.net.URL
 import java.time.ZonedDateTime
 import java.util.Locale
 import java.util.TimeZone
@@ -67,7 +60,6 @@ class App : Application() {
         Analytics.logEvent(
             "user_metrics",
             "name" to Prefs.clientName,
-            "ip" to getPublicIp(),
             "theme" to Prefs.appTheme,
             "language" to Locale.getDefault().language,
             "timezone" to TimeZone.getDefault().id,
@@ -82,13 +74,10 @@ class App : Application() {
             "time" to ZonedDateTime.now().toString(),
         )
 
-        Sui.init(packageName)
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
 
         setupHooks()
-
-        loadPlugins()
 
         HiddenApiBypass.addHiddenApiExemptions()
 
@@ -97,23 +86,13 @@ class App : Application() {
 
         Log.d("App", "JDK set to: ${ConfigProvider.getJavaHome()}")
 
-        extractGlibcAssetsOnce()
-//        compileJavaSource()
-//        executeJavaClass()
-
-        DynamicColors.applyToActivitiesIfAvailable(this)
+        extractGlibcAssets()
 
         loadTextmateTheme()
 
         val theme = getTheme(Prefs.appTheme)
         val uiModeManager = getSystemService(UiModeManager::class.java)
         if (uiModeManager.nightMode == theme) return
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            uiModeManager.setApplicationNightMode(theme)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(if (theme == UiModeManager.MODE_NIGHT_AUTO) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM else theme)
-        }
 
         StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectLeakedRegistrationObjects().penaltyLog().build())
 
@@ -140,31 +119,14 @@ class App : Application() {
     }
 
     @SuppressLint("SetWorldReadable")
-    fun extractGlibcAssetsOnce() {
-        val targetDir = File(filesDir, "glibc")
-
-        targetDir.mkdirs()
-
-        try {
-            // List all the .so files inside your app's assets/glibc folder
-            val assetManager = assets
-            val files = assetManager.list("glibc") ?: return
-
-            for (fileName in files) {
-                val assetFile = "glibc/$fileName"
-                val outputFile = File(targetDir, fileName)
-                if (outputFile.exists()) continue
-
-                assetManager.open(assetFile).use { inputStream ->
-                    outputFile.outputStream().use { outputStream ->
-                        inputStream.copyTo(outputStream)
-                    }
-                }
-                // Optional: Explicitly make sure the permissions layout allows reading
-                outputFile.setReadable(true, false)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+    fun extractGlibcAssets() {
+        assets.open("glibc.zip").use { input ->
+            input.unzip(
+                targetDir = File(filesDir, "glibc"),
+                stripPrefix = "glibc/",
+                skipExisting = true,
+                makeReadable = true
+            )
         }
     }
 
@@ -199,31 +161,6 @@ class App : Application() {
                 }
             })
 
-            // Fix crash in ViewPager2
-            HookManager.registerHook(object : Hook(
-                method = "onLayoutChildren",
-                argTypes = arrayOf(
-                    RecyclerView.Recycler::class.java,
-                    RecyclerView.State::class.java
-                ),
-                type = LinearLayoutManager::class.java
-            ) {
-                override fun before(param: Pine.CallFrame) {
-                    try {
-                        // Call the original method.
-                        HookManager.invokeOriginal(
-                            param.method,
-                            param.thisObject,
-                            *param.args
-                        )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                    // Bypass method call as we have already called the original method.
-                    param.result = null
-                }
-            })
-
             injectPrint("fine")
             injectPrint("info")
         } catch (e: UnsatisfiedLinkError) {
@@ -241,30 +178,5 @@ class App : Application() {
                 println(param.args[0])
             }
         })
-    }
-
-
-    private fun getPublicIp(): String {
-        return try {
-            val ip = URL("https://api.ipify.org").readText()
-            ip
-        } catch (_: Exception) {
-            ""
-        }
-    }
-
-    fun loadPlugins() {
-        PluginsFragment.getPlugins().forEach { plugin ->
-            val dir = FileUtil.pluginDir.resolve(plugin.name)
-
-            if (plugin.isEnabled) {
-                Log.i("App", "Loading plugin: ${plugin.name}")
-            } else {
-                Log.i("App", "Plugin ${plugin.name} is disabled")
-                return@forEach
-            }
-
-            PluginLoader.loadPlugin(dir, plugin)
-        }
     }
 }

@@ -7,14 +7,15 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.color.MaterialColors
+import androidx.compose.material3.ColorScheme
+import androidx.compose.ui.graphics.toArgb
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lsp.editor.completion.LspCompletionItem
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import org.cosmicide.databinding.CompletionResultBinding
 
-class CustomCompletionItemAdapter : EditorCompletionAdapter() {
+class CustomCompletionItemAdapter(val colorScheme: ColorScheme) : EditorCompletionAdapter() {
 
     override fun areAllItemsEnabled(): Boolean = true
 
@@ -49,6 +50,9 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
             binding.resultItemLabel.paintFlags = binding.resultItemLabel.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
             binding.resultItemLabel.alpha = 1.0f
         }
+
+        binding.resultItemLabel.setTextColor(colorScheme.onSurface.toArgb())
+        binding.resultItemDesc.setTextColor(colorScheme.onSurfaceVariant.toArgb())
 
         // 3. Semantic Kind Coloring (The "IDE" Magic)
         val kindColor = getKindColor(item.kind)
@@ -89,11 +93,11 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
         // 6. Material 3 Selection Highlighting
         if (isCurrentCursorPosition) {
             binding.root.setBackgroundColor(
-                MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceVariant, null)
+                colorScheme.surfaceVariant.toArgb()
             )
         } else {
             binding.root.setBackgroundColor(
-                MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, null)
+                colorScheme.surface.toArgb()
             )
         }
 

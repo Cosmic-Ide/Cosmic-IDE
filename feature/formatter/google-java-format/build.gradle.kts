@@ -37,7 +37,7 @@ tasks.withType<JavaExec> {
 
 dependencies {
     implementation("com.google.guava:guava:33.6.0-jre")
-    implementation("com.github.PranavPurwar:javac-android:27.23")
+    implementation("com.github.PranavPurwar:javac-android:27.26")
     implementation("org.commonmark:commonmark:0.28.0")
     implementation("org.commonmark:commonmark-ext-gfm-tables:0.28.0")
 

@@ -30,7 +30,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -39,7 +38,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,11 +47,15 @@ import org.cosmicide.R
 import org.cosmicide.model.ProjectViewModel
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.FileUtil
 import java.io.File
 import java.io.IOException
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalLayoutApi::class
+)
 @Composable
 fun NewProjectScreen(
     viewModel: ProjectViewModel = viewModel(),
@@ -67,7 +69,8 @@ fun NewProjectScreen(
     var packageName by remember { mutableStateOf("") }
     var language by remember { mutableStateOf(Language.Kotlin as Language) }
 
-    val isPackageInvalid = packageName.isNotEmpty() && !packageName.matches("^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$".toRegex())
+    val isPackageInvalid =
+        packageName.isNotEmpty() && !packageName.matches("^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$".toRegex())
     val isFormValid = name.isNotBlank() && packageName.isNotBlank() && !isPackageInvalid
 
     Scaffold(
@@ -138,7 +141,13 @@ fun NewProjectScreen(
                     onValueChange = { name = it },
                     label = { Text("Project title") },
                     placeholder = { Text("MyAwesomeApplication") },
-                    leadingIcon = { Icon(Icons.Default.FolderOpen, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.FolderOpen,
+                            null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                 )
@@ -148,7 +157,13 @@ fun NewProjectScreen(
                     onValueChange = { packageName = it },
                     label = { Text("Package name") },
                     placeholder = { Text("com.example.app") },
-                    leadingIcon = { Icon(Icons.Default.Layers, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Layers,
+                            null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     isError = isPackageInvalid,

@@ -1,13 +1,29 @@
 package org.cosmicide.ui.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.automirrored.filled.FormatAlignLeft
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Hardware
+import androidx.compose.material.icons.filled.Hub
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,13 +39,12 @@ fun SettingsScreen(
     onNavigateToCategory: (SettingsCategory) -> Unit
 ) {
     val categories = listOf(
-        SettingsCategory.Appearance,
         SettingsCategory.Editor,
         SettingsCategory.Compiler,
         SettingsCategory.Formatter,
         SettingsCategory.Plugins,
         SettingsCategory.Git,
-        SettingsCategory.Gemini,
+        SettingsCategory.Toolchains,
         SettingsCategory.About
     )
 
@@ -64,13 +79,19 @@ sealed class SettingsCategory(
     val summary: String,
     val icon: ImageVector
 ) {
-    data object Appearance : SettingsCategory("Appearance", "Customize the appearance as you see fit", Icons.Default.Palette)
     data object Editor : SettingsCategory("Code editor", "Customize editor settings", Icons.Default.Code)
     data object Compiler : SettingsCategory("Compiler", "Configure compiler options and build process", Icons.Default.Build)
-    data object Formatter : SettingsCategory("Formatter", "Adjust code formatting preferences", Icons.Default.FormatAlignLeft)
-    data object Plugins : SettingsCategory("Plugins", "Explore and install plugins", Icons.Default.Extension)
+    data object Formatter : SettingsCategory(
+        "Formatter",
+        "Adjust code formatting preferences",
+        Icons.AutoMirrored.Filled.FormatAlignLeft
+    )
+
+    data object Plugins :
+        SettingsCategory("Plugins", "Explore and install plugins", Icons.Default.Hub)
     data object Git : SettingsCategory("Git", "Configure Git integration", Icons.Default.Settings)
-    data object Gemini : SettingsCategory("Gemini", "Configure Gemini integration", Icons.Default.Settings)
+    data object Toolchains :
+        SettingsCategory("Toolchains", "Configure JDK Toolchain", Icons.Default.Hardware)
     data object About : SettingsCategory("About", "Learn more about Cosmic IDE", Icons.Default.Info)
 }
 

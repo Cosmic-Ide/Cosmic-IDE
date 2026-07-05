@@ -42,19 +42,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.databinding:viewbinding:9.2.1")
-
-    "prodImplementation"("io.appwrite:sdk-for-android:25.0.0")
+//    "prodImplementation"("io.appwrite:sdk-for-android:25.0.0")
     "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.4.0")
-
-    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.2")
 
     api("androidx.preference:preference-ktx:1.2.1")
 
-    implementation("com.google.android.material:material:1.14.0")
-
     api("io.github.rosemoe:editor:0.24.6")
-    api("io.github.rosemoe:language-treesitter:0.24.6")
     api("io.github.rosemoe:language-textmate:0.24.6")
 }

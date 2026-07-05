@@ -17,7 +17,6 @@ class MainInitializer : Initializer<Unit> {
 
     override fun dependencies(): List<Class<out Initializer<*>>> {
         return listOf(
-            DebugInitializer::class.java,
             PreferencesInitializer::class.java
         )
     }

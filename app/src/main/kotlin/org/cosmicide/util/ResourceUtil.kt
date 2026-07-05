@@ -8,13 +8,12 @@
 package org.cosmicide.util
 
 import org.cosmicide.App
-import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 
 object ResourceUtil {
 
     val resources =
-        arrayOf("index.json")
+        arrayOf<String>()
 
     fun missingResources(): List<String> {
         val missing = mutableListOf<String>()

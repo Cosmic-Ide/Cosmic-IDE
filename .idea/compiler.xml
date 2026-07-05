@@ -5,13 +5,6 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.11.0/d1fd0e74d20e922145c3fede3f05e246bb6be281/auto-value-1.11.0.jar" />
-        </processorPath>
-        <module name="CosmicIDE.feature.genai.main" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.11.1/ea6b28b677d1d9813d7c980c1d82f7ac07acc58f/auto-value-1.11.1.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service/1.1.1/bfeb4c40087b49e23700f074807d3f2a6d36d2d1/auto-service-1.1.1.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service-annotations/1.1.1/da12a15cd058ba90a0ff55357fb521161af4736d/auto-service-annotations-1.1.1.jar" />
@@ -80,8 +73,11 @@
       <module name="CosmicIDE-Rewrite.TreeView" target="17" />
       <module name="CosmicIDE-Rewrite.util" target="20" />
       <module name="CosmicIDE-Rewrite.util.test" target="17" />
+      <module name="CosmicIDE.datadir" target="21" />
       <module name="CosmicIDE.feature.aliuhook" target="21" />
       <module name="CosmicIDE.feature.appwrite" target="21" />
+      <module name="CosmicIDE.feature.TreeView" target="21" />
+      <module name="CosmicIDE.gradle-tooling-api" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

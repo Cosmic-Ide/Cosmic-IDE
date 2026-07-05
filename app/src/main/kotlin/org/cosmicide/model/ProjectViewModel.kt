@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.util.FileUtil
 import java.io.File
 
 class ProjectViewModel : ViewModel() {

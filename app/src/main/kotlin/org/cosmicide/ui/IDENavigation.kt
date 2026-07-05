@@ -15,7 +15,6 @@ import org.cosmicide.ui.project.NewProjectScreen
 import org.cosmicide.ui.resource.InstallResourcesScreen
 import org.cosmicide.ui.resource.JdkSettingsPanel
 import org.cosmicide.ui.settings.AboutSettingsScreen
-import org.cosmicide.ui.settings.AppearanceSettingsScreen
 import org.cosmicide.ui.settings.CompilerSettingsScreen
 import org.cosmicide.ui.settings.EditorSettingsScreen
 import org.cosmicide.ui.settings.FormatterSettingsScreen
@@ -66,7 +65,9 @@ fun IDENavigation() {
             }
 
             is NewProject -> NavEntry(key) {
-                NewProjectScreen(onNavigateToEditor = {}, onBack = {
+                NewProjectScreen(onNavigateToEditor = {
+                    backStack.add(Editor(it))
+                }, onBack = {
                     if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
                 })
             }
@@ -97,13 +98,12 @@ fun IDENavigation() {
 
             is SettingsCategoryScreen -> NavEntry(key) {
                 when (key.category) {
-                    "Appearance" -> AppearanceSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Code editor" -> EditorSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Compiler" -> CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Formatter" -> FormatterSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Plugins" -> PluginsSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Git" -> GitSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Gemini" -> JdkSettingsPanel { backStack.removeLastOrNull() }
+                    "Toolchains" -> JdkSettingsPanel { backStack.removeLastOrNull() }
                     "About" -> AboutSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     else -> Text("Category: ${key.category}")
                 }

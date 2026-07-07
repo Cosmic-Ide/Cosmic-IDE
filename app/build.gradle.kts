@@ -144,6 +144,7 @@ configurations.all {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
+    implementation("com.github.luben:zstd-jni:1.5.7-11@aar")
 
     implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
     implementation("org.gradle:gradle-tooling-api:9.6.1")
@@ -152,7 +153,6 @@ dependencies {
     implementation("androidx.documentfile:documentfile:1.1.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
-    implementation("androidx.activity:activity-ktx:1.13.0")
     implementation("androidx.startup:startup-runtime:1.2.0")
 
     implementation(platform("io.github.rosemoe:editor-bom:0.24.6"))

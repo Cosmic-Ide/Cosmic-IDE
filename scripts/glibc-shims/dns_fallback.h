@@ -5,8 +5,6 @@
 
 /*
  * Exported by dns_fallback.c as an LD_PRELOAD interposer.
- * Keep this in a separate translation unit so libpath_redirect.c remains
- * focused on filesystem/path redirection and HotSpot hsperfdata stat spoofing.
  */
 int getaddrinfo(
     const char* node,
@@ -15,4 +13,4 @@ int getaddrinfo(
     struct addrinfo** res
 );
 
-#endif /* COSMICIDE_DNS_FALLBACK_H */
+#endif

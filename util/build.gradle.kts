@@ -29,7 +29,6 @@ android {
 }
 
 dependencies {
-    implementation("de.maxr1998:modernandroidpreferences:2.3.2")
     implementation("top.canyie.pine:core:0.3.0")
     implementation("androidx.core:core-ktx:1.19.0")
 }

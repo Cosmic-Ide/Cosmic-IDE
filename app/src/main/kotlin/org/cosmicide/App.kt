@@ -7,7 +7,6 @@
 
 package org.cosmicide
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.app.UiModeManager
@@ -28,10 +27,8 @@ import org.cosmicide.plugin.api.Hook
 import org.cosmicide.plugin.api.HookManager
 import org.cosmicide.util.FileUtil
 import org.cosmicide.util.jdksDir
-import org.cosmicide.util.unzip
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import top.canyie.pine.Pine
-import java.io.File
 import java.lang.ref.WeakReference
 import java.time.ZonedDateTime
 import java.util.Locale
@@ -84,10 +81,6 @@ class App : Application() {
         val jdkDir = jdksDir().resolve(Prefs.currentJDK)
         ConfigProvider.setJavaHome(jdkDir.absolutePath)
 
-        Log.d("App", "JDK set to: ${ConfigProvider.getJavaHome()}")
-
-        extractGlibcAssets()
-
         loadTextmateTheme()
 
         val theme = getTheme(Prefs.appTheme)
@@ -116,18 +109,6 @@ class App : Application() {
         })
 
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
-    }
-
-    @SuppressLint("SetWorldReadable")
-    fun extractGlibcAssets() {
-        assets.open("glibc.zip").use { input ->
-            input.unzip(
-                targetDir = File(filesDir, "glibc"),
-                stripPrefix = "glibc/",
-                skipExisting = true,
-                makeReadable = true
-            )
-        }
     }
 
     fun getTheme(theme: String): Int {

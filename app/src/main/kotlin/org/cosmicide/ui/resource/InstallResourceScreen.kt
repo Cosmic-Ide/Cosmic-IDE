@@ -1,10 +1,3 @@
-/*
- * This file is part of Cosmic IDE.
- * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package org.cosmicide.ui.resource
 
 import androidx.compose.animation.AnimatedVisibility
@@ -50,11 +43,12 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.util.Download
 import org.cosmicide.util.FileUtil
 import org.cosmicide.util.ResourceUtil
+import org.cosmicide.util.extractTarGzFolder
+import org.cosmicide.util.extractTarZstStream
+import org.cosmicide.util.extractZip
+import org.cosmicide.util.restoreSymlinksFromManifest
 import java.io.File
-import java.io.InputStream
 import java.util.Locale
-import java.util.zip.GZIPInputStream
-import java.util.zip.ZipInputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,8 +63,6 @@ fun InstallResourcesScreen(
         "https://github.com/JetBrains/kotlin/releases/download/v2.4.0/kotlin-compiler-2.4.0.zip"
     val jdtlsUrl =
         "https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz"
-    val kotlinLspUrl =
-        "https://github.com/fwcd/kotlin-language-server/releases/download/1.3.13/server.zip"
 
     var isRunning by remember { mutableStateOf(false) }
     var statusText by remember { mutableStateOf("Ready to configure environment assets.") }
@@ -172,19 +164,43 @@ fun InstallResourcesScreen(
                 }
             }
 
+            val glibcTargetDir = context.filesDir.resolve("glibc")
+            if (!glibcTargetDir.exists() || glibcTargetDir.listFiles()?.isEmpty() == true) {
+                glibcTargetDir.mkdirs()
+                statusText = "Deploying local runtime..."
+                currentProgress = -1f
+                progressDetailsText = "Extracting runtime..."
+
+                val extractionSuccessGl = withContext(Dispatchers.IO) {
+                    runCatching {
+                        context.assets.open("glibc.tar.zst").use { assetIn ->
+                            extractTarZstStream(assetIn, glibcTargetDir, "glibc/", longMax = 30)
+                        } && restoreSymlinksFromManifest(glibcTargetDir)
+                    }.getOrDefault(false)
+                }
+
+                if (!extractionSuccessGl) {
+                    statusText = "Failed to deploy glibc runtime."
+                    isRunning = false
+                    return@launch
+                }
+            }
+
             statusText = "Workspace environment initialized!"
             isRunning = false
             onMoveToJdkManager()
         }
-
         Unit
     }
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Environment Init", fontWeight = FontWeight.Bold) }
-            )
+            CenterAlignedTopAppBar(title = {
+                Text(
+                    "Environment Init",
+                    fontWeight = FontWeight.Bold
+                )
+            })
         }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -201,9 +217,7 @@ fun InstallResourcesScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Text(
                 text = progressDetailsText,
                 style = MaterialTheme.typography.bodySmall,
@@ -211,35 +225,20 @@ fun InstallResourcesScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-
             Spacer(modifier = Modifier.height(24.dp))
-
             AnimatedVisibility(visible = isRunning) {
-                if (currentProgress >= 0f) {
-                    LinearProgressIndicator(
-                        progress = { currentProgress },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                    )
-                } else {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                    )
-                }
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                )
             }
-
             Spacer(modifier = Modifier.height(32.dp))
-
             Button(
                 onClick = runSetupChain,
                 enabled = !isRunning,
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 shapes = ButtonDefaults.shapes()
             ) {
                 Icon(Icons.Default.PlayArrow, null)
@@ -260,89 +259,5 @@ private suspend fun installResource(
     } catch (e: Exception) {
         e.printStackTrace()
         false
-    }
-}
-
-fun extractTarGzFolder(tarGzFile: File, targetDir: File, filterPrefix: String?): Boolean {
-    return runCatching {
-        GZIPInputStream(tarGzFile.inputStream().buffered()).use { gisIn ->
-            val header = ByteArray(512)
-            while (gisIn.readFully(header) && header[0].toInt() != 0) {
-                val name = String(header, 0, 100).trim { it <= ' ' || it.code == 0 }
-                if (name.isEmpty() || (filterPrefix != null && !name.startsWith(filterPrefix))) continue
-
-                val fileSize =
-                    String(header, 124, 12).trim { it <= ' ' || it.code == 0 }.toLongOrNull(8) ?: 0L
-                val entryFile = File(targetDir, name)
-
-                if (name.endsWith("/")) {
-                    entryFile.mkdirs()
-                } else {
-                    entryFile.parentFile?.mkdirs()
-                    entryFile.outputStream().use { fos ->
-                        gisIn.copyToLimit(fos, fileSize)
-                    }
-                }
-
-                val padding = (512 - (fileSize % 512)) % 512
-                gisIn.skipFully(padding)
-            }
-        }
-        true
-    }.getOrDefault(false)
-}
-
-private fun extractZip(zipFile: File, targetDir: File): Boolean {
-    return runCatching {
-        ZipInputStream(zipFile.inputStream().buffered()).use { zis ->
-            generateSequence { zis.nextEntry }.forEach { entry ->
-                val newFile = File(targetDir, entry.name)
-                if (entry.isDirectory) {
-                    newFile.mkdirs()
-                } else {
-                    newFile.parentFile?.mkdirs()
-                    newFile.outputStream().use { fos ->
-                        zis.copyTo(fos)
-                    }
-                }
-                zis.closeEntry()
-            }
-        }
-        true
-    }.getOrDefault(false)
-}
-
-private fun InputStream.readFully(buffer: ByteArray): Boolean {
-    var offset = 0
-    while (offset < buffer.size) {
-        val read = read(buffer, offset, buffer.size - offset)
-        if (read == -1) break
-        offset += read
-    }
-    return offset == buffer.size
-}
-
-private fun InputStream.copyToLimit(out: java.io.OutputStream, limit: Long) {
-    val buffer = ByteArray(8192)
-    var remaining = limit
-    while (remaining > 0) {
-        val toRead = minOf(remaining, buffer.size.toLong()).toInt()
-        val read = read(buffer, 0, toRead)
-        if (read == -1) break
-        out.write(buffer, 0, read)
-        remaining -= read
-    }
-}
-
-private fun InputStream.skipFully(amount: Long) {
-    var remaining = amount
-    while (remaining > 0) {
-        val skipped = skip(remaining)
-        if (skipped <= 0) {
-            if (read() == -1) break
-            remaining--
-        } else {
-            remaining -= skipped
-        }
     }
 }

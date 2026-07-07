@@ -6,59 +6,97 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 OUT_ROOT="$ROOT/glibc"
 OUT_DIR="$OUT_ROOT/usr"
-ASSETS_ZIP="$ROOT/app/src/main/assets/glibc.zip"
+ASSETS_TAR_ZST="$ROOT/app/src/main/assets/glibc.tar.zst"
+REUSE_GLIBC=0
 
-if ! command -v zip >/dev/null 2>&1; then
-    echo "error: missing zip" >&2
+usage() {
+    echo "usage: $0 [--reuse-glibc]" >&2
+    echo "  --reuse-glibc  reuse existing ./glibc tree; skip clean + gpkg extraction" >&2
+    exit 1
+}
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --reuse-glibc|--no-extract)
+            REUSE_GLIBC=1
+            ;;
+        --help|-h)
+            usage
+            ;;
+        *)
+            echo "error: unknown option: $1" >&2
+            usage
+            ;;
+    esac
+    shift
+done
+
+if ! command -v tar >/dev/null 2>&1; then
+    echo "error: missing tar" >&2
     exit 1
 fi
 
-if ! command -v jq >/dev/null 2>&1; then
+if ! command -v zstd >/dev/null 2>&1; then
+    echo "error: missing zstd" >&2
+    exit 1
+fi
+
+if [ "$REUSE_GLIBC" = "0" ] && ! command -v jq >/dev/null 2>&1; then
     echo "error: missing jq" >&2
     exit 1
 fi
 
 cd "$ROOT"
 
-echo "cleaning $OUT_ROOT"
-rm -rf "$OUT_ROOT"
-
-echo "building glibc..."
-chmod +x "$ROOT/scripts/glibc.sh"
 chmod +x "$ROOT/scripts/build-shims.sh"
 
-set -- \
-    glibc \
-    gcc-libs-glibc \
-    coreutils-glibc \
-    bash-glibc \
-    binutils-glibc \
-    ca-certificates-glibc \
-    gcc-glibc \
-    clang-glibc \
-    cmake-glibc \
-    llvm-glibc \
-    make-glibc
+if [ "$REUSE_GLIBC" = "1" ]; then
+    echo "reusing existing glibc tree: $OUT_ROOT"
 
-echo "requested packages:"
-printf '  %s\n' "$@"
-
-"$ROOT/scripts/glibc.sh" --install --out "$OUT_DIR" "$@"
-
-echo "checking required downloaded roots..."
-for pkg in "$@"; do
-    filename="$(jq -r --arg p "$pkg" '.[$p].FILENAME // empty' "$ROOT/gpkg-cache/gpkg.json")"
-
-    if [ -z "$filename" ]; then
-        echo "error: package missing from gpkg.json: $pkg" >&2
+    if [ ! -d "$OUT_DIR" ]; then
+        echo "error: cannot reuse missing directory: $OUT_DIR" >&2
         exit 1
     fi
+else
+    echo "cleaning $OUT_ROOT"
+    rm -rf "$OUT_ROOT"
 
-    if [ ! -s "$ROOT/gpkg-cache/$filename" ]; then
-        echo "error: package was not downloaded: $pkg -> $filename" >&2
-        exit 1
-    fi
-done
+    echo "building glibc..."
+    chmod +x "$ROOT/scripts/glibc.sh"
+
+    set -- \
+        glibc \
+        gcc-libs-glibc \
+        coreutils-glibc \
+        bash-glibc \
+        binutils-glibc \
+        findutils-glibc \
+        ca-certificates-glibc \
+        clang-glibc \
+        llvm-glibc \
+        cmake-glibc \
+        make-glibc
+
+    echo "requested packages:"
+    printf '  %s\n' "$@"
+
+    "$ROOT/scripts/glibc.sh" --install --keep-symlinks --out "$OUT_DIR" "$@"
+
+    echo "checking required downloaded roots..."
+    for pkg in "$@"; do
+        filename="$(jq -r --arg p "$pkg" '.[$p].FILENAME // empty' "$ROOT/gpkg-cache/gpkg.json")"
+
+        if [ -z "$filename" ]; then
+            echo "error: package missing from gpkg.json: $pkg" >&2
+            exit 1
+        fi
+
+        if [ ! -s "$ROOT/gpkg-cache/$filename" ]; then
+            echo "error: package was not downloaded: $pkg -> $filename" >&2
+            exit 1
+        fi
+    done
+fi
 
 "$ROOT/scripts/build-shims.sh"
 
@@ -72,27 +110,45 @@ require_bin() {
     exit 1
 }
 
-for bin in ls mkdir cp rm cat chmod chown ln sh bash gcc g++ make cmake ar ranlib; do
+for bin in ls mkdir cp rm cat chmod chown ln sh bash make cmake ar ranlib; do
     require_bin "$bin"
 done
 
-echo "creating asset zip..."
-mkdir -p "$(dirname "$ASSETS_ZIP")" "$OUT_ROOT"
-rm -f "$ASSETS_ZIP"
+if [ -e "$OUT_DIR/bin/gcc" ]; then
+    require_bin gcc
+    require_bin g++
+elif [ -e "$OUT_DIR/bin/clang" ]; then
+    require_bin clang
+    require_bin clang++
+else
+    echo "error: missing compiler: expected gcc or clang" >&2
+    exit 1
+fi
+
+echo "creating asset archive..."
+mkdir -p "$(dirname "$ASSETS_TAR_ZST")" "$OUT_ROOT"
+rm -f "$ASSETS_TAR_ZST"
+rm -f "$ROOT/app/src/main/assets/glibc.zip"
 
 SYMLINK_MANIFEST="$OUT_ROOT/.symlinks"
 : > "$SYMLINK_MANIFEST"
 
 normalize_rel_path() {
     path="$1"
-
-    old_ifs="$IFS"
-    IFS=/
-    set -- $path
-    IFS="$old_ifs"
-
     out=""
-    for part do
+
+    while [ -n "$path" ]; do
+        case "$path" in
+            */*)
+                part="${path%%/*}"
+                path="${path#*/}"
+                ;;
+            *)
+                part="$path"
+                path=""
+                ;;
+        esac
+
         case "$part" in
             ""|.)
                 ;;
@@ -216,8 +272,10 @@ find_final_target_for_symlink() {
     relative_path_from_dir "$link_dir_rel" "$target_rel"
 }
 
+out_prefix="$OUT_ROOT/"
+
 find "$OUT_DIR" -type l | sort | while IFS= read -r link; do
-    rel="${link#$OUT_ROOT/}"
+    rel="${link#"$out_prefix"}"
     raw_target="$(readlink "$link")"
 
     target="$(find_final_target_for_symlink "$rel" "$raw_target")" || continue
@@ -225,12 +283,25 @@ find "$OUT_DIR" -type l | sort | while IFS= read -r link; do
     printf '%s\t%s\n' "$rel" "$target" >> "$SYMLINK_MANIFEST"
 done
 
-(
-    cd "$ROOT"
-    find glibc \( -type d -o -type f \) -print | sort | zip -q "$ASSETS_ZIP" -@
-)
+# disable macOS copyfile metadata to avoid "xattrs not supported" errors when extracting the tar on Linux
+export COPYFILE_DISABLE=1
 
-echo "cleaning up"
-# rm -rf "$OUT_DIR"
+TAR_LIST="$ROOT/.glibc-tar-files.$$"
+ASSETS_TMP="$ASSETS_TAR_ZST.tmp.$$"
 
-echo "done: $ASSETS_ZIP"
+cleanup_archive() {
+    rm -f "$TAR_LIST" "$ASSETS_TMP"
+}
+trap cleanup_archive EXIT HUP INT TERM
+
+find glibc -type f -print | LC_ALL=C sort > "$TAR_LIST"
+
+tar --no-xattrs --disable-copyfile -cf - -T "$TAR_LIST" | \
+zstd -19 -T0 --long=30 -f -o "$ASSETS_TMP"
+
+mv -f "$ASSETS_TMP" "$ASSETS_TAR_ZST"
+
+trap - EXIT HUP INT TERM
+rm -f "$TAR_LIST"
+
+echo "done: $ASSETS_TAR_ZST"

@@ -27,6 +27,11 @@ object ResourceUtil {
         return missing
     }
 
+    fun isRuntimeMissing(): Boolean {
+        val context = App.instance.get()
+        return !context!!.filesDir.resolve("glibc").exists()
+    }
+
     fun isJdkMissing(): Boolean {
         val context = App.instance.get()
         return context!!.jdks().isEmpty()
@@ -49,6 +54,7 @@ object ResourceUtil {
      */
     fun isEnvironmentIncomplete(): Boolean {
         return missingResources().isNotEmpty() ||
+                isRuntimeMissing() ||
                 isJdkMissing() ||
                 isKotlinMissing() ||
                 isJdtlsMissing()

@@ -189,14 +189,16 @@ fun JdkSettingsPanel(
                 when (task.action) {
                     is JdkAction.Install -> {
                         val hostOs =
-                            FoojayClient.OS.resolve(System.getProperty("os.name") ?: "linux")
+                            FoojayClient.OS.resolve("linux")
                         val hostArch =
-                            FoojayClient.Arch.resolve(System.getProperty("os.arch") ?: "aarch64")
+                            FoojayClient.Arch.resolve("aarch64")
+                        val hostLibC =
+                            FoojayClient.LibCType.resolve("glibc")
 
                         taskQueue[i] = taskQueue[i].copy(message = "Resolving artifacts...")
 
                         val resolveResult = foojayClient.resolveLatestArtifact(
-                            task.action.vendorParam, task.action.version, hostOs, hostArch
+                            task.action.vendorParam, task.action.version, hostOs, hostArch, hostLibC
                         )
                         if (resolveResult.isSuccess) {
                             val artifact = resolveResult.getOrNull()!!

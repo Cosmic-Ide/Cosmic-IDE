@@ -1,16 +1,20 @@
 package org.cosmicide.sdk.manager.jdk
 
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.onDownload
+import io.ktor.client.plugins.timeout
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.parameter
+import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.bodyAsChannel
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.cio.writeChannel
-import io.ktor.utils.io.close
 import io.ktor.utils.io.copyTo
-import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -31,6 +35,16 @@ class FoojayClient(private val httpClient: HttpClient = defaultClient) {
     enum class Arch(val apiValue: String) {
         X64("x64"), AARCH64("aarch64");
         companion object { fun resolve(arch: String) = when(arch.lowercase()) { "aarch64", "arm64" -> AARCH64; else -> X64 } }
+    }
+
+    enum class LibCType(val apiValue: String) {
+        GLIBC("glibc"), MUSL("musl"), LIBC("libc");
+
+        companion object {
+            fun resolve(libc: String) = when (libc.lowercase()) {
+                "musl" -> MUSL; "libc" -> LIBC; else -> GLIBC
+            }
+        }
     }
 
     data class Distribution(val name: String, val apiParam: String, val versions: List<String>)
@@ -73,15 +87,21 @@ class FoojayClient(private val httpClient: HttpClient = defaultClient) {
     /**
      * Resolves the latest available artifact matching the technical requirements.
      */
-    suspend fun resolveLatestArtifact(vendorParam: String, version: String, os: OS, arch: Arch): Result<Artifact> = withContext(Dispatchers.IO) {
+    suspend fun resolveLatestArtifact(
+        vendorParam: String,
+        version: String,
+        os: OS,
+        arch: Arch,
+        libCType: LibCType = LibCType.GLIBC
+    ): Result<Artifact> = withContext(Dispatchers.IO) {
         runCatching {
-            // Step 1: Discover package entries
             val packagesResponse: PackagesResponse = httpClient.get("$BASE_URL/packages/jdks") {
                 parameter("distribution", vendorParam)
                 parameter("version", version)
                 parameter("operating_system", os.apiValue)
                 parameter("architecture", arch.apiValue)
                 parameter("latest", "available")
+                parameter("lib_c_type", libCType.apiValue)
             }.body()
 
             val pkg = packagesResponse.result.firstOrNull()

@@ -11,7 +11,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -19,23 +18,23 @@ import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import org.cosmicide.ui.IDENavigation
 import org.cosmicide.ui.editor.resolveTheme
 import org.cosmicide.ui.theme.IDETheme
+import org.cosmicide.ui.theme.isDeviceInDarkTheme
 import org.eclipse.tm4e.core.registry.IThemeSource
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-
         System.loadLibrary("android-tree-sitter")
 
         setContent {
             IDETheme {
+                val isDarkTheme = isDeviceInDarkTheme()
                 loadEditorThemes(MaterialTheme.colorScheme)
 
-                if (isSystemInDarkTheme()) {
+                if (isDarkTheme) {
                     ThemeRegistry.getInstance().setTheme("darcula")
                 } else {
                     ThemeRegistry.getInstance().setTheme("light")
@@ -62,5 +61,4 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-
 }

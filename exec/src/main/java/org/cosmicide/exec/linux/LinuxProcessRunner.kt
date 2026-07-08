@@ -18,7 +18,10 @@ object LinuxProcessRunner {
         val arguments: List<String>,
         val workingDir: File,
         val environmentOverrides: Map<String, String> = emptyMap(),
-        val pathEntries: List<File> = emptyList()
+        val pathEntries: List<File> = emptyList(),
+        val usePty: Boolean = false,
+        val terminalRows: Int = 24,
+        val terminalColumns: Int = 80
     )
 
     private data class GlibcRuntime(
@@ -47,6 +50,48 @@ object LinuxProcessRunner {
      */
     fun start(context: Context, config: Configuration): Process {
         return createProcessBuilder(context, config).start()
+    }
+
+    /**
+     * Spawns a process with PTY support for interactive terminal I/O
+     * Uses the exec module native PTY implementation to fork/exec and attach the child process.
+     */
+    fun startWithPty(context: Context, config: Configuration): PtyProcess {
+        if (!config.usePty) {
+            throw IllegalArgumentException("Configuration must have usePty=true")
+        }
+
+        // Build environment map including glibc settings
+        val runtime = prepareGlibcRuntime(context)
+        val environment = buildMap {
+            putCommonGlibcEnvironment(runtime)
+            put("PATH", buildPath(runtime, config.binary, config.pathEntries))
+            put("TERM", "xterm-256color")
+            // Caller overrides applied last
+            putAll(config.environmentOverrides)
+        }
+
+        // Wrap the binary with glibc ld-linux if needed
+        val wrappedBinary = runtime.wrapCommand(config.binary, config.arguments)
+
+        try {
+            // Allocate PTY and spawn child process inside it
+            // IMPORTANT: Pass config.workingDir to native layer for chdir()
+            val pty = PtyTerminal.allocateAndSpawn(
+                workingDir = config.workingDir,
+                executable = File(wrappedBinary[0]),
+                arguments = wrappedBinary.drop(1),
+                environment = environment
+            )
+
+            // Configure terminal dimensions
+            pty.setWindowSize(config.terminalRows, config.terminalColumns)
+
+            // Create wrapper with child PID for signal management
+            return PtyProcess.create(pty)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     fun execute(

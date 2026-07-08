@@ -10,7 +10,11 @@ plugins {
 
 android {
     namespace = "com.facebook.ktfmt"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         minSdk = 26

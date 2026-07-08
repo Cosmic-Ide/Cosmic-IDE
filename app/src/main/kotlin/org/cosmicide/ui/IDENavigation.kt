@@ -18,9 +18,9 @@ import org.cosmicide.ui.settings.AboutSettingsScreen
 import org.cosmicide.ui.settings.CompilerSettingsScreen
 import org.cosmicide.ui.settings.EditorSettingsScreen
 import org.cosmicide.ui.settings.FormatterSettingsScreen
-import org.cosmicide.ui.settings.GitSettingsScreen
 import org.cosmicide.ui.settings.PluginsSettingsScreen
 import org.cosmicide.ui.settings.SettingsScreen
+import org.cosmicide.ui.terminal.TerminalScreen
 import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.ResourceUtil
 
@@ -102,7 +102,7 @@ fun IDENavigation() {
                     "Compiler" -> CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Formatter" -> FormatterSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Plugins" -> PluginsSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Git" -> GitSettingsScreen(onBack = { backStack.removeLastOrNull() })
+                    "Git" -> TerminalScreen(onNavigateBack = { backStack.removeLastOrNull() }) //GitSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Toolchains" -> JdkSettingsPanel { backStack.removeLastOrNull() }
                     "About" -> AboutSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     else -> Text("Category: ${key.category}")
@@ -111,9 +111,7 @@ fun IDENavigation() {
 
             is JDKSettingsScreen -> NavEntry(key) {
                 JdkSettingsPanel(onDismissRequested = {
-                    backStack.add(Home); backStack.removeAt(
-                    backStack.size - 2
-                )
+                    backStack.add(Home); backStack.removeAt(backStack.size - 2)
                 })
             }
 

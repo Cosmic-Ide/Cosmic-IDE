@@ -1,7 +1,9 @@
 package org.cosmicide.ui.theme
 
+import android.app.UiModeManager
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
@@ -11,15 +13,15 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.expressiveLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun IDETheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-
-    content: @Composable () -> Unit
+    darkTheme: Boolean = isDeviceInDarkTheme(),
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -38,4 +40,22 @@ fun IDETheme(
         shapes = shapes,
         content = content
     )
+}
+
+@Composable
+fun isDeviceInDarkTheme(): Boolean {
+    val context = LocalContext.current
+    val localNightMode = LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    val contextNightMode =
+        context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+    if (
+        localNightMode == Configuration.UI_MODE_NIGHT_YES ||
+        contextNightMode == Configuration.UI_MODE_NIGHT_YES
+    ) {
+        return true
+    }
+
+    val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+    return uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
 }

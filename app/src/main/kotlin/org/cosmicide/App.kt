@@ -7,16 +7,9 @@
 
 package org.cosmicide
 
-import android.app.Activity
 import android.app.Application
-import android.app.UiModeManager
 import android.os.Build
-import android.os.Bundle
-import android.os.StrictMode
 import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import com.sun.tools.javac.ConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
@@ -46,7 +39,6 @@ class App : Application() {
         lateinit var instance: WeakReference<App>
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate() {
         super.onCreate()
 
@@ -76,47 +68,16 @@ class App : Application() {
 
         setupHooks()
 
-        HiddenApiBypass.addHiddenApiExemptions()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            HiddenApiBypass.addHiddenApiExemptions()
+        }
 
         val jdkDir = jdksDir().resolve(Prefs.currentJDK)
         ConfigProvider.setJavaHome(jdkDir.absolutePath)
 
         loadTextmateTheme()
 
-        val theme = getTheme(Prefs.appTheme)
-        val uiModeManager = getSystemService(UiModeManager::class.java)
-        if (uiModeManager.nightMode == theme) return
-
-        StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectLeakedRegistrationObjects().penaltyLog().build())
-
-        // iterate through each activity and apply theme
-        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, p1: Bundle?) {
-                (activity as? ComponentActivity)?.enableEdgeToEdge()
-            }
-
-            override fun onActivityStarted(p0: Activity) {}
-
-            override fun onActivityResumed(p0: Activity) {}
-
-            override fun onActivityPaused(p0: Activity) {}
-
-            override fun onActivityStopped(p0: Activity) {}
-
-            override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {}
-
-            override fun onActivityDestroyed(p0: Activity) {}
-        })
-
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
-    }
-
-    fun getTheme(theme: String): Int {
-        return when (theme) {
-            "light" -> UiModeManager.MODE_NIGHT_NO
-            "dark" -> UiModeManager.MODE_NIGHT_YES
-            else -> UiModeManager.MODE_NIGHT_AUTO
-        }
     }
 
     fun loadTextmateTheme() {

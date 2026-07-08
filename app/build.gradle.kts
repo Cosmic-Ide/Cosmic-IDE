@@ -13,7 +13,11 @@ plugins {
 
 android {
     namespace = "org.cosmicide"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         val commit = getGitCommit()
@@ -168,6 +172,9 @@ dependencies {
     implementation("com.itsaky.androidide.treesitter:tree-sitter-kotlin:4.3.2")
 
     implementation("com.github.PranavPurwar:javac-android:27.26")
+
+    implementation("com.github.termux.termux-app:terminal-emulator:v0.119.0-beta.3")
+    implementation("com.github.termux.termux-app:terminal-view:v0.119.0-beta.3")
 
     //noinspection Aligned16KB
     implementation("top.canyie.pine:core:0.3.0")

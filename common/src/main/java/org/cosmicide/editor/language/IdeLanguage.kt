@@ -25,6 +25,7 @@ import org.eclipse.tm4e.languageconfiguration.internal.model.LanguageConfigurati
  * @param themeRegistry The theme registry.
  * @param createIdentifiers Whether to create identifiers or not.
  */
+@Suppress("PROPERTY_HIDES_JAVA_FIELD")
 open class IdeLanguage(
     private val grammar: IGrammar?,
     private val langConfiguration: LanguageConfiguration?,

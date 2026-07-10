@@ -1,6 +1,7 @@
 package org.cosmicide.ui.editor
 
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -96,11 +97,14 @@ import org.cosmicide.common.Prefs
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.model.EditorViewModel
 import org.cosmicide.project.Project
+import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.jdksDir
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
+
+private const val EDITOR_SCREEN_TAG = "EditorScreen"
 
 sealed class TreeDialogState {
     data class Create(val parent: File, val type: CreateType) : TreeDialogState()
@@ -124,17 +128,40 @@ fun EditorScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val toolingServer = remember(project.root.absolutePath) {
+        ToolingServerManager.forProject(context.applicationContext, project.root)
+    }
 
     val openFiles = viewModel.openFiles
     val activeFile = viewModel.activeFile
-    val fileContentCache = viewModel.fileContentCache
 
     val editor = remember {
         setCodeEditorFactory(context = context, state = state)
     }
+    val isApplyingEditorContent = remember { mutableStateOf(false) }
 
-    DisposableEffect(project.name) {
-        CoroutineScope(Dispatchers.IO).launch {
+    DisposableEffect(project.root.absolutePath) {
+        ProjectHandler.setProject(project)
+
+        val toolingJob = CoroutineScope(Dispatchers.IO).launch {
+            toolingServer.start(
+                onReady = {
+                    Log.d(
+                        EDITOR_SCREEN_TAG,
+                        "Tooling server started for ${project.root.absolutePath}"
+                    )
+                },
+                onError = { error ->
+                    Log.e(
+                        EDITOR_SCREEN_TAG,
+                        "Failed to start tooling server for ${project.root.absolutePath}",
+                        error
+                    )
+                }
+            )
+        }
+
+        val jdtJob = CoroutineScope(Dispatchers.IO).launch {
             runJdtlsProcess(context, project) { process ->
                 val pid = LinuxProcessRunner.getNativePid(process)
                 while (process.isAlive) {
@@ -147,43 +174,47 @@ fun EditorScreen(
         }
 
         onDispose {
+            toolingJob.cancel()
+            jdtJob.cancel()
+
             CoroutineScope(Dispatchers.IO).launch {
                 stopJdtlsProcess()
             }
         }
     }
 
-    val switchTab = { newFile: File ->
-        activeFile?.let { file ->
-            viewModel.updateCache(file, editor.text.toString())
-        }
-        viewModel.switchTab(newFile, editor.text.toString())
+    val openFile = { newFile: File ->
+        viewModel.openFile(newFile, editor.text.toString())
     }
 
     val colorScheme = MaterialTheme.colorScheme
 
     LaunchedEffect(activeFile) {
         activeFile?.let { file ->
-            val content = fileContentCache[file] ?: withContext(Dispatchers.IO) { file.readText() }
-            viewModel.updateCache(file, content)
-            editor.setText(content)
+            val content = viewModel.cachedContent(file)
+                ?: withContext(Dispatchers.IO) { file.readText() }
+            viewModel.ensureDocument(file, content)
+
+            isApplyingEditorContent.value = true
+            try {
+                editor.setText(content)
+            } finally {
+                isApplyingEditorContent.value = false
+            }
             editor.applyEditorSettings(file, colorScheme)
         }
     }
 
-    DisposableEffect(activeFile) {
-        editor.subscribeEvent(ContentChangeEvent::class.java) { _, unsubscribe ->
-            activeFile?.let { file ->
-                viewModel.updateCache(file, editor.text.toString())
-                file.writeText(editor.text.toString())
-            }
-
-            onDispose {
-                unsubscribe.unsubscribe()
+    DisposableEffect(editor) {
+        val receipt = editor.subscribeEvent(ContentChangeEvent::class.java) { _, _ ->
+            if (!isApplyingEditorContent.value) {
+                viewModel.onActiveContentChanged(editor.text.toString())
             }
         }
 
-        onDispose { }
+        onDispose {
+            receipt.unsubscribe()
+        }
     }
 
     ModalNavigationDrawer(
@@ -197,9 +228,10 @@ fun EditorScreen(
                 )
                 HorizontalDivider()
                 ProjectTreeView(rootDir = project.root, onFileClick = { file ->
-                    switchTab(file)
+                    openFile(file)
                     scope.launch { drawerState.close() }
                 }, onExecuteFile = { file ->
+                    viewModel.saveActiveDocument(editor.text.toString())
                     val executionPath =
                         file.absolutePath.replace(project.srcDir.absolutePath + "/", "")
                     ProjectHandler.clazz = executionPath.substringBeforeLast('.')
@@ -216,7 +248,10 @@ fun EditorScreen(
                         file = activeFile,
                         editor = editor,
                         onOpenDrawer = { scope.launch { drawerState.open() } },
-                        onCompile = onCompile
+                        onCompile = {
+                            viewModel.saveActiveDocument(editor.text.toString())
+                            onCompile()
+                        }
                     )
 
                     if (openFiles.isNotEmpty()) {
@@ -228,7 +263,7 @@ fun EditorScreen(
                             openFiles.forEach { file ->
                                 val isSelected = file == activeFile
                                 Tab(
-                                    selected = isSelected, onClick = { switchTab(file) }) {
+                                    selected = isSelected, onClick = { openFile(file) }) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.padding(
@@ -241,7 +276,7 @@ fun EditorScreen(
                                         Spacer(Modifier.width(6.dp))
                                         IconButton(
                                             onClick = {
-                                                viewModel.closeTab(file)
+                                                viewModel.closeTab(file, editor.text.toString())
                                             }, modifier = Modifier.size(18.dp)
                                         ) {
                                             Icon(
@@ -585,26 +620,34 @@ fun EditorToolbar(
     var showCustomCommandDialog by remember { mutableStateOf(false) }
     var showStatsDialog by remember { mutableStateOf(false) }
 
-    val undoManager = editor.text.undoManager
-    var canUndo by remember { mutableStateOf(undoManager.canUndo()) }
-    var canRedo by remember { mutableStateOf(undoManager.canRedo()) }
-
-    var savedContentHash by remember { mutableIntStateOf(0) }
-    var editorContentHash by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(file) {
-        if (file != null && file.exists()) {
-            withContext(Dispatchers.IO) {
-                savedContentHash = file.readBytes().contentHashCode()
-                editorContentHash = savedContentHash
-            }
-        }
+    fun editorCanUndo(): Boolean {
+        return editor.text.undoManager.canUndo()
     }
 
-    editor.subscribeAlways<ContentChangeEvent> {
-        canUndo = undoManager.canUndo()
-        canRedo = undoManager.canRedo()
-        editorContentHash = editor.text.toString().toByteArray().contentHashCode()
+    fun editorCanRedo(): Boolean {
+        return editor.text.undoManager.canRedo()
+    }
+
+    var canUndo by remember { mutableStateOf(editorCanUndo()) }
+    var canRedo by remember { mutableStateOf(editorCanRedo()) }
+
+    fun refreshHistoryState() {
+        canUndo = editorCanUndo()
+        canRedo = editorCanRedo()
+    }
+
+    LaunchedEffect(file) {
+        refreshHistoryState()
+    }
+
+    DisposableEffect(editor) {
+        val receipt = editor.subscribeAlways<ContentChangeEvent> {
+            refreshHistoryState()
+        }
+
+        onDispose {
+            receipt.unsubscribe()
+        }
     }
 
     TopAppBar(title = {
@@ -628,9 +671,7 @@ fun EditorToolbar(
         }
         IconButton(onClick = {
             editor.undo()
-            canUndo = undoManager.canUndo()
-            canRedo = undoManager.canRedo()
-            editorContentHash = editor.text.toString().toByteArray().contentHashCode()
+            refreshHistoryState()
         }, enabled = file != null) {
             Icon(
                 Icons.AutoMirrored.Filled.Undo,
@@ -640,9 +681,7 @@ fun EditorToolbar(
         }
         IconButton(onClick = {
             editor.redo()
-            canUndo = undoManager.canUndo()
-            canRedo = undoManager.canRedo()
-            editorContentHash = editor.text.toString().toByteArray().contentHashCode()
+            refreshHistoryState()
         }, enabled = file != null) {
             Icon(
                 Icons.AutoMirrored.Filled.Redo,
@@ -980,11 +1019,18 @@ private fun TextEditorContent(editor: CodeEditor) {
     var position by remember { mutableStateOf("1:1") }
     var statsDialogShown by remember { mutableStateOf(false) }
 
-    editor.subscribeAlways<SelectionChangeEvent> { event ->
-        position = event.left.let {
-            "${it.line + 1}:${it.column}"
+    DisposableEffect(editor) {
+        val receipt = editor.subscribeAlways<SelectionChangeEvent> { event ->
+            position = event.left.let {
+                "${it.line + 1}:${it.column}"
+            }
+        }
+
+        onDispose {
+            receipt.unsubscribe()
         }
     }
+
     Column {
         Row(
             modifier = Modifier

@@ -2,11 +2,14 @@ package org.cosmicide.ui
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.ui.compile.CompileInfoScreen
 import org.cosmicide.ui.editor.EditorScreen
 import org.cosmicide.ui.home.HomeScreen
@@ -33,6 +36,22 @@ fun IDENavigation() {
             Home
         }
     )
+
+    val hasProjectSession = backStack.any { screen ->
+        screen is Editor || screen is CompileInfo || screen is ProjectOutput
+    }
+
+    LaunchedEffect(hasProjectSession) {
+        if (!hasProjectSession) {
+            ToolingServerManager.stopCurrent()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            ToolingServerManager.stopCurrent()
+        }
+    }
 
     NavDisplay(
         backStack = backStack, onBack = { backStack.removeLastOrNull() }, entryDecorators = listOf(

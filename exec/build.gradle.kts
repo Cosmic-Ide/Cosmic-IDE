@@ -29,8 +29,21 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            isDefault = true
+        }
+        create("prod") {
+            dimension = "environment"
+        }
+    }
 }
 
 dependencies {
     implementation(projects.util)
+    implementation(projects.common)
 }

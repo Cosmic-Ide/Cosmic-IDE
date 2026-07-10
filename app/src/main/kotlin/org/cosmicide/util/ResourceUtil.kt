@@ -13,7 +13,8 @@ import java.io.File
 object ResourceUtil {
 
     val resources =
-        arrayOf<String>()
+        arrayOf<String>(
+        )
 
     fun missingResources(): List<String> {
         val missing = mutableListOf<String>()

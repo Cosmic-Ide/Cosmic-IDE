@@ -18,6 +18,7 @@ import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
 import org.cosmicide.plugin.api.Hook
 import org.cosmicide.plugin.api.HookManager
+import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.util.FileUtil
 import org.cosmicide.util.jdksDir
 import org.lsposed.hiddenapibypass.HiddenApiBypass
@@ -78,6 +79,19 @@ class App : Application() {
         loadTextmateTheme()
 
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
+
+        try {
+            Runtime.getRuntime().addShutdownHook(Thread({
+                ToolingServerManager.stopCurrent()
+            }, "cosmic-tooling-shutdown"))
+        } catch (e: Exception) {
+            Log.w("App", "Failed to register tooling shutdown hook", e)
+        }
+    }
+
+    override fun onTerminate() {
+        ToolingServerManager.stopCurrent()
+        super.onTerminate()
     }
 
     fun loadTextmateTheme() {

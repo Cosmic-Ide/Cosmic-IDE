@@ -19,10 +19,10 @@
       "languageConfiguration": "textmate/smali/language-configuration.json"
     },
     {
-      "grammar": "textmate/buildLog/syntaxes/buildLog.tmLanguage.json",
-      "name": "build",
-      "scopeName": "source.build",
-      "languageConfiguration": "textmate/buildLog/language-configuration.json"
+      "grammar": "textmate/scala/syntaxes/scala.tmLanguage.json",
+      "name": "scala",
+      "scopeName": "source.scala",
+      "languageConfiguration": "textmate/scala/language-configuration.json"
     }
   ]
 }

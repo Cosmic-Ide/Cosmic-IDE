@@ -16,7 +16,7 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Hardware
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,7 +43,7 @@ fun SettingsScreen(
         SettingsCategory.Compiler,
         SettingsCategory.Formatter,
         SettingsCategory.Plugins,
-        SettingsCategory.Git,
+        SettingsCategory.Terminal,
         SettingsCategory.Toolchains,
         SettingsCategory.About
     )
@@ -89,7 +89,11 @@ sealed class SettingsCategory(
 
     data object Plugins :
         SettingsCategory("Plugins", "Explore and install plugins", Icons.Default.Hub)
-    data object Git : SettingsCategory("Git", "Configure Git integration", Icons.Default.Settings)
+    data object Terminal : SettingsCategory(
+        "Terminal",
+        "Run commands in the built-in terminal",
+        Icons.Default.Terminal
+    )
     data object Toolchains :
         SettingsCategory("Toolchains", "Configure JDK Toolchain", Icons.Default.Hardware)
     data object About : SettingsCategory("About", "Learn more about Cosmic IDE", Icons.Default.Info)

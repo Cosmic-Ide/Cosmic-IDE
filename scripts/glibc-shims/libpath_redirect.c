@@ -1,6 +1,8 @@
 #define _GNU_SOURCE
 #define _LARGEFILE64_SOURCE
 
+#include "exec_wrap.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +16,9 @@
 #include <errno.h>
 #include <dirent.h>
 #include <sys/syscall.h>
+#include <sys/auxv.h>
+#include <sys/inotify.h>
+#include <elf.h>
 
 /*
  * libpath_redirect.c
@@ -92,6 +97,7 @@ DECLARE_REAL_SYMBOL(fopen)
 DECLARE_REAL_SYMBOL(fopen64)
 DECLARE_REAL_SYMBOL(freopen)
 DECLARE_REAL_SYMBOL(freopen64)
+DECLARE_REAL_SYMBOL(getauxval)
 DECLARE_REAL_SYMBOL(fstat)
 DECLARE_REAL_SYMBOL(fstat64)
 DECLARE_REAL_SYMBOL(fstatat)
@@ -118,6 +124,7 @@ DECLARE_REAL_SYMBOL(renameat2)
 DECLARE_REAL_SYMBOL(rmdir)
 DECLARE_REAL_SYMBOL(stat)
 DECLARE_REAL_SYMBOL(stat64)
+DECLARE_REAL_SYMBOL(statx)
 DECLARE_REAL_SYMBOL(symlink)
 DECLARE_REAL_SYMBOL(symlinkat)
 DECLARE_REAL_SYMBOL(unlink)
@@ -134,6 +141,113 @@ DECLARE_REAL_SYMBOL(__lxstat)
 DECLARE_REAL_SYMBOL(__lxstat64)
 DECLARE_REAL_SYMBOL(__xstat)
 DECLARE_REAL_SYMBOL(__xstat64)
+DECLARE_REAL_SYMBOL(inotify_add_watch)
+
+/* ------------------------------------------------------------------------- */
+/* Executable identity virtualization                                         */
+/* ------------------------------------------------------------------------- */
+
+static int is_current_process_exe_path(const char* path) {
+    if (!path || !*path) return 0;
+
+    if (strcmp(path, "/proc/self/exe") == 0 ||
+        strcmp(path, "/proc/thread-self/exe") == 0) {
+        return 1;
+    }
+
+    if (strncmp(path, "/proc/", 6) != 0) return 0;
+
+    const char* pid_start = path + 6;
+    char* pid_end = NULL;
+    errno = 0;
+    long pid = strtol(pid_start, &pid_end, 10);
+    if (errno != 0 || pid_end == pid_start || pid <= 0) return 0;
+    if (strcmp(pid_end, "/exe") != 0) return 0;
+
+    return pid == (long)getpid();
+}
+
+static ssize_t copy_readlink_result(
+    const char* target,
+    char* out,
+    size_t out_size
+) {
+    if (!target) {
+        errno = ENOENT;
+        return -1;
+    }
+    if (out_size == 0) {
+        errno = EINVAL;
+        return -1;
+    }
+    if (!out) {
+        errno = EFAULT;
+        return -1;
+    }
+
+    size_t target_len = strlen(target);
+    size_t copy_len = target_len < out_size ? target_len : out_size;
+    memcpy(out, target, copy_len);
+
+    /* readlink(2) intentionally does not append a terminating NUL byte. */
+    return (ssize_t)copy_len;
+}
+
+static pthread_once_t expected_loader_once = PTHREAD_ONCE_INIT;
+static char expected_loader_path[REDIR_BUF_SIZE];
+
+static void init_expected_loader_path(void) {
+    Dl_info info;
+    memset(&info, 0, sizeof(info));
+
+    if (dladdr((void*)&init_expected_loader_path, &info) == 0 ||
+        !info.dli_fname || !*info.dli_fname) {
+        return;
+    }
+
+    const char* slash = strrchr(info.dli_fname, '/');
+    if (!slash) return;
+
+    size_t dir_len = (size_t)(slash - info.dli_fname);
+    const char* loader_name = "/libld_linux.so";
+    size_t loader_len = strlen(loader_name);
+
+    if (dir_len + loader_len + 1 > sizeof(expected_loader_path)) return;
+
+    memcpy(expected_loader_path, info.dli_fname, dir_len);
+    memcpy(expected_loader_path + dir_len, loader_name, loader_len + 1);
+}
+
+static const char* active_executable_identity(void) {
+    const char* executable = getenv(EXEC_WRAP_EXECUTABLE_ENV);
+    if (!executable || executable[0] != '/') return NULL;
+
+    pthread_once(&expected_loader_once, init_expected_loader_path);
+    if (!expected_loader_path[0]) return NULL;
+
+    /*
+     * COSMIC_EXECUTABLE is inherited, so only trust it while the kernel still
+     * reports our bundled loader as the current executable. The loader path is
+     * derived from this shim's own directory instead of requiring another
+     * environment variable.
+     */
+    ssize_t (*real_readlink)(const char*, char*, size_t) =
+        REAL(readlink, ssize_t (*)(const char*, char*, size_t));
+
+    char actual[REDIR_BUF_SIZE];
+    ssize_t count = real_readlink("/proc/self/exe", actual, sizeof(actual) - 1);
+    if (count <= 0 || (size_t)count >= sizeof(actual)) return NULL;
+
+    actual[count] = '\0';
+    if (strcmp(actual, expected_loader_path) != 0) return NULL;
+
+    return executable;
+}
+
+static const char* executable_identity_for_path(const char* path) {
+    if (!is_current_process_exe_path(path)) return NULL;
+    return active_executable_identity();
+}
 
 /* ------------------------------------------------------------------------- */
 /* Path redirection                                                           */
@@ -330,6 +444,19 @@ static void spoof_stat_if_perf_data(struct stat* st) {
     } else if (S_ISREG(st->st_mode)) {
         st->st_mode &= ~(S_IWGRP | S_IWOTH);
         st->st_nlink = 1;
+    }
+}
+
+static void spoof_statx_if_perf_data(struct statx* st) {
+    if (!st) return;
+
+    st->stx_uid = geteuid();
+
+    if (S_ISDIR(st->stx_mode)) {
+        st->stx_mode &= ~(S_IWGRP | S_IWOTH);
+    } else if (S_ISREG(st->stx_mode)) {
+        st->stx_mode &= ~(S_IWGRP | S_IWOTH);
+        st->stx_nlink = 1;
     }
 }
 
@@ -641,6 +768,27 @@ int creat64(const char* pathname, mode_t mode) {
 /* stat wrappers                                                              */
 /* ------------------------------------------------------------------------- */
 
+int statx(
+    int dirfd,
+    const char* pathname,
+    int flags,
+    unsigned int mask,
+    struct statx* st
+) {
+    int (*fn)(int, const char*, int, unsigned int, struct statx*) =
+        REAL(statx, int (*)(int, const char*, int, unsigned int, struct statx*));
+
+    char buf[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
+    int rc = fn(dirfd, path, flags, mask, st);
+
+    if (rc == 0 && is_perf_path_either(pathname, path)) {
+        spoof_statx_if_perf_data(st);
+    }
+
+    return rc;
+}
+
 int stat(const char* pathname, struct stat* st) {
     char buf[REDIR_BUF_SIZE];
     const char* path = redirect_path(pathname, buf, sizeof(buf));
@@ -784,6 +932,98 @@ int __fxstatat64(int ver, int dirfd, const char* pathname, struct stat64* st, in
 }
 #endif
 
+int inotify_add_watch(
+    int fd,
+    const char *pathname,
+    uint32_t mask
+) {
+    int (*fn)(int, const char *, uint32_t) =
+        REAL(
+            inotify_add_watch,
+            int (*)(int, const char *, uint32_t)
+        );
+
+    char path_buf[REDIR_BUF_SIZE];
+    const char *path = redirect_path(
+        pathname,
+        path_buf,
+        sizeof(path_buf)
+    );
+
+    int watch_descriptor = fn(fd, path, mask);
+
+    /*
+     * Android SELinux prevents app processes from installing an inotify
+     * watch on the real filesystem root. Some desktop Linux file watchers
+     * install a root watch as an internal anchor and treat failure as fatal.
+     *
+     * Use the existing app-private compatibility root as that anchor.
+     * Individual project/source directories still receive their own watches.
+     */
+    if (
+        watch_descriptor == -1 &&
+        errno == EACCES &&
+        path != NULL &&
+        strcmp(path, "/") == 0
+    ) {
+        const int root_errno = errno;
+        const char *app_root = getenv("APP_FILES_DIR");
+
+        if (app_root != NULL && app_root[0] != '\0') {
+            watch_descriptor = fn(fd, app_root, mask);
+
+            if (path_redirect_debug_enabled()) {
+                if (watch_descriptor >= 0) {
+                    fprintf(
+                        stderr,
+                        "path_redirect: inotify root fallback / -> %s, wd=%d\n",
+                        app_root,
+                        watch_descriptor
+                    );
+                } else {
+                    const int fallback_errno = errno;
+
+                    fprintf(
+                        stderr,
+                        "path_redirect: inotify root fallback / -> %s "
+                        "failed: errno=%d (%s)\n",
+                        app_root,
+                        fallback_errno,
+                        strerror(fallback_errno)
+                    );
+
+                    errno = fallback_errno;
+                }
+            }
+
+            return watch_descriptor;
+        }
+
+        errno = root_errno;
+    }
+
+    if (
+        watch_descriptor == -1 &&
+        path_redirect_debug_enabled()
+    ) {
+        const int error = errno;
+
+        fprintf(
+            stderr,
+            "path_redirect: inotify_add_watch(%s -> %s) "
+            "failed: errno=%d (%s)\n",
+            pathname != NULL ? pathname : "(null)",
+            path != NULL ? path : "(null)",
+            error,
+            strerror(error)
+        );
+
+        errno = error;
+    }
+
+    return watch_descriptor;
+}
+
 /* ------------------------------------------------------------------------- */
 /* access/readlink/metadata wrappers                                          */
 /* ------------------------------------------------------------------------- */
@@ -813,6 +1053,11 @@ int faccessat2(int dirfd, const char* pathname, int mode, int flags) {
 #endif
 
 ssize_t readlink(const char* pathname, char* out, size_t out_size) {
+    const char* identity = executable_identity_for_path(pathname);
+    if (identity) {
+        return copy_readlink_result(identity, out, out_size);
+    }
+
     ssize_t (*fn)(const char*, char*, size_t) =
         REAL(readlink, ssize_t (*)(const char*, char*, size_t));
     char buf[REDIR_BUF_SIZE];
@@ -820,10 +1065,33 @@ ssize_t readlink(const char* pathname, char* out, size_t out_size) {
 }
 
 ssize_t readlinkat(int dirfd, const char* pathname, char* out, size_t out_size) {
+    if (pathname[0] == '/') {
+        const char* identity = executable_identity_for_path(pathname);
+        if (identity) {
+            return copy_readlink_result(identity, out, out_size);
+        }
+    }
+
     ssize_t (*fn)(int, const char*, char*, size_t) =
         REAL(readlinkat, ssize_t (*)(int, const char*, char*, size_t));
     char buf[REDIR_BUF_SIZE];
     return fn(dirfd, redirect_at_path(dirfd, pathname, buf, sizeof(buf)), out, out_size);
+}
+
+unsigned long getauxval(unsigned long type) {
+#ifdef AT_EXECFN
+    if (type == AT_EXECFN) {
+        const char* identity = active_executable_identity();
+        if (identity) return (unsigned long)identity;
+    }
+#endif
+
+    unsigned long (*fn)(unsigned long) =
+        OPT_REAL(getauxval, unsigned long (*)(unsigned long));
+    if (fn) return fn(type);
+
+    errno = ENOENT;
+    return 0;
 }
 
 int chmod(const char* pathname, mode_t mode) {
@@ -1019,6 +1287,51 @@ long syscall(long number, ...) {
     char path_buf[REDIR_BUF_SIZE];
     char path_buf_2[REDIR_BUF_SIZE];
 
+#ifdef SYS_readlink
+    if (number == SYS_readlink) {
+        const char* original = (const char*)a1;
+        const char* identity = executable_identity_for_path(original);
+        if (identity) {
+            return copy_readlink_result(identity, (char*)a2, (size_t)a3);
+        }
+
+        const char* path = redirect_path(original, path_buf, sizeof(path_buf));
+        return real_syscall_call(number, (long)path, a2, a3, a4, a5, a6);
+    }
+#endif
+
+#ifdef SYS_readlinkat
+    if (number == SYS_readlinkat) {
+        int dirfd = (int)a1;
+        const char* original = (const char*)a2;
+
+        if (original && original[0] == '/') {
+            const char* identity = executable_identity_for_path(original);
+            if (identity) {
+                return copy_readlink_result(identity, (char*)a3, (size_t)a4);
+            }
+        }
+
+        const char* path = redirect_at_path(dirfd, original, path_buf, sizeof(path_buf));
+        return real_syscall_call(number, a1, (long)path, a3, a4, a5, a6);
+    }
+#endif
+
+#ifdef SYS_statx
+    if (number == SYS_statx) {
+        int dirfd = (int)a1;
+        const char* original = (const char*)a2;
+        const char* path = redirect_at_path(dirfd, original, path_buf, sizeof(path_buf));
+        long rc = real_syscall_call(number, a1, (long)path, a3, a4, a5, a6);
+
+        if (rc == 0 && is_perf_path_either(original, path)) {
+            spoof_statx_if_perf_data((struct statx*)a5);
+        }
+
+        return rc;
+    }
+#endif
+
 #ifdef SYS_mkdir
     if (number == SYS_mkdir) {
         const char* original = (const char*) a1;
@@ -1134,6 +1447,10 @@ long syscall(long number, ...) {
 
 char* realpath(const char* pathname, char* resolved_path) {
     char* (*fn)(const char*, char*) = REAL(realpath, char* (*)(const char*, char*));
+
+    const char* identity = executable_identity_for_path(pathname);
+    if (identity) return fn(identity, resolved_path);
+
     char buf[REDIR_BUF_SIZE];
     return fn(redirect_path(pathname, buf, sizeof(buf)), resolved_path);
 }
@@ -1142,6 +1459,10 @@ char* realpath(const char* pathname, char* resolved_path) {
 char* canonicalize_file_name(const char* pathname) {
     char* (*fn)(const char*) =
         REAL(canonicalize_file_name, char* (*)(const char*));
+
+    const char* identity = executable_identity_for_path(pathname);
+    if (identity) return fn(identity);
+
     char buf[REDIR_BUF_SIZE];
     return fn(redirect_path(pathname, buf, sizeof(buf)));
 }

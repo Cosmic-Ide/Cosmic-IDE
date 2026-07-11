@@ -6,6 +6,8 @@ import org.gradle.tooling.ConfigurableLauncher;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ModelBuilder;
 import org.gradle.tooling.ProjectConnection;
+import org.gradle.tooling.TestLauncher;
+import org.gradle.tooling.TestSpec;
 import org.gradle.tooling.events.ProgressEvent;
 import org.gradle.tooling.events.ProgressListener;
 import org.gradle.tooling.model.GradleProject;
@@ -29,7 +31,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -37,9 +46,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -311,6 +322,47 @@ public final class Main {
         return result;
     }
 
+    private static Map<String, Object> objectMap(Object value) {
+        if (!(value instanceof Map)) {
+            return Collections.emptyMap();
+        }
+
+        return castMap(value);
+    }
+
+    private static List<Map<String, Object>> mapList(Object value) {
+        if (!(value instanceof List)) {
+            return Collections.emptyList();
+        }
+
+        List<?> raw = (List<?>) value;
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (Object item : raw) {
+            if (item instanceof Map) {
+                result.add(castMap(item));
+            }
+        }
+
+        return result;
+    }
+
+    private static Integer integer(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+
+        if (value instanceof String) {
+            try {
+                return Integer.parseInt((String) value);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
     private static String asString(Object value) {
         if (value == null) {
             return null;
@@ -483,8 +535,14 @@ public final class Main {
                 case "gradle/tasks":
                     tasks(request);
                     break;
+                case "gradle/model":
+                    model(request);
+                    break;
                 case "gradle/run":
                     runBuild(request);
+                    break;
+                case "gradle/test":
+                    runTests(request);
                     break;
                 case "gradle/notifyChanged":
                     notifyChanged(request);
@@ -652,6 +710,67 @@ public final class Main {
             }
         }
 
+        private void model(Map<String, Object> request) {
+            Object id = request.get("id");
+            Map<String, Object> params = params(request);
+            String opId = operationId(id, params);
+            String modelTypeName = asString(params.get("modelType"));
+
+            if (modelTypeName == null || modelTypeName.isEmpty()) {
+                writer.error(id, "MissingModelType", "gradle/model requires params.modelType", null);
+                return;
+            }
+
+            Class<?> modelType;
+            try {
+                modelType = Class.forName(modelTypeName, true, Main.class.getClassLoader());
+            } catch (ClassNotFoundException e) {
+                writer.error(id, "UnknownModelType", "Model type is not available in the provider: " + modelTypeName, e);
+                return;
+            }
+
+            CancellationTokenSource token = GradleConnector.newCancellationTokenSource();
+            InteractiveInput input = new InteractiveInput(writer, opId);
+
+            running.put(opId, token);
+            inputs.put(opId, input);
+
+            writer.event("gradle/operationStarted", obj(
+                    "opId", opId,
+                    "method", "gradle/model",
+                    "modelType", modelTypeName
+            ));
+
+            try {
+                ModelBuilder<?> builder = connection().model(modelType);
+                configure(builder, params, opId, token);
+                builder.setStandardInput(input);
+
+                List<String> tasks = stringList(params.get("tasks"));
+                if (!tasks.isEmpty()) {
+                    builder.forTasks(tasks);
+                }
+
+                Object model = builder.get();
+
+                writer.result(id, obj(
+                        "opId", opId,
+                        "modelType", modelTypeName,
+                        "model", ModelSerializer.serialize(model, modelType)
+                ));
+            } finally {
+                running.remove(opId);
+                inputs.remove(opId);
+                input.close();
+
+                writer.event("gradle/operationFinished", obj(
+                        "opId", opId,
+                        "method", "gradle/model",
+                        "modelType", modelTypeName
+                ));
+            }
+        }
+
         private void runBuild(Map<String, Object> request) {
             Object id = request.get("id");
             Map<String, Object> params = params(request);
@@ -661,11 +780,6 @@ public final class Main {
             String task = asString(params.get("task"));
             if (tasks.isEmpty() && task != null && !task.isEmpty()) {
                 tasks.add(task);
-            }
-
-            if (tasks.isEmpty()) {
-                writer.error(id, "MissingTasks", "gradle/run requires params.tasks or params.task", null);
-                return;
             }
 
             CancellationTokenSource token = GradleConnector.newCancellationTokenSource();
@@ -686,7 +800,9 @@ public final class Main {
 
                 launcher.setStandardInput(input);
 
-                launcher.forTasks(tasks.toArray(new String[0]));
+                if (!tasks.isEmpty()) {
+                    launcher.forTasks(tasks.toArray(new String[0]));
+                }
                 launcher.run();
 
                 writer.result(id, obj(
@@ -699,6 +815,138 @@ public final class Main {
                 input.close();
 
                 writer.event("gradle/buildFinished", obj(
+                        "opId", opId
+                ));
+            }
+        }
+
+        private void runTests(Map<String, Object> request) {
+            Object id = request.get("id");
+            Map<String, Object> params = params(request);
+            String opId = operationId(id, params);
+
+            List<Map<String, Object>> descriptors = mapList(params.get("testDescriptors"));
+            if (!descriptors.isEmpty()) {
+                writer.error(
+                        id,
+                        "UnsupportedTestDescriptors",
+                        "TestOperationDescriptor instances cannot be reconstructed from name/displayName snapshots",
+                        null
+                );
+                return;
+            }
+
+            CancellationTokenSource token = GradleConnector.newCancellationTokenSource();
+            InteractiveInput input = new InteractiveInput(writer, opId);
+
+            running.put(opId, token);
+            inputs.put(opId, input);
+
+            writer.event("gradle/testStarted", obj(
+                    "opId", opId
+            ));
+
+            try {
+                TestLauncher launcher = connection().newTestLauncher();
+                configure(launcher, params, opId, token);
+                launcher.setStandardInput(input);
+
+                List<String> tasks = stringList(params.get("tasks"));
+                if (!tasks.isEmpty()) {
+                    launcher.forTasks(tasks.toArray(new String[0]));
+                }
+
+                List<String> testClasses = stringList(params.get("testClasses"));
+                if (!testClasses.isEmpty()) {
+                    launcher.withJvmTestClasses(testClasses);
+                }
+
+                Map<String, Object> testMethods = objectMap(params.get("testMethods"));
+                for (Map.Entry<String, Object> entry : testMethods.entrySet()) {
+                    List<String> methods = stringList(entry.getValue());
+                    if (!methods.isEmpty()) {
+                        launcher.withJvmTestMethods(entry.getKey(), methods);
+                    }
+                }
+
+                Map<String, Object> taskTestClasses = objectMap(params.get("taskTestClasses"));
+                for (Map.Entry<String, Object> entry : taskTestClasses.entrySet()) {
+                    List<String> classes = stringList(entry.getValue());
+                    if (!classes.isEmpty()) {
+                        launcher.withTaskAndTestClasses(entry.getKey(), classes);
+                    }
+                }
+
+                Map<String, Object> taskTestMethods = objectMap(params.get("taskTestMethods"));
+                for (Map.Entry<String, Object> taskEntry : taskTestMethods.entrySet()) {
+                    Map<String, Object> classes = objectMap(taskEntry.getValue());
+
+                    for (Map.Entry<String, Object> classEntry : classes.entrySet()) {
+                        List<String> methods = stringList(classEntry.getValue());
+                        if (!methods.isEmpty()) {
+                            launcher.withTaskAndTestMethods(
+                                    taskEntry.getKey(),
+                                    classEntry.getKey(),
+                                    methods
+                            );
+                        }
+                    }
+                }
+
+                Integer debugPort = integer(params.get("debugPort"));
+                if (debugPort != null) {
+                    launcher.debugTestsOn(debugPort);
+                }
+
+                List<Map<String, Object>> testSpecs = mapList(params.get("testSpecs"));
+                if (!testSpecs.isEmpty()) {
+                    launcher.withTestsFor(specs -> {
+                        for (Map<String, Object> specData : testSpecs) {
+                            String taskPath = asString(specData.get("taskPath"));
+                            if (taskPath == null || taskPath.isEmpty()) {
+                                continue;
+                            }
+
+                            TestSpec spec = specs.forTaskPath(taskPath);
+
+                            List<String> packages = stringList(specData.get("packages"));
+                            if (!packages.isEmpty()) {
+                                spec.includePackages(packages);
+                            }
+
+                            List<String> classes = stringList(specData.get("classes"));
+                            if (!classes.isEmpty()) {
+                                spec.includeClasses(classes);
+                            }
+
+                            Map<String, Object> methodsByClass = objectMap(specData.get("methods"));
+                            for (Map.Entry<String, Object> methodEntry : methodsByClass.entrySet()) {
+                                List<String> methods = stringList(methodEntry.getValue());
+                                if (!methods.isEmpty()) {
+                                    spec.includeMethods(methodEntry.getKey(), methods);
+                                }
+                            }
+
+                            List<String> patterns = stringList(specData.get("patterns"));
+                            if (!patterns.isEmpty()) {
+                                spec.includePatterns(patterns);
+                            }
+                        }
+                    });
+                }
+
+                launcher.run();
+
+                writer.result(id, obj(
+                        "opId", opId,
+                        "success", true
+                ));
+            } finally {
+                running.remove(opId);
+                inputs.remove(opId);
+                input.close();
+
+                writer.event("gradle/testFinished", obj(
                         "opId", opId
                 ));
             }
@@ -889,6 +1137,11 @@ public final class Main {
             }
 
             operation.setColorOutput(bool(params.get("colorOutput"), false));
+
+            if (bool(params.get("detailedFailure"), false)) {
+                operation.withDetailedFailure();
+            }
+
             operation.withCancellationToken(token.token());
 
             operation.setStandardOutput(new GradleEventOutputStream(writer, opId, "stdout"));
@@ -938,6 +1191,317 @@ public final class Main {
             } catch (InterruptedException ignored) {
                 Thread.currentThread().interrupt();
             }
+        }
+    }
+
+    private static final class ModelSerializer {
+        private static final int MAX_DEPTH = 64;
+
+        private ModelSerializer() {
+        }
+
+        static Object serialize(Object model, Type modelType) {
+            return serializeValue(
+                    model,
+                    modelType,
+                    new IdentityHashMap<>(),
+                    0
+            );
+        }
+
+        private static Object serializeValue(
+                Object value,
+                Type declaredType,
+                IdentityHashMap<Object, Boolean> stack,
+                int depth
+        ) {
+            if (value == null) {
+                return null;
+            }
+
+            if (value instanceof String
+                    || value instanceof Number
+                    || value instanceof Boolean) {
+                return value;
+            }
+
+            if (value instanceof Character) {
+                return String.valueOf(value);
+            }
+
+            if (value instanceof Enum<?>) {
+                return ((Enum<?>) value).name();
+            }
+
+            if (value instanceof File) {
+                return ((File) value).getAbsolutePath();
+            }
+
+            if (value instanceof Path || value instanceof URI) {
+                return value.toString();
+            }
+
+            if (value instanceof Class<?>) {
+                return ((Class<?>) value).getName();
+            }
+
+            if (value instanceof Optional<?>) {
+                Optional<?> optional = (Optional<?>) value;
+                return optional.isPresent()
+                        ? serializeValue(optional.get(), Object.class, stack, depth + 1)
+                        : null;
+            }
+
+            if (depth >= MAX_DEPTH) {
+                return null;
+            }
+
+            Type elementType = collectionElementType(declaredType);
+
+            if (value instanceof Iterable<?>) {
+                List<Object> list = new ArrayList<>();
+
+                for (Object item : (Iterable<?>) value) {
+                    list.add(serializeValue(item, elementType, stack, depth + 1));
+                }
+
+                return list;
+            }
+
+            Class<?> valueClass = value.getClass();
+
+            if (valueClass.isArray()) {
+                int length = Array.getLength(value);
+                Type componentType = arrayComponentType(declaredType, valueClass);
+                List<Object> list = new ArrayList<>(length);
+
+                for (int i = 0; i < length; i++) {
+                    list.add(serializeValue(
+                            Array.get(value, i),
+                            componentType,
+                            stack,
+                            depth + 1
+                    ));
+                }
+
+                return list;
+            }
+
+            if (value instanceof Map<?, ?>) {
+                Map<String, Object> map = new LinkedHashMap<>();
+
+                for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
+                    if (entry.getKey() != null) {
+                        map.put(
+                                String.valueOf(entry.getKey()),
+                                serializeValue(
+                                        entry.getValue(),
+                                        Object.class,
+                                        stack,
+                                        depth + 1
+                                )
+                        );
+                    }
+                }
+
+                return map;
+            }
+
+            if (stack.containsKey(value)) {
+                return null;
+            }
+
+            stack.put(value, Boolean.TRUE);
+
+            try {
+                Class<?> serializationType = serializationType(value, declaredType);
+                Method[] methods = serializationType.getMethods();
+                List<Method> getters = new ArrayList<>();
+
+                for (Method method : methods) {
+                    if (isGetter(method)) {
+                        getters.add(method);
+                    }
+                }
+
+                getters.sort(Comparator.comparing(Method::getName));
+
+                Map<String, Object> result = new LinkedHashMap<>();
+
+                for (Method getter : getters) {
+                    String field = getterField(getter);
+
+                    if (field == null || result.containsKey(field)) {
+                        continue;
+                    }
+
+                    try {
+                        Object child = getter.invoke(value);
+                        result.put(
+                                field,
+                                serializeValue(
+                                        child,
+                                        getter.getGenericReturnType(),
+                                        stack,
+                                        depth + 1
+                                )
+                        );
+                    } catch (InvocationTargetException e) {
+                        Throwable cause = e.getCause();
+
+                        if (!(cause instanceof UnsupportedMethodException)) {
+                            result.put(field, null);
+                        }
+                    } catch (Throwable ignored) {
+                        result.put(field, null);
+                    }
+                }
+
+                return result;
+            } finally {
+                stack.remove(value);
+            }
+        }
+
+        private static Class<?> serializationType(Object value, Type declaredType) {
+            Class<?> declaredClass = rawClass(declaredType);
+
+            if (declaredClass != null
+                    && declaredClass.isInterface()
+                    && declaredClass.isInstance(value)) {
+                return declaredClass;
+            }
+
+            Class<?> toolingInterface = findToolingModelInterface(value.getClass());
+            return toolingInterface == null ? value.getClass() : toolingInterface;
+        }
+
+        private static Class<?> findToolingModelInterface(Class<?> type) {
+            if (type == null) {
+                return null;
+            }
+
+            for (Class<?> candidate : type.getInterfaces()) {
+                if (candidate.getName().startsWith("org.gradle.tooling.model.")) {
+                    return candidate;
+                }
+
+                Class<?> nested = findToolingModelInterface(candidate);
+                if (nested != null) {
+                    return nested;
+                }
+            }
+
+            return findToolingModelInterface(type.getSuperclass());
+        }
+
+        private static boolean isGetter(Method method) {
+            if (method.getParameterCount() != 0
+                    || method.getReturnType() == Void.TYPE
+                    || method.getDeclaringClass() == Object.class) {
+                return false;
+            }
+
+            String name = method.getName();
+
+            if ("getClass".equals(name)) {
+                return false;
+            }
+
+            if (name.startsWith("get") && name.length() > 3) {
+                return true;
+            }
+
+            return name.startsWith("is")
+                    && name.length() > 2
+                    && (method.getReturnType() == Boolean.TYPE
+                    || method.getReturnType() == Boolean.class);
+        }
+
+        private static String getterField(Method method) {
+            String name = method.getName();
+
+            if (name.startsWith("get") && name.length() > 3) {
+                return decapitalize(name.substring(3));
+            }
+
+            if (name.startsWith("is") && name.length() > 2) {
+                return decapitalize(name.substring(2));
+            }
+
+            return null;
+        }
+
+        private static String decapitalize(String value) {
+            if (value.isEmpty()) {
+                return value;
+            }
+
+            if (value.length() > 1
+                    && Character.isUpperCase(value.charAt(0))
+                    && Character.isUpperCase(value.charAt(1))) {
+                return value;
+            }
+
+            return Character.toLowerCase(value.charAt(0)) + value.substring(1);
+        }
+
+        private static Type collectionElementType(Type type) {
+            if (type instanceof ParameterizedType) {
+                Type[] arguments = ((ParameterizedType) type).getActualTypeArguments();
+                if (arguments.length > 0) {
+                    return normalizeType(arguments[0]);
+                }
+            }
+
+            return Object.class;
+        }
+
+        private static Type arrayComponentType(Type declaredType, Class<?> valueClass) {
+            if (declaredType instanceof GenericArrayType) {
+                return normalizeType(
+                        ((GenericArrayType) declaredType).getGenericComponentType()
+                );
+            }
+
+            if (declaredType instanceof Class<?> && ((Class<?>) declaredType).isArray()) {
+                return ((Class<?>) declaredType).getComponentType();
+            }
+
+            return valueClass.getComponentType();
+        }
+
+        private static Type normalizeType(Type type) {
+            if (type instanceof WildcardType) {
+                Type[] upperBounds = ((WildcardType) type).getUpperBounds();
+                if (upperBounds.length > 0) {
+                    return normalizeType(upperBounds[0]);
+                }
+
+                Type[] lowerBounds = ((WildcardType) type).getLowerBounds();
+                if (lowerBounds.length > 0) {
+                    return normalizeType(lowerBounds[0]);
+                }
+
+                return Object.class;
+            }
+
+            return type;
+        }
+
+        private static Class<?> rawClass(Type type) {
+            Type normalized = normalizeType(type);
+
+            if (normalized instanceof Class<?>) {
+                return (Class<?>) normalized;
+            }
+
+            if (normalized instanceof ParameterizedType) {
+                Type raw = ((ParameterizedType) normalized).getRawType();
+                return raw instanceof Class<?> ? (Class<?>) raw : null;
+            }
+
+            return null;
         }
     }
 
@@ -1767,3 +2331,4 @@ public final class Main {
         }
     }
 }
+

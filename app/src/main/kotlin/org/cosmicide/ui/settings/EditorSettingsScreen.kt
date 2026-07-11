@@ -7,8 +7,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
@@ -30,7 +40,6 @@ fun EditorSettingsScreen(
     var fontSize by remember { mutableFloatStateOf(prefs.getString(PreferenceKeys.EDITOR_FONT_SIZE, "12")?.toFloat() ?: 12f) }
     var tabSize by remember { mutableFloatStateOf(prefs.getInt(PreferenceKeys.EDITOR_TAB_SIZE, 4).toFloat()) }
     var jdtLs by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_JDT_LS, false)) }
-    var kotlinRealtimeErrors by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.KOTLIN_REALTIME_ERRORS, false)) }
     var editorFont by remember { mutableStateOf(prefs.getString(PreferenceKeys.EDITOR_FONT, "") ?: "") }
     var stickyScroll by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.STICKY_SCROLL, true)) }
     var useSpaces by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_USE_SPACES, true)) }
@@ -95,17 +104,6 @@ fun EditorSettingsScreen(
                     jdtLs = it
                     prefs.edit { putBoolean(PreferenceKeys.EDITOR_JDT_LS, it) }
                     Analytics.logEvent("experimental_java_completion", it)
-                }
-            )
-
-            SwitchPreference(
-                title = "Enable Kotlin real-time errors",
-                summary = "Enables real-time error checking for Kotlin files. This is a slow process and may cause lag.",
-                checked = kotlinRealtimeErrors,
-                onCheckedChange = {
-                    kotlinRealtimeErrors = it
-                    prefs.edit { putBoolean(PreferenceKeys.KOTLIN_REALTIME_ERRORS, it) }
-                    Analytics.logEvent("kotlin_realtime_errors", it)
                 }
             )
 

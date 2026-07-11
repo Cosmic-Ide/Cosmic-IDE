@@ -38,15 +38,41 @@ object ResourceUtil {
         return context!!.jdks().isEmpty()
     }
 
-    fun isKotlinMissing(): Boolean {
-        val kotlinTargetDir = File(FileUtil.dataDir, "kotlinc")
-        return !kotlinTargetDir.exists() || kotlinTargetDir.listFiles()?.isEmpty() == true
+    fun isKotlinLspMissing(): Boolean {
+        val context = App.instance.get() ?: return true
+        return !context.filesDir.resolve("kotlin-lsp/bin/intellij-server").isFile
     }
 
     fun isJdtlsMissing(): Boolean {
         val context = App.instance.get() ?: return true
-        val jdtlsTargetDir = File(context.filesDir, "jdtls")
-        return !jdtlsTargetDir.exists() || jdtlsTargetDir.listFiles()?.isEmpty() == true
+        val pluginsDir = context.filesDir.resolve("jdtls/plugins")
+        return pluginsDir.listFiles().orEmpty().none { file ->
+            file.name.startsWith("org.eclipse.equinox.launcher_") &&
+                    file.name.endsWith(".jar")
+        }
+    }
+
+    fun isMetalsMissing(): Boolean {
+        val context = App.instance.get() ?: return true
+        return !context.filesDir.resolve("scala/bin/metals").isFile
+    }
+
+    fun isBootstrapIncomplete(): Boolean {
+        return missingResources().isNotEmpty() || isRuntimeMissing()
+    }
+
+    fun isLanguageServerSetupIncomplete(): Boolean {
+        return isKotlinLspMissing() || isJdtlsMissing() || isMetalsMissing()
+    }
+
+    fun prepareLanguageServerSetupScript(): File {
+        val context = checkNotNull(App.instance.get()) { "Application context is unavailable" }
+        val script = context.filesDir.resolve("setup-language-servers.sh")
+        context.assets.open("setup-language-servers.sh").use { input ->
+            script.outputStream().use { output -> input.copyTo(output) }
+        }
+        script.setExecutable(true)
+        return script
     }
 
     /**
@@ -54,10 +80,8 @@ object ResourceUtil {
      * is missing, signifying that setup is required.
      */
     fun isEnvironmentIncomplete(): Boolean {
-        return missingResources().isNotEmpty() ||
-                isRuntimeMissing() ||
+        return isBootstrapIncomplete() ||
                 isJdkMissing() ||
-                isKotlinMissing() ||
-                isJdtlsMissing()
+                isLanguageServerSetupIncomplete()
     }
 }

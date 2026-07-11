@@ -18,8 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.exec.linux.PtyProcess
-import org.cosmicide.plugin.api.Hook
-import org.cosmicide.plugin.api.HookManager
+import org.cosmicide.plugin.runtime.hook.Hook
+import org.cosmicide.plugin.runtime.hook.HookManager
 import top.canyie.pine.Pine
 import java.io.File
 import java.io.OutputStream
@@ -35,7 +35,8 @@ internal class TerminalController(
     private val modifierLatch: TerminalModifierLatch,
     private val scope: CoroutineScope,
     private val onTitleChanged: (String) -> Unit,
-    private val onFailure: (Throwable) -> Unit
+    private val onFailure: (Throwable) -> Unit,
+    private val onProcessExit: (Int) -> Unit
 ) {
     private val closed = AtomicBoolean(false)
     private val lock = Any()
@@ -292,6 +293,7 @@ internal class TerminalController(
                 if (!closed.get()) {
                     withContext(Dispatchers.Main.immediate) {
                         onTitleChanged("Exited ($exitCode)")
+                        onProcessExit(exitCode)
                     }
                 }
             } catch (e: Throwable) {

@@ -27,7 +27,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-        System.loadLibrary("android-tree-sitter")
 
         setContent {
             IDETheme {

@@ -43,9 +43,7 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.util.Download
 import org.cosmicide.util.FileUtil
 import org.cosmicide.util.ResourceUtil
-import org.cosmicide.util.extractTarGzFolder
 import org.cosmicide.util.extractTarZstStream
-import org.cosmicide.util.extractZip
 import org.cosmicide.util.restoreSymlinksFromManifest
 import java.io.File
 import java.util.Locale
@@ -59,11 +57,6 @@ fun InstallResourcesScreen(
     val scope = rememberCoroutineScope()
 
     val rawUrl = "https://github.com/Cosmic-Ide/binaries/raw/main/"
-    val kotlinUrl =
-        "https://github.com/JetBrains/kotlin/releases/download/v2.4.0/kotlin-compiler-2.4.0.zip"
-    val jdtlsUrl =
-        "https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz"
-
     var isRunning by remember { mutableStateOf(false) }
     var statusText by remember { mutableStateOf("Ready to configure environment assets.") }
     var progressDetailsText by remember { mutableStateOf("Foundational resources will be deployed.") }
@@ -108,62 +101,6 @@ fun InstallResourcesScreen(
                 }
             }
 
-            val kotlinTargetDir = File(FileUtil.dataDir, "kotlinc")
-            if (!kotlinTargetDir.exists() || kotlinTargetDir.listFiles()?.isEmpty() == true) {
-                statusText = "Downloading Kotlin Compiler..."
-                val kotlinArchiveFile = File(FileUtil.dataDir, "kotlin_compiler.zip")
-
-                val downloadSuccess =
-                    installResource(client, kotlinUrl, kotlinArchiveFile, onProgressUpdate)
-                if (!downloadSuccess) {
-                    statusText = "Network failure downloading Kotlin Compiler."
-                    isRunning = false
-                    return@launch
-                }
-
-                statusText = "Extracting Kotlin Compiler package..."
-                currentProgress = -1f
-                progressDetailsText = "Expanding archive structures onto local storage..."
-                val extractionSuccess =
-                    withContext(Dispatchers.IO) { extractZip(kotlinArchiveFile, FileUtil.dataDir) }
-                if (kotlinArchiveFile.exists()) kotlinArchiveFile.delete()
-
-                if (!extractionSuccess) {
-                    statusText = "Failed to unpack Kotlin Compiler package."
-                    isRunning = false
-                    return@launch
-                }
-            }
-
-            val jdtlsTargetDir = context.filesDir.resolve("jdtls")
-            if (!jdtlsTargetDir.exists() || jdtlsTargetDir.listFiles()?.isEmpty() == true) {
-                jdtlsTargetDir.mkdirs()
-                statusText = "Downloading Eclipse JDT Language Server..."
-                val jdtlsArchiveFile = context.cacheDir.resolve("jdtls_archive.tar.gz")
-
-                val downloadSuccess =
-                    installResource(client, jdtlsUrl, jdtlsArchiveFile, onProgressUpdate)
-                if (!downloadSuccess) {
-                    statusText = "Network failure downloading language components."
-                    isRunning = false
-                    return@launch
-                }
-
-                statusText = "Deploying Language Server architecture..."
-                currentProgress = -1f
-                progressDetailsText = "Extracting runtime distribution components..."
-                val extractionSuccess = withContext(Dispatchers.IO) {
-                    extractTarGzFolder(jdtlsArchiveFile, jdtlsTargetDir, null)
-                }
-                if (jdtlsArchiveFile.exists()) jdtlsArchiveFile.delete()
-
-                if (!extractionSuccess) {
-                    statusText = "Failed to deploy Language Server environment."
-                    isRunning = false
-                    return@launch
-                }
-            }
-
             val glibcTargetDir = context.filesDir.resolve("glibc")
             if (!glibcTargetDir.exists() || glibcTargetDir.listFiles()?.isEmpty() == true) {
                 glibcTargetDir.mkdirs()
@@ -186,7 +123,8 @@ fun InstallResourcesScreen(
                 }
             }
 
-            statusText = "Workspace environment initialized!"
+            statusText = "Core runtime initialized!"
+            progressDetailsText = "Continue by selecting a JDK toolchain."
             isRunning = false
             onMoveToJdkManager()
         }

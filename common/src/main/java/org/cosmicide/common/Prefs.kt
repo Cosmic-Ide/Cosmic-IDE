@@ -110,9 +110,6 @@ object Prefs {
     val gitApiKey: String
         get() = prefs.getString("git_api_key", "") ?: ""
 
-    val kotlinRealtimeErrors: Boolean
-        get() = prefs.getBoolean("kotlin_realtime_errors", false)
-
     val experimentsEnabled: Boolean
         get() = prefs.getBoolean("experiments_enabled", false)
 

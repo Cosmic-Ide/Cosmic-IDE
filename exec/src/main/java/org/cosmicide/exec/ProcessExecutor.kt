@@ -22,7 +22,9 @@ object ProcessExecutor {
         context: Context,
         command: String,
         args: List<String> = emptyList(),
-        workingDir: File
+        workingDir: File,
+        redirectErrorStream: Boolean = true,
+        environmentOverrides: Map<String, String> = emptyMap()
     ): Process {
         val appContext = context.applicationContext
         val jdkDir = appContext.jdksDir().resolve(Prefs.currentJDK)
@@ -38,8 +40,9 @@ object ProcessExecutor {
             binary = binary,
             arguments = args,
             workingDir = workingDir,
-            environmentOverrides = toolchainEnvironment(appContext, jdkDir),
-            pathEntries = pathEntries
+            environmentOverrides = toolchainEnvironment(appContext, jdkDir) + environmentOverrides,
+            pathEntries = pathEntries,
+            redirectErrorStream = redirectErrorStream
         )
 
         return LinuxProcessRunner.start(appContext, runnerConfig)

@@ -28,19 +28,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.sun.tools.javac.ConfigProvider
-import org.cosmicide.R
 import org.cosmicide.ui.settings.components.EditTextPreference
 import org.cosmicide.ui.settings.components.SingleChoicePreference
-import org.cosmicide.ui.settings.components.SwitchPreference
 import org.cosmicide.util.PreferenceKeys
 import org.cosmicide.util.jdkNames
-import org.cosmicide.util.jdksDir
-import org.jetbrains.kotlin.config.LanguageVersion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,11 +45,6 @@ fun CompilerSettingsScreen(
     val prefs = remember { PreferenceManager.getDefaultSharedPreferences(context) }
 
     // Read general configurations
-    var useFastJarFs by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.COMPILER_USE_FJFS, false)) }
-    var useK2 by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.COMPILER_USE_K2, false)) }
-    var javaVersion by remember { mutableStateOf(prefs.getString(PreferenceKeys.COMPILER_JAVA_VERSIONS, "27") ?: "27") }
-    var kotlinVersion by remember { mutableStateOf(prefs.getString(PreferenceKeys.COMPILER_KOTLIN_VERSION, LanguageVersion.KOTLIN_2_4.versionString) ?: LanguageVersion.KOTLIN_2_4.versionString) }
-    var javacFlags by remember { mutableStateOf(prefs.getString(PreferenceKeys.COMPILER_JAVAC_FLAGS, "") ?: "") }
     var repos by remember { mutableStateOf(prefs.getString("repos", "Maven Central: https://repo1.maven.org/maven2\nGoogle Maven: https://maven.google.com\nJitpack: https://jitpack.io\nSonatype Snapshots: https://s01.oss.sonatype.org/content/repositories/snapshots\nJCenter: https://jcenter.bintray.com") ?: "") }
 
     // Dynamic JDK Selection from org.cosmicide.util
@@ -72,16 +61,6 @@ fun CompilerSettingsScreen(
             installedJdkNames.map { it to it }
         }
     }
-
-    val javaVersions = (8..27).map { it.toString() to it.toString() }
-    val kotlinVersions = listOf(
-        LanguageVersion.KOTLIN_2_0,
-        LanguageVersion.KOTLIN_2_1,
-        LanguageVersion.KOTLIN_2_2,
-        LanguageVersion.KOTLIN_2_3,
-        LanguageVersion.KOTLIN_2_4,
-        LanguageVersion.KOTLIN_2_5
-    ).map { it.versionString to it.versionString }
 
     Scaffold(
         topBar = {
@@ -116,20 +95,8 @@ fun CompilerSettingsScreen(
                 onItemSelected = { selected ->
                     if (installedJdkNames.isNotEmpty()) {
                         currentJdk = selected
-                        ConfigProvider.setJavaHome(context.jdksDir().resolve(selected).absolutePath)
                         prefs.edit { putString(PreferenceKeys.COMPILER_CURRENT_JDK, selected) }
                     }
-                }
-            )
-
-            SingleChoicePreference(
-                title = stringResource(R.string.java_version),
-                summary = stringResource(R.string.java_version_desc),
-                selectedItem = javaVersion,
-                items = javaVersions,
-                onItemSelected = {
-                    javaVersion = it
-                    prefs.edit().putString(PreferenceKeys.COMPILER_JAVA_VERSIONS, it).apply()
                 }
             )
 
@@ -138,47 +105,6 @@ fun CompilerSettingsScreen(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 8.dp)
-            )
-
-            SwitchPreference(
-                title = stringResource(R.string.fast_jar_fs),
-                summary = stringResource(R.string.experimental_caution),
-                checked = useFastJarFs,
-                onCheckedChange = {
-                    useFastJarFs = it
-                    prefs.edit().putBoolean(PreferenceKeys.COMPILER_USE_FJFS, it).apply()
-                }
-            )
-
-            SwitchPreference(
-                title = stringResource(R.string.k2_compiler),
-                summary = stringResource(R.string.experimental_caution),
-                checked = useK2,
-                onCheckedChange = {
-                    useK2 = it
-                    prefs.edit().putBoolean(PreferenceKeys.COMPILER_USE_K2, it).apply()
-                }
-            )
-
-            SingleChoicePreference(
-                title = "Kotlin Version",
-                summary = "Select the Kotlin version to use",
-                selectedItem = kotlinVersion,
-                items = kotlinVersions,
-                onItemSelected = {
-                    kotlinVersion = it
-                    prefs.edit().putString(PreferenceKeys.COMPILER_KOTLIN_VERSION, it).apply()
-                }
-            )
-
-            EditTextPreference(
-                title = stringResource(R.string.additional_javac_flags),
-                summary = stringResource(R.string.additional_javac_flags_desc),
-                value = javacFlags,
-                onValueChange = {
-                    javacFlags = it
-                    prefs.edit().putString(PreferenceKeys.COMPILER_JAVAC_FLAGS, it).apply()
-                }
             )
 
             Text(

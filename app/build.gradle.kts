@@ -23,7 +23,7 @@ android {
         val commit = getGitCommit()
 
         applicationId = "org.cosmicide"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 37
         versionCode = 25
         versionName = "3.0.0"
@@ -52,8 +52,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-
-        isCoreLibraryDesugaringEnabled = true
     }
 
     viewBinding {
@@ -123,8 +121,6 @@ android {
     splits {
         abi {
             isEnable = true
-
-            isUniversalApk = true
         }
     }
 }
@@ -150,9 +146,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.github.luben:zstd-jni:1.5.7-11@aar")
 
-    implementation("com.github.haroldadmin:WhatTheStack:1.0.0-alpha04")
-    implementation("org.gradle:gradle-tooling-api:9.6.1")
-
     implementation("androidx.core:core-ktx:1.19.0")
     implementation("androidx.documentfile:documentfile:1.1.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
@@ -161,39 +154,30 @@ dependencies {
 
     implementation(platform("io.github.rosemoe:editor-bom:0.24.6"))
     implementation("io.github.rosemoe:editor")
-    implementation("io.github.rosemoe:language-treesitter")
     implementation("io.github.rosemoe:language-textmate")
     implementation("io.github.rosemoe:editor-lsp")
 
     implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0")
 
-    implementation("com.itsaky.androidide.treesitter:android-tree-sitter:4.3.2")
-    implementation("com.itsaky.androidide.treesitter:tree-sitter-java:4.3.2")
-    implementation("com.itsaky.androidide.treesitter:tree-sitter-kotlin:4.3.2")
-
-    implementation("com.github.PranavPurwar:javac-android:27.26")
-
+    //noinspection Aligned16KB
     implementation("com.github.termux.termux-app:terminal-emulator:v0.119.0-beta.3")
     implementation("com.github.termux.termux-app:terminal-view:v0.119.0-beta.3")
 
     //noinspection Aligned16KB
     implementation("top.canyie.pine:core:0.3.0")
 
-    implementation("com.github.PranavPurwar:kotlinc-android:8a8572b26b")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
     implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
 
-    implementation(projects.buildTools)
+    implementation("org.gradle:gradle-tooling-api:9.6.1")
+
+
     implementation(projects.common)
-    implementation(projects.feature.completion.java)
-    implementation(projects.feature.completion.kotlin)
-    implementation(projects.feature.formatter.googleJavaFormat)
-    implementation(projects.feature.formatter.ktfmt)
-    implementation(projects.feature.javaCompletion)
+    implementation(projects.ideApi)
     implementation(projects.feature.project)
-    implementation(projects.feature.codeNavigation)
     implementation(projects.feature.sdkManager)
+    implementation(projects.pluginRuntime)
     implementation(projects.util)
     implementation(projects.exec)
 
@@ -215,9 +199,6 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.5.1")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.1")
     implementation("io.ktor:ktor-client-cio:3.5.1")
-
-    // jgit uses some methods like `transferTo` are only available from Android 13 onwards
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
     testImplementation("junit:junit:4.13.2")
 }

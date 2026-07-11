@@ -33,6 +33,5 @@ android {
 }
 
 dependencies {
-    implementation("top.canyie.pine:core:0.3.0")
     implementation("androidx.core:core-ktx:1.19.0")
 }

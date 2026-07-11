@@ -25,6 +25,8 @@
  * behavior. Runtime env toggles are intentionally avoided. The wrapper derives
  * the custom linker path from this preload library location, and reads
  * normal Unix variables only: LD_LIBRARY_PATH, LD_PRELOAD, TMPDIR, SHELL, PATH.
+ * Internal executable-identity variables are defined in exec_wrap.h and are
+ * written only into wrapped child environments.
  */
 #ifndef EXEC_WRAP_ENABLE
 #define EXEC_WRAP_ENABLE 1
@@ -352,6 +354,35 @@ static char* directory_of_path(const char* path) {
     return out;
 }
 
+static char* absolute_canonical_path(const char* path) {
+    if (!path || !*path) return NULL;
+
+    /*
+     * /proc/self/exe normally exposes an absolute, symlink-resolved path. Use
+     * realpath first so resource-relative launchers observe the same shape.
+     */
+    char* canonical = realpath(path, NULL);
+    if (canonical) return canonical;
+
+    int saved_errno = errno;
+
+    if (path[0] == '/') {
+        char* absolute = duplicate_string(path);
+        if (absolute) errno = saved_errno;
+        return absolute;
+    }
+
+    char cwd[PATH_MAX];
+    if (!getcwd(cwd, sizeof(cwd))) {
+        errno = saved_errno;
+        return duplicate_string(path);
+    }
+
+    char* absolute = join_path2(cwd, path);
+    if (absolute) errno = saved_errno;
+    return absolute;
+}
+
 static char* resolve_ld_linux_path(void) {
     Dl_info info;
     memset(&info, 0, sizeof(info));
@@ -471,6 +502,8 @@ static int build_child_env(
     char* const envp[],
     const char* library_path,
     const char* preload,
+    const char* executable_identity,
+    const char* loader_identity,
     owned_vec_t* out
 ) {
     if (env_copy_owned(envp, out) != 0) return -1;
@@ -480,6 +513,22 @@ static int build_child_env(
     }
     if (preload && *preload) {
         if (env_set_owned(&out->items, &out->count, "LD_PRELOAD", preload) != 0) goto fail;
+    }
+    if (executable_identity && *executable_identity) {
+        if (env_set_owned(
+                &out->items,
+                &out->count,
+                EXEC_WRAP_EXECUTABLE_ENV,
+                executable_identity
+            ) != 0) goto fail;
+    }
+    if (loader_identity && *loader_identity) {
+        if (env_set_owned(
+                &out->items,
+                &out->count,
+                EXEC_WRAP_LOADER_ENV,
+                loader_identity
+            ) != 0) goto fail;
     }
     return 0;
 
@@ -598,6 +647,8 @@ static int build_android_delegate_env(char* const envp[], owned_vec_t* out) {
         "HOSTS_PATH",
         "NSSWITCH_CONF_PATH",
         "GAI_CONF_PATH",
+        EXEC_WRAP_EXECUTABLE_ENV,
+        EXEC_WRAP_LOADER_ENV,
     };
 
     for (size_t i = 0; i < sizeof(remove_keys) / sizeof(remove_keys[0]); i++) {
@@ -784,6 +835,7 @@ static const char* choose_java_tmpdir(char* const envp[]) {
 
 static int build_wrapped_argv(
     const char* ld_linux,
+    const char* loader_argv0,
     const char* library_path,
     const char* preload,
     const char* program_path,
@@ -796,6 +848,7 @@ static int build_wrapped_argv(
 
     size_t original_count = argv_count(original_argv);
     int has_preload = preload && *preload;
+    int has_loader_argv0 = loader_argv0 && *loader_argv0;
     int inject_java_tmpdir = 0;
 
 #if EXEC_WRAP_ENABLE_JAVA_TMPDIR_INJECTION
@@ -809,6 +862,7 @@ static int build_wrapped_argv(
 
     size_t total = 0;
     total += 1;                    /* ld-linux argv[0] */
+    if (has_loader_argv0) total += 2; /* --argv0 <original argv[0]> */
     total += 2;                    /* --library-path <path> */
     if (has_preload) total += 2;    /* --preload <libs> */
     total += 1;                    /* program path */
@@ -824,6 +878,12 @@ static int build_wrapped_argv(
 
     size_t index = 0;
     argv[index++] = duplicate_string(ld_linux);
+
+    if (has_loader_argv0) {
+        argv[index++] = duplicate_string("--argv0");
+        argv[index++] = duplicate_string(loader_argv0);
+    }
+
     argv[index++] = duplicate_string("--library-path");
     argv[index++] = duplicate_string(library_path);
 
@@ -945,15 +1005,55 @@ static int prepare_wrap(
         return 0;
     }
 
-    if (build_wrapped_argv(ld_linux, library_path, preload, program_path, script_path, argv, java_tmpdir, wrapped_argv_out) != 0) {
+    const char* loader_argv0 = NULL;
+    if (kind == KIND_ELF) {
+        loader_argv0 = argv && argv[0] && *argv[0]
+            ? argv[0]
+            : program_path;
+    }
+
+    char* executable_identity = absolute_canonical_path(program_path);
+    char* loader_identity = absolute_canonical_path(ld_linux);
+    if (!executable_identity || !loader_identity) {
+        free(executable_identity);
+        free(loader_identity);
+        free(program_path);
+        free(resolved);
+        free(ld_linux);
+        errno = ENOMEM;
+        return -1;
+    }
+
+    if (build_wrapped_argv(
+            ld_linux,
+            loader_argv0,
+            library_path,
+            preload,
+            program_path,
+            script_path,
+            argv,
+            java_tmpdir,
+            wrapped_argv_out
+        ) != 0) {
+        free(executable_identity);
+        free(loader_identity);
         free(program_path);
         free(resolved);
         free(ld_linux);
         return -1;
     }
 
-    if (build_child_env(envp, library_path, preload, wrapped_env_out) != 0) {
+    if (build_child_env(
+            envp,
+            library_path,
+            preload,
+            executable_identity,
+            loader_identity,
+            wrapped_env_out
+        ) != 0) {
         owned_vec_free(wrapped_argv_out);
+        free(executable_identity);
+        free(loader_identity);
         free(program_path);
         free(resolved);
         free(ld_linux);
@@ -961,11 +1061,27 @@ static int prepare_wrap(
     }
 
     if (kind == KIND_SCRIPT) {
-        tracef("wrap script %s -> %s via shell %s and linker %s", requested_path, resolved, program_path, ld_linux);
+        tracef(
+            "wrap script %s -> %s via shell %s and linker %s; identity=%s",
+            requested_path,
+            resolved,
+            program_path,
+            ld_linux,
+            executable_identity
+        );
     } else {
-        tracef("wrap ELF %s -> %s via %s", requested_path, resolved, ld_linux);
+        tracef(
+            "wrap ELF %s -> %s via %s; argv0=%s identity=%s",
+            requested_path,
+            resolved,
+            ld_linux,
+            loader_argv0,
+            executable_identity
+        );
     }
 
+    free(executable_identity);
+    free(loader_identity);
     free(program_path);
     free(ld_linux);
     *resolved_target_out = resolved;

@@ -20,7 +20,7 @@ data object NewProject : Screen
 data class Editor(val project: Project) : Screen
 
 @Serializable
-data object CompileInfo : Screen
+data class GradleTask(val task: String) : Screen
 
 @Serializable
 data object ProjectOutput : Screen
@@ -33,3 +33,6 @@ data class SettingsCategoryScreen(val category: String) : Screen
 
 @Serializable
 data object JDKSettingsScreen : Screen
+
+@Serializable
+data object LanguageServerSetupScreen : Screen

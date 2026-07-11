@@ -237,14 +237,14 @@ internal fun TerminalView.calculateGeometry(
 
     val cellWidth = paint.measureText("X").coerceAtLeast(1f)
     val metrics = paint.fontMetricsInt
-    val cellHeight = (metrics.descent - metrics.ascent + context.dpToPx(4f).toInt())
+    val cellHeight = (metrics.descent - metrics.ascent)
         .coerceAtLeast(1)
 
     return TerminalGeometry(
         columns = maxOf(4, (viewWidth / cellWidth).toInt()),
         rows = maxOf(4, viewHeight / cellHeight),
         cellWidthPixels = cellWidth.toInt().coerceAtLeast(1),
-        cellHeightPixels = cellHeight
+        cellHeightPixels = cellHeight + 4
     )
 }
 

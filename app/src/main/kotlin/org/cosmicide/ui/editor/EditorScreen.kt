@@ -1,7 +1,6 @@
 package org.cosmicide.ui.editor
 
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -87,21 +86,19 @@ import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.subscribeAlways
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.saket.cascade.CascadeDropdownMenu
-import org.cosmicide.build.dex.D8Task
 import org.cosmicide.common.Prefs
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.model.EditorViewModel
 import org.cosmicide.project.Project
-import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.jdksDir
+import org.gradle.tooling.ProjectConnection
+import org.gradle.tooling.model.gradle.BuildInvocations
 import java.io.File
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 private const val EDITOR_SCREEN_TAG = "EditorScreen"
@@ -122,15 +119,14 @@ sealed class TreeDialogState {
 
 @Composable
 fun EditorScreen(
-    project: Project, onCompile: () -> Unit, viewModel: EditorViewModel = viewModel()
+    project: Project,
+    onRunGradleTask: (String) -> Unit,
+    viewModel: EditorViewModel = viewModel()
 ) {
     val state = remember { CodeEditorState() }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val toolingServer = remember(project.root.absolutePath) {
-        ToolingServerManager.forProject(context.applicationContext, project.root)
-    }
 
     val openFiles = viewModel.openFiles
     val activeFile = viewModel.activeFile
@@ -140,47 +136,24 @@ fun EditorScreen(
     }
     val isApplyingEditorContent = remember { mutableStateOf(false) }
 
-    DisposableEffect(project.root.absolutePath) {
+    val connector = remember(context, project.root.absolutePath) {
+        org.cosmicide.tooling.RemoteGradleConnector(context)
+            .forProjectDirectory(project.root)
+    }
+
+    var connection: ProjectConnection? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(project.root.absolutePath) {
         ProjectHandler.setProject(project)
-
-        val toolingJob = CoroutineScope(Dispatchers.IO).launch {
-            toolingServer.start(
-                onReady = {
-                    Log.d(
-                        EDITOR_SCREEN_TAG,
-                        "Tooling server started for ${project.root.absolutePath}"
-                    )
-                },
-                onError = { error ->
-                    Log.e(
-                        EDITOR_SCREEN_TAG,
-                        "Failed to start tooling server for ${project.root.absolutePath}",
-                        error
-                    )
-                }
-            )
-        }
-
-        val jdtJob = CoroutineScope(Dispatchers.IO).launch {
-            runJdtlsProcess(context, project) { process ->
-                val pid = LinuxProcessRunner.getNativePid(process)
-                while (process.isAlive) {
-                    val mem = LinuxProcessRunner.getResidentMemoryKb(pid)
-
-                    println("JDT mem: " + mem)
-                    Thread.sleep(5.seconds.inWholeMilliseconds)
-                }
-            }
-        }
-
-        onDispose {
-            toolingJob.cancel()
-            jdtJob.cancel()
-
-            CoroutineScope(Dispatchers.IO).launch {
-                stopJdtlsProcess()
-            }
-        }
+        connection = runCatching {
+            withContext(Dispatchers.IO) { connector.connect() }
+        }.onFailure { error ->
+            Toast.makeText(
+                context,
+                "Failed to connect to Gradle: ${error.message}",
+                Toast.LENGTH_LONG
+            ).show()
+        }.getOrNull()
     }
 
     val openFile = { newFile: File ->
@@ -235,7 +208,7 @@ fun EditorScreen(
                     val executionPath =
                         file.absolutePath.replace(project.srcDir.absolutePath + "/", "")
                     ProjectHandler.clazz = executionPath.substringBeforeLast('.')
-                    onCompile()
+                    onRunGradleTask("build")
                     scope.launch { drawerState.close() }
                 })
             }
@@ -248,9 +221,10 @@ fun EditorScreen(
                         file = activeFile,
                         editor = editor,
                         onOpenDrawer = { scope.launch { drawerState.open() } },
-                        onCompile = {
+                        connection = connection,
+                        onRunGradleTask = { task ->
                             viewModel.saveActiveDocument(editor.text.toString())
-                            onCompile()
+                            onRunGradleTask(task)
                         }
                     )
 
@@ -441,16 +415,6 @@ fun ProjectTreeView(
                                     contextMenuFile = null
                                 })
                             }
-                            if (file.extension == "jar") {
-                                DropdownMenuItem(text = { Text("DEX") }, onClick = {
-                                    val dex =
-                                        file.resolveSibling("${file.nameWithoutExtension}.dex")
-                                    dex.createNewFile()
-                                    D8Task.compileJar(file.toPath(), dex.parentFile!!.toPath())
-                                    treeTrigger++
-                                    contextMenuFile = null
-                                })
-                            }
                             DropdownMenuItem(text = { Text("Open External") }, onClick = {
                                 try {
                                     val uri = FileProvider.getUriForFile(
@@ -610,8 +574,9 @@ fun EditorToolbar(
     project: Project,
     file: File?,
     editor: CodeEditor,
+    connection: ProjectConnection?,
     onOpenDrawer: () -> Unit,
-    onCompile: () -> Unit
+    onRunGradleTask: (String) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showGoToLineDialog by remember { mutableStateOf(false) }
@@ -619,6 +584,7 @@ fun EditorToolbar(
     var showJREArgsDialog by remember { mutableStateOf(false) }
     var showCustomCommandDialog by remember { mutableStateOf(false) }
     var showStatsDialog by remember { mutableStateOf(false) }
+    var showTasksDialog by remember { mutableStateOf(false) }
 
     fun editorCanUndo(): Boolean {
         return editor.text.undoManager.canUndo()
@@ -662,10 +628,10 @@ fun EditorToolbar(
             Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
         }
     }, actions = {
-        IconButton(onClick = onCompile) {
+        IconButton(onClick = { onRunGradleTask("build") }) {
             Icon(
                 Icons.Filled.PlayArrow,
-                contentDescription = "Compile",
+                contentDescription = "Run Gradle build",
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -730,12 +696,27 @@ fun EditorToolbar(
                         showMenu = false
                     })
                 })
-                DropdownMenuItem(text = { Text("Settings") }, onClick = {
-                    showMenu = false
-                })
+                if (connection != null) {
+                    DropdownMenuItem(text = { Text("Gradle") }, children = {
+                        DropdownMenuItem(text = { Text("Tasks") }, onClick = {
+                            showTasksDialog = true
+                            showMenu = false
+                        })
+                    })
+                }
             }
         }
     })
+
+    if (showTasksDialog) {
+        TasksDialog(
+            connection = connection!!,
+            onDismiss = { showTasksDialog = false },
+            onTaskSelected = { task ->
+                onRunGradleTask(task)
+            }
+        )
+    }
 
     if (showGoToLineDialog) {
         GoToLineDialog(
@@ -782,6 +763,68 @@ fun EditorToolbar(
             onDismiss = { showStatsDialog = false }
         )
     }
+}
+
+@Composable
+fun TasksDialog(
+    connection: ProjectConnection,
+    onDismiss: () -> Unit,
+    onTaskSelected: (String) -> Unit
+) {
+    val context = LocalContext.current
+    var tasks by remember { mutableStateOf<List<String>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+    var loadError by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(connection) {
+        val result = runCatching {
+            withContext(Dispatchers.IO) {
+                val buildInvocations = connection.getModel(BuildInvocations::class.java)
+                (buildInvocations.tasks.map { it.path } +
+                        buildInvocations.taskSelectors.map { it.name })
+                    .distinct()
+                    .sorted()
+            }
+        }
+
+        result.onSuccess { tasks = it }
+            .onFailure { error -> loadError = error.message ?: "Unknown Gradle error" }
+        isLoading = false
+    }
+
+    AlertDialog(onDismissRequest = onDismiss, title = { Text("Gradle Tasks") }, text = {
+        when {
+            isLoading -> {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+            }
+
+            loadError != null -> {
+                Text(
+                    text = "Failed to fetch tasks: $loadError",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            tasks.isEmpty() -> {
+                Text("No Gradle tasks found")
+            }
+
+            else -> {
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    items(tasks) { task ->
+                        DropdownMenuItem(text = { Text(task) }, onClick = {
+                            onTaskSelected(task)
+                            onDismiss()
+                        })
+                    }
+                }
+            }
+        }
+    }, confirmButton = {}, dismissButton = {
+        TextButton(onClick = onDismiss) { Text("Close") }
+    })
 }
 
 @Composable

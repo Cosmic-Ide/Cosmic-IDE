@@ -15,8 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * - Blocking I/O on master for proper InputStream behavior
  */
 class PtyTerminal(
-    private val masterFd: Int,
-    private val childPid: Int
+    private val masterFd: Int, private val childPid: Int
 ) {
     private val isClosed = AtomicBoolean(false)
 
@@ -95,39 +94,28 @@ class PtyTerminal(
             argv.addAll(arguments)
 
             // Build environment array if provided
-            val envArray = if (environment != null) {
-                environment.map { (k, v) -> "$k=$v" }.toTypedArray()
-            } else {
-                null
+            val envArray = environment?.map { (k, v) -> "$k=$v" }?.toTypedArray()
+
+            // Spawn child process inside PTY
+            // Native function returns [master_fd, child_pid]
+            val result = nativeSpawnInPty(
+                workingDir.absolutePath, executable.absolutePath, argv.toTypedArray(), envArray
+            )
+
+            if (result.size < 2) {
+                throw RuntimeException("Failed to spawn process in PTY: invalid result")
             }
 
-            try {
-                // Spawn child process inside PTY
-                // Native function returns [master_fd, child_pid]
-                val result = nativeSpawnInPty(
-                    workingDir.absolutePath,
-                    executable.absolutePath,
-                    argv.toTypedArray(),
-                    envArray
-                )
+            val masterFd = result[0]
+            val childPid = result[1]
 
-                if (result.size < 2) {
-                    throw RuntimeException("Failed to spawn process in PTY: invalid result")
-                }
-
-                val masterFd = result[0]
-                val childPid = result[1]
-
-                // FD 0 is valid (stdin), but PTY master will almost always be >= 3
-                // childPid must be > 0
-                if (masterFd < 0 || childPid <= 0) {
-                    throw RuntimeException("Failed to spawn process in PTY (fd=$masterFd, pid=$childPid)")
-                }
-
-                return PtyTerminal(masterFd, childPid)
-            } catch (e: Exception) {
-                throw e
+            // FD 0 is valid (stdin), but PTY master will almost always be >= 3
+            // childPid must be > 0
+            if (masterFd < 0 || childPid <= 0) {
+                throw RuntimeException("Failed to spawn process in PTY (fd=$masterFd, pid=$childPid)")
             }
+
+            return PtyTerminal(masterFd, childPid)
         }
 
         init {
@@ -136,8 +124,7 @@ class PtyTerminal(
             } catch (e: UnsatisfiedLinkError) {
                 // FAIL LOUDLY - don't silently continue
                 throw RuntimeException(
-                    "Failed to load PTY native library (pty_native): ${e.message}. " +
-                            "Make sure libpty_native.so is in the native library path.",
+                    "Failed to load PTY native library (pty_native): ${e.message}. " + "Make sure libpty_native.so is in the native library path.",
                     e
                 )
             }
@@ -215,18 +202,13 @@ private fun checkBounds(size: Int, off: Int, len: Int) {
 
 // Native method declarations
 private external fun nativeSpawnInPty(
-    workingDir: String,
-    exePath: String,
-    argv: Array<String>,
-    envVars: Array<String>?
+    workingDir: String, exePath: String, argv: Array<String>, envVars: Array<String>?
 ): IntArray
 
 private external fun nativeClosePty(masterFd: Int): Boolean
 private external fun nativeSetWindowSize(masterFd: Int, rows: Int, columns: Int): Boolean
 private external fun nativeSendSignalToForegroundProcessGroup(
-    masterFd: Int,
-    fallbackPid: Int,
-    signal: Int
+    masterFd: Int, fallbackPid: Int, signal: Int
 ): Boolean
 
 private external fun nativeRead(fd: Int, buffer: ByteArray, len: Int): Int

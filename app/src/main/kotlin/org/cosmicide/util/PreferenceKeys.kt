@@ -32,7 +32,6 @@ object PreferenceKeys {
     const val EDITOR_LINE_NUMBERS_SHOW = "line_numbers_show"
     const val EDITOR_DOUBLE_CLICK_CLOSE = "double_click_close"
     const val EDITOR_JDT_LS = "jdt_ls"
-    const val KOTLIN_REALTIME_ERRORS = "kotlin_realtime_errors"
     const val EDITOR_FONT = "editor_font"
     const val BRACKET_PAIR_AUTOCOMPLETE = "bracket_pair_autocomplete"
     const val QUICK_DELETE = "quick_delete"

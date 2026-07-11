@@ -1,5 +1,7 @@
 package org.cosmicide.ui.output
 
+//import org.jetbrains.org.objectweb.asm.ClassReader
+//import org.jetbrains.org.objectweb.asm.tree.ClassNode
 import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -50,7 +52,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -64,8 +65,6 @@ import org.cosmicide.ui.editor.CodeEditorState
 import org.cosmicide.util.FileUtil
 import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.jdksDir
-import org.jetbrains.org.objectweb.asm.ClassReader
-import org.jetbrains.org.objectweb.asm.tree.ClassNode
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicLong
@@ -117,7 +116,6 @@ fun ProjectOutputScreen(
         isRunning = true
 
         editorState.editor?.apply {
-            setEditorLanguage(TextMateLanguage.create("source.build", false))
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance().currentThemeModel)
             setFont()
         }
@@ -2051,19 +2049,19 @@ private fun parseTargetClassName(project: Project): String? {
     }
 
     classesDir.walkTopDown().filter { it.extension == "class" }.forEach { file ->
-        val node = ClassNode().apply {
-            file.inputStream().use {
-                ClassReader(it.readBytes()).accept(this, ClassReader.SKIP_CODE)
-            }
-        }
-
-        val hasMain = node.methods.any {
-            it.name == "main" && it.desc == "([Ljava/lang/String;)V"
-        }
-
-        if (hasMain) {
-            return node.name.replace('/', '.')
-        }
+//        val node = ClassNode().apply {
+//            file.inputStream().use {
+//                ClassReader(it.readBytes()).accept(this, ClassReader.SKIP_CODE)
+//            }
+//        }
+//
+//        val hasMain = node.methods.any {
+//            it.name == "main" && it.desc == "([Ljava/lang/String;)V"
+//        }
+//
+//        if (hasMain) {
+//            return node.name.replace('/', '.')
+//        }
     }
 
     return null

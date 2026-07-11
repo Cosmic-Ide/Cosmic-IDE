@@ -1,7 +1,6 @@
 package org.cosmicide.exec.linux
 
 import android.util.Log
-import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.concurrent.atomic.AtomicBoolean
@@ -82,24 +81,7 @@ class PtyProcess(
     }
 
     fun interrupt(): Boolean {
-        val signal = 2 // SIGINT
-        var delivered = false
-
-        val childPid = getChildPid()
-        val descendants = findDescendantPids(childPid)
-        Log.d(PtyLogTag, "interrupt childPid=$childPid descendants=$descendants")
-        descendants.forEach { pid ->
-            val childDelivered = nativeSendSignal(pid, signal)
-            Log.d(
-                PtyLogTag,
-                "interrupt descendant pid=$pid signal=$signal delivered=$childDelivered"
-            )
-            delivered = childDelivered || delivered
-        }
-
-        val result = delivered || sendSignalToForegroundProcessGroup(signal) || sendSignal(signal)
-        Log.d(PtyLogTag, "interrupt result=$result childPid=$childPid")
-        return result
+        return sendSignalToForegroundProcessGroup(2) // SIGINT
     }
 
     /**
@@ -173,56 +155,6 @@ class PtyProcess(
         fun create(pty: PtyTerminal): PtyProcess {
             return PtyProcess(pty)
         }
-    }
-}
-
-private fun findDescendantPids(rootPid: Int): List<Int> {
-    if (rootPid <= 0) return emptyList()
-
-    val result = mutableListOf<Int>()
-    val queue = ArrayDeque<Int>()
-    val seen = mutableSetOf(rootPid)
-
-    queue.add(rootPid)
-    while (queue.isNotEmpty()) {
-        val parentPid = queue.removeFirst()
-        childPidsOf(parentPid).forEach { childPid ->
-            if (seen.add(childPid)) {
-                result.add(childPid)
-                queue.add(childPid)
-            }
-        }
-    }
-
-    return result
-}
-
-private fun childPidsOf(pid: Int): List<Int> {
-    val directChildren = try {
-        File("/proc/$pid/task/$pid/children").readText().trim().split(Regex("\\s+"))
-            .mapNotNull { it.toIntOrNull() }
-    } catch (_: Exception) {
-        emptyList()
-    }
-
-    if (directChildren.isNotEmpty()) return directChildren
-
-    return try {
-        File("/proc").listFiles()?.mapNotNull { it.name.toIntOrNull() }
-            ?.filter { childPid -> getParentPid(childPid) == pid }.orEmpty()
-    } catch (_: Exception) {
-        emptyList()
-    }
-}
-
-private fun getParentPid(pid: Int): Int? {
-    return try {
-        File("/proc/$pid/status").useLines { lines ->
-            lines.firstOrNull { it.startsWith("PPid:") }?.substringAfter(':')?.trim()
-                ?.toIntOrNull()
-        }
-    } catch (_: Exception) {
-        null
     }
 }
 

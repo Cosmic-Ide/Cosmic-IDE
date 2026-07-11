@@ -10,17 +10,16 @@ package org.cosmicide
 import android.app.Application
 import android.os.Build
 import android.util.Log
-import com.sun.tools.javac.ConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
-import org.cosmicide.plugin.api.Hook
-import org.cosmicide.plugin.api.HookManager
+import org.cosmicide.plugin.CosmicPluginHost
+import org.cosmicide.plugin.runtime.hook.Hook
+import org.cosmicide.plugin.runtime.hook.HookManager
 import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.util.FileUtil
-import org.cosmicide.util.jdksDir
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import top.canyie.pine.Pine
 import java.lang.ref.WeakReference
@@ -73,10 +72,9 @@ class App : Application() {
             HiddenApiBypass.addHiddenApiExemptions()
         }
 
-        val jdkDir = jdksDir().resolve(Prefs.currentJDK)
-        ConfigProvider.setJavaHome(jdkDir.absolutePath)
-
         loadTextmateTheme()
+
+        CosmicPluginHost.init(this)
 
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
 

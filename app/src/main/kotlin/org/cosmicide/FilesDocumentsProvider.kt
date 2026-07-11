@@ -58,7 +58,7 @@ class FilesDocumentsProvider : DocumentsProvider() {
                         DocumentsContract.Root.FLAG_SUPPORTS_SEARCH or
                         DocumentsContract.Root.FLAG_SUPPORTS_RECENTS or
                         DocumentsContract.Root.FLAG_SUPPORTS_IS_CHILD,
-                context.filesDir.freeSpace
+                context.dataDir.freeSpace
             )
         )
 
@@ -265,17 +265,17 @@ class FilesDocumentsProvider : DocumentsProvider() {
         )
     }
 
-    @SuppressLint("SetWorldReadable")
+    @SuppressLint("SetWorldReadable", "SetWorldWritable")
     private fun getFileForDocumentId(documentId: String?): File {
         val file = if (documentId == ROOT_ID) {
-            context?.filesDir ?: File("/")
+            context?.dataDir ?: File("/")
         } else {
-            File(context?.filesDir, documentId ?: "")
+            File(context?.dataDir, documentId ?: "")
         }
 
         try {
             file.setReadable(true, false)
-            file.setWritable(true, false)
+            if (file.extension != "dex") file.setWritable(true, false)
         } catch (e: Exception) {
             // Ignore permission errors
         }
@@ -284,7 +284,7 @@ class FilesDocumentsProvider : DocumentsProvider() {
     }
 
     private fun getDocumentIdForFile(file: File): String {
-        val filesDir = context?.filesDir ?: return ROOT_ID
+        val filesDir = context?.dataDir ?: return ROOT_ID
         return if (file == filesDir) {
             ROOT_ID
         } else {
@@ -364,6 +364,6 @@ class FilesDocumentsProvider : DocumentsProvider() {
     }
 
     companion object {
-        private const val ROOT_ID = "root"
+        private const val ROOT_ID = "Files"
     }
 }

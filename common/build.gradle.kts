@@ -47,7 +47,7 @@ android {
 
 dependencies {
 //    "prodImplementation"("io.appwrite:sdk-for-android:25.0.0")
-    "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.4.0")
+    "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.5.0")
 
     api("androidx.preference:preference-ktx:1.2.1")
 

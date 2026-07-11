@@ -90,6 +90,7 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.sdk.manager.jdk.FoojayClient
 import org.cosmicide.util.jdks
 import org.cosmicide.util.jdksDir
+import org.cosmicide.util.repairJdkExecutablePermissions
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -223,7 +224,7 @@ fun JdkSettingsPanel(
 
                                 if (targetArchiveFile.exists()) targetArchiveFile.delete()
 
-                                if (extracted) {
+                                if (extracted && repairJdkExecutablePermissions(targetDir)) {
                                     taskQueue[i] = taskQueue[i].copy(
                                         status = TaskStatus.SUCCESS,
                                         message = "Installed successfully"
@@ -642,6 +643,7 @@ private suspend fun extractTarGz(tarGz: File, targetDir: File): Boolean =
                     if (rawName.isEmpty()) continue
 
                     val size = header.readTarOctal(124, 12)
+                    val mode = header.readTarOctal(100, 8)
                     val cleanName = rawName.removePrefix("./")
 
                     if (rootPrefix == null) {
@@ -665,6 +667,9 @@ private suspend fun extractTarGz(tarGz: File, targetDir: File): Boolean =
                             targetFile.outputStream().use { fos ->
                                 gisin.copyBounded(fos, size, buffer)
                             }
+                            targetFile.setReadable(true, false)
+                            targetFile.setWritable((mode and 0b10_000_000L) != 0L, true)
+                            targetFile.setExecutable((mode and 0b001_001_001L) != 0L, false)
                         }
                     } else {
                         gisin.skipNBytes(size)

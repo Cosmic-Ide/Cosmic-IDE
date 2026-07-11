@@ -2,6 +2,7 @@ package org.cosmicide.exec.linux
 
 import android.content.Context
 import org.cosmicide.util.FileUtil
+import org.cosmicide.util.repairJdkExecutablePermissions
 import java.io.File
 import java.lang.reflect.Field
 import android.os.Process as AndroidProcess
@@ -10,6 +11,7 @@ object LinuxProcessRunner {
 
     private const val RUNTIME_USER = "cosmicide"
     private const val JSTAT_SAMPLE_INTERVAL_MS = 1000
+    private const val EXECUTABLE_IDENTITY_ENV = "COSMIC_EXECUTABLE"
 
     private val DefaultDnsServers = listOf("1.1.1.1", "8.8.8.8")
 
@@ -19,19 +21,23 @@ object LinuxProcessRunner {
         val workingDir: File,
         val environmentOverrides: Map<String, String> = emptyMap(),
         val pathEntries: List<File> = emptyList(),
+        val redirectErrorStream: Boolean = true,
         val usePty: Boolean = false,
         val terminalRows: Int = 24,
         val terminalColumns: Int = 80
     )
 
+    private data class WrappedCommand(
+        val command: List<String>,
+        val executableIdentity: String
+    )
+
     private data class GlibcRuntime(
         val tempDir: File,
         val appDir: File,
-        val usrPath: String,
         val glibcPath: String,
         val customLinker: String,
         val combinedPreload: String,
-        val linkLibraryPath: String,
         val runtimeUser: String,
         val resolvConf: File,
         val hostsFile: File,
@@ -61,37 +67,30 @@ object LinuxProcessRunner {
             throw IllegalArgumentException("Configuration must have usePty=true")
         }
 
-        // Build environment map including glibc settings
         val runtime = prepareGlibcRuntime(context)
+        val wrappedCommand = runtime.wrapCommand(config.binary, config.arguments)
         val environment = buildMap {
             putCommonGlibcEnvironment(runtime)
             put("PATH", buildPath(runtime, config.binary, config.pathEntries))
             put("TERM", "xterm-256color")
-            // Caller overrides applied last
             putAll(config.environmentOverrides)
+
+            // The initial process is launched through ld-linux directly, before
+            // exec_wrap can intercept anything. Preserve the real executable
+            // identity for /proc/self/exe and AT_EXECFN virtualization.
+            put(EXECUTABLE_IDENTITY_ENV, wrappedCommand.executableIdentity)
         }
 
-        // Wrap the binary with glibc ld-linux if needed
-        val wrappedBinary = runtime.wrapCommand(config.binary, config.arguments)
+        // IMPORTANT: config.workingDir is passed to the native layer for chdir().
+        val pty = PtyTerminal.allocateAndSpawn(
+            workingDir = config.workingDir,
+            executable = File(wrappedCommand.command[0]),
+            arguments = wrappedCommand.command.drop(1),
+            environment = environment
+        )
 
-        try {
-            // Allocate PTY and spawn child process inside it
-            // IMPORTANT: Pass config.workingDir to native layer for chdir()
-            val pty = PtyTerminal.allocateAndSpawn(
-                workingDir = config.workingDir,
-                executable = File(wrappedBinary[0]),
-                arguments = wrappedBinary.drop(1),
-                environment = environment
-            )
-
-            // Configure terminal dimensions
-            pty.setWindowSize(config.terminalRows, config.terminalColumns)
-
-            // Create wrapper with child PID for signal management
-            return PtyProcess.create(pty)
-        } catch (e: Exception) {
-            throw e
-        }
+        pty.setWindowSize(config.terminalRows, config.terminalColumns)
+        return PtyProcess.create(pty)
     }
 
     fun execute(
@@ -122,17 +121,15 @@ object LinuxProcessRunner {
                 add(FileUtil.dataDir.resolve("kotlinc/bin"))
             }
             add(context.filesDir.resolve("jdtls/bin"))
+            add(context.filesDir.resolve("scala/bin"))
             add(context.filesDir.resolve("glibc/usr/bin"))
         }
     }
 
     fun toolchainEnvironment(context: Context, jdkDir: File): Map<String, String> {
+        repairJdkExecutablePermissions(jdkDir)
         return buildMap {
             put("JAVA_HOME", jdkDir.absolutePath)
-            if (FileUtil.isInitialized) {
-                put("KOTLIN_HOME", FileUtil.dataDir.resolve("kotlinc").absolutePath)
-            }
-            put("JDTLS_HOME", context.filesDir.resolve("jdtls").absolutePath)
         }
     }
 
@@ -235,25 +232,31 @@ object LinuxProcessRunner {
 
     private fun createProcessBuilder(context: Context, config: Configuration): ProcessBuilder {
         val runtime = prepareGlibcRuntime(context)
-        val command = runtime.wrapCommand(config.binary, config.arguments)
+        val wrappedCommand = runtime.wrapCommand(config.binary, config.arguments)
 
-        return ProcessBuilder(command).apply {
+        return ProcessBuilder(wrappedCommand.command).apply {
             directory(config.workingDir)
-            redirectErrorStream(true)
+            redirectErrorStream(config.redirectErrorStream)
 
             environment().apply {
                 clear()
                 putCommonGlibcEnvironment(runtime)
                 put("PATH", buildPath(runtime, config.binary, config.pathEntries))
 
-                // Keep this last so callers can intentionally override JAVA_HOME,
-                // TMPDIR, LD_LIBRARY_PATH, PATH, DNS_TRACE, etc. for special tool invocations.
+                // Keep caller overrides late so special tool invocations can replace
+                // JAVA_HOME, TMPDIR, LD_LIBRARY_PATH, PATH, DNS_TRACE, etc.
                 putAll(config.environmentOverrides)
+
+                // This is internal launch metadata, not a caller-facing switch.
+                put(EXECUTABLE_IDENTITY_ENV, wrappedCommand.executableIdentity)
             }
         }
     }
 
-    private fun GlibcRuntime.wrapCommand(binary: File, arguments: List<String>): List<String> {
+    private fun GlibcRuntime.wrapCommand(
+        binary: File,
+        arguments: List<String>
+    ): WrappedCommand {
         val target = resolveInitialGlibcTarget(binary.absoluteFile)
 
         return when (target.executableKind()) {
@@ -266,22 +269,33 @@ object LinuxProcessRunner {
 
             ExecutableKind.UNSUPPORTED -> {
                 throw IllegalArgumentException(
-                    "Unsupported executable: ${target.absolutePath}. " + "Expected a readable ELF binary or a readable shell script with a sh/bash shebang."
+                    "Unsupported executable: ${target.absolutePath}. " +
+                            "Expected a readable ELF binary or a readable shell script with a sh/bash shebang."
                 )
             }
         }
     }
 
-    private fun GlibcRuntime.linkerCommand(program: File, arguments: List<String>): List<String> {
-        return buildList {
-            add(customLinker)
-            add("--library-path")
-            add(linkLibraryDirs().joinToString(":") { it.absolutePath })
-            add("--preload")
-            add(combinedPreload)
-            add(program.absolutePath)
-            addAll(arguments)
-        }
+    private fun GlibcRuntime.linkerCommand(
+        program: File,
+        arguments: List<String>
+    ): WrappedCommand {
+        val programPath = program.canonicalOrAbsolutePath()
+
+        return WrappedCommand(
+            command = buildList {
+                add(customLinker)
+                add("--argv0")
+                add(programPath)
+                add("--library-path")
+                add(linkLibraryDirs().joinToString(":") { it.absolutePath })
+                add("--preload")
+                add(combinedPreload)
+                add(programPath)
+                addAll(arguments)
+            },
+            executableIdentity = programPath
+        )
     }
 
     private fun GlibcRuntime.resolveInitialGlibcTarget(binary: File): File {
@@ -320,7 +334,6 @@ object LinuxProcessRunner {
     }
 
     private fun buildPath(runtime: GlibcRuntime, binary: File, extraEntries: List<File>): String {
-        val usrBin = File(runtime.usrPath).resolve("bin")
         val glibcBin = File(runtime.glibcPath).resolve("bin")
 
         return buildList {
@@ -330,7 +343,6 @@ object LinuxProcessRunner {
 
             addAll(extraEntries)
             add(glibcBin)
-            add(usrBin)
             addAll(runtime.gccFrontendDirs())
             add(File("/system/bin"))
         }.distinctBy { it.absolutePath }.joinToString(":") { it.absolutePath }
@@ -461,6 +473,14 @@ object LinuxProcessRunner {
         return this == "sh" || this == "bash" || this == "dash" || this == "ash" || this == "ksh" || this == "zsh"
     }
 
+    private fun File.canonicalOrAbsolutePath(): String {
+        return try {
+            canonicalPath
+        } catch (_: Exception) {
+            absolutePath
+        }
+    }
+
     private fun File.isAndroidSystemPath(): Boolean {
         val path = absolutePath
         return path.startsWith("/system/") || path.startsWith("/apex/") || path.startsWith("/vendor/") || path.startsWith(
@@ -470,15 +490,10 @@ object LinuxProcessRunner {
 
     private fun prepareGlibcRuntime(context: Context): GlibcRuntime {
         val tempDir = context.cacheDir.apply { mkdirs() }
-        val realAppDir = context.filesDir
-        val appDir = realAppDir.resolve("glibc")
+        val appDir = context.filesDir.resolve("glibc")
         appDir.resolve("home").mkdirs()
-        val usrRoot = appDir.resolve("usr")
-        val glibcRoot = usrRoot
-        val usrPath = usrRoot.absolutePath
-        val glibcPath = usrRoot.absolutePath
-        val glibcLib = usrRoot.resolve("lib")
-        val usrLib = usrRoot.resolve("lib")
+        val glibcRoot = appDir.resolve("usr")
+        val glibcPath = glibcRoot.absolutePath
         val nativeLibDir = context.applicationInfo.nativeLibraryDir
         val runtimeUid = AndroidProcess.myUid()
 
@@ -506,7 +521,6 @@ object LinuxProcessRunner {
         return GlibcRuntime(
             tempDir = tempDir,
             appDir = appDir,
-            usrPath = usrPath,
             glibcPath = glibcPath,
             customLinker = "$nativeLibDir/libld_linux.so",
             combinedPreload = listOf(pathRedirect, nssWrapper).joinToString(":"),
@@ -516,14 +530,7 @@ object LinuxProcessRunner {
             nsswitchConf = nsswitchConf,
             gaiConf = gaiConf,
             passwdFile = passwdFile,
-            groupFile = groupFile,
-            linkLibraryPath = listOf(
-                glibcLib,
-                usrLib,
-                glibcRoot
-            ).filter { it.exists() || it == glibcLib }
-                .distinctBy { it.absolutePath }
-                .joinToString(":") { it.absolutePath },
+            groupFile = groupFile
         )
     }
 
@@ -582,12 +589,10 @@ object LinuxProcessRunner {
     }
 
     private fun GlibcRuntime.linkLibraryDirs(): List<File> {
-        val usrRoot = File(usrPath)
         val glibcRoot = File(glibcPath)
 
         return buildList {
             add(glibcRoot.resolve("lib"))
-            add(usrRoot.resolve("lib"))
             add(glibcRoot)
             addAll(gccFrontendDirs())
         }.filter { it.exists() }
@@ -629,13 +634,15 @@ object LinuxProcessRunner {
         put("NSS_WRAPPER_PASSWD", runtime.passwdFile.absolutePath)
         put("NSS_WRAPPER_GROUP", runtime.groupFile.absolutePath)
 
+        put("RUST_BACKTRACE", "full")
+
         // Kept for compatibility with your custom glibc/nss routing layer.
         put("NSS_WEAK_ROUTE_CONFIG", runtime.nsswitchConf.absolutePath)
 
         // Make paths baked into Termux/gpkg binaries resolve against the app-private
         // files directory. runtime.appDir is the fake Termux files root: <app>/files/glibc.
         put("APP_FILES_DIR", runtime.appDir.absolutePath)
-        put("TERMUX_PREFIX", File(runtime.usrPath).absolutePath)
+        put("TERMUX_PREFIX", File(runtime.glibcPath).absolutePath)
 
         val gccFrontendPath = runtime.gccFrontendDirs()
             .joinToString(":") { it.absolutePath }

@@ -58,7 +58,8 @@ fun TerminalScreen(
     initialCommand: String = "bash -i",
     workingDir: File? = null,
     terminalTextSizeDp: Int = 14,
-    terminalFontResId: Int = R.font.firacode_medium
+    terminalFontResId: Int = R.font.firacode_medium,
+    onProcessExit: (Int) -> Unit = {}
 ) {
     val context = LocalContext.current
     val appContext = context.applicationContext
@@ -101,14 +102,16 @@ fun TerminalScreen(
                 modifier = Modifier
                     .imePadding()
                     .navigationBarsPadding()
+                    .padding(2.dp)
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { padding ->
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 8.dp),
+                .padding(8.dp, 8.dp, 8.dp, 2.dp),
             factory = { viewContext ->
                 val terminalView = TerminalView(viewContext, null).apply {
                     layoutParams = FrameLayout.LayoutParams(
@@ -131,9 +134,15 @@ fun TerminalScreen(
                     modifierLatch = modifierLatch,
                     scope = scope,
                     onTitleChanged = { title = it.ifBlank { initialCommand } },
-                    onFailure = { startupError = "Terminal fault: ${it.message.orEmpty()}" }
+                    onFailure = { startupError = "Terminal fault: ${it.message.orEmpty()}" },
+                    onProcessExit = onProcessExit
                 )
 
+                terminalView.addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
+                    view.post {
+                        controller.startOrResize(currentTextSizeDp, terminalTypeface)
+                    }
+                }
 
                 terminalView.setTerminalViewClient(
                     BasicTerminalViewClient(
@@ -268,14 +277,13 @@ private fun ExtraKeysBar(
     }
 
     Surface(
-        modifier = modifier,
         color = MaterialTheme.colorScheme.surfaceContainer,
         tonalElevation = 2.dp
     ) {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .horizontalScroll(scrollState)
-                .padding(8.dp),
+                .padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             ExtraKeyButton(

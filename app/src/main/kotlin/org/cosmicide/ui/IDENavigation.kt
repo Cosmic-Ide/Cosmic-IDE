@@ -4,13 +4,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import org.cosmicide.tooling.ToolingServerManager
-import org.cosmicide.ui.compile.CompileInfoScreen
+import org.cosmicide.ui.compile.GradleTaskScreen
 import org.cosmicide.ui.editor.EditorScreen
 import org.cosmicide.ui.home.HomeScreen
 import org.cosmicide.ui.output.ProjectOutputScreen
@@ -29,16 +31,19 @@ import org.cosmicide.util.ResourceUtil
 
 @Composable
 fun IDENavigation() {
+    val context = LocalContext.current
+    val initialScreen: Screen = when {
+        ResourceUtil.isBootstrapIncomplete() -> InstallResourceScreen
+        ResourceUtil.isJdkMissing() -> JDKSettingsScreen
+        ResourceUtil.isLanguageServerSetupIncomplete() -> LanguageServerSetupScreen
+        else -> Home
+    }
     val backStack = rememberNavBackStack(
-        if (ResourceUtil.isEnvironmentIncomplete()) {
-            InstallResourceScreen
-        } else {
-            Home
-        }
+        initialScreen
     )
 
     val hasProjectSession = backStack.any { screen ->
-        screen is Editor || screen is CompileInfo || screen is ProjectOutput
+        screen is Editor || screen is GradleTask || screen is ProjectOutput
     }
 
     LaunchedEffect(hasProjectSession) {
@@ -63,7 +68,13 @@ fun IDENavigation() {
             is InstallResourceScreen -> NavEntry(key) {
                 InstallResourcesScreen {
                     backStack.removeLastOrNull()
-                    backStack.add(JDKSettingsScreen)
+                    backStack.add(
+                        if (ResourceUtil.isJdkMissing()) {
+                            JDKSettingsScreen
+                        } else {
+                            LanguageServerSetupScreen
+                        }
+                    )
                 }
             }
 
@@ -78,8 +89,8 @@ fun IDENavigation() {
             }
 
             is Editor -> NavEntry(key) {
-                EditorScreen(key.project, onCompile = {
-                    backStack.add(CompileInfo)
+                EditorScreen(key.project, onRunGradleTask = { task ->
+                    backStack.add(GradleTask(task))
                 })
             }
 
@@ -91,11 +102,13 @@ fun IDENavigation() {
                 })
             }
 
-            is CompileInfo -> NavEntry(key) {
-                CompileInfoScreen(onNavigateBack = {
+            is GradleTask -> NavEntry(key) {
+                GradleTaskScreen(task = key.task, onNavigateBack = {
                     if (backStack.size > 1) backStack.removeLastOrNull()
-                }, onCompileSuccess = {
-                    backStack.add(ProjectOutput)
+                }, onTaskSuccess = {
+                    if (key.task == "build") {
+                        backStack.add(ProjectOutput)
+                    }
                 })
             }
 
@@ -121,7 +134,7 @@ fun IDENavigation() {
                     "Compiler" -> CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Formatter" -> FormatterSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Plugins" -> PluginsSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Git" -> TerminalScreen(onNavigateBack = { backStack.removeLastOrNull() }) //GitSettingsScreen(onBack = { backStack.removeLastOrNull() })
+                    "Terminal" -> TerminalScreen(onNavigateBack = { backStack.removeLastOrNull() }) //GitSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Toolchains" -> JdkSettingsPanel { backStack.removeLastOrNull() }
                     "About" -> AboutSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     else -> Text("Category: ${key.category}")
@@ -130,8 +143,41 @@ fun IDENavigation() {
 
             is JDKSettingsScreen -> NavEntry(key) {
                 JdkSettingsPanel(onDismissRequested = {
-                    backStack.add(Home); backStack.removeAt(backStack.size - 2)
+                    if (!ResourceUtil.isJdkMissing()) {
+                        backStack.removeLastOrNull()
+                        backStack.add(
+                            if (ResourceUtil.isLanguageServerSetupIncomplete()) {
+                                LanguageServerSetupScreen
+                            } else {
+                                Home
+                            }
+                        )
+                    }
                 })
+            }
+
+            is LanguageServerSetupScreen -> NavEntry(key) {
+                val setupScript = remember { ResourceUtil.prepareLanguageServerSetupScript() }
+                TerminalScreen(
+                    onNavigateBack = {
+                        backStack.removeLastOrNull()
+                        backStack.add(
+                            if (ResourceUtil.isEnvironmentIncomplete()) {
+                                JDKSettingsScreen
+                            } else {
+                                Home
+                            }
+                        )
+                    },
+                    initialCommand = "bash ${setupScript.absolutePath} ${context.filesDir.absolutePath} ${context.cacheDir.absolutePath}",
+                    workingDir = context.filesDir,
+                    onProcessExit = { exitCode ->
+                        if (exitCode == 0 && !ResourceUtil.isEnvironmentIncomplete()) {
+                            backStack.removeLastOrNull()
+                            backStack.add(Home)
+                        }
+                    }
+                )
             }
 
             else -> NavEntry(key) {

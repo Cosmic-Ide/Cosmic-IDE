@@ -67,8 +67,8 @@ object ResourceUtil {
 
     fun prepareLanguageServerSetupScript(): File {
         val context = checkNotNull(App.instance.get()) { "Application context is unavailable" }
-        val script = context.filesDir.resolve("setup-language-servers.sh")
-        context.assets.open("setup-language-servers.sh").use { input ->
+        val script = context.filesDir.resolve("setup.sh")
+        context.assets.open("setup.sh").use { input ->
             script.outputStream().use { output -> input.copyTo(output) }
         }
         script.setExecutable(true)

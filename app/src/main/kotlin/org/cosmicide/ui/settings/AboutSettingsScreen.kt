@@ -263,7 +263,7 @@ fun TerminalExecutionSheet(
                     arguments = processArguments,
                     workingDir = workingDir,
                     environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
-                        context, jdkDir
+                        jdkDir
                     ) + mapOf(
                         "TMPDIR" to tempDir.absolutePath,
                         "TMP" to tempDir.absolutePath,

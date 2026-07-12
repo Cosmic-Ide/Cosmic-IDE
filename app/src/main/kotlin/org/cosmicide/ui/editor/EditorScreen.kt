@@ -961,7 +961,7 @@ fun CustomCommandDialog(
                                 arguments = commandParts.drop(1),
                                 workingDir = project.root,
                                 environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
-                                    context, jdkDir
+                                    jdkDir
                                 ),
                                 pathEntries = pathEntries
                             )

@@ -453,7 +453,6 @@ private fun createTerminalConfig(
         arguments = commandParts.drop(1),
         workingDir = workingDir,
         environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
-            context,
             jdkDir
         ) + mapOf(
             "TMPDIR" to tempDir.absolutePath,

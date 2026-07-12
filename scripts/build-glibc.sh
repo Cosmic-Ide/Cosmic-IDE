@@ -71,6 +71,7 @@ else
         bash-glibc \
         binutils-glibc \
         findutils-glibc \
+        ncurses-utils-glibc \
         ca-certificates-glibc \
         clang-glibc \
         llvm-glibc \

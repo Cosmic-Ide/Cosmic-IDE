@@ -146,7 +146,6 @@ object PtyProcessExecutor {
      */
     private fun toolchainEnvironment(context: Context, jdkDir: File): Map<String, String> {
         return LinuxProcessRunner.toolchainEnvironment(
-            context,
             jdkDir
         ) + mapOf(
             "TMPDIR" to context.cacheDir.absolutePath,

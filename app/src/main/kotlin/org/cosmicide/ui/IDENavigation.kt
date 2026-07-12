@@ -106,9 +106,9 @@ fun IDENavigation() {
                 GradleTaskScreen(task = key.task, onNavigateBack = {
                     if (backStack.size > 1) backStack.removeLastOrNull()
                 }, onTaskSuccess = {
-                    if (key.task == "build") {
-                        backStack.add(ProjectOutput)
-                    }
+//                    if (key.task == "build") {
+//                        backStack.add(ProjectOutput)
+//                    }
                 })
             }
 

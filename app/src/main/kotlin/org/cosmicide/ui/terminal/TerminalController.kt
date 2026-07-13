@@ -340,6 +340,55 @@ internal class TerminalController(
                 param.result = null
             }
         })
+
+        HookManager.registerHook(object : Hook(
+            method = "handleKeyCode",
+            argTypes = arrayOf(
+                Int::class.javaPrimitiveType!!,
+                Int::class.javaPrimitiveType!!
+            ),
+            type = TerminalView::class.java
+        ) {
+            override fun before(param: Pine.CallFrame) {
+                val view = param.thisObject as? TerminalView ?: return
+                if (view !== terminalView) return
+
+                // If Termux has a real session, let original TerminalView handle it.
+                if (view.mTermSession != null) return
+
+                val keyCode = param.args[0] as Int
+                val keyMod = param.args[1] as Int
+                val term = view.mEmulator
+
+                if (term == null) {
+                    param.result = false
+                    return
+                }
+
+                term.setCursorBlinkState(true)
+
+                // Preserve Termux's built-in non-session actions, like Shift+PageUp/PageDown scrollback.
+                if (view.handleKeyCodeAction(keyCode, keyMod)) {
+                    param.result = true
+                    return
+                }
+
+                val code = KeyHandler.getCode(
+                    keyCode,
+                    keyMod,
+                    term.isCursorKeysApplicationMode,
+                    term.isKeypadApplicationMode
+                )
+
+                if (code == null) {
+                    param.result = false
+                    return
+                }
+
+                write(code)
+                param.result = true
+            }
+        })
     }
 
     private fun installSelectionMenuHook() {

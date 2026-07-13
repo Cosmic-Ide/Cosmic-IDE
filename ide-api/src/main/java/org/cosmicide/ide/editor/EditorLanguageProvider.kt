@@ -8,6 +8,7 @@
 package org.cosmicide.ide.editor
 
 import io.github.rosemoe.sora.widget.CodeEditor
+import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.project.Project
 import java.io.File
 
@@ -17,9 +18,7 @@ data class EditorLanguageRequest(
     val file: File
 )
 
-interface EditorLanguageProvider {
-    val id: String
-
+interface EditorLanguageProvider : ConfigurableExtension {
     val priority: Int
         get() = 0
 

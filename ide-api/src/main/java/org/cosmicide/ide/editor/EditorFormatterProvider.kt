@@ -8,6 +8,7 @@
 package org.cosmicide.ide.editor
 
 import io.github.rosemoe.sora.text.TextRange
+import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.project.Project
 import java.io.File
 
@@ -23,9 +24,7 @@ data class EditorFormatterResult(
     val replacementRange: TextRange? = null
 )
 
-interface EditorFormatterProvider {
-    val id: String
-
+interface EditorFormatterProvider : ConfigurableExtension {
     val priority: Int
         get() = 0
 

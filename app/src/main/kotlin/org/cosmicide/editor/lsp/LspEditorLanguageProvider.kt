@@ -1,5 +1,6 @@
 package org.cosmicide.editor.lsp
 
+import android.util.Log
 import org.cosmicide.ide.editor.EditorExtensionPoints
 import org.cosmicide.ide.editor.EditorLanguageProvider
 import org.cosmicide.ide.editor.EditorLanguageRequest
@@ -9,6 +10,9 @@ import org.cosmicide.plugin.CosmicPluginHost
 
 object LspEditorLanguageProvider : EditorLanguageProvider {
     override val id = "org.cosmicide.editor.lsp"
+    override val displayName = "Language Server Protocol editor"
+    override val description = "Connects editor documents to registered language servers"
+    override val canDisable = false
     override val priority = 200
 
     override fun supports(request: EditorLanguageRequest): Boolean {
@@ -30,9 +34,15 @@ object LspEditorLanguageProvider : EditorLanguageProvider {
             project = project,
             file = file
         )
-        return CosmicPluginHost.extensionRegistry
-            .extensions(EditorExtensionPoints.LSP_SERVER_PROVIDER)
+        return CosmicPluginHost
+            .enabledExtensions(EditorExtensionPoints.LSP_SERVER_PROVIDER)
             .asSequence()
-            .filter { it.supports(lspRequest) }
+            .filter { provider ->
+                runCatching { provider.supports(lspRequest) }
+                    .onFailure { Log.w(TAG, "LSP provider ${provider.id} failed to match", it) }
+                    .getOrDefault(false)
+            }
     }
+
+    private const val TAG = "LspLanguageProvider"
 }

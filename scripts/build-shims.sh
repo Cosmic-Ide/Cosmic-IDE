@@ -18,5 +18,6 @@ zig cc \
   "$ROOT/scripts/glibc-shims/libpath_redirect.c" \
   "$ROOT/scripts/glibc-shims/dns_fallback.c" \
   "$ROOT/scripts/glibc-shims/exec_wrap.c" \
+  "$ROOT/scripts/glibc-shims/pacman_fake_root.c" \
   -ldl \
   -pthread

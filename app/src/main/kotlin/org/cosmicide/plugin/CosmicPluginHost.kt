@@ -10,6 +10,8 @@ package org.cosmicide.plugin
 import android.content.Context
 import android.util.Log
 import org.cosmicide.editor.language.registerBuiltinEditorExtensions
+import org.cosmicide.ide.editor.EditorExtensionPoints
+import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.plugin.api.DefaultExtensionRegistry
 import org.cosmicide.plugin.api.DefaultServiceRegistry
 import org.cosmicide.plugin.api.MutableExtensionRegistry
@@ -20,6 +22,9 @@ object CosmicPluginHost {
 
     val extensionRegistry: MutableExtensionRegistry = DefaultExtensionRegistry()
     private val serviceRegistry = DefaultServiceRegistry()
+
+    lateinit var extensionSettings: ExtensionSettings
+        private set
 
     @Volatile
     private var initialized = false
@@ -32,7 +37,8 @@ object CosmicPluginHost {
         synchronized(this) {
             if (initialized) return
 
-            registerBuiltinEditorExtensions(extensionRegistry)
+            extensionSettings = ExtensionSettings(context)
+            registerBuiltinEditorExtensions(context, extensionRegistry)
             pluginManager = AndroidPluginManager(
                 context = context,
                 extensionRegistry = extensionRegistry,
@@ -48,6 +54,30 @@ object CosmicPluginHost {
 
             initialized = true
         }
+    }
+
+    fun <T> enabledExtensions(point: org.cosmicide.plugin.api.ExtensionPoint<T>): List<T>
+            where T : Any, T : ConfigurableExtension {
+        return extensionRegistry.extensions(point).filter(extensionSettings::isEnabled)
+    }
+
+    fun configurableExtensions(): List<ExtensionSettingsItem> {
+        return buildList {
+            addRegistrations(EditorExtensionPoints.LANGUAGE_PROVIDER, "Editor languages")
+            addRegistrations(EditorExtensionPoints.LSP_SERVER_PROVIDER, "Language servers")
+            addRegistrations(EditorExtensionPoints.FORMATTER_PROVIDER, "Formatters")
+        }.distinctBy { it.extension.id }
+    }
+
+    private fun <T> MutableList<ExtensionSettingsItem>.addRegistrations(
+        point: org.cosmicide.plugin.api.ExtensionPoint<T>,
+        category: String
+    ) where T : Any, T : ConfigurableExtension {
+        extensionRegistry.registrations(point)
+            .filter { it.extension.canDisable }
+            .mapTo(this) {
+                ExtensionSettingsItem(it.extension, it.ownerPluginId, category)
+            }
     }
 
     private inline fun org.cosmicide.plugin.api.PluginLoadResult.onFailure(

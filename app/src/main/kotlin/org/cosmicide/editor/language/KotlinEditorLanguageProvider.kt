@@ -9,35 +9,67 @@ package org.cosmicide.editor.language
 
 import android.content.Context
 import android.util.Log
+import org.cosmicide.App
 import org.cosmicide.common.Prefs
-import org.cosmicide.editor.lsp.KotlinLspServerProvider
-import org.cosmicide.editor.lsp.configureLspLanguage
+import org.cosmicide.editor.lsp.ExistingProcessLspConnection
 import org.cosmicide.exec.ProcessExecutor
-import org.cosmicide.ide.editor.EditorLanguageProvider
-import org.cosmicide.ide.editor.EditorLanguageRequest
+import org.cosmicide.ide.editor.LspServerDefinition
+import org.cosmicide.ide.editor.LspServerProvider
 import org.cosmicide.ide.editor.LspServerRequest
 import org.cosmicide.project.Project
 import org.cosmicide.util.jdksDir
+import org.eclipse.lsp4j.CodeLensOptions
+import org.eclipse.lsp4j.ServerCapabilities
+import org.eclipse.lsp4j.SignatureHelpOptions
+import org.eclipse.lsp4j.jsonrpc.messages.Either
 import java.io.InputStream
 
-object KotlinEditorLanguageProvider : EditorLanguageProvider {
+object KotlinEditorLanguageProvider : LspServerProvider {
     override val id = "org.cosmicide.editor.kotlin"
+    override val displayName = "Kotlin language support"
+    override val description = "Kotlin editing powered by Kotlin Language Server"
     override val priority = 300
 
     private var kotlinLspProcess: Process? = null
     private var kotlinProjectRoot: String? = null
 
-    override fun supports(request: EditorLanguageRequest): Boolean {
-        return request.file.extension == "kt"
+    override fun supports(request: LspServerRequest): Boolean {
+        return request.extension == "kt"
     }
 
-    override fun configure(request: EditorLanguageRequest): Boolean {
-        val lspRequest = LspServerRequest(
-            project = request.project,
-            file = request.file
+    override fun createDefinition(request: LspServerRequest): LspServerDefinition {
+        val context = App.instance.get()
+            ?: throw IllegalStateException("Application context is unavailable")
+        val defaultSdk = context.jdksDir()
+            .resolve(Prefs.currentJDK)
+            .takeIf { it.isDirectory }
+            ?.absolutePath
+        return LspServerDefinition(
+            id = id,
+            fileExtension = "kt",
+            displayName = "Kotlin Language Server",
+            connectionFactory = {
+                ExistingProcessLspConnection {
+                    startKotlinLspProcess(context, request.project)
+                }
+            },
+            grammarScopeName = "source.kotlin",
+            initializationOptions = defaultSdk?.let { mapOf("defaultSdk" to it) },
+            expectedCapabilities = ServerCapabilities().apply {
+                codeActionProvider = Either.forLeft(true)
+                documentFormattingProvider = Either.forLeft(true)
+                signatureHelpProvider = SignatureHelpOptions(listOf("(", ","))
+                diagnosticProvider = null
+                definitionProvider = Either.forLeft(true)
+                hoverProvider = Either.forLeft(true)
+                inlayHintProvider = Either.forLeft(true)
+                codeLensProvider = CodeLensOptions(true)
+                semanticTokensProvider = null
+                documentHighlightProvider = Either.forLeft(false)
+            },
+            initializationTimeoutMillis = 120_000,
+            traceIncomingMessages = true
         )
-        val definition = KotlinLspServerProvider.createDefinition(lspRequest)
-        return request.editor.configureLspLanguage(lspRequest, definition)
     }
 
     @Synchronized

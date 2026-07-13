@@ -24,6 +24,8 @@ fun registerBuiltinFormatterExtensions(registry: MutableExtensionRegistry) {
 
 private object KtfmtFormatterProvider : EditorFormatterProvider {
     override val id = "org.cosmicide.formatter.kotlin.ktfmt"
+    override val displayName = "Kotlin formatter"
+    override val description = "Formats Kotlin and Kotlin script files with ktfmt"
     override val priority = 100
 
     override fun supports(request: EditorFormatterRequest): Boolean {
@@ -44,6 +46,8 @@ private object KtfmtFormatterProvider : EditorFormatterProvider {
 
 private object GoogleJavaFormatterProvider : EditorFormatterProvider {
     override val id = "org.cosmicide.formatter.java.google"
+    override val displayName = "Google Java Format"
+    override val description = "Formats Java source using Google Java Format"
     override val priority = 100
 
     override fun supports(request: EditorFormatterRequest): Boolean {

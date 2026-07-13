@@ -1026,7 +1026,7 @@ static int prepare_wrap(
             loader_argv0,
             library_path,
             preload,
-            program_path,
+            executable_identity,
             script_path,
             argv,
             java_tmpdir,

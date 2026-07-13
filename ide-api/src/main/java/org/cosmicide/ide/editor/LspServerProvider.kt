@@ -7,6 +7,7 @@
 
 package org.cosmicide.ide.editor
 
+import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.project.Project
 import org.eclipse.lsp4j.ServerCapabilities
 import java.io.File
@@ -21,9 +22,7 @@ data class LspServerRequest(
         get() = file.extension
 }
 
-interface LspServerProvider {
-    val id: String
-
+interface LspServerProvider : ConfigurableExtension {
     val priority: Int
         get() = 0
 

@@ -31,10 +31,20 @@ private class RegistryBackedFormatter(
             range = range
         )
 
-        val result = CosmicPluginHost.extensionRegistry
-            .extensions(EditorExtensionPoints.FORMATTER_PROVIDER)
+        val result = CosmicPluginHost
+            .enabledExtensions(EditorExtensionPoints.FORMATTER_PROVIDER)
             .asSequence()
-            .filter { it.supports(request) }
+            .filter { provider ->
+                runCatching { provider.supports(request) }
+                    .onFailure {
+                        Log.w(
+                            TAG,
+                            "Formatter provider ${provider.id} failed to match",
+                            it
+                        )
+                    }
+                    .getOrDefault(false)
+            }
             .firstNotNullOfOrNull { provider ->
                 runCatching {
                     provider.format(request)

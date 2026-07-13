@@ -9,6 +9,13 @@ OUT_DIR="$OUT_ROOT/usr"
 ASSETS_TAR_ZST="$ROOT/app/src/main/assets/glibc.tar.zst"
 REUSE_GLIBC=0
 
+PACMAN_VERSION="${PACMAN_VERSION:-7.1.0.r9.g54d9411-2}"
+PACMAN_FILENAME="${PACMAN_FILENAME:-pacman-${PACMAN_VERSION}-aarch64.pkg.tar.xz}"
+PACMAN_MIRROR="${PACMAN_MIRROR:-https://mirrors.dotsrc.org/archlinuxarm}"
+PACMAN_URL="${PACMAN_URL:-$PACMAN_MIRROR/aarch64/core/$PACMAN_FILENAME}"
+PACMAN_CACHE_DIR="$ROOT/gpkg-cache/archlinuxarm"
+PACMAN_ARCHIVE="$PACMAN_CACHE_DIR/$PACMAN_FILENAME"
+
 usage() {
     echo "usage: $0 [--reuse-glibc]" >&2
     echo "  --reuse-glibc  reuse existing ./glibc tree; skip clean + gpkg extraction" >&2
@@ -46,6 +53,89 @@ if [ "$REUSE_GLIBC" = "0" ] && ! command -v jq >/dev/null 2>&1; then
     exit 1
 fi
 
+download_file() {
+    url="$1"
+    destination="$2"
+    temporary="$destination.tmp.$$"
+
+    mkdir -p "$(dirname "$destination")"
+    rm -f "$temporary"
+
+    if command -v curl >/dev/null 2>&1; then
+        curl \
+            --fail \
+            --location \
+            --retry 3 \
+            --retry-delay 2 \
+            --connect-timeout 30 \
+            --output "$temporary" \
+            "$url"
+    elif command -v wget >/dev/null 2>&1; then
+        wget \
+            --tries=3 \
+            --timeout=30 \
+            --output-document="$temporary" \
+            "$url"
+    else
+        echo "error: curl or wget is required to download pacman" >&2
+        return 1
+    fi
+
+    if [ ! -s "$temporary" ]; then
+        echo "error: downloaded empty file: $url" >&2
+        rm -f "$temporary"
+        return 1
+    fi
+
+    mv -f "$temporary" "$destination"
+}
+
+install_pacman() {
+    pacman_bin="$OUT_DIR/bin/pacman"
+
+    if [ -e "$pacman_bin" ]; then
+        echo "pacman is already installed: $pacman_bin"
+        return 0
+    fi
+
+    echo "installing Arch Linux ARM pacman..."
+    echo "  version: $PACMAN_VERSION"
+    echo "  source:  $PACMAN_URL"
+
+    mkdir -p "$PACMAN_CACHE_DIR" "$OUT_ROOT"
+
+    if [ -s "$PACMAN_ARCHIVE" ]; then
+        echo "using cached pacman package: $PACMAN_ARCHIVE"
+    else
+        echo "downloading pacman package..."
+        download_file "$PACMAN_URL" "$PACMAN_ARCHIVE"
+    fi
+
+    echo "checking pacman package..."
+
+    if ! tar -tf "$PACMAN_ARCHIVE" | grep -q '^\(\./\)\?usr/bin/pacman$'; then
+        echo "error: archive does not contain usr/bin/pacman: $PACMAN_ARCHIVE" >&2
+        echo "error: remove the cached archive and retry if it is corrupted" >&2
+        exit 1
+    fi
+
+    echo "extracting pacman into $OUT_ROOT..."
+
+    if ! tar -xf "$PACMAN_ARCHIVE" -C "$OUT_ROOT"; then
+        echo "error: failed to extract pacman package: $PACMAN_ARCHIVE" >&2
+        exit 1
+    fi
+
+    if [ ! -e "$pacman_bin" ]; then
+        echo "error: pacman was not installed at: $pacman_bin" >&2
+        exit 1
+    fi
+
+    chmod +x "$pacman_bin"
+
+    echo "pacman installed: $pacman_bin"
+}
+
 cd "$ROOT"
 
 chmod +x "$ROOT/scripts/build-shims.sh"
@@ -72,20 +162,31 @@ else
         binutils-glibc \
         findutils-glibc \
         ncurses-utils-glibc \
+        xz-utils-glibc \
+        libseccomp-glibc \
         ca-certificates-glibc \
         clang-glibc \
-        llvm-glibc \
         cmake-glibc \
         make-glibc
 
     echo "requested packages:"
     printf '  %s\n' "$@"
 
-    "$ROOT/scripts/glibc.sh" --install --keep-symlinks --out "$OUT_DIR" "$@"
+    "$ROOT/scripts/glibc.sh" \
+        --install \
+        --keep-symlinks \
+        --out "$OUT_DIR" \
+        "$@"
 
     echo "checking required downloaded roots..."
+
     for pkg in "$@"; do
-        filename="$(jq -r --arg p "$pkg" '.[$p].FILENAME // empty' "$ROOT/gpkg-cache/gpkg.json")"
+        filename="$(
+            jq -r \
+                --arg p "$pkg" \
+                '.[$p].FILENAME // empty' \
+                "$ROOT/gpkg-cache/gpkg.json"
+        )"
 
         if [ -z "$filename" ]; then
             echo "error: package missing from gpkg.json: $pkg" >&2
@@ -99,19 +200,40 @@ else
     done
 fi
 
+install_pacman
+
 "$ROOT/scripts/build-shims.sh"
 
 echo "checking required binaries..."
+
 require_bin() {
     name="$1"
+
     if [ -e "$OUT_DIR/bin/$name" ]; then
         return 0
     fi
+
     echo "error: missing required bin: $OUT_DIR/bin/$name" >&2
     exit 1
 }
 
-for bin in ls mkdir cp rm cat chmod chown ln sh bash make cmake ar ranlib; do
+for bin in \
+    ls \
+    mkdir \
+    cp \
+    rm \
+    cat \
+    chmod \
+    chown \
+    ln \
+    sh \
+    bash \
+    make \
+    cmake \
+    ar \
+    ranlib \
+    pacman
+do
     require_bin "$bin"
 done
 
@@ -198,12 +320,17 @@ relative_path_from_dir() {
     done
 
     up=""
+
     while [ -n "$from" ]; do
         up="../$up"
 
         case "$from" in
-            */*) from="${from#*/}" ;;
-            *) from="" ;;
+            */*)
+                from="${from#*/}"
+                ;;
+            *)
+                from=""
+                ;;
         esac
     done
 
@@ -215,25 +342,32 @@ map_abs_target_to_out_rel() {
 
     case "$abs" in
         /data/data/com.termux/files/usr/glibc/*)
-            printf 'usr/%s\n' "${abs#/data/data/com.termux/files/usr/glibc/}"
+            printf 'usr/%s\n' \
+                "${abs#/data/data/com.termux/files/usr/glibc/}"
             ;;
         /data/data/com.termux/files/usr/bin/*)
-            printf 'usr/bin/%s\n' "${abs#/data/data/com.termux/files/usr/bin/}"
+            printf 'usr/bin/%s\n' \
+                "${abs#/data/data/com.termux/files/usr/bin/}"
             ;;
         /data/data/com.termux/files/usr/lib/*)
-            printf 'usr/lib/%s\n' "${abs#/data/data/com.termux/files/usr/lib/}"
+            printf 'usr/lib/%s\n' \
+                "${abs#/data/data/com.termux/files/usr/lib/}"
             ;;
         /data/data/com.termux/files/usr/include/*)
-            printf 'usr/include/%s\n' "${abs#/data/data/com.termux/files/usr/include/}"
+            printf 'usr/include/%s\n' \
+                "${abs#/data/data/com.termux/files/usr/include/}"
             ;;
         /data/data/com.termux/files/usr/share/*)
-            printf 'usr/share/%s\n' "${abs#/data/data/com.termux/files/usr/share/}"
+            printf 'usr/share/%s\n' \
+                "${abs#/data/data/com.termux/files/usr/share/}"
             ;;
         /data/data/com.termux/files/usr/etc/*)
-            printf 'usr/etc/%s\n' "${abs#/data/data/com.termux/files/usr/etc/}"
+            printf 'usr/etc/%s\n' \
+                "${abs#/data/data/com.termux/files/usr/etc/}"
             ;;
         /data/data/com.termux/files/usr/libexec/*)
-            printf 'usr/libexec/%s\n' "${abs#/data/data/com.termux/files/usr/libexec/}"
+            printf 'usr/libexec/%s\n' \
+                "${abs#/data/data/com.termux/files/usr/libexec/}"
             ;;
         *)
             return 1
@@ -249,8 +383,12 @@ find_final_target_for_symlink() {
 
     case "$raw_target" in
         /*)
-            target_rel="$(map_abs_target_to_out_rel "$raw_target" 2>/dev/null)" || {
-                echo "warning: skipping external symlink target: $link_rel -> $raw_target" >&2
+            target_rel="$(
+                map_abs_target_to_out_rel "$raw_target" 2>/dev/null
+            )" || {
+                echo \
+                    "warning: skipping external symlink target: $link_rel -> $raw_target" \
+                    >&2
                 return 1
             }
             ;;
@@ -258,7 +396,9 @@ find_final_target_for_symlink() {
             if [ "$link_dir_rel" = "." ]; then
                 target_rel="$(normalize_rel_path "$raw_target")"
             else
-                target_rel="$(normalize_rel_path "$link_dir_rel/$raw_target")"
+                target_rel="$(
+                    normalize_rel_path "$link_dir_rel/$raw_target"
+                )"
             fi
             ;;
     esac
@@ -266,7 +406,9 @@ find_final_target_for_symlink() {
     target_abs="$OUT_ROOT/$target_rel"
 
     if [ ! -e "$target_abs" ] && [ ! -L "$target_abs" ]; then
-        echo "warning: skipping missing symlink target: $link_rel -> $raw_target resolved=$target_rel" >&2
+        echo \
+            "warning: skipping missing symlink target: $link_rel -> $raw_target resolved=$target_rel" \
+            >&2
         return 1
     fi
 
@@ -279,12 +421,14 @@ find "$OUT_DIR" -type l | sort | while IFS= read -r link; do
     rel="${link#"$out_prefix"}"
     raw_target="$(readlink "$link")"
 
-    target="$(find_final_target_for_symlink "$rel" "$raw_target")" || continue
+    target="$(find_final_target_for_symlink "$rel" "$raw_target")" ||
+        continue
 
     printf '%s\t%s\n' "$rel" "$target" >> "$SYMLINK_MANIFEST"
 done
 
-# disable macOS copyfile metadata to avoid "xattrs not supported" errors when extracting the tar on Linux
+# Disable macOS copyfile metadata to avoid "xattrs not supported"
+# errors when extracting the tar on Linux.
 export COPYFILE_DISABLE=1
 
 TAR_LIST="$ROOT/.glibc-tar-files.$$"
@@ -293,12 +437,22 @@ ASSETS_TMP="$ASSETS_TAR_ZST.tmp.$$"
 cleanup_archive() {
     rm -f "$TAR_LIST" "$ASSETS_TMP"
 }
+
 trap cleanup_archive EXIT HUP INT TERM
 
 find glibc -type f -print | LC_ALL=C sort > "$TAR_LIST"
 
-tar --no-xattrs --disable-copyfile -cf - -T "$TAR_LIST" | \
-zstd -19 -T0 --long=30 -f -o "$ASSETS_TMP"
+tar \
+    --no-xattrs \
+    --disable-copyfile \
+    -cf - \
+    -T "$TAR_LIST" |
+    zstd \
+        -19 \
+        -T0 \
+        --long=30 \
+        -f \
+        -o "$ASSETS_TMP"
 
 mv -f "$ASSETS_TMP" "$ASSETS_TAR_ZST"
 

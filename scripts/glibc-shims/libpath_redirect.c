@@ -3,57 +3,46 @@
 
 #include "exec_wrap.h"
 
+#include <dlfcn.h>
+#include <dirent.h>
+#include <elf.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include <stddef.h>
+#include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dlfcn.h>
-#include <pthread.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <stdarg.h>
-#include <unistd.h>
-#include <errno.h>
-#include <dirent.h>
-#include <sys/syscall.h>
 #include <sys/auxv.h>
 #include <sys/inotify.h>
-#include <elf.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/xattr.h>
+#include <sys/stat.h>
+#include <sys/statfs.h>
+#include <sys/statvfs.h>
+#include <sys/syscall.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+#include <utime.h>
 
-/*
- * libpath_redirect.c
- *
- * LD_PRELOAD shim for running glibc/JDK tooling in an Android app-private
- * filesystem layout.
- *
- * Redirects:
- *   /tmp and /tmp/...                      -> $TMPDIR
- *   /data/data/com.termux/files/usr/glibc[/...]
- *       -> $APP_FILES_DIR/usr[/...]
- *   /data/data/com.termux/files[/...]
- *       -> $APP_FILES_DIR[/...]
- *   any path ending in /etc/resolv.conf    -> $RESOLV_CONF_PATH
- *   any path ending in /etc/hosts          -> $HOSTS_PATH
- *   any path ending in /etc/nsswitch.conf  -> $NSSWITCH_CONF_PATH
- *   any path ending in /etc/gai.conf       -> $GAI_CONF_PATH
- *
- * The suffix matching is intentional: some glibc/Termux-derived builds are
- * configured with sysconfdir paths such as
- * /data/data/com.termux/usr/etc/resolv.conf instead of literal /etc/resolv.conf.
- *
- * Also spoofs selected stat fields for hsperfdata_* paths so HotSpot's
- * perfdata security checks accept an app-private/custom TMPDIR.
- *
- * Build:
- *   gcc -shared -fPIC -O2 -Wall -Wextra \
- *       -o libpath_redirect.so libpath_redirect.c dns_fallback.c -ldl -pthread
- */
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 
-#define REDIR_BUF_SIZE 4096
+#define REDIR_BUF_SIZE PATH_MAX
 #define ARRAY_LEN(a) (sizeof(a) / sizeof((a)[0]))
 
+#define TERMUX_FILES_PREFIX   "/data/data/com.termux/files"
+#define TERMUX_GLIBC_PREFIX   "/data/data/com.termux/files/usr/glibc"
+#define APP_FILES_DIR_DEFAULT "/data/data/org.cosmicide/files/glibc"
+
 /* ------------------------------------------------------------------------- */
-/* Thread-safe RTLD_NEXT symbol cache                                         */
+/* RTLD_NEXT symbol lookup                                                    */
 /* ------------------------------------------------------------------------- */
 
 static void* lookup_next_symbol(const char* name) {
@@ -62,29 +51,31 @@ static void* lookup_next_symbol(const char* name) {
 }
 
 static void require_symbol_or_abort(const char* name, void* symbol) {
-    if (!symbol) {
-        fprintf(stderr, "tmpredir: failed to resolve symbol: %s\n", name);
-        abort();
-    }
+    if (symbol != NULL) return;
+    fprintf(stderr, "path_redirect: failed to resolve symbol: %s\n", name);
+    abort();
 }
 
 #define DECLARE_REAL_SYMBOL(sym)                                      \
     static void* real_##sym##_ptr = NULL;                             \
-    static pthread_once_t real_##sym##_once = PTHREAD_ONCE_INIT;       \
-    static void init_##sym(void) {                                     \
-        real_##sym##_ptr = lookup_next_symbol(#sym);                   \
+    static pthread_once_t real_##sym##_once = PTHREAD_ONCE_INIT;      \
+    static void init_##sym(void) {                                    \
+        real_##sym##_ptr = lookup_next_symbol(#sym);                  \
     }                                                                 \
-    static void* get_##sym(int required) {                             \
-        pthread_once(&real_##sym##_once, init_##sym);                  \
-        if (required) require_symbol_or_abort(#sym, real_##sym##_ptr); \
-        return real_##sym##_ptr;                                       \
+    static void* get_##sym(int required) {                            \
+        pthread_once(&real_##sym##_once, init_##sym);                 \
+        if (required) require_symbol_or_abort(#sym, real_##sym##_ptr);\
+        return real_##sym##_ptr;                                      \
     }
 
-#define REAL(sym, type) ((type) get_##sym(1))
-#define OPT_REAL(sym, type) ((type) get_##sym(0))
+#define REAL(sym, type) ((type)get_##sym(1))
+#define OPT_REAL(sym, type) ((type)get_##sym(0))
 
 DECLARE_REAL_SYMBOL(access)
+DECLARE_REAL_SYMBOL(bind)
+DECLARE_REAL_SYMBOL(connect)
 DECLARE_REAL_SYMBOL(canonicalize_file_name)
+DECLARE_REAL_SYMBOL(chdir)
 DECLARE_REAL_SYMBOL(chmod)
 DECLARE_REAL_SYMBOL(chown)
 DECLARE_REAL_SYMBOL(creat)
@@ -97,18 +88,29 @@ DECLARE_REAL_SYMBOL(fopen)
 DECLARE_REAL_SYMBOL(fopen64)
 DECLARE_REAL_SYMBOL(freopen)
 DECLARE_REAL_SYMBOL(freopen64)
-DECLARE_REAL_SYMBOL(getauxval)
 DECLARE_REAL_SYMBOL(fstat)
 DECLARE_REAL_SYMBOL(fstat64)
 DECLARE_REAL_SYMBOL(fstatat)
 DECLARE_REAL_SYMBOL(fstatat64)
+DECLARE_REAL_SYMBOL(futimesat)
+DECLARE_REAL_SYMBOL(getauxval)
+DECLARE_REAL_SYMBOL(getxattr)
+DECLARE_REAL_SYMBOL(lgetxattr)
+DECLARE_REAL_SYMBOL(listxattr)
+DECLARE_REAL_SYMBOL(llistxattr)
+DECLARE_REAL_SYMBOL(inotify_add_watch)
 DECLARE_REAL_SYMBOL(lchown)
 DECLARE_REAL_SYMBOL(link)
 DECLARE_REAL_SYMBOL(linkat)
 DECLARE_REAL_SYMBOL(lstat)
 DECLARE_REAL_SYMBOL(lstat64)
+DECLARE_REAL_SYMBOL(lutimes)
 DECLARE_REAL_SYMBOL(mkdir)
 DECLARE_REAL_SYMBOL(mkdirat)
+DECLARE_REAL_SYMBOL(mkfifo)
+DECLARE_REAL_SYMBOL(mkfifoat)
+DECLARE_REAL_SYMBOL(mknod)
+DECLARE_REAL_SYMBOL(mknodat)
 DECLARE_REAL_SYMBOL(open)
 DECLARE_REAL_SYMBOL(open64)
 DECLARE_REAL_SYMBOL(openat)
@@ -118,37 +120,73 @@ DECLARE_REAL_SYMBOL(readlink)
 DECLARE_REAL_SYMBOL(readlinkat)
 DECLARE_REAL_SYMBOL(realpath)
 DECLARE_REAL_SYMBOL(remove)
+DECLARE_REAL_SYMBOL(removexattr)
+DECLARE_REAL_SYMBOL(lremovexattr)
 DECLARE_REAL_SYMBOL(rename)
 DECLARE_REAL_SYMBOL(renameat)
 DECLARE_REAL_SYMBOL(renameat2)
 DECLARE_REAL_SYMBOL(rmdir)
+DECLARE_REAL_SYMBOL(scandir)
+DECLARE_REAL_SYMBOL(scandirat)
+DECLARE_REAL_SYMBOL(sendmsg)
+DECLARE_REAL_SYMBOL(sendto)
+DECLARE_REAL_SYMBOL(setxattr)
+DECLARE_REAL_SYMBOL(lsetxattr)
 DECLARE_REAL_SYMBOL(stat)
 DECLARE_REAL_SYMBOL(stat64)
+DECLARE_REAL_SYMBOL(statfs)
+DECLARE_REAL_SYMBOL(statfs64)
+DECLARE_REAL_SYMBOL(statvfs)
+DECLARE_REAL_SYMBOL(statvfs64)
 DECLARE_REAL_SYMBOL(statx)
+DECLARE_REAL_SYMBOL(syscall)
 DECLARE_REAL_SYMBOL(symlink)
 DECLARE_REAL_SYMBOL(symlinkat)
+DECLARE_REAL_SYMBOL(truncate)
+DECLARE_REAL_SYMBOL(truncate64)
 DECLARE_REAL_SYMBOL(unlink)
 DECLARE_REAL_SYMBOL(unlinkat)
-DECLARE_REAL_SYMBOL(syscall)
-DECLARE_REAL_SYMBOL(__rmdir)
-DECLARE_REAL_SYMBOL(__unlink)
-DECLARE_REAL_SYMBOL(__unlinkat)
+DECLARE_REAL_SYMBOL(utime)
+DECLARE_REAL_SYMBOL(utimensat)
+DECLARE_REAL_SYMBOL(utimes)
 DECLARE_REAL_SYMBOL(__fxstat)
 DECLARE_REAL_SYMBOL(__fxstat64)
 DECLARE_REAL_SYMBOL(__fxstatat)
 DECLARE_REAL_SYMBOL(__fxstatat64)
 DECLARE_REAL_SYMBOL(__lxstat)
 DECLARE_REAL_SYMBOL(__lxstat64)
+DECLARE_REAL_SYMBOL(__rmdir)
+DECLARE_REAL_SYMBOL(__unlink)
+DECLARE_REAL_SYMBOL(__unlinkat)
 DECLARE_REAL_SYMBOL(__xstat)
 DECLARE_REAL_SYMBOL(__xstat64)
-DECLARE_REAL_SYMBOL(inotify_add_watch)
+
+/* ------------------------------------------------------------------------- */
+/* Debugging                                                                  */
+/* ------------------------------------------------------------------------- */
+
+static int path_redirect_debug_enabled(void) {
+    const char* value = getenv("PATH_REDIRECT_DEBUG");
+    return value != NULL && value[0] != '\0' && strcmp(value, "0") != 0;
+}
+
+static void debug_redirect(const char* operation, const char* from, const char* to) {
+    if (!path_redirect_debug_enabled()) return;
+    if (from == NULL || to == NULL || strcmp(from, to) == 0) return;
+    fprintf(stderr, "path_redirect: %s %s -> %s\n", operation, from, to);
+}
+
+/* Kept for compatibility with the original implementation and its log labels. */
+static void debug_path_operation(const char* operation, const char* from, const char* to) {
+    debug_redirect(operation, from, to);
+}
 
 /* ------------------------------------------------------------------------- */
 /* Executable identity virtualization                                         */
 /* ------------------------------------------------------------------------- */
 
 static int is_current_process_exe_path(const char* path) {
-    if (!path || !*path) return 0;
+    if (path == NULL || path[0] == '\0') return 0;
 
     if (strcmp(path, "/proc/self/exe") == 0 ||
         strcmp(path, "/proc/thread-self/exe") == 0) {
@@ -163,33 +201,26 @@ static int is_current_process_exe_path(const char* path) {
     long pid = strtol(pid_start, &pid_end, 10);
     if (errno != 0 || pid_end == pid_start || pid <= 0) return 0;
     if (strcmp(pid_end, "/exe") != 0) return 0;
-
     return pid == (long)getpid();
 }
 
-static ssize_t copy_readlink_result(
-    const char* target,
-    char* out,
-    size_t out_size
-) {
-    if (!target) {
+static ssize_t copy_readlink_result(const char* target, char* out, size_t out_size) {
+    if (target == NULL) {
         errno = ENOENT;
+        return -1;
+    }
+    if (out == NULL) {
+        errno = EFAULT;
         return -1;
     }
     if (out_size == 0) {
         errno = EINVAL;
         return -1;
     }
-    if (!out) {
-        errno = EFAULT;
-        return -1;
-    }
 
     size_t target_len = strlen(target);
     size_t copy_len = target_len < out_size ? target_len : out_size;
     memcpy(out, target, copy_len);
-
-    /* readlink(2) intentionally does not append a terminating NUL byte. */
     return (ssize_t)copy_len;
 }
 
@@ -197,56 +228,51 @@ static pthread_once_t expected_loader_once = PTHREAD_ONCE_INIT;
 static char expected_loader_path[REDIR_BUF_SIZE];
 
 static void init_expected_loader_path(void) {
+    const char* configured_loader = getenv(EXEC_WRAP_LOADER_ENV);
+    if (configured_loader != NULL && configured_loader[0] == '/') {
+        snprintf(expected_loader_path, sizeof(expected_loader_path), "%s", configured_loader);
+        return;
+    }
+
     Dl_info info;
     memset(&info, 0, sizeof(info));
-
     if (dladdr((void*)&init_expected_loader_path, &info) == 0 ||
-        !info.dli_fname || !*info.dli_fname) {
+        info.dli_fname == NULL || info.dli_fname[0] == '\0') {
         return;
     }
 
     const char* slash = strrchr(info.dli_fname, '/');
-    if (!slash) return;
+    if (slash == NULL) return;
 
-    size_t dir_len = (size_t)(slash - info.dli_fname);
-    const char* loader_name = "/libld_linux.so";
-    size_t loader_len = strlen(loader_name);
+    size_t directory_len = (size_t)(slash - info.dli_fname);
+    const char loader_name[] = "/libld_linux.so";
+    if (directory_len + sizeof(loader_name) > sizeof(expected_loader_path)) return;
 
-    if (dir_len + loader_len + 1 > sizeof(expected_loader_path)) return;
-
-    memcpy(expected_loader_path, info.dli_fname, dir_len);
-    memcpy(expected_loader_path + dir_len, loader_name, loader_len + 1);
+    memcpy(expected_loader_path, info.dli_fname, directory_len);
+    memcpy(expected_loader_path + directory_len, loader_name, sizeof(loader_name));
 }
 
 static const char* active_executable_identity(void) {
     const char* executable = getenv(EXEC_WRAP_EXECUTABLE_ENV);
-    if (!executable || executable[0] != '/') return NULL;
+    if (executable == NULL || executable[0] != '/') return NULL;
 
     pthread_once(&expected_loader_once, init_expected_loader_path);
-    if (!expected_loader_path[0]) return NULL;
+    if (expected_loader_path[0] == '\0') return NULL;
 
-    /*
-     * COSMIC_EXECUTABLE is inherited, so only trust it while the kernel still
-     * reports our bundled loader as the current executable. The loader path is
-     * derived from this shim's own directory instead of requiring another
-     * environment variable.
-     */
-    ssize_t (*real_readlink)(const char*, char*, size_t) =
+    ssize_t (*real_readlink_fn)(const char*, char*, size_t) =
         REAL(readlink, ssize_t (*)(const char*, char*, size_t));
 
     char actual[REDIR_BUF_SIZE];
-    ssize_t count = real_readlink("/proc/self/exe", actual, sizeof(actual) - 1);
+    ssize_t count = real_readlink_fn("/proc/self/exe", actual, sizeof(actual) - 1);
     if (count <= 0 || (size_t)count >= sizeof(actual)) return NULL;
-
     actual[count] = '\0';
-    if (strcmp(actual, expected_loader_path) != 0) return NULL;
 
+    if (strcmp(actual, expected_loader_path) != 0) return NULL;
     return executable;
 }
 
 static const char* executable_identity_for_path(const char* path) {
-    if (!is_current_process_exe_path(path)) return NULL;
-    return active_executable_identity();
+    return is_current_process_exe_path(path) ? active_executable_identity() : NULL;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -255,344 +281,542 @@ static const char* executable_identity_for_path(const char* path) {
 
 typedef struct {
     const char* suffix;
-    const char* env;
+    const char* environment;
 } suffix_redirect_t;
 
-#define TERMUX_FILES_PREFIX       "/data/data/com.termux/files"
-#define TERMUX_GLIBC_PREFIX       "/data/data/com.termux/files/usr/glibc"
-#define APP_FILES_DIR_DEFAULT     "/data/data/org.cosmicide/files/glibc"
-
 static const suffix_redirect_t suffix_redirects[] = {
-    { "/etc/resolv.conf",   "RESOLV_CONF_PATH"   },
-    { "/etc/hosts",         "HOSTS_PATH"         },
+    { "/etc/resolv.conf",   "RESOLV_CONF_PATH" },
+    { "/etc/hosts",         "HOSTS_PATH" },
     { "/etc/nsswitch.conf", "NSSWITCH_CONF_PATH" },
-    { "/etc/gai.conf",      "GAI_CONF_PATH"      },
+    { "/etc/gai.conf",      "GAI_CONF_PATH" },
 };
 
-static int path_ends_with(const char* path, const char* suffix) {
-    if (!path || !suffix) return 0;
-
-    size_t path_len = strlen(path);
-    size_t suffix_len = strlen(suffix);
-
-    if (path_len < suffix_len) return 0;
-    return strcmp(path + path_len - suffix_len, suffix) == 0;
+static const char* app_files_dir(void) {
+    const char* value = getenv("APP_FILES_DIR");
+    return value != NULL && value[0] != '\0' ? value : APP_FILES_DIR_DEFAULT;
 }
 
 static int path_starts_with_component(const char* path, const char* prefix) {
-    if (!path || !prefix) return 0;
+    if (path == NULL || prefix == NULL) return 0;
+    size_t length = strlen(prefix);
+    if (strncmp(path, prefix, length) != 0) return 0;
+    return path[length] == '\0' || path[length] == '/';
+}
 
-    size_t prefix_len = strlen(prefix);
-    if (strncmp(path, prefix, prefix_len) != 0) return 0;
-
-    return path[prefix_len] == '\0' || path[prefix_len] == '/';
+static int path_ends_with(const char* path, const char* suffix) {
+    if (path == NULL || suffix == NULL) return 0;
+    size_t path_length = strlen(path);
+    size_t suffix_length = strlen(suffix);
+    return path_length >= suffix_length &&
+           strcmp(path + path_length - suffix_length, suffix) == 0;
 }
 
 static const char* redirect_prefix_path(
     const char* path,
-    const char* from_prefix,
-    const char* to_prefix,
+    const char* source_prefix,
+    const char* destination_prefix,
     char* buffer,
     size_t buffer_size
 ) {
-    const char* rest = path + strlen(from_prefix);
-
-    if (*rest == '\0') {
-        snprintf(buffer, buffer_size, "%s", to_prefix);
-    } else {
-        size_t to_len = strlen(to_prefix);
-        snprintf(
-            buffer,
-            buffer_size,
-            to_len > 0 && to_prefix[to_len - 1] == '/' ? "%s%s" : "%s%s",
-            to_prefix,
-            to_len > 0 && to_prefix[to_len - 1] == '/' && rest[0] == '/' ? rest + 1 : rest
-        );
+    const char* remainder = path + strlen(source_prefix);
+    int result = snprintf(buffer, buffer_size, "%s%s", destination_prefix, remainder);
+    if (result < 0 || (size_t)result >= buffer_size) {
+        errno = ENAMETOOLONG;
+        return NULL;
     }
-
     return buffer;
 }
 
-static int path_redirect_debug_enabled(void) {
-    const char* v = getenv("PATH_REDIRECT_DEBUG");
-    return v && *v && strcmp(v, "0") != 0;
+static const char* redirect_virtual_root(
+    const char* path,
+    const char* virtual_prefix,
+    const char* physical_suffix,
+    char* buffer,
+    size_t buffer_size
+) {
+    char physical_prefix[REDIR_BUF_SIZE];
+    int result = snprintf(
+        physical_prefix,
+        sizeof(physical_prefix),
+        "%s%s",
+        app_files_dir(),
+        physical_suffix
+    );
+    if (result < 0 || (size_t)result >= sizeof(physical_prefix)) {
+        errno = ENAMETOOLONG;
+        return NULL;
+    }
+    return redirect_prefix_path(path, virtual_prefix, physical_prefix, buffer, buffer_size);
 }
-
-static void debug_redirect(const char* from, const char* to, const char* env) {
-    if (!path_redirect_debug_enabled()) return;
-    fprintf(stderr, "path_redirect: %s -> %s via %s\n", from, to ? to : "(null)", env);
-}
-
-static void debug_path_operation(const char* operation, const char* from, const char* to) {
-    if (!path_redirect_debug_enabled()) return;
-    if (!from || !to || strcmp(from, to) == 0) return;
-    fprintf(stderr, "path_redirect: %s %s -> %s\n", operation, from, to);
-}
-
 
 static const char* redirect_path(const char* path, char* buffer, size_t buffer_size) {
-    if (!path) return path;
+    if (path == NULL || path[0] == '\0' || path[0] != '/') return path;
 
-    for (size_t i = 0; i < ARRAY_LEN(suffix_redirects); i++) {
-        if (path_ends_with(path, suffix_redirects[i].suffix)) {
-            const char* replacement = getenv(suffix_redirects[i].env);
-            if (replacement && *replacement) {
-                debug_redirect(path, replacement, suffix_redirects[i].env);
-                snprintf(buffer, buffer_size, "%s", replacement);
-                return buffer;
-            }
-            return path;
+    /* Never redirect an already-physical app path a second time. */
+    if (path_starts_with_component(path, app_files_dir())) return path;
+
+    /* Special config files override the generic /etc mapping. */
+    for (size_t i = 0; i < ARRAY_LEN(suffix_redirects); ++i) {
+        if (!path_ends_with(path, suffix_redirects[i].suffix)) continue;
+        const char* replacement = getenv(suffix_redirects[i].environment);
+        if (replacement == NULL || replacement[0] == '\0') break;
+        int result = snprintf(buffer, buffer_size, "%s", replacement);
+        if (result < 0 || (size_t)result >= buffer_size) {
+            errno = ENAMETOOLONG;
+            return NULL;
         }
+        debug_redirect("config", path, buffer);
+        return buffer;
     }
 
     if (path_starts_with_component(path, TERMUX_GLIBC_PREFIX)) {
-        const char* app_files_dir = getenv("APP_FILES_DIR");
-        if (!app_files_dir || !*app_files_dir) {
-            app_files_dir = APP_FILES_DIR_DEFAULT;
-        }
-
-        char usr_prefix[REDIR_BUF_SIZE];
-        snprintf(usr_prefix, sizeof(usr_prefix), "%s/usr", app_files_dir);
-
-        redirect_prefix_path(
+        const char* redirected = redirect_virtual_root(
             path,
             TERMUX_GLIBC_PREFIX,
-            usr_prefix,
+            "/usr",
             buffer,
             buffer_size
         );
-        debug_redirect(path, buffer, "APP_FILES_DIR usr/glibc flatten");
-        return buffer;
+        debug_redirect("termux-glibc", path, redirected);
+        return redirected;
     }
 
     if (path_starts_with_component(path, TERMUX_FILES_PREFIX)) {
-        const char* app_files_dir = getenv("APP_FILES_DIR");
-        if (!app_files_dir || !*app_files_dir) {
-            app_files_dir = APP_FILES_DIR_DEFAULT;
-        }
-
-        redirect_prefix_path(
+        const char* redirected = redirect_prefix_path(
             path,
             TERMUX_FILES_PREFIX,
-            app_files_dir,
+            app_files_dir(),
             buffer,
             buffer_size
         );
-        debug_redirect(path, buffer, "APP_FILES_DIR");
-        return buffer;
+        debug_redirect("termux", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/etc")) {
+        const char* redirected = redirect_virtual_root(path, "/etc", "/usr/etc", buffer, buffer_size);
+        debug_redirect("etc", path, redirected);
+        return redirected;
+    }
+
+    /* Avoid absolute /var/run -> /run and /var/lock -> /run/lock symlinks. */
+    if (path_starts_with_component(path, "/var/run")) {
+        const char* redirected = redirect_virtual_root(path, "/var/run", "/usr/run", buffer, buffer_size);
+        debug_redirect("var-run", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/var/lock")) {
+        const char* redirected = redirect_virtual_root(path, "/var/lock", "/usr/run/lock", buffer, buffer_size);
+        debug_redirect("var-lock", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/var")) {
+        const char* redirected = redirect_virtual_root(path, "/var", "/usr/var", buffer, buffer_size);
+        debug_redirect("var", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/run")) {
+        const char* redirected = redirect_virtual_root(path, "/run", "/usr/run", buffer, buffer_size);
+        debug_redirect("run", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/usr")) {
+        const char* redirected = redirect_virtual_root(path, "/usr", "/usr", buffer, buffer_size);
+        debug_redirect("usr", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/bin")) {
+        const char* redirected = redirect_virtual_root(path, "/bin", "/usr/bin", buffer, buffer_size);
+        debug_redirect("bin", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/sbin")) {
+        const char* redirected = redirect_virtual_root(path, "/sbin", "/usr/sbin", buffer, buffer_size);
+        debug_redirect("sbin", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/lib64")) {
+        const char* redirected = redirect_virtual_root(path, "/lib64", "/lib64", buffer, buffer_size);
+        debug_redirect("lib64", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/lib")) {
+        const char* redirected = redirect_virtual_root(path, "/lib", "/lib", buffer, buffer_size);
+        debug_redirect("lib", path, redirected);
+        return redirected;
     }
 
     const char* tmpdir = getenv("TMPDIR");
-    if (!tmpdir || !*tmpdir) return path;
-
-    if (strcmp(path, "/tmp") == 0) {
-        snprintf(buffer, buffer_size, "%s", tmpdir);
-        debug_redirect(path, buffer, "TMPDIR");
-        return buffer;
-    }
-
-    if (strncmp(path, "/tmp/", 5) == 0) {
-        size_t len = strlen(tmpdir);
-        snprintf(
-            buffer,
-            buffer_size,
-            len > 0 && tmpdir[len - 1] == '/' ? "%s%s" : "%s/%s",
-            tmpdir,
-            path + 5
-        );
-        debug_redirect(path, buffer, "TMPDIR");
-        return buffer;
+    if (tmpdir != NULL && tmpdir[0] != '\0' && path_starts_with_component(path, "/tmp")) {
+        const char* redirected = redirect_prefix_path(path, "/tmp", tmpdir, buffer, buffer_size);
+        debug_redirect("tmp", path, redirected);
+        return redirected;
     }
 
     return path;
 }
 
-static inline int should_redirect_at(int dirfd, const char* path) {
-    return path && (path[0] == '/' || dirfd == AT_FDCWD);
+static int read_dirfd_path(int dirfd, char* buffer, size_t buffer_size) {
+    if (dirfd == AT_FDCWD || buffer == NULL || buffer_size < 2) return 0;
+
+    char proc_path[64];
+    int count = snprintf(proc_path, sizeof(proc_path), "/proc/self/fd/%d", dirfd);
+    if (count < 0 || (size_t)count >= sizeof(proc_path)) return 0;
+
+    ssize_t (*real_readlink_fn)(const char*, char*, size_t) =
+        REAL(readlink, ssize_t (*)(const char*, char*, size_t));
+    ssize_t length = real_readlink_fn(proc_path, buffer, buffer_size - 1);
+    if (length <= 0 || (size_t)length >= buffer_size) return 0;
+    buffer[length] = '\0';
+
+    static const char deleted_suffix[] = " (deleted)";
+    size_t path_length = (size_t)length;
+    size_t suffix_length = sizeof(deleted_suffix) - 1;
+    if (path_length >= suffix_length &&
+        strcmp(buffer + path_length - suffix_length, deleted_suffix) == 0) {
+        buffer[path_length - suffix_length] = '\0';
+    }
+    return buffer[0] == '/';
 }
 
-static inline const char* redirect_at_path(
+static int dirfd_path_can_contain_virtual_root(const char* path) {
+    if (path == NULL || path[0] != '/') return 0;
+    if (strcmp(path, "/") == 0) return 1;
+    if (path_starts_with_component(path, "/etc")) return 1;
+    if (path_starts_with_component(path, "/var")) return 1;
+    if (path_starts_with_component(path, "/run")) return 1;
+    if (path_starts_with_component(path, "/usr")) return 1;
+    if (path_starts_with_component(path, "/bin")) return 1;
+    if (path_starts_with_component(path, "/sbin")) return 1;
+    if (path_starts_with_component(path, "/lib")) return 1;
+    if (path_starts_with_component(path, "/lib64")) return 1;
+    if (path_starts_with_component(path, "/tmp")) return 1;
+    if (path_starts_with_component(path, TERMUX_FILES_PREFIX)) return 1;
+    return 0;
+}
+
+static const char* redirect_at_path(
     int dirfd,
     const char* path,
     char* buffer,
     size_t buffer_size
 ) {
-    return should_redirect_at(dirfd, path)
-        ? redirect_path(path, buffer, buffer_size)
-        : path;
+    if (path == NULL || path[0] == '\0') return path;
+    if (path[0] == '/') return redirect_path(path, buffer, buffer_size);
+    if (dirfd == AT_FDCWD) return path;
+
+    char directory[REDIR_BUF_SIZE];
+    if (!read_dirfd_path(dirfd, directory, sizeof(directory))) return path;
+
+    /* A relative path below an already redirected physical directory is fine. */
+    if (path_starts_with_component(directory, app_files_dir())) return path;
+    if (!dirfd_path_can_contain_virtual_root(directory)) return path;
+
+    char absolute[REDIR_BUF_SIZE];
+    int result;
+    if (strcmp(directory, "/") == 0) {
+        result = snprintf(absolute, sizeof(absolute), "/%s", path);
+    } else {
+        result = snprintf(absolute, sizeof(absolute), "%s/%s", directory, path);
+    }
+    if (result < 0 || (size_t)result >= sizeof(absolute)) {
+        errno = ENAMETOOLONG;
+        return NULL;
+    }
+
+    const char* redirected = redirect_path(absolute, buffer, buffer_size);
+    debug_redirect("dirfd-relative", absolute, redirected);
+    return redirected;
+}
+
+static const struct sockaddr* redirect_unix_socket_address(
+    const struct sockaddr* address,
+    socklen_t address_length,
+    struct sockaddr_un* redirected_address,
+    socklen_t* redirected_length,
+    char* path_buffer,
+    size_t path_buffer_size
+) {
+    if (redirected_length != NULL) *redirected_length = address_length;
+    if (address == NULL || address->sa_family != AF_UNIX) return address;
+
+    const size_t path_offset = offsetof(struct sockaddr_un, sun_path);
+    if ((size_t)address_length <= path_offset) return address;
+
+    const struct sockaddr_un* unix_address = (const struct sockaddr_un*)address;
+    size_t available = (size_t)address_length - path_offset;
+    if (available > sizeof(unix_address->sun_path)) available = sizeof(unix_address->sun_path);
+    if (available == 0 || unix_address->sun_path[0] == '\0') {
+        /* Linux abstract-namespace socket: it is not a filesystem path. */
+        return address;
+    }
+
+    size_t original_length = strnlen(unix_address->sun_path, available);
+    if (original_length == available && available == sizeof(unix_address->sun_path)) {
+        errno = ENAMETOOLONG;
+        return NULL;
+    }
+
+    char original_path[sizeof(unix_address->sun_path) + 1];
+    memcpy(original_path, unix_address->sun_path, original_length);
+    original_path[original_length] = '\0';
+
+    const char* redirected_path = redirect_path(
+        original_path,
+        path_buffer,
+        path_buffer_size
+    );
+    if (redirected_path == NULL) return NULL;
+    if (redirected_path == original_path || strcmp(redirected_path, original_path) == 0) {
+        return address;
+    }
+
+    size_t redirected_path_length = strlen(redirected_path);
+    if (redirected_path_length >= sizeof(redirected_address->sun_path)) {
+        errno = ENAMETOOLONG;
+        return NULL;
+    }
+
+    memset(redirected_address, 0, sizeof(*redirected_address));
+    redirected_address->sun_family = AF_UNIX;
+    memcpy(redirected_address->sun_path, redirected_path, redirected_path_length + 1);
+    if (redirected_length != NULL) {
+        *redirected_length = (socklen_t)(path_offset + redirected_path_length + 1);
+    }
+    debug_redirect("unix-socket", original_path, redirected_path);
+    return (const struct sockaddr*)redirected_address;
 }
 
 /* ------------------------------------------------------------------------- */
-/* HotSpot hsperfdata stat spoofing                                           */
+/* Unix-domain socket path wrappers                                           */
+/* ------------------------------------------------------------------------- */
+
+int connect(int socket_fd, const struct sockaddr* address, socklen_t address_length) {
+    int (*fn)(int, const struct sockaddr*, socklen_t) =
+        REAL(connect, int (*)(int, const struct sockaddr*, socklen_t));
+    struct sockaddr_un redirected_address;
+    socklen_t redirected_length = address_length;
+    char path_buffer[REDIR_BUF_SIZE];
+    const struct sockaddr* redirected = redirect_unix_socket_address(
+        address,
+        address_length,
+        &redirected_address,
+        &redirected_length,
+        path_buffer,
+        sizeof(path_buffer)
+    );
+    if (redirected == NULL) return -1;
+    return fn(socket_fd, redirected, redirected_length);
+}
+
+int bind(int socket_fd, const struct sockaddr* address, socklen_t address_length) {
+    int (*fn)(int, const struct sockaddr*, socklen_t) =
+        REAL(bind, int (*)(int, const struct sockaddr*, socklen_t));
+    struct sockaddr_un redirected_address;
+    socklen_t redirected_length = address_length;
+    char path_buffer[REDIR_BUF_SIZE];
+    const struct sockaddr* redirected = redirect_unix_socket_address(
+        address,
+        address_length,
+        &redirected_address,
+        &redirected_length,
+        path_buffer,
+        sizeof(path_buffer)
+    );
+    if (redirected == NULL) return -1;
+    return fn(socket_fd, redirected, redirected_length);
+}
+
+ssize_t sendto(
+    int socket_fd,
+    const void* data,
+    size_t data_length,
+    int flags,
+    const struct sockaddr* destination,
+    socklen_t destination_length
+) {
+    ssize_t (*fn)(int, const void*, size_t, int, const struct sockaddr*, socklen_t) =
+        REAL(sendto, ssize_t (*)(int, const void*, size_t, int, const struct sockaddr*, socklen_t));
+    struct sockaddr_un redirected_address;
+    socklen_t redirected_length = destination_length;
+    char path_buffer[REDIR_BUF_SIZE];
+    const struct sockaddr* redirected = redirect_unix_socket_address(
+        destination,
+        destination_length,
+        &redirected_address,
+        &redirected_length,
+        path_buffer,
+        sizeof(path_buffer)
+    );
+    if (redirected == NULL) return -1;
+    return fn(socket_fd, data, data_length, flags, redirected, redirected_length);
+}
+
+ssize_t sendmsg(int socket_fd, const struct msghdr* message, int flags) {
+    ssize_t (*fn)(int, const struct msghdr*, int) =
+        REAL(sendmsg, ssize_t (*)(int, const struct msghdr*, int));
+    if (message == NULL || message->msg_name == NULL) return fn(socket_fd, message, flags);
+
+    struct sockaddr_un redirected_address;
+    socklen_t redirected_length = (socklen_t)message->msg_namelen;
+    char path_buffer[REDIR_BUF_SIZE];
+    const struct sockaddr* redirected = redirect_unix_socket_address(
+        (const struct sockaddr*)message->msg_name,
+        (socklen_t)message->msg_namelen,
+        &redirected_address,
+        &redirected_length,
+        path_buffer,
+        sizeof(path_buffer)
+    );
+    if (redirected == NULL) return -1;
+    if (redirected == (const struct sockaddr*)message->msg_name) {
+        return fn(socket_fd, message, flags);
+    }
+
+    struct msghdr redirected_message = *message;
+    redirected_message.msg_name = (void*)redirected;
+    redirected_message.msg_namelen = redirected_length;
+    return fn(socket_fd, &redirected_message, flags);
+}
+
+/* ------------------------------------------------------------------------- */
+/* HotSpot hsperfdata compatibility                                           */
 /* ------------------------------------------------------------------------- */
 
 static int is_perf_path(const char* path) {
-    return path && strstr(path, "hsperfdata_") != NULL;
+    return path != NULL && strstr(path, "hsperfdata_") != NULL;
 }
 
-static int is_perf_path_either(const char* a, const char* b) {
-    return is_perf_path(a) || is_perf_path(b);
+static int is_perf_path_either(const char* original, const char* redirected) {
+    return is_perf_path(original) || is_perf_path(redirected);
+}
+
+static int fd_points_to_perf_data(int fd) {
+    char proc_path[64];
+    char target[REDIR_BUF_SIZE];
+    snprintf(proc_path, sizeof(proc_path), "/proc/self/fd/%d", fd);
+
+    ssize_t (*real_readlink_fn)(const char*, char*, size_t) =
+        REAL(readlink, ssize_t (*)(const char*, char*, size_t));
+    ssize_t length = real_readlink_fn(proc_path, target, sizeof(target) - 1);
+    if (length <= 0 || (size_t)length >= sizeof(target)) return 0;
+    target[length] = '\0';
+    return is_perf_path(target);
 }
 
 static void spoof_stat_if_perf_data(struct stat* st) {
-    if (!st) return;
-
+    if (st == NULL) return;
     st->st_uid = geteuid();
-
-    if (S_ISDIR(st->st_mode)) {
-        st->st_mode &= ~(S_IWGRP | S_IWOTH);
-    } else if (S_ISREG(st->st_mode)) {
-        st->st_mode &= ~(S_IWGRP | S_IWOTH);
-        st->st_nlink = 1;
-    }
-}
-
-static void spoof_statx_if_perf_data(struct statx* st) {
-    if (!st) return;
-
-    st->stx_uid = geteuid();
-
-    if (S_ISDIR(st->stx_mode)) {
-        st->stx_mode &= ~(S_IWGRP | S_IWOTH);
-    } else if (S_ISREG(st->stx_mode)) {
-        st->stx_mode &= ~(S_IWGRP | S_IWOTH);
-        st->stx_nlink = 1;
-    }
+    st->st_mode &= ~(S_IWGRP | S_IWOTH);
+    if (S_ISREG(st->st_mode)) st->st_nlink = 1;
 }
 
 #if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
 static void spoof_stat64_if_perf_data(struct stat64* st) {
-    if (!st) return;
-
+    if (st == NULL) return;
     st->st_uid = geteuid();
+    st->st_mode &= ~(S_IWGRP | S_IWOTH);
+    if (S_ISREG(st->st_mode)) st->st_nlink = 1;
+}
+#endif
 
-    if (S_ISDIR(st->st_mode)) {
-        st->st_mode &= ~(S_IWGRP | S_IWOTH);
-    } else if (S_ISREG(st->st_mode)) {
-        st->st_mode &= ~(S_IWGRP | S_IWOTH);
-        st->st_nlink = 1;
+static void spoof_statx_if_perf_data(struct statx* st) {
+    if (st == NULL) return;
+    st->stx_uid = geteuid();
+    st->stx_mode &= (uint16_t)~(S_IWGRP | S_IWOTH);
+    if ((st->stx_mode & S_IFMT) == S_IFREG) st->stx_nlink = 1;
+}
+
+/* ------------------------------------------------------------------------- */
+/* General wrappers                                                           */
+/* ------------------------------------------------------------------------- */
+
+int access(const char* pathname, int mode) {
+    int (*fn)(const char*, int) = REAL(access, int (*)(const char*, int));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, mode);
+}
+
+int faccessat(int dirfd, const char* pathname, int mode, int flags) {
+    int (*fn)(int, const char*, int, int) =
+        REAL(faccessat, int (*)(int, const char*, int, int));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, mode, flags);
+}
+
+int faccessat2(int dirfd, const char* pathname, int mode, int flags) {
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+
+    int (*fn)(int, const char*, int, int) =
+        OPT_REAL(faccessat2, int (*)(int, const char*, int, int));
+    if (fn != NULL) return fn(dirfd, path, mode, flags);
+#ifdef SYS_faccessat2
+    return (int)syscall(SYS_faccessat2, dirfd, path, mode, flags);
+#else
+    if (flags != 0) {
+        errno = ENOSYS;
+        return -1;
     }
-}
-#endif
-
-static int fd_points_to_perf_data(int fd) {
-    char proc_path[64];
-    char link_path[REDIR_BUF_SIZE];
-
-    snprintf(proc_path, sizeof(proc_path), "/proc/self/fd/%d", fd);
-
-    ssize_t n = readlink(proc_path, link_path, sizeof(link_path) - 1);
-    if (n <= 0) return 0;
-
-    link_path[n] = '\0';
-    return is_perf_path(link_path);
-}
-
-/* ------------------------------------------------------------------------- */
-/* Real stat helpers, used by normal and legacy xstat wrappers                */
-/* ------------------------------------------------------------------------- */
-
-static int real_stat_call(const char* path, struct stat* st) {
-    int (*fn)(const char*, struct stat*) = REAL(stat, int (*)(const char*, struct stat*));
-    return fn(path, st);
-}
-
-static int real_lstat_call(const char* path, struct stat* st) {
-    int (*fn)(const char*, struct stat*) = REAL(lstat, int (*)(const char*, struct stat*));
-    return fn(path, st);
-}
-
-static int real_fstat_call(int fd, struct stat* st) {
-    int (*fn)(int, struct stat*) = REAL(fstat, int (*)(int, struct stat*));
-    return fn(fd, st);
-}
-
-static int real_fstatat_call(int dirfd, const char* path, struct stat* st, int flags) {
-    int (*fn)(int, const char*, struct stat*, int) =
-        REAL(fstatat, int (*)(int, const char*, struct stat*, int));
-    return fn(dirfd, path, st, flags);
-}
-
-#if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
-static int real_stat64_call(const char* path, struct stat64* st) {
-    int (*fn)(const char*, struct stat64*) =
-        OPT_REAL(stat64, int (*)(const char*, struct stat64*));
-    if (fn) return fn(path, st);
-
-#if defined(__LP64__) || defined(_LP64)
-    return real_stat_call(path, (struct stat*) st);
-#else
-    errno = ENOSYS;
-    return -1;
+    return faccessat(dirfd, path, mode, 0);
 #endif
 }
 
-static int real_lstat64_call(const char* path, struct stat64* st) {
-    int (*fn)(const char*, struct stat64*) =
-        OPT_REAL(lstat64, int (*)(const char*, struct stat64*));
-    if (fn) return fn(path, st);
-
-#if defined(__LP64__) || defined(_LP64)
-    return real_lstat_call(path, (struct stat*) st);
-#else
-    errno = ENOSYS;
-    return -1;
-#endif
+int chdir(const char* pathname) {
+    int (*fn)(const char*) = REAL(chdir, int (*)(const char*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path);
 }
 
-static int real_fstat64_call(int fd, struct stat64* st) {
-    int (*fn)(int, struct stat64*) =
-        OPT_REAL(fstat64, int (*)(int, struct stat64*));
-    if (fn) return fn(fd, st);
+ssize_t readlink(const char* pathname, char* out, size_t out_size) {
+    const char* identity = executable_identity_for_path(pathname);
+    if (identity != NULL) return copy_readlink_result(identity, out, out_size);
 
-#if defined(__LP64__) || defined(_LP64)
-    return real_fstat_call(fd, (struct stat*) st);
-#else
-    errno = ENOSYS;
-    return -1;
-#endif
+    ssize_t (*fn)(const char*, char*, size_t) =
+        REAL(readlink, ssize_t (*)(const char*, char*, size_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, out, out_size);
 }
 
-static int real_fstatat64_call(int dirfd, const char* path, struct stat64* st, int flags) {
-    int (*fn)(int, const char*, struct stat64*, int) =
-        OPT_REAL(fstatat64, int (*)(int, const char*, struct stat64*, int));
-    if (fn) return fn(dirfd, path, st, flags);
-
-#if defined(__LP64__) || defined(_LP64)
-    return real_fstatat_call(dirfd, path, (struct stat*) st, flags);
-#else
-    errno = ENOSYS;
-    return -1;
-#endif
-}
-#endif
-
-/* ------------------------------------------------------------------------- */
-/* Small helper macros for repetitive wrappers                                */
-/* ------------------------------------------------------------------------- */
-
-#define WRAP_PATH_1(ret, name, type, args, call_args)        \
-    ret name args {                                          \
-        type fn = REAL(name, type);                          \
-        char path_buf[REDIR_BUF_SIZE];                       \
-        pathname = redirect_path(pathname, path_buf, sizeof(path_buf)); \
-        return fn call_args;                                 \
+ssize_t readlinkat(int dirfd, const char* pathname, char* out, size_t out_size) {
+    if (pathname[0] == '/') {
+        const char* identity = executable_identity_for_path(pathname);
+        if (identity != NULL) return copy_readlink_result(identity, out, out_size);
     }
 
-#define WRAP_AT_PATH_1(ret, name, type, args, call_args)     \
-    ret name args {                                          \
-        type fn = REAL(name, type);                          \
-        char path_buf[REDIR_BUF_SIZE];                       \
-        pathname = redirect_at_path(dirfd, pathname, path_buf, sizeof(path_buf)); \
-        return fn call_args;                                 \
-    }
+    ssize_t (*fn)(int, const char*, char*, size_t) =
+        REAL(readlinkat, ssize_t (*)(int, const char*, char*, size_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, out, out_size);
+}
 
-static inline int open_needs_mode(int flags) {
-#if defined(O_TMPFILE)
-    return (flags & O_CREAT) || ((flags & O_TMPFILE) == O_TMPFILE);
-#else
-    return (flags & O_CREAT);
-#endif
+unsigned long getauxval(unsigned long type) {
+    if (type == AT_EXECFN) {
+        const char* identity = active_executable_identity();
+        if (identity != NULL) return (unsigned long)(uintptr_t)identity;
+    }
+    unsigned long (*fn)(unsigned long) =
+        REAL(getauxval, unsigned long (*)(unsigned long));
+    return fn(type);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -601,870 +825,1772 @@ static inline int open_needs_mode(int flags) {
 
 FILE* fopen(const char* pathname, const char* mode) {
     FILE* (*fn)(const char*, const char*) = REAL(fopen, FILE* (*)(const char*, const char*));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), mode);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return NULL;
+    return fn(path, mode);
+}
+
+FILE* fopen64(const char* pathname, const char* mode) {
+    FILE* (*fn)(const char*, const char*) = OPT_REAL(fopen64, FILE* (*)(const char*, const char*));
+    if (fn == NULL) fn = REAL(fopen, FILE* (*)(const char*, const char*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return NULL;
+    return fn(path, mode);
 }
 
 FILE* freopen(const char* pathname, const char* mode, FILE* stream) {
     FILE* (*fn)(const char*, const char*, FILE*) =
         REAL(freopen, FILE* (*)(const char*, const char*, FILE*));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), mode, stream);
-}
-
-#if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
-FILE* fopen64(const char* pathname, const char* mode) {
-    FILE* (*fn)(const char*, const char*) =
-        OPT_REAL(fopen64, FILE* (*)(const char*, const char*));
-    if (!fn) fn = REAL(fopen, FILE* (*)(const char*, const char*));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), mode);
+    if (pathname == NULL) return fn(NULL, mode, stream);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return NULL;
+    return fn(path, mode, stream);
 }
 
 FILE* freopen64(const char* pathname, const char* mode, FILE* stream) {
     FILE* (*fn)(const char*, const char*, FILE*) =
         OPT_REAL(freopen64, FILE* (*)(const char*, const char*, FILE*));
-    if (!fn) fn = REAL(freopen, FILE* (*)(const char*, const char*, FILE*));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), mode, stream);
+    if (fn == NULL) fn = REAL(freopen, FILE* (*)(const char*, const char*, FILE*));
+    if (pathname == NULL) return fn(NULL, mode, stream);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return NULL;
+    return fn(path, mode, stream);
 }
-#endif
 
-DIR* opendir(const char* name) {
+DIR* opendir(const char* pathname) {
     DIR* (*fn)(const char*) = REAL(opendir, DIR* (*)(const char*));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(name, buf, sizeof(buf)));
-}
-
-int mkdir(const char* pathname, mode_t mode) {
-    int (*fn)(const char*, mode_t) = REAL(mkdir, int (*)(const char*, mode_t));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    debug_path_operation("mkdir", pathname, path);
-    return fn(path, mode);
-}
-
-int mkdirat(int dirfd, const char* pathname, mode_t mode) {
-    int (*fn)(int, const char*, mode_t) = REAL(mkdirat, int (*)(int, const char*, mode_t));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    debug_path_operation("mkdirat", pathname, path);
-    return fn(dirfd, path, mode);
-}
-
-int rmdir(const char* pathname) {
-    int (*fn)(const char*) = REAL(rmdir, int (*)(const char*));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    debug_path_operation("rmdir", pathname, path);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return NULL;
     return fn(path);
 }
 
-int __rmdir(const char* pathname) {
-    int (*fn)(const char*) = OPT_REAL(__rmdir, int (*)(const char*));
-    if (!fn) fn = REAL(rmdir, int (*)(const char*));
+int scandir(
+    const char* pathname,
+    struct dirent*** namelist,
+    int (*filter)(const struct dirent*),
+    int (*compare)(const struct dirent**, const struct dirent**)
+) {
+    int (*fn)(const char*, struct dirent***, int (*)(const struct dirent*),
+              int (*)(const struct dirent**, const struct dirent**)) =
+        REAL(scandir, int (*)(const char*, struct dirent***,
+                             int (*)(const struct dirent*),
+                             int (*)(const struct dirent**, const struct dirent**)));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, namelist, filter, compare);
+}
 
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    debug_path_operation("__rmdir", pathname, path);
-    return fn(path);
+int scandirat(
+    int dirfd,
+    const char* pathname,
+    struct dirent*** namelist,
+    int (*filter)(const struct dirent*),
+    int (*compare)(const struct dirent**, const struct dirent**)
+) {
+    int (*fn)(int, const char*, struct dirent***, int (*)(const struct dirent*),
+              int (*)(const struct dirent**, const struct dirent**)) =
+        OPT_REAL(scandirat, int (*)(int, const char*, struct dirent***,
+                                   int (*)(const struct dirent*),
+                                   int (*)(const struct dirent**, const struct dirent**)));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return -1;
+    }
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, namelist, filter, compare);
 }
 
 /* ------------------------------------------------------------------------- */
 /* open/create wrappers                                                       */
 /* ------------------------------------------------------------------------- */
 
+static int open_needs_mode(int flags) {
+    if ((flags & O_CREAT) != 0) return 1;
+#ifdef O_TMPFILE
+    if ((flags & O_TMPFILE) == O_TMPFILE) return 1;
+#endif
+    return 0;
+}
+
 int open(const char* pathname, int flags, ...) {
     int (*fn)(const char*, int, ...) = REAL(open, int (*)(const char*, int, ...));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
 
     if (open_needs_mode(flags)) {
-        va_list ap;
-        va_start(ap, flags);
-        mode_t mode = va_arg(ap, mode_t);
-        va_end(ap);
+        va_list arguments;
+        va_start(arguments, flags);
+        mode_t mode = va_arg(arguments, mode_t);
+        va_end(arguments);
         return fn(path, flags, mode);
     }
-
     return fn(path, flags);
 }
 
-#if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
 int open64(const char* pathname, int flags, ...) {
-    int (*fn)(const char*, int, ...) =
-        OPT_REAL(open64, int (*)(const char*, int, ...));
-    if (!fn) fn = REAL(open, int (*)(const char*, int, ...));
-
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
+    int (*fn)(const char*, int, ...) = OPT_REAL(open64, int (*)(const char*, int, ...));
+    if (fn == NULL) fn = REAL(open, int (*)(const char*, int, ...));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
 
     if (open_needs_mode(flags)) {
-        va_list ap;
-        va_start(ap, flags);
-        mode_t mode = va_arg(ap, mode_t);
-        va_end(ap);
+        va_list arguments;
+        va_start(arguments, flags);
+        mode_t mode = va_arg(arguments, mode_t);
+        va_end(arguments);
         return fn(path, flags, mode);
     }
-
     return fn(path, flags);
 }
-#endif
 
 int openat(int dirfd, const char* pathname, int flags, ...) {
     int (*fn)(int, const char*, int, ...) =
         REAL(openat, int (*)(int, const char*, int, ...));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
 
     if (open_needs_mode(flags)) {
-        va_list ap;
-        va_start(ap, flags);
-        mode_t mode = va_arg(ap, mode_t);
-        va_end(ap);
+        va_list arguments;
+        va_start(arguments, flags);
+        mode_t mode = va_arg(arguments, mode_t);
+        va_end(arguments);
         return fn(dirfd, path, flags, mode);
     }
-
     return fn(dirfd, path, flags);
 }
 
-#if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
 int openat64(int dirfd, const char* pathname, int flags, ...) {
     int (*fn)(int, const char*, int, ...) =
         OPT_REAL(openat64, int (*)(int, const char*, int, ...));
-    if (!fn) fn = REAL(openat, int (*)(int, const char*, int, ...));
-
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
+    if (fn == NULL) fn = REAL(openat, int (*)(int, const char*, int, ...));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
 
     if (open_needs_mode(flags)) {
-        va_list ap;
-        va_start(ap, flags);
-        mode_t mode = va_arg(ap, mode_t);
-        va_end(ap);
+        va_list arguments;
+        va_start(arguments, flags);
+        mode_t mode = va_arg(arguments, mode_t);
+        va_end(arguments);
         return fn(dirfd, path, flags, mode);
     }
-
     return fn(dirfd, path, flags);
 }
-#endif
 
 int creat(const char* pathname, mode_t mode) {
     int (*fn)(const char*, mode_t) = REAL(creat, int (*)(const char*, mode_t));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), mode);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, mode);
 }
 
-#if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
 int creat64(const char* pathname, mode_t mode) {
     int (*fn)(const char*, mode_t) = OPT_REAL(creat64, int (*)(const char*, mode_t));
-    if (!fn) fn = REAL(creat, int (*)(const char*, mode_t));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), mode);
+    if (fn == NULL) fn = REAL(creat, int (*)(const char*, mode_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, mode);
 }
-#endif
 
 /* ------------------------------------------------------------------------- */
 /* stat wrappers                                                              */
 /* ------------------------------------------------------------------------- */
 
-int statx(
-    int dirfd,
-    const char* pathname,
-    int flags,
-    unsigned int mask,
-    struct statx* st
-) {
+int statx(int dirfd, const char* pathname, int flags, unsigned int mask, struct statx* st) {
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+
     int (*fn)(int, const char*, int, unsigned int, struct statx*) =
-        REAL(statx, int (*)(int, const char*, int, unsigned int, struct statx*));
-
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    int rc = fn(dirfd, path, flags, mask, st);
-
-    if (rc == 0 && is_perf_path_either(pathname, path)) {
-        spoof_statx_if_perf_data(st);
+        OPT_REAL(statx, int (*)(int, const char*, int, unsigned int, struct statx*));
+    int result;
+    if (fn != NULL) {
+        result = fn(dirfd, path, flags, mask, st);
+    } else {
+#ifdef SYS_statx
+        result = (int)syscall(SYS_statx, dirfd, path, flags, mask, st);
+#else
+        errno = ENOSYS;
+        return -1;
+#endif
     }
 
-    return rc;
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_statx_if_perf_data(st);
+    return result;
 }
 
 int stat(const char* pathname, struct stat* st) {
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    int rc = real_stat_call(path, st);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
-    return rc;
+    int (*fn)(const char*, struct stat*) = REAL(stat, int (*)(const char*, struct stat*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn(path, st);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    return result;
 }
 
 int lstat(const char* pathname, struct stat* st) {
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    int rc = real_lstat_call(path, st);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
-    return rc;
+    int (*fn)(const char*, struct stat*) = REAL(lstat, int (*)(const char*, struct stat*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn(path, st);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    return result;
 }
 
 int fstat(int fd, struct stat* st) {
-    int rc = real_fstat_call(fd, st);
-    if (rc == 0 && fd_points_to_perf_data(fd)) spoof_stat_if_perf_data(st);
-    return rc;
+    int (*fn)(int, struct stat*) = REAL(fstat, int (*)(int, struct stat*));
+    int result = fn(fd, st);
+    if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat_if_perf_data(st);
+    return result;
 }
 
 int fstatat(int dirfd, const char* pathname, struct stat* st, int flags) {
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    int rc = real_fstatat_call(dirfd, path, st, flags);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
-    return rc;
+    int (*fn)(int, const char*, struct stat*, int) =
+        REAL(fstatat, int (*)(int, const char*, struct stat*, int));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn(dirfd, path, st, flags);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    return result;
+}
+
+int newfstatat(int dirfd, const char* pathname, struct stat* st, int flags) {
+    return fstatat(dirfd, pathname, st, flags);
+}
+
+int __newfstatat(int dirfd, const char* pathname, struct stat* st, int flags) {
+    return fstatat(dirfd, pathname, st, flags);
 }
 
 #if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
 int stat64(const char* pathname, struct stat64* st) {
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    int rc = real_stat64_call(path, st);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
-    return rc;
+    int (*fn)(const char*, struct stat64*) =
+        OPT_REAL(stat64, int (*)(const char*, struct stat64*));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return -1;
+    }
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn(path, st);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    return result;
 }
 
 int lstat64(const char* pathname, struct stat64* st) {
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    int rc = real_lstat64_call(path, st);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
-    return rc;
+    int (*fn)(const char*, struct stat64*) =
+        OPT_REAL(lstat64, int (*)(const char*, struct stat64*));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return -1;
+    }
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn(path, st);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    return result;
 }
 
 int fstat64(int fd, struct stat64* st) {
-    int rc = real_fstat64_call(fd, st);
-    if (rc == 0 && fd_points_to_perf_data(fd)) spoof_stat64_if_perf_data(st);
-    return rc;
+    int (*fn)(int, struct stat64*) = OPT_REAL(fstat64, int (*)(int, struct stat64*));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return -1;
+    }
+    int result = fn(fd, st);
+    if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat64_if_perf_data(st);
+    return result;
 }
 
 int fstatat64(int dirfd, const char* pathname, struct stat64* st, int flags) {
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    int rc = real_fstatat64_call(dirfd, path, st, flags);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
-    return rc;
+    int (*fn)(int, const char*, struct stat64*, int) =
+        OPT_REAL(fstatat64, int (*)(int, const char*, struct stat64*, int));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return -1;
+    }
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn(dirfd, path, st, flags);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    return result;
 }
 #endif
 
-/* ------------------------------------------------------------------------- */
-/* Legacy glibc xstat wrappers                                                */
-/* ------------------------------------------------------------------------- */
-
-int __xstat(int ver, const char* pathname, struct stat* st) {
+int __xstat(int version, const char* pathname, struct stat* st) {
     int (*fn)(int, const char*, struct stat*) =
         OPT_REAL(__xstat, int (*)(int, const char*, struct stat*));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    int rc = fn ? fn(ver, path, st) : real_stat_call(path, st);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
-    return rc;
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn != NULL ? fn(version, path, st) : stat(path, st);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    return result;
 }
 
-int __lxstat(int ver, const char* pathname, struct stat* st) {
+int __lxstat(int version, const char* pathname, struct stat* st) {
     int (*fn)(int, const char*, struct stat*) =
         OPT_REAL(__lxstat, int (*)(int, const char*, struct stat*));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    int rc = fn ? fn(ver, path, st) : real_lstat_call(path, st);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
-    return rc;
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn != NULL ? fn(version, path, st) : lstat(path, st);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    return result;
 }
 
-int __fxstat(int ver, int fd, struct stat* st) {
-    int (*fn)(int, int, struct stat*) = OPT_REAL(__fxstat, int (*)(int, int, struct stat*));
-    int rc = fn ? fn(ver, fd, st) : real_fstat_call(fd, st);
-    if (rc == 0 && fd_points_to_perf_data(fd)) spoof_stat_if_perf_data(st);
-    return rc;
+int __fxstat(int version, int fd, struct stat* st) {
+    int (*fn)(int, int, struct stat*) =
+        OPT_REAL(__fxstat, int (*)(int, int, struct stat*));
+    int result = fn != NULL ? fn(version, fd, st) : fstat(fd, st);
+    if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat_if_perf_data(st);
+    return result;
 }
 
-int __fxstatat(int ver, int dirfd, const char* pathname, struct stat* st, int flags) {
+int __fxstatat(int version, int dirfd, const char* pathname, struct stat* st, int flags) {
     int (*fn)(int, int, const char*, struct stat*, int) =
         OPT_REAL(__fxstatat, int (*)(int, int, const char*, struct stat*, int));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    int rc = fn ? fn(ver, dirfd, path, st, flags) : real_fstatat_call(dirfd, path, st, flags);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
-    return rc;
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn != NULL ? fn(version, dirfd, path, st, flags)
+                            : fstatat(dirfd, path, st, flags);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    return result;
 }
 
 #if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
-int __xstat64(int ver, const char* pathname, struct stat64* st) {
+int __xstat64(int version, const char* pathname, struct stat64* st) {
     int (*fn)(int, const char*, struct stat64*) =
         OPT_REAL(__xstat64, int (*)(int, const char*, struct stat64*));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    int rc = fn ? fn(ver, path, st) : real_stat64_call(path, st);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
-    return rc;
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn != NULL ? fn(version, path, st) : stat64(path, st);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    return result;
 }
 
-int __lxstat64(int ver, const char* pathname, struct stat64* st) {
+int __lxstat64(int version, const char* pathname, struct stat64* st) {
     int (*fn)(int, const char*, struct stat64*) =
         OPT_REAL(__lxstat64, int (*)(int, const char*, struct stat64*));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    int rc = fn ? fn(ver, path, st) : real_lstat64_call(path, st);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
-    return rc;
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn != NULL ? fn(version, path, st) : lstat64(path, st);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    return result;
 }
 
-int __fxstat64(int ver, int fd, struct stat64* st) {
+int __fxstat64(int version, int fd, struct stat64* st) {
     int (*fn)(int, int, struct stat64*) =
         OPT_REAL(__fxstat64, int (*)(int, int, struct stat64*));
-    int rc = fn ? fn(ver, fd, st) : real_fstat64_call(fd, st);
-    if (rc == 0 && fd_points_to_perf_data(fd)) spoof_stat64_if_perf_data(st);
-    return rc;
+    int result = fn != NULL ? fn(version, fd, st) : fstat64(fd, st);
+    if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat64_if_perf_data(st);
+    return result;
 }
 
-int __fxstatat64(int ver, int dirfd, const char* pathname, struct stat64* st, int flags) {
+int __fxstatat64(
+    int version,
+    int dirfd,
+    const char* pathname,
+    struct stat64* st,
+    int flags
+) {
     int (*fn)(int, int, const char*, struct stat64*, int) =
         OPT_REAL(__fxstatat64, int (*)(int, int, const char*, struct stat64*, int));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    int rc = fn ? fn(ver, dirfd, path, st, flags) : real_fstatat64_call(dirfd, path, st, flags);
-    if (rc == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
-    return rc;
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    int result = fn != NULL ? fn(version, dirfd, path, st, flags)
+                            : fstatat64(dirfd, path, st, flags);
+    if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    return result;
 }
 #endif
 
-int inotify_add_watch(
-    int fd,
-    const char *pathname,
-    uint32_t mask
-) {
-    int (*fn)(int, const char *, uint32_t) =
-        REAL(
-            inotify_add_watch,
-            int (*)(int, const char *, uint32_t)
-        );
+/* ------------------------------------------------------------------------- */
+/* Directory and node creation                                                */
+/* ------------------------------------------------------------------------- */
 
-    char path_buf[REDIR_BUF_SIZE];
-    const char *path = redirect_path(
-        pathname,
-        path_buf,
-        sizeof(path_buf)
-    );
+int mkdir(const char* pathname, mode_t mode) {
+    int (*fn)(const char*, mode_t) = REAL(mkdir, int (*)(const char*, mode_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, mode);
+}
 
-    int watch_descriptor = fn(fd, path, mask);
+int mkdirat(int dirfd, const char* pathname, mode_t mode) {
+    int (*fn)(int, const char*, mode_t) =
+        REAL(mkdirat, int (*)(int, const char*, mode_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, mode);
+}
 
-    /*
-     * Android SELinux prevents app processes from installing an inotify
-     * watch on the real filesystem root. Some desktop Linux file watchers
-     * install a root watch as an internal anchor and treat failure as fatal.
-     *
-     * Use the existing app-private compatibility root as that anchor.
-     * Individual project/source directories still receive their own watches.
-     */
-    if (
-        watch_descriptor == -1 &&
-        errno == EACCES &&
-        path != NULL &&
-        strcmp(path, "/") == 0
-    ) {
-        const int root_errno = errno;
-        const char *app_root = getenv("APP_FILES_DIR");
+int mkfifo(const char* pathname, mode_t mode) {
+    int (*fn)(const char*, mode_t) = REAL(mkfifo, int (*)(const char*, mode_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, mode);
+}
 
-        if (app_root != NULL && app_root[0] != '\0') {
-            watch_descriptor = fn(fd, app_root, mask);
+int mkfifoat(int dirfd, const char* pathname, mode_t mode) {
+    int (*fn)(int, const char*, mode_t) =
+        REAL(mkfifoat, int (*)(int, const char*, mode_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, mode);
+}
 
-            if (path_redirect_debug_enabled()) {
-                if (watch_descriptor >= 0) {
-                    fprintf(
-                        stderr,
-                        "path_redirect: inotify root fallback / -> %s, wd=%d\n",
-                        app_root,
-                        watch_descriptor
-                    );
-                } else {
-                    const int fallback_errno = errno;
+int mknod(const char* pathname, mode_t mode, dev_t device) {
+    int (*fn)(const char*, mode_t, dev_t) =
+        REAL(mknod, int (*)(const char*, mode_t, dev_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, mode, device);
+}
 
-                    fprintf(
-                        stderr,
-                        "path_redirect: inotify root fallback / -> %s "
-                        "failed: errno=%d (%s)\n",
-                        app_root,
-                        fallback_errno,
-                        strerror(fallback_errno)
-                    );
+int mknodat(int dirfd, const char* pathname, mode_t mode, dev_t device) {
+    int (*fn)(int, const char*, mode_t, dev_t) =
+        REAL(mknodat, int (*)(int, const char*, mode_t, dev_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, mode, device);
+}
 
-                    errno = fallback_errno;
-                }
-            }
+int rmdir(const char* pathname) {
+    int (*fn)(const char*) = REAL(rmdir, int (*)(const char*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path);
+}
 
-            return watch_descriptor;
-        }
-
-        errno = root_errno;
-    }
-
-    if (
-        watch_descriptor == -1 &&
-        path_redirect_debug_enabled()
-    ) {
-        const int error = errno;
-
-        fprintf(
-            stderr,
-            "path_redirect: inotify_add_watch(%s -> %s) "
-            "failed: errno=%d (%s)\n",
-            pathname != NULL ? pathname : "(null)",
-            path != NULL ? path : "(null)",
-            error,
-            strerror(error)
-        );
-
-        errno = error;
-    }
-
-    return watch_descriptor;
+int __rmdir(const char* pathname) {
+    int (*fn)(const char*) = OPT_REAL(__rmdir, int (*)(const char*));
+    if (fn == NULL) fn = REAL(rmdir, int (*)(const char*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path);
 }
 
 /* ------------------------------------------------------------------------- */
-/* access/readlink/metadata wrappers                                          */
+/* Permissions and ownership                                                  */
 /* ------------------------------------------------------------------------- */
-
-int access(const char* pathname, int mode) {
-    int (*fn)(const char*, int) = REAL(access, int (*)(const char*, int));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), mode);
-}
-
-int faccessat(int dirfd, const char* pathname, int mode, int flags) {
-    int (*fn)(int, const char*, int, int) =
-        REAL(faccessat, int (*)(int, const char*, int, int));
-    char buf[REDIR_BUF_SIZE];
-    return fn(dirfd, redirect_at_path(dirfd, pathname, buf, sizeof(buf)), mode, flags);
-}
-
-#ifdef __linux__
-int faccessat2(int dirfd, const char* pathname, int mode, int flags) {
-    int (*fn)(int, const char*, int, int) =
-        OPT_REAL(faccessat2, int (*)(int, const char*, int, int));
-    char buf[REDIR_BUF_SIZE];
-    pathname = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    if (fn) return fn(dirfd, pathname, mode, flags);
-    return faccessat(dirfd, pathname, mode, flags);
-}
-#endif
-
-ssize_t readlink(const char* pathname, char* out, size_t out_size) {
-    const char* identity = executable_identity_for_path(pathname);
-    if (identity) {
-        return copy_readlink_result(identity, out, out_size);
-    }
-
-    ssize_t (*fn)(const char*, char*, size_t) =
-        REAL(readlink, ssize_t (*)(const char*, char*, size_t));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), out, out_size);
-}
-
-ssize_t readlinkat(int dirfd, const char* pathname, char* out, size_t out_size) {
-    if (pathname[0] == '/') {
-        const char* identity = executable_identity_for_path(pathname);
-        if (identity) {
-            return copy_readlink_result(identity, out, out_size);
-        }
-    }
-
-    ssize_t (*fn)(int, const char*, char*, size_t) =
-        REAL(readlinkat, ssize_t (*)(int, const char*, char*, size_t));
-    char buf[REDIR_BUF_SIZE];
-    return fn(dirfd, redirect_at_path(dirfd, pathname, buf, sizeof(buf)), out, out_size);
-}
-
-unsigned long getauxval(unsigned long type) {
-#ifdef AT_EXECFN
-    if (type == AT_EXECFN) {
-        const char* identity = active_executable_identity();
-        if (identity) return (unsigned long)identity;
-    }
-#endif
-
-    unsigned long (*fn)(unsigned long) =
-        OPT_REAL(getauxval, unsigned long (*)(unsigned long));
-    if (fn) return fn(type);
-
-    errno = ENOENT;
-    return 0;
-}
 
 int chmod(const char* pathname, mode_t mode) {
     int (*fn)(const char*, mode_t) = REAL(chmod, int (*)(const char*, mode_t));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), mode);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, mode);
 }
 
 int fchmodat(int dirfd, const char* pathname, mode_t mode, int flags) {
     int (*fn)(int, const char*, mode_t, int) =
         REAL(fchmodat, int (*)(int, const char*, mode_t, int));
-    char buf[REDIR_BUF_SIZE];
-    return fn(dirfd, redirect_at_path(dirfd, pathname, buf, sizeof(buf)), mode, flags);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, mode, flags);
 }
 
 int chown(const char* pathname, uid_t owner, gid_t group) {
-    int (*fn)(const char*, uid_t, gid_t) = REAL(chown, int (*)(const char*, uid_t, gid_t));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), owner, group);
+    int (*fn)(const char*, uid_t, gid_t) =
+        REAL(chown, int (*)(const char*, uid_t, gid_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, owner, group);
 }
 
 int lchown(const char* pathname, uid_t owner, gid_t group) {
-    int (*fn)(const char*, uid_t, gid_t) = REAL(lchown, int (*)(const char*, uid_t, gid_t));
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), owner, group);
+    int (*fn)(const char*, uid_t, gid_t) =
+        REAL(lchown, int (*)(const char*, uid_t, gid_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, owner, group);
 }
 
 int fchownat(int dirfd, const char* pathname, uid_t owner, gid_t group, int flags) {
     int (*fn)(int, const char*, uid_t, gid_t, int) =
         REAL(fchownat, int (*)(int, const char*, uid_t, gid_t, int));
-    char buf[REDIR_BUF_SIZE];
-    return fn(dirfd, redirect_at_path(dirfd, pathname, buf, sizeof(buf)), owner, group, flags);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, owner, group, flags);
 }
 
 /* ------------------------------------------------------------------------- */
-/* link/remove/rename wrappers                                                */
+/* Removal, links and renames                                                 */
 /* ------------------------------------------------------------------------- */
-
-int symlink(const char* target, const char* linkpath) {
-    int (*fn)(const char*, const char*) = REAL(symlink, int (*)(const char*, const char*));
-    char target_buf[REDIR_BUF_SIZE];
-    char link_buf[REDIR_BUF_SIZE];
-    return fn(
-        redirect_path(target, target_buf, sizeof(target_buf)),
-        redirect_path(linkpath, link_buf, sizeof(link_buf))
-    );
-}
-
-int symlinkat(const char* target, int dirfd, const char* linkpath) {
-    int (*fn)(const char*, int, const char*) =
-        REAL(symlinkat, int (*)(const char*, int, const char*));
-    char target_buf[REDIR_BUF_SIZE];
-    char link_buf[REDIR_BUF_SIZE];
-    return fn(
-        redirect_path(target, target_buf, sizeof(target_buf)),
-        dirfd,
-        redirect_at_path(dirfd, linkpath, link_buf, sizeof(link_buf))
-    );
-}
-
-int link(const char* oldpath, const char* newpath) {
-    int (*fn)(const char*, const char*) = REAL(link, int (*)(const char*, const char*));
-    char old_buf[REDIR_BUF_SIZE];
-    char new_buf[REDIR_BUF_SIZE];
-    return fn(
-        redirect_path(oldpath, old_buf, sizeof(old_buf)),
-        redirect_path(newpath, new_buf, sizeof(new_buf))
-    );
-}
-
-int linkat(int olddirfd, const char* oldpath, int newdirfd, const char* newpath, int flags) {
-    int (*fn)(int, const char*, int, const char*, int) =
-        REAL(linkat, int (*)(int, const char*, int, const char*, int));
-    char old_buf[REDIR_BUF_SIZE];
-    char new_buf[REDIR_BUF_SIZE];
-    return fn(
-        olddirfd,
-        redirect_at_path(olddirfd, oldpath, old_buf, sizeof(old_buf)),
-        newdirfd,
-        redirect_at_path(newdirfd, newpath, new_buf, sizeof(new_buf)),
-        flags
-    );
-}
 
 int unlink(const char* pathname) {
     int (*fn)(const char*) = REAL(unlink, int (*)(const char*));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    debug_path_operation("unlink", pathname, path);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
     return fn(path);
 }
 
 int __unlink(const char* pathname) {
     int (*fn)(const char*) = OPT_REAL(__unlink, int (*)(const char*));
-    if (!fn) fn = REAL(unlink, int (*)(const char*));
-
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    debug_path_operation("__unlink", pathname, path);
+    if (fn == NULL) fn = REAL(unlink, int (*)(const char*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
     return fn(path);
 }
 
 int unlinkat(int dirfd, const char* pathname, int flags) {
     int (*fn)(int, const char*, int) = REAL(unlinkat, int (*)(int, const char*, int));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    debug_path_operation("unlinkat", pathname, path);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
     return fn(dirfd, path, flags);
 }
 
 int __unlinkat(int dirfd, const char* pathname, int flags) {
-    int (*fn)(int, const char*, int) = OPT_REAL(__unlinkat, int (*)(int, const char*, int));
-    if (!fn) fn = REAL(unlinkat, int (*)(int, const char*, int));
-
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_at_path(dirfd, pathname, buf, sizeof(buf));
-    debug_path_operation("__unlinkat", pathname, path);
+    int (*fn)(int, const char*, int) =
+        OPT_REAL(__unlinkat, int (*)(int, const char*, int));
+    if (fn == NULL) fn = REAL(unlinkat, int (*)(int, const char*, int));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
     return fn(dirfd, path, flags);
 }
 
 int remove(const char* pathname) {
     int (*fn)(const char*) = REAL(remove, int (*)(const char*));
-    char buf[REDIR_BUF_SIZE];
-    const char* path = redirect_path(pathname, buf, sizeof(buf));
-    debug_path_operation("remove", pathname, path);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
     return fn(path);
 }
 
+int link(const char* oldpath, const char* newpath) {
+    int (*fn)(const char*, const char*) = REAL(link, int (*)(const char*, const char*));
+    char old_buffer[REDIR_BUF_SIZE];
+    char new_buffer[REDIR_BUF_SIZE];
+    const char* old_redirected = redirect_path(oldpath, old_buffer, sizeof(old_buffer));
+    const char* new_redirected = redirect_path(newpath, new_buffer, sizeof(new_buffer));
+    if (old_redirected == NULL || new_redirected == NULL) return -1;
+    return fn(old_redirected, new_redirected);
+}
+
+int linkat(
+    int olddirfd,
+    const char* oldpath,
+    int newdirfd,
+    const char* newpath,
+    int flags
+) {
+    int (*fn)(int, const char*, int, const char*, int) =
+        REAL(linkat, int (*)(int, const char*, int, const char*, int));
+    char old_buffer[REDIR_BUF_SIZE];
+    char new_buffer[REDIR_BUF_SIZE];
+    const char* old_redirected = redirect_at_path(olddirfd, oldpath, old_buffer, sizeof(old_buffer));
+    const char* new_redirected = redirect_at_path(newdirfd, newpath, new_buffer, sizeof(new_buffer));
+    if (old_redirected == NULL || new_redirected == NULL) return -1;
+    return fn(olddirfd, old_redirected, newdirfd, new_redirected, flags);
+}
+
+int symlink(const char* target, const char* linkpath) {
+    int (*fn)(const char*, const char*) =
+        REAL(symlink, int (*)(const char*, const char*));
+    char link_buffer[REDIR_BUF_SIZE];
+    const char* redirected_link = redirect_path(linkpath, link_buffer, sizeof(link_buffer));
+    if (redirected_link == NULL) return -1;
+    /* Keep the target text virtual; redirect only where the symlink is created. */
+    return fn(target, redirected_link);
+}
+
+int symlinkat(const char* target, int newdirfd, const char* linkpath) {
+    int (*fn)(const char*, int, const char*) =
+        REAL(symlinkat, int (*)(const char*, int, const char*));
+    char link_buffer[REDIR_BUF_SIZE];
+    const char* redirected_link =
+        redirect_at_path(newdirfd, linkpath, link_buffer, sizeof(link_buffer));
+    if (redirected_link == NULL) return -1;
+    return fn(target, newdirfd, redirected_link);
+}
+
 int rename(const char* oldpath, const char* newpath) {
-    int (*fn)(const char*, const char*) = REAL(rename, int (*)(const char*, const char*));
-    char old_buf[REDIR_BUF_SIZE];
-    char new_buf[REDIR_BUF_SIZE];
-    return fn(
-        redirect_path(oldpath, old_buf, sizeof(old_buf)),
-        redirect_path(newpath, new_buf, sizeof(new_buf))
-    );
+    int (*fn)(const char*, const char*) =
+        REAL(rename, int (*)(const char*, const char*));
+    char old_buffer[REDIR_BUF_SIZE];
+    char new_buffer[REDIR_BUF_SIZE];
+    const char* old_redirected = redirect_path(oldpath, old_buffer, sizeof(old_buffer));
+    const char* new_redirected = redirect_path(newpath, new_buffer, sizeof(new_buffer));
+    if (old_redirected == NULL || new_redirected == NULL) return -1;
+    return fn(old_redirected, new_redirected);
 }
 
 int renameat(int olddirfd, const char* oldpath, int newdirfd, const char* newpath) {
     int (*fn)(int, const char*, int, const char*) =
         REAL(renameat, int (*)(int, const char*, int, const char*));
-    char old_buf[REDIR_BUF_SIZE];
-    char new_buf[REDIR_BUF_SIZE];
-    return fn(
-        olddirfd,
-        redirect_at_path(olddirfd, oldpath, old_buf, sizeof(old_buf)),
-        newdirfd,
-        redirect_at_path(newdirfd, newpath, new_buf, sizeof(new_buf))
-    );
+    char old_buffer[REDIR_BUF_SIZE];
+    char new_buffer[REDIR_BUF_SIZE];
+    const char* old_redirected = redirect_at_path(olddirfd, oldpath, old_buffer, sizeof(old_buffer));
+    const char* new_redirected = redirect_at_path(newdirfd, newpath, new_buffer, sizeof(new_buffer));
+    if (old_redirected == NULL || new_redirected == NULL) return -1;
+    return fn(olddirfd, old_redirected, newdirfd, new_redirected);
 }
 
-#ifdef __linux__
-int renameat2(int olddirfd, const char* oldpath, int newdirfd, const char* newpath, unsigned int flags) {
+int renameat2(
+    int olddirfd,
+    const char* oldpath,
+    int newdirfd,
+    const char* newpath,
+    unsigned int flags
+) {
+    char old_buffer[REDIR_BUF_SIZE];
+    char new_buffer[REDIR_BUF_SIZE];
+    const char* old_redirected = redirect_at_path(olddirfd, oldpath, old_buffer, sizeof(old_buffer));
+    const char* new_redirected = redirect_at_path(newdirfd, newpath, new_buffer, sizeof(new_buffer));
+    if (old_redirected == NULL || new_redirected == NULL) return -1;
+
     int (*fn)(int, const char*, int, const char*, unsigned int) =
         OPT_REAL(renameat2, int (*)(int, const char*, int, const char*, unsigned int));
-    char old_buf[REDIR_BUF_SIZE];
-    char new_buf[REDIR_BUF_SIZE];
-
-    oldpath = redirect_at_path(olddirfd, oldpath, old_buf, sizeof(old_buf));
-    newpath = redirect_at_path(newdirfd, newpath, new_buf, sizeof(new_buf));
-
-    if (fn) return fn(olddirfd, oldpath, newdirfd, newpath, flags);
+    if (fn != NULL) return fn(olddirfd, old_redirected, newdirfd, new_redirected, flags);
+#ifdef SYS_renameat2
+    return (int)syscall(SYS_renameat2, olddirfd, old_redirected, newdirfd, new_redirected, flags);
+#else
     if (flags != 0) {
         errno = ENOSYS;
         return -1;
     }
-    return renameat(olddirfd, oldpath, newdirfd, newpath);
-}
+    return renameat(olddirfd, old_redirected, newdirfd, new_redirected);
 #endif
+}
+
 
 /* ------------------------------------------------------------------------- */
-/* direct syscall wrapper for path operations that bypass libc symbols         */
+/* Direct syscall wrapper                                                     */
+/*                                                                           */
+/* Keep this in addition to the public libc interposers above. Some programs  */
+/* call syscall(2) directly and would otherwise bypass path redirection.      */
 /* ------------------------------------------------------------------------- */
 
-static long real_syscall_call(long number, long a1, long a2, long a3, long a4, long a5, long a6) {
+static long real_syscall_call(
+    long number,
+    long argument1,
+    long argument2,
+    long argument3,
+    long argument4,
+    long argument5,
+    long argument6
+) {
     long (*fn)(long, ...) = REAL(syscall, long (*)(long, ...));
-    return fn(number, a1, a2, a3, a4, a5, a6);
+    return fn(
+        number,
+        argument1,
+        argument2,
+        argument3,
+        argument4,
+        argument5,
+        argument6
+    );
 }
 
 long syscall(long number, ...) {
-    va_list ap;
-    va_start(ap, number);
+    va_list arguments;
+    va_start(arguments, number);
 
-    long a1 = va_arg(ap, long);
-    long a2 = va_arg(ap, long);
-    long a3 = va_arg(ap, long);
-    long a4 = va_arg(ap, long);
-    long a5 = va_arg(ap, long);
-    long a6 = va_arg(ap, long);
+    long argument1 = va_arg(arguments, long);
+    long argument2 = va_arg(arguments, long);
+    long argument3 = va_arg(arguments, long);
+    long argument4 = va_arg(arguments, long);
+    long argument5 = va_arg(arguments, long);
+    long argument6 = va_arg(arguments, long);
 
-    va_end(ap);
+    va_end(arguments);
 
-    char path_buf[REDIR_BUF_SIZE];
-    char path_buf_2[REDIR_BUF_SIZE];
+    char path_buffer[REDIR_BUF_SIZE];
+    char second_path_buffer[REDIR_BUF_SIZE];
 
 #ifdef SYS_readlink
     if (number == SYS_readlink) {
-        const char* original = (const char*)a1;
+        const char* original = (const char*)argument1;
         const char* identity = executable_identity_for_path(original);
-        if (identity) {
-            return copy_readlink_result(identity, (char*)a2, (size_t)a3);
+        if (identity != NULL) {
+            return copy_readlink_result(
+                identity,
+                (char*)argument2,
+                (size_t)argument3
+            );
         }
 
-        const char* path = redirect_path(original, path_buf, sizeof(path_buf));
-        return real_syscall_call(number, (long)path, a2, a3, a4, a5, a6);
+        const char* path = redirect_path(
+            original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_readlink)", original, path);
+        return real_syscall_call(
+            number,
+            (long)path,
+            argument2,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
     }
 #endif
 
 #ifdef SYS_readlinkat
     if (number == SYS_readlinkat) {
-        int dirfd = (int)a1;
-        const char* original = (const char*)a2;
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
 
-        if (original && original[0] == '/') {
+        if (original != NULL && original[0] == '/') {
             const char* identity = executable_identity_for_path(original);
-            if (identity) {
-                return copy_readlink_result(identity, (char*)a3, (size_t)a4);
+            if (identity != NULL) {
+                return copy_readlink_result(
+                    identity,
+                    (char*)argument3,
+                    (size_t)argument4
+                );
             }
         }
 
-        const char* path = redirect_at_path(dirfd, original, path_buf, sizeof(path_buf));
-        return real_syscall_call(number, a1, (long)path, a3, a4, a5, a6);
+        const char* path = redirect_at_path(
+            dirfd,
+            original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_readlinkat)", original, path);
+        return real_syscall_call(
+            number,
+            argument1,
+            (long)path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
     }
 #endif
 
 #ifdef SYS_statx
     if (number == SYS_statx) {
-        int dirfd = (int)a1;
-        const char* original = (const char*)a2;
-        const char* path = redirect_at_path(dirfd, original, path_buf, sizeof(path_buf));
-        long rc = real_syscall_call(number, a1, (long)path, a3, a4, a5, a6);
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(
+            dirfd,
+            original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (path == NULL) return -1;
 
-        if (rc == 0 && is_perf_path_either(original, path)) {
-            spoof_statx_if_perf_data((struct statx*)a5);
+        debug_path_operation("syscall(SYS_statx)", original, path);
+        long result = real_syscall_call(
+            number,
+            argument1,
+            (long)path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+
+        if (result == 0 && is_perf_path_either(original, path)) {
+            spoof_statx_if_perf_data((struct statx*)argument5);
         }
+        return result;
+    }
+#endif
 
-        return rc;
+#ifdef SYS_newfstatat
+    if (number == SYS_newfstatat) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(
+            dirfd,
+            original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (path == NULL) return -1;
+
+        debug_path_operation("syscall(SYS_newfstatat)", original, path);
+        long result = real_syscall_call(
+            number,
+            argument1,
+            (long)path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+        if (result == 0 && is_perf_path_either(original, path)) {
+            spoof_stat_if_perf_data((struct stat*)argument3);
+        }
+        return result;
+    }
+#endif
+
+#if defined(SYS_fstatat64) && (!defined(SYS_newfstatat) || SYS_fstatat64 != SYS_newfstatat)
+    if (number == SYS_fstatat64) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(
+            dirfd,
+            original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (path == NULL) return -1;
+
+        debug_path_operation("syscall(SYS_fstatat64)", original, path);
+        long result = real_syscall_call(
+            number,
+            argument1,
+            (long)path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+        if (result == 0 && is_perf_path_either(original, path)) {
+            spoof_stat64_if_perf_data((struct stat64*)argument3);
+        }
+        return result;
+    }
+#endif
+
+#ifdef SYS_stat
+    if (number == SYS_stat) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_stat)", original, path);
+        long result = real_syscall_call(
+            number,
+            (long)path,
+            argument2,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+        if (result == 0 && is_perf_path_either(original, path)) {
+            spoof_stat_if_perf_data((struct stat*)argument2);
+        }
+        return result;
+    }
+#endif
+
+#ifdef SYS_lstat
+    if (number == SYS_lstat) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_lstat)", original, path);
+        long result = real_syscall_call(
+            number,
+            (long)path,
+            argument2,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+        if (result == 0 && is_perf_path_either(original, path)) {
+            spoof_stat_if_perf_data((struct stat*)argument2);
+        }
+        return result;
+    }
+#endif
+
+#ifdef SYS_access
+    if (number == SYS_access) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_access)", original, path);
+        return real_syscall_call(
+            number,
+            (long)path,
+            argument2,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+    }
+#endif
+
+#ifdef SYS_faccessat
+    if (number == SYS_faccessat) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_faccessat)", original, path);
+        return real_syscall_call(
+            number,
+            argument1,
+            (long)path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+    }
+#endif
+
+#ifdef SYS_faccessat2
+    if (number == SYS_faccessat2) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_faccessat2)", original, path);
+        return real_syscall_call(
+            number,
+            argument1,
+            (long)path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+    }
+#endif
+
+#ifdef SYS_chdir
+    if (number == SYS_chdir) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_chdir)", original, path);
+        return real_syscall_call(
+            number,
+            (long)path,
+            argument2,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
     }
 #endif
 
 #ifdef SYS_mkdir
     if (number == SYS_mkdir) {
-        const char* original = (const char*) a1;
-        const char* path = redirect_path(original, path_buf, sizeof(path_buf));
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
         debug_path_operation("syscall(SYS_mkdir)", original, path);
-        return real_syscall_call(number, (long) path, a2, a3, a4, a5, a6);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_mkdirat
     if (number == SYS_mkdirat) {
-        int dirfd = (int) a1;
-        const char* original = (const char*) a2;
-        const char* path = redirect_at_path(dirfd, original, path_buf, sizeof(path_buf));
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
         debug_path_operation("syscall(SYS_mkdirat)", original, path);
-        return real_syscall_call(number, a1, (long) path, a3, a4, a5, a6);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_mknod
+    if (number == SYS_mknod) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_mknod)", original, path);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_mknodat
+    if (number == SYS_mknodat) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_mknodat)", original, path);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_rmdir
     if (number == SYS_rmdir) {
-        const char* original = (const char*) a1;
-        const char* path = redirect_path(original, path_buf, sizeof(path_buf));
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
         debug_path_operation("syscall(SYS_rmdir)", original, path);
-        return real_syscall_call(number, (long) path, a2, a3, a4, a5, a6);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_unlink
     if (number == SYS_unlink) {
-        const char* original = (const char*) a1;
-        const char* path = redirect_path(original, path_buf, sizeof(path_buf));
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
         debug_path_operation("syscall(SYS_unlink)", original, path);
-        return real_syscall_call(number, (long) path, a2, a3, a4, a5, a6);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_unlinkat
     if (number == SYS_unlinkat) {
-        int dirfd = (int) a1;
-        const char* original = (const char*) a2;
-        const char* path = redirect_at_path(dirfd, original, path_buf, sizeof(path_buf));
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
         debug_path_operation("syscall(SYS_unlinkat)", original, path);
-        return real_syscall_call(number, a1, (long) path, a3, a4, a5, a6);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_open
     if (number == SYS_open) {
-        const char* original = (const char*) a1;
-        const char* path = redirect_path(original, path_buf, sizeof(path_buf));
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
         debug_path_operation("syscall(SYS_open)", original, path);
-        return real_syscall_call(number, (long) path, a2, a3, a4, a5, a6);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_openat
     if (number == SYS_openat) {
-        int dirfd = (int) a1;
-        const char* original = (const char*) a2;
-        const char* path = redirect_at_path(dirfd, original, path_buf, sizeof(path_buf));
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
         debug_path_operation("syscall(SYS_openat)", original, path);
-        return real_syscall_call(number, a1, (long) path, a3, a4, a5, a6);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_openat2
+    if (number == SYS_openat2) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_openat2)", original, path);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_link
+    if (number == SYS_link) {
+        const char* old_original = (const char*)argument1;
+        const char* new_original = (const char*)argument2;
+        const char* old_path = redirect_path(old_original, path_buffer, sizeof(path_buffer));
+        const char* new_path = redirect_path(new_original, second_path_buffer, sizeof(second_path_buffer));
+        if (old_path == NULL || new_path == NULL) return -1;
+        debug_path_operation("syscall(SYS_link old)", old_original, old_path);
+        debug_path_operation("syscall(SYS_link new)", new_original, new_path);
+        return real_syscall_call(number, (long)old_path, (long)new_path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_linkat
+    if (number == SYS_linkat) {
+        int olddirfd = (int)argument1;
+        const char* old_original = (const char*)argument2;
+        int newdirfd = (int)argument3;
+        const char* new_original = (const char*)argument4;
+        const char* old_path = redirect_at_path(olddirfd, old_original, path_buffer, sizeof(path_buffer));
+        const char* new_path = redirect_at_path(newdirfd, new_original, second_path_buffer, sizeof(second_path_buffer));
+        if (old_path == NULL || new_path == NULL) return -1;
+        debug_path_operation("syscall(SYS_linkat old)", old_original, old_path);
+        debug_path_operation("syscall(SYS_linkat new)", new_original, new_path);
+        return real_syscall_call(number, argument1, (long)old_path, argument3, (long)new_path, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_symlink
+    if (number == SYS_symlink) {
+        const char* target = (const char*)argument1;
+        const char* link_original = (const char*)argument2;
+        const char* link_path = redirect_path(link_original, path_buffer, sizeof(path_buffer));
+        if (link_path == NULL) return -1;
+        debug_path_operation("syscall(SYS_symlink link)", link_original, link_path);
+        return real_syscall_call(number, (long)target, (long)link_path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_symlinkat
+    if (number == SYS_symlinkat) {
+        const char* target = (const char*)argument1;
+        int newdirfd = (int)argument2;
+        const char* link_original = (const char*)argument3;
+        const char* link_path = redirect_at_path(newdirfd, link_original, path_buffer, sizeof(path_buffer));
+        if (link_path == NULL) return -1;
+        debug_path_operation("syscall(SYS_symlinkat link)", link_original, link_path);
+        return real_syscall_call(number, (long)target, argument2, (long)link_path, argument4, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_rename
     if (number == SYS_rename) {
-        const char* old_original = (const char*) a1;
-        const char* new_original = (const char*) a2;
-        const char* old_path = redirect_path(old_original, path_buf, sizeof(path_buf));
-        const char* new_path = redirect_path(new_original, path_buf_2, sizeof(path_buf_2));
+        const char* old_original = (const char*)argument1;
+        const char* new_original = (const char*)argument2;
+        const char* old_path = redirect_path(old_original, path_buffer, sizeof(path_buffer));
+        const char* new_path = redirect_path(new_original, second_path_buffer, sizeof(second_path_buffer));
+        if (old_path == NULL || new_path == NULL) return -1;
         debug_path_operation("syscall(SYS_rename old)", old_original, old_path);
         debug_path_operation("syscall(SYS_rename new)", new_original, new_path);
-        return real_syscall_call(number, (long) old_path, (long) new_path, a3, a4, a5, a6);
+        return real_syscall_call(number, (long)old_path, (long)new_path, argument3, argument4, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_renameat
     if (number == SYS_renameat) {
-        int olddirfd = (int) a1;
-        const char* old_original = (const char*) a2;
-        int newdirfd = (int) a3;
-        const char* new_original = (const char*) a4;
-        const char* old_path = redirect_at_path(olddirfd, old_original, path_buf, sizeof(path_buf));
-        const char* new_path = redirect_at_path(newdirfd, new_original, path_buf_2, sizeof(path_buf_2));
+        int olddirfd = (int)argument1;
+        const char* old_original = (const char*)argument2;
+        int newdirfd = (int)argument3;
+        const char* new_original = (const char*)argument4;
+        const char* old_path = redirect_at_path(olddirfd, old_original, path_buffer, sizeof(path_buffer));
+        const char* new_path = redirect_at_path(newdirfd, new_original, second_path_buffer, sizeof(second_path_buffer));
+        if (old_path == NULL || new_path == NULL) return -1;
         debug_path_operation("syscall(SYS_renameat old)", old_original, old_path);
         debug_path_operation("syscall(SYS_renameat new)", new_original, new_path);
-        return real_syscall_call(number, a1, (long) old_path, a3, (long) new_path, a5, a6);
+        return real_syscall_call(number, argument1, (long)old_path, argument3, (long)new_path, argument5, argument6);
     }
 #endif
 
 #ifdef SYS_renameat2
     if (number == SYS_renameat2) {
-        int olddirfd = (int) a1;
-        const char* old_original = (const char*) a2;
-        int newdirfd = (int) a3;
-        const char* new_original = (const char*) a4;
-        const char* old_path = redirect_at_path(olddirfd, old_original, path_buf, sizeof(path_buf));
-        const char* new_path = redirect_at_path(newdirfd, new_original, path_buf_2, sizeof(path_buf_2));
+        int olddirfd = (int)argument1;
+        const char* old_original = (const char*)argument2;
+        int newdirfd = (int)argument3;
+        const char* new_original = (const char*)argument4;
+        const char* old_path = redirect_at_path(olddirfd, old_original, path_buffer, sizeof(path_buffer));
+        const char* new_path = redirect_at_path(newdirfd, new_original, second_path_buffer, sizeof(second_path_buffer));
+        if (old_path == NULL || new_path == NULL) return -1;
         debug_path_operation("syscall(SYS_renameat2 old)", old_original, old_path);
         debug_path_operation("syscall(SYS_renameat2 new)", new_original, new_path);
-        return real_syscall_call(number, a1, (long) old_path, a3, (long) new_path, a5, a6);
+        return real_syscall_call(number, argument1, (long)old_path, argument3, (long)new_path, argument5, argument6);
     }
 #endif
 
-    return real_syscall_call(number, a1, a2, a3, a4, a5, a6);
+#ifdef SYS_chmod
+    if (number == SYS_chmod) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_chmod)", original, path);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_fchmodat
+    if (number == SYS_fchmodat) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_fchmodat)", original, path);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_fchmodat2
+    if (number == SYS_fchmodat2) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_fchmodat2)", original, path);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_chown
+    if (number == SYS_chown) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_chown)", original, path);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_lchown
+    if (number == SYS_lchown) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_lchown)", original, path);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_fchownat
+    if (number == SYS_fchownat) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_fchownat)", original, path);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_truncate
+    if (number == SYS_truncate) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_truncate)", original, path);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_truncate64
+    if (number == SYS_truncate64) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_truncate64)", original, path);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_utimensat
+    if (number == SYS_utimensat) {
+        int dirfd = (int)argument1;
+        const char* original = (const char*)argument2;
+        if (original == NULL) {
+            return real_syscall_call(number, argument1, argument2, argument3, argument4, argument5, argument6);
+        }
+        const char* path = redirect_at_path(dirfd, original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_utimensat)", original, path);
+        return real_syscall_call(number, argument1, (long)path, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_statfs
+    if (number == SYS_statfs) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_statfs)", original, path);
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_inotify_add_watch
+    if (number == SYS_inotify_add_watch) {
+        const char* original = (const char*)argument2;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        debug_path_operation("syscall(SYS_inotify_add_watch)", original, path);
+
+        long result = real_syscall_call(
+            number,
+            argument1,
+            (long)path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+
+        if (result == -1 && errno == EACCES && original != NULL && strcmp(original, "/") == 0) {
+            int saved_errno = errno;
+            result = real_syscall_call(
+                number,
+                argument1,
+                (long)app_files_dir(),
+                argument3,
+                argument4,
+                argument5,
+                argument6
+            );
+            if (result != -1) return result;
+            errno = saved_errno;
+        }
+        return result;
+    }
+#endif
+
+#ifdef SYS_connect
+    if (number == SYS_connect) {
+        struct sockaddr_un redirected_address;
+        socklen_t redirected_length = (socklen_t)argument3;
+        const struct sockaddr* redirected = redirect_unix_socket_address(
+            (const struct sockaddr*)argument2,
+            (socklen_t)argument3,
+            &redirected_address,
+            &redirected_length,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (redirected == NULL) return -1;
+        return real_syscall_call(number, argument1, (long)redirected, redirected_length, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_bind
+    if (number == SYS_bind) {
+        struct sockaddr_un redirected_address;
+        socklen_t redirected_length = (socklen_t)argument3;
+        const struct sockaddr* redirected = redirect_unix_socket_address(
+            (const struct sockaddr*)argument2,
+            (socklen_t)argument3,
+            &redirected_address,
+            &redirected_length,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (redirected == NULL) return -1;
+        return real_syscall_call(number, argument1, (long)redirected, redirected_length, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_sendto
+    if (number == SYS_sendto) {
+        struct sockaddr_un redirected_address;
+        socklen_t redirected_length = (socklen_t)argument6;
+        const struct sockaddr* redirected = redirect_unix_socket_address(
+            (const struct sockaddr*)argument5,
+            (socklen_t)argument6,
+            &redirected_address,
+            &redirected_length,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (redirected == NULL) return -1;
+        return real_syscall_call(number, argument1, argument2, argument3, argument4, (long)redirected, redirected_length);
+    }
+#endif
+
+#ifdef SYS_sendmsg
+    if (number == SYS_sendmsg) {
+        const struct msghdr* message = (const struct msghdr*)argument2;
+        if (message == NULL || message->msg_name == NULL) {
+            return real_syscall_call(number, argument1, argument2, argument3, argument4, argument5, argument6);
+        }
+        struct sockaddr_un redirected_address;
+        socklen_t redirected_length = (socklen_t)message->msg_namelen;
+        const struct sockaddr* redirected = redirect_unix_socket_address(
+            (const struct sockaddr*)message->msg_name,
+            (socklen_t)message->msg_namelen,
+            &redirected_address,
+            &redirected_length,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+        if (redirected == NULL) return -1;
+        if (redirected == (const struct sockaddr*)message->msg_name) {
+            return real_syscall_call(number, argument1, argument2, argument3, argument4, argument5, argument6);
+        }
+        struct msghdr redirected_message = *message;
+        redirected_message.msg_name = (void*)redirected;
+        redirected_message.msg_namelen = redirected_length;
+        return real_syscall_call(number, argument1, (long)&redirected_message, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_getxattr
+    if (number == SYS_getxattr) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_lgetxattr
+    if (number == SYS_lgetxattr) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_setxattr
+    if (number == SYS_setxattr) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_lsetxattr
+    if (number == SYS_lsetxattr) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_listxattr
+    if (number == SYS_listxattr) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_llistxattr
+    if (number == SYS_llistxattr) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_removexattr
+    if (number == SYS_removexattr) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+#ifdef SYS_lremovexattr
+    if (number == SYS_lremovexattr) {
+        const char* original = (const char*)argument1;
+        const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
+        if (path == NULL) return -1;
+        return real_syscall_call(number, (long)path, argument2, argument3, argument4, argument5, argument6);
+    }
+#endif
+
+    return real_syscall_call(
+        number,
+        argument1,
+        argument2,
+        argument3,
+        argument4,
+        argument5,
+        argument6
+    );
 }
 
 /* ------------------------------------------------------------------------- */
-/* canonical path wrappers                                                    */
+/* Timestamps, sizes and filesystem metadata                                  */
+/* ------------------------------------------------------------------------- */
+
+int utime(const char* pathname, const struct utimbuf* times) {
+    int (*fn)(const char*, const struct utimbuf*) =
+        REAL(utime, int (*)(const char*, const struct utimbuf*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, times);
+}
+
+int utimes(const char* pathname, const struct timeval times[2]) {
+    int (*fn)(const char*, const struct timeval[2]) =
+        REAL(utimes, int (*)(const char*, const struct timeval[2]));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, times);
+}
+
+int lutimes(const char* pathname, const struct timeval times[2]) {
+    int (*fn)(const char*, const struct timeval[2]) =
+        REAL(lutimes, int (*)(const char*, const struct timeval[2]));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, times);
+}
+
+int futimesat(int dirfd, const char* pathname, const struct timeval times[2]) {
+    int (*fn)(int, const char*, const struct timeval[2]) =
+        REAL(futimesat, int (*)(int, const char*, const struct timeval[2]));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, times);
+}
+
+int utimensat(int dirfd, const char* pathname, const struct timespec times[2], int flags) {
+    int (*fn)(int, const char*, const struct timespec[2], int) =
+        REAL(utimensat, int (*)(int, const char*, const struct timespec[2], int));
+    if (pathname == NULL) return fn(dirfd, NULL, times, flags);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(dirfd, path, times, flags);
+}
+
+int truncate(const char* pathname, off_t length) {
+    int (*fn)(const char*, off_t) = REAL(truncate, int (*)(const char*, off_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, length);
+}
+
+int truncate64(const char* pathname, off64_t length) {
+    int (*fn)(const char*, off64_t) =
+        OPT_REAL(truncate64, int (*)(const char*, off64_t));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return -1;
+    }
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, length);
+}
+
+int statfs(const char* pathname, struct statfs* buffer) {
+    int (*fn)(const char*, struct statfs*) =
+        REAL(statfs, int (*)(const char*, struct statfs*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, buffer);
+}
+
+int statfs64(const char* pathname, struct statfs64* buffer) {
+    int (*fn)(const char*, struct statfs64*) =
+        OPT_REAL(statfs64, int (*)(const char*, struct statfs64*));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return -1;
+    }
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, buffer);
+}
+
+int statvfs(const char* pathname, struct statvfs* buffer) {
+    int (*fn)(const char*, struct statvfs*) =
+        REAL(statvfs, int (*)(const char*, struct statvfs*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, buffer);
+}
+
+int statvfs64(const char* pathname, struct statvfs64* buffer) {
+    int (*fn)(const char*, struct statvfs64*) =
+        OPT_REAL(statvfs64, int (*)(const char*, struct statvfs64*));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return -1;
+    }
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, buffer);
+}
+
+/* ------------------------------------------------------------------------- */
+/* Extended-attribute path wrappers                                           */
+/* ------------------------------------------------------------------------- */
+
+ssize_t getxattr(const char* pathname, const char* name, void* value, size_t size) {
+    ssize_t (*fn)(const char*, const char*, void*, size_t) =
+        REAL(getxattr, ssize_t (*)(const char*, const char*, void*, size_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, name, value, size);
+}
+
+ssize_t lgetxattr(const char* pathname, const char* name, void* value, size_t size) {
+    ssize_t (*fn)(const char*, const char*, void*, size_t) =
+        REAL(lgetxattr, ssize_t (*)(const char*, const char*, void*, size_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, name, value, size);
+}
+
+int setxattr(
+    const char* pathname,
+    const char* name,
+    const void* value,
+    size_t size,
+    int flags
+) {
+    int (*fn)(const char*, const char*, const void*, size_t, int) =
+        REAL(setxattr, int (*)(const char*, const char*, const void*, size_t, int));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, name, value, size, flags);
+}
+
+int lsetxattr(
+    const char* pathname,
+    const char* name,
+    const void* value,
+    size_t size,
+    int flags
+) {
+    int (*fn)(const char*, const char*, const void*, size_t, int) =
+        REAL(lsetxattr, int (*)(const char*, const char*, const void*, size_t, int));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, name, value, size, flags);
+}
+
+ssize_t listxattr(const char* pathname, char* list, size_t size) {
+    ssize_t (*fn)(const char*, char*, size_t) =
+        REAL(listxattr, ssize_t (*)(const char*, char*, size_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, list, size);
+}
+
+ssize_t llistxattr(const char* pathname, char* list, size_t size) {
+    ssize_t (*fn)(const char*, char*, size_t) =
+        REAL(llistxattr, ssize_t (*)(const char*, char*, size_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, list, size);
+}
+
+int removexattr(const char* pathname, const char* name) {
+    int (*fn)(const char*, const char*) =
+        REAL(removexattr, int (*)(const char*, const char*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, name);
+}
+
+int lremovexattr(const char* pathname, const char* name) {
+    int (*fn)(const char*, const char*) =
+        REAL(lremovexattr, int (*)(const char*, const char*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    return fn(path, name);
+}
+
+/* ------------------------------------------------------------------------- */
+/* Canonical path wrappers                                                    */
 /* ------------------------------------------------------------------------- */
 
 char* realpath(const char* pathname, char* resolved_path) {
     char* (*fn)(const char*, char*) = REAL(realpath, char* (*)(const char*, char*));
-
-    const char* identity = executable_identity_for_path(pathname);
-    if (identity) return fn(identity, resolved_path);
-
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)), resolved_path);
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return NULL;
+    return fn(path, resolved_path);
 }
 
-#ifdef __GLIBC__
+/*
+ * With _FORTIFY_SOURCE enabled, calls such as
+ *
+ *     char resolved[PATH_MAX];
+ *     realpath(path, resolved);
+ *
+ * are compiled as __realpath_chk(path, resolved, sizeof(resolved)).  Pacman
+ * and libalpm are built with fortification, so intercepting realpath() alone
+ * is not sufficient.  Route the fortified entry point through the same
+ * virtual-root mapping while still using libc's real implementation.
+ */
+char* __realpath_chk(
+    const char* pathname,
+    char* resolved_path,
+    size_t resolved_path_size
+) {
+    if (resolved_path != NULL && resolved_path_size < PATH_MAX) {
+        errno = ENAMETOOLONG;
+        return NULL;
+    }
+
+    char* (*fn)(const char*, char*) = REAL(realpath, char* (*)(const char*, char*));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return NULL;
+
+    debug_path_operation("__realpath_chk", pathname, path);
+    return fn(path, resolved_path);
+}
+
 char* canonicalize_file_name(const char* pathname) {
     char* (*fn)(const char*) =
-        REAL(canonicalize_file_name, char* (*)(const char*));
-
-    const char* identity = executable_identity_for_path(pathname);
-    if (identity) return fn(identity);
-
-    char buf[REDIR_BUF_SIZE];
-    return fn(redirect_path(pathname, buf, sizeof(buf)));
+        OPT_REAL(canonicalize_file_name, char* (*)(const char*));
+    if (fn == NULL) {
+        errno = ENOSYS;
+        return NULL;
+    }
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return NULL;
+    return fn(path);
 }
-#endif
 
+/* ------------------------------------------------------------------------- */
+/* inotify                                                                    */
+/* ------------------------------------------------------------------------- */
+
+int inotify_add_watch(int fd, const char* pathname, uint32_t mask) {
+    int (*fn)(int, const char*, uint32_t) =
+        REAL(inotify_add_watch, int (*)(int, const char*, uint32_t));
+
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+
+    int watch = fn(fd, path, mask);
+
+    /* Android rejects a watch on the real filesystem root. */
+    if (watch == -1 && errno == EACCES && strcmp(pathname, "/") == 0) {
+        int saved_errno = errno;
+        watch = fn(fd, app_files_dir(), mask);
+        if (watch != -1) return watch;
+        errno = saved_errno;
+    }
+
+    return watch;
+}

@@ -133,7 +133,7 @@ fun IDENavigation() {
                     "Code editor" -> EditorSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Compiler" -> CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Formatter" -> FormatterSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Plugins" -> PluginsSettingsScreen(onBack = { backStack.removeLastOrNull() })
+                    "Extensions" -> PluginsSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Terminal" -> TerminalScreen(onNavigateBack = { backStack.removeLastOrNull() }) //GitSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Toolchains" -> JdkSettingsPanel { backStack.removeLastOrNull() }
                     "About" -> AboutSettingsScreen(onBack = { backStack.removeLastOrNull() })

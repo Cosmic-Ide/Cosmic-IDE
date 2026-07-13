@@ -9,33 +9,43 @@ package org.cosmicide.editor.language
 
 import android.content.Context
 import android.util.Log
-import org.cosmicide.editor.lsp.MetalsLspServerProvider
-import org.cosmicide.editor.lsp.configureLspLanguage
+import org.cosmicide.App
+import org.cosmicide.editor.lsp.ExistingProcessLspConnection
 import org.cosmicide.exec.ProcessExecutor
-import org.cosmicide.ide.editor.EditorLanguageProvider
-import org.cosmicide.ide.editor.EditorLanguageRequest
+import org.cosmicide.ide.editor.LspServerDefinition
+import org.cosmicide.ide.editor.LspServerProvider
 import org.cosmicide.ide.editor.LspServerRequest
 import org.cosmicide.project.Project
 import java.io.InputStream
 
-object ScalaEditorLanguageProvider : EditorLanguageProvider {
+object ScalaEditorLanguageProvider : LspServerProvider {
     override val id = "org.cosmicide.editor.scala"
+    override val displayName = "Scala language support"
+    override val description = "Scala editing powered by Metals"
     override val priority = 300
 
     private var metalsProcess: Process? = null
     private var metalsProjectRoot: String? = null
 
-    override fun supports(request: EditorLanguageRequest): Boolean {
-        return request.file.extension in SCALA_EXTENSIONS
+    override fun supports(request: LspServerRequest): Boolean {
+        return request.extension in SCALA_EXTENSIONS
     }
 
-    override fun configure(request: EditorLanguageRequest): Boolean {
-        val lspRequest = LspServerRequest(
-            project = request.project,
-            file = request.file
+    override fun createDefinition(request: LspServerRequest): LspServerDefinition {
+        return LspServerDefinition(
+            id = id,
+            fileExtension = request.extension,
+            displayName = "Metals",
+            connectionFactory = {
+                ExistingProcessLspConnection {
+                    val context = App.instance.get()
+                        ?: throw IllegalStateException("Application context is unavailable")
+                    startMetalsProcess(context, request.project)
+                }
+            },
+            grammarScopeName = "source.scala",
+            initializationTimeoutMillis = 120_000
         )
-        val definition = MetalsLspServerProvider.createDefinition(lspRequest)
-        return request.editor.configureLspLanguage(lspRequest, definition)
     }
 
     @Synchronized

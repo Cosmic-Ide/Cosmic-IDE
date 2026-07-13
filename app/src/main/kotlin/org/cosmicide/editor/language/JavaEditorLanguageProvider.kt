@@ -9,36 +9,51 @@ package org.cosmicide.editor.language
 
 import android.content.Context
 import android.util.Log
+import org.cosmicide.App
 import org.cosmicide.common.Prefs
-import org.cosmicide.editor.lsp.JdtLspServerProvider
-import org.cosmicide.editor.lsp.configureLspLanguage
+import org.cosmicide.editor.lsp.ExistingProcessLspConnection
 import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.exec.linux.LinuxProcessRunner
-import org.cosmicide.ide.editor.EditorLanguageProvider
-import org.cosmicide.ide.editor.EditorLanguageRequest
+import org.cosmicide.ide.editor.LspServerDefinition
+import org.cosmicide.ide.editor.LspServerProvider
 import org.cosmicide.ide.editor.LspServerRequest
 import org.cosmicide.project.Project
+import org.eclipse.lsp4j.CodeLensOptions
+import org.eclipse.lsp4j.ServerCapabilities
+import org.eclipse.lsp4j.SignatureHelpOptions
+import org.eclipse.lsp4j.jsonrpc.messages.Either
 import java.io.File
 import java.io.InputStream
 
-object JavaEditorLanguageProvider : EditorLanguageProvider {
+object JavaEditorLanguageProvider : LspServerProvider {
     override val id = "org.cosmicide.editor.java"
+    override val displayName = "Java language support"
+    override val description = "Java editing powered by Eclipse JDT Language Server"
     override val priority = 300
 
     private var jdtLspProcess: Process? = null
     private var jdtProjectRoot: String? = null
 
-    override fun supports(request: EditorLanguageRequest): Boolean {
-        return request.file.extension == "java" && Prefs.useJdtLS
+    override fun supports(request: LspServerRequest): Boolean {
+        return request.extension == "java" && Prefs.useJdtLS
     }
 
-    override fun configure(request: EditorLanguageRequest): Boolean {
-        val lspRequest = LspServerRequest(
-            project = request.project,
-            file = request.file
+    override fun createDefinition(request: LspServerRequest): LspServerDefinition {
+        return LspServerDefinition(
+            id = id,
+            fileExtension = "java",
+            displayName = "JDT LS",
+            connectionFactory = {
+                ExistingProcessLspConnection {
+                    val context = App.instance.get()
+                        ?: throw IllegalStateException("Application context is unavailable")
+                    startJdtlsProcess(context, request.project)
+                }
+            },
+            grammarScopeName = "source.java",
+            expectedCapabilities = createJdtCapabilities(),
+            configuration = createJdtConfiguration()
         )
-        val definition = JdtLspServerProvider.createDefinition(lspRequest)
-        return request.editor.configureLspLanguage(lspRequest, definition)
     }
 
     @Synchronized
@@ -153,6 +168,38 @@ object JavaEditorLanguageProvider : EditorLanguageProvider {
                         file.name.endsWith(".jar")
             }
             ?.absolutePath
+    }
+
+    private fun createJdtCapabilities(): ServerCapabilities {
+        return ServerCapabilities().apply {
+            codeActionProvider = Either.forLeft(true)
+            documentFormattingProvider = Either.forLeft(true)
+            signatureHelpProvider = SignatureHelpOptions(listOf("(", ","))
+            diagnosticProvider = null
+            definitionProvider = Either.forLeft(true)
+            hoverProvider = Either.forLeft(true)
+            inlayHintProvider = Either.forLeft(true)
+            codeLensProvider = CodeLensOptions(true)
+            semanticTokensProvider = null
+            documentHighlightProvider = Either.forLeft(false)
+        }
+    }
+
+    private fun createJdtConfiguration(): Map<String, Any> {
+        return mapOf(
+            "settings" to mapOf(
+                "java" to mapOf(
+                    "autobuild" to mapOf("enabled" to false),
+                    "references" to mapOf("includeDecompiledSources" to false),
+                    "completion" to mapOf(
+                        "guessMethodArguments" to false,
+                        "favoriteStaticMembers" to emptyList<String>()
+                    ),
+                    "implementationsCodeLens" to mapOf("enabled" to false),
+                    "referencesCodeLens" to mapOf("enabled" to false)
+                )
+            )
+        )
     }
 
     private const val TAG = "JavaLanguageProvider"

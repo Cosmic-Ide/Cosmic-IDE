@@ -19,10 +19,14 @@ fun CodeEditor.configureLanguageFor(file: File) {
         file = file
     )
 
-    val configured = CosmicPluginHost.extensionRegistry
-        .extensions(EditorExtensionPoints.LANGUAGE_PROVIDER)
+    val configured = CosmicPluginHost
+        .enabledExtensions(EditorExtensionPoints.LANGUAGE_PROVIDER)
         .asSequence()
-        .filter { it.supports(request) }
+        .filter { provider ->
+            runCatching { provider.supports(request) }
+                .onFailure { Log.w(TAG, "Language provider ${provider.id} failed to match", it) }
+                .getOrDefault(false)
+        }
         .any { provider ->
             runCatching {
                 provider.configure(request)

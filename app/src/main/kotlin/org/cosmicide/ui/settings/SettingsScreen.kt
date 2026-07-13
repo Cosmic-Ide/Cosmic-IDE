@@ -88,7 +88,11 @@ sealed class SettingsCategory(
     )
 
     data object Plugins :
-        SettingsCategory("Plugins", "Explore and install plugins", Icons.Default.Hub)
+        SettingsCategory(
+            "Extensions",
+            "Manage providers, plugins, and language servers",
+            Icons.Default.Hub
+        )
     data object Terminal : SettingsCategory(
         "Terminal",
         "Run commands in the built-in terminal",

@@ -49,5 +49,8 @@ object PreferenceKeys {
     const val GIT_API_KEY = "git_api_key"
 
     const val PLUGIN_REPOSITORY = "plugin_repository"
+    const val CUSTOM_LSP_CONFIGURATIONS = "custom_lsp_configurations"
+
+    const val EXTENSION_ENABLED_PREFIX = "extension_enabled."
 
 }

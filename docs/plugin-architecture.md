@@ -1,157 +1,419 @@
-# Plugin Architecture
+# Cosmic IDE Extension Architecture
 
-## Problem framing
+## Purpose
 
-Cosmic IDE needs extension points similar to VS Code or IntelliJ without making plugins depend on
-app internals. The old plugin pieces lived in `util` and exposed low-level method hooks as the
-primary API. That makes plugins hard to reason about, hard to unload, and tightly coupled to
-implementation details.
+Cosmic IDE uses typed extension points to let built-in features and third-party plugins contribute
+behavior without depending on app implementation classes. The architecture separates contracts,
+runtime loading, application integration, and user configuration so each part can evolve without
+turning the plugin API into a collection of hooks.
 
-Primary use cases:
+The first supported extension surfaces are:
 
-- Load installed plugins from the app plugin directory.
-- Let plugins contribute IDE behavior through typed extension points.
-- Let plugins contribute LSP-backed language support without reimplementing app/editor wiring.
-- Keep low-level runtime hooks available for app-owned integrations, but separate from the public
-  plugin API.
-- Allow built-in features and third-party plugins to use the same registration path.
+- editor language providers;
+- Language Server Protocol (LSP) server providers;
+- editor formatter providers.
 
-Open constraints:
+Built-in providers use exactly the same registry and resolution rules as plugin contributions.
 
-- Plugin signing, trust policy, repository metadata, and user enable/disable persistence still need
-  product decisions.
-- Runtime isolation is classloader-level, not process-level.
-- Current first extension surfaces are editor language selection and LSP language server
-  definitions; formatting has a stable contract but is not fully routed through the editor yet.
+## Module boundaries
 
-## Proposed boundaries
+### `:plugin-api`
 
-- `:plugin-api`: pure JVM contracts for descriptors, lifecycle, extension registry, service
-  registry, and plugin manager results. This is the stable API plugin authors compile against.
-- `:ide-api`: Android/editor-facing API for IDE extension contracts such as
-  `EditorLanguageProvider`, `LspServerProvider`, and `EditorFormatterProvider`.
-- `:plugin-runtime`: Android runtime implementation for manifest parsing, dex/apk/jar loading,
-  plugin activation, plugin cleanup, and low-level Pine hooks.
-- `:app`: owns app startup, built-in extension registration, installed plugin loading, and concrete
-  editor integrations.
-- `:util`: general utilities only. It no longer owns plugin API or hook runtime classes.
+This is the stable, platform-neutral plugin contract. It owns:
 
-## Consistency map
+- `CosmicPlugin` activation and deactivation;
+- `PluginDescriptor` and dependency metadata;
+- `PluginContext`;
+- typed extension and service registries;
+- registration disposal and owner-based cleanup;
+- `ConfigurableExtension`, the common identity and settings metadata contract.
 
-- Extension registration is in-memory and synchronous. Priority determines deterministic provider
-  ordering.
-- Plugin activation is all-or-nothing for registered extensions: if activation fails, runtime
-  disposes plugin resources and unregisters that plugin owner.
-- Plugin unload calls `deactivate`, disposes registered resources, and unregisters all extensions
-  owned by that plugin id.
-- Installed plugin discovery is read-only from `FileUtil.pluginDir`; install/update/delete flows
-  should be added as separate commands with explicit validation.
+Plugin artifacts should depend on this module and, only when they contribute IDE behavior, on
+`:ide-api`. They must not compile against `:app` or `:plugin-runtime`.
 
-## API or event contracts
+### `:ide-api`
 
-Plugin entry point:
+This module defines IDE-facing extension contracts. It currently owns:
+
+- `EditorLanguageProvider` for advanced editor integrations;
+- `LspServerProvider` for standard LSP-based language support;
+- `EditorFormatterProvider` for document and range formatting;
+- request, result, connection, and server-definition data types;
+- `EditorExtensionPoints`, the canonical extension point identifiers.
+
+An LSP plugin should normally use `LspServerProvider`. Direct `EditorLanguageProvider`
+implementations are intended for integrations that cannot be represented by the LSP adapter.
+
+### `:plugin-runtime`
+
+The Android runtime owns discovery, manifest parsing, class loading, activation, unload, and
+cleanup.
+It also owns low-level runtime hooks. Hooks are an implementation mechanism, not a public extension
+model, and should not be used where a typed extension point can express the same behavior.
+
+### `:app`
+
+The app owns composition:
+
+- creation of the global extension registry;
+- registration of built-in extensions;
+- loading installed plugins;
+- persisted extension enablement policy;
+- routing editor requests to enabled providers;
+- the Sora Editor LSP adapter;
+- custom user-defined LSP configuration and process startup;
+- settings UI.
+
+### `:util`
+
+General utilities belong here. Plugin contracts and runtime lifecycle code do not.
+
+## Core model
+
+An extension contribution has three identities:
+
+| Identity           | Meaning                             | Example                                  |
+|--------------------|-------------------------------------|------------------------------------------|
+| Extension point id | The contract being implemented      | `org.cosmicide.editor.lspServerProvider` |
+| Extension id       | Stable identity of one contribution | `org.cosmicide.editor.java`              |
+| Owner plugin id    | Lifecycle owner of the registration | `org.cosmicide.core`                     |
+
+The extension id is used for persisted settings. It must remain stable across releases. Renaming a
+class or moving its package is harmless if its extension id does not change. Changing the id creates
+a new settings identity and loses the user's previous enablement override.
+
+The owner plugin id is used for cleanup. Unloading a plugin removes all registrations owned by that
+plugin, regardless of extension point.
+
+## Configurable extensions
+
+Every editor extension contract implements `ConfigurableExtension`:
+
+```kotlin
+interface ConfigurableExtension {
+    val id: String
+    val displayName: String
+        get() = id
+    val description: String
+        get() = ""
+    val enabledByDefault: Boolean
+        get() = true
+    val canDisable: Boolean
+        get() = true
+}
+```
+
+`displayName` and `description` are shown in Settings > Extensions. Providers should supply concise
+user-facing values. `enabledByDefault` is consulted only when no user override exists.
+
+Infrastructure adapters and terminal fallbacks should set `canDisable` to `false`. They remain in
+the registry but are not shown as independent switches. For example, the generic LSP editor adapter
+cannot be disabled because disabling individual LSP providers is the meaningful user operation.
+
+Enablement does not unregister or unload an extension. It is a persisted resolution policy:
+
+1. all registrations remain available for inspection and lifecycle cleanup;
+2. the resolver reads the provider's current setting;
+3. disabled providers are removed before `supports` is called;
+4. the remaining providers are evaluated by priority.
+
+This distinction matters for plugin lifecycle. Toggling one contribution does not deactivate its
+owner plugin or disable unrelated contributions from that plugin.
+
+Settings are stored under `extension_enabled.<extension-id>`. A missing preference means
+`enabledByDefault`. Changes affect new routing and formatting requests immediately. Existing editor
+sessions and already-running server processes are not forcefully terminated.
+
+## Registration and ordering
+
+Registrations are synchronous and in-memory. The registry orders them by descending priority, then
+by owner plugin id for deterministic ties.
 
 ```kotlin
 class MyPlugin : CosmicPlugin {
     override fun activate(context: PluginContext) {
-        val disposable = context.extensions.register(
-            point = EditorExtensionPoints.LANGUAGE_PROVIDER,
-            extension = MyLanguageProvider(),
+        val registration = context.extensions.register(
+            point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
+            extension = MyLspProvider(),
             ownerPluginId = context.descriptor.id,
-            priority = 300
+            priority = 350
         )
-        context.registerDisposable(disposable)
+        context.registerDisposable(registration)
     }
 }
 ```
 
-Plugin manifest:
+Always register the returned `Disposable` with `PluginContext`. The runtime also unregisters by
+owner id during unload, but explicit disposal keeps resource ownership clear and handles partial
+activation failures.
 
-```json
-{
-  "id": "com.example.cosmic.myplugin",
-  "name": "My Plugin",
-  "version": "1.0.0",
-  "entryClass": "com.example.MyPlugin",
-  "classPath": ["plugin.apk"],
-  "capabilities": ["editor.language"]
-}
+Priority is a selection mechanism, not a load order. A provider should use the lowest priority that
+expresses its precedence:
+
+- `500`: user-defined custom LSP provider;
+- `300`: bundled language servers;
+- `200`: generic LSP editor adapter;
+- `Int.MIN_VALUE`: plain-text fallback.
+
+Third-party providers may choose their own value. A provider with a higher priority wins only when
+its `supports` method returns `true` for the current request.
+
+## Editor routing
+
+Opening a file creates an `EditorLanguageRequest`. Routing proceeds as follows:
+
+```text
+file opened
+  -> enabled EditorLanguageProvider registrations
+  -> provider.supports(request), in priority order
+  -> provider.configure(request)
+  -> stop at the first provider returning true
+  -> plain text fallback when none succeeds
 ```
 
-Editor language providers receive `EditorLanguageRequest` with `CodeEditor`, `Project`, and `File`,
-then return `true` when they configured the editor. Providers are ordered by descending priority.
+Provider exceptions are logged and treated as a failed attempt, allowing the next matching provider
+to run. `supports` should be fast, deterministic, and free of side effects. Expensive startup
+belongs
+in `configure` or in the connection factory used by an LSP definition.
 
-LSP plugins should usually register `EditorExtensionPoints.LSP_SERVER_PROVIDER` instead of
-`LANGUAGE_PROVIDER`. The app owns the Sora `LspEditor` adapter, TextMate wrapper setup,
-configuration dispatch, and editor enable/disable state.
+## LSP architecture
+
+All bundled and custom language servers implement `LspServerProvider`. Java, Kotlin, and Scala own
+their process launchers and server definitions in their respective language provider objects. There
+is no second JDT-specific launcher in the generic LSP package.
+
+The generic `LspEditorLanguageProvider` performs this flow:
+
+```text
+EditorLanguageRequest
+  -> enabled LspServerProvider registrations
+  -> first provider supporting the file
+  -> LspServerDefinition
+  -> app-owned Sora LSP adapter
+  -> LspServerConnection
+  -> server process stdin/stdout
+```
+
+The app-owned adapter is responsible for editor mutability during connection, initialization
+timeouts, TextMate wrapper selection, capability overrides, configuration dispatch, inlay hints,
+signature help, and optional protocol tracing. Plugins do not depend on Sora's `LspEditor` classes.
+
+### Implementing an LSP provider
 
 ```kotlin
-class MyLspPlugin : CosmicPlugin {
-    override fun activate(context: PluginContext) {
-        context.registerDisposable(
-            context.extensions.register(
-                point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
-                extension = MyLspProvider(),
-                ownerPluginId = context.descriptor.id,
-                priority = 300
-            )
-        )
-    }
-}
-
-class MyLspProvider : LspServerProvider {
-    override val id = "com.example.my-language.lsp"
+class RustLspProvider : LspServerProvider {
+    override val id = "com.example.rust-analyzer"
+    override val displayName = "Rust language support"
+    override val description = "Rust editing powered by rust-analyzer"
+    override val priority = 350
 
     override fun supports(request: LspServerRequest): Boolean {
-        return request.extension == "my"
+        return request.extension.equals("rs", ignoreCase = true)
     }
 
     override fun createDefinition(request: LspServerRequest): LspServerDefinition {
         return LspServerDefinition(
             id = id,
-            fileExtension = "my",
-            displayName = "My Language Server",
-            grammarScopeName = "source.my",
-            connectionFactory = MyServerConnectionFactory()
+            fileExtension = "rs",
+            displayName = "rust-analyzer",
+            grammarScopeName = "source.rust",
+            connectionFactory = RustConnectionFactory(),
+            initializationTimeoutMillis = 120_000
         )
     }
 }
 ```
 
-## Tradeoffs
+`LspServerConnectionFactory` creates a connection for a request. A connection must:
 
-- A modular monolith is the right boundary now. Separate services would add deployment and IPC
-  complexity without solving the IDE extension problem.
-- The public API is small and typed. That is less flexible than arbitrary hooks, but safer to evolve
-  and unload.
-- Runtime hooks remain available in `:plugin-runtime` because current app behavior uses them, but
-  they are no longer the extension model.
-- Generic editor language providers still expose Sora editor types for advanced integrations. LSP
-  plugins can use `LspServerProvider`, which avoids direct `CodeEditor` and `LspEditor` coupling.
+- start lazily when `start()` is called;
+- expose server stdin as `outputStream`;
+- expose server stdout as `inputStream`;
+- report whether it is closed;
+- stop and release resources from `close()`.
 
-## ADR outline
+Server diagnostics must go to stderr. Writing logs to stdout corrupts LSP framing.
 
-Decision: introduce dedicated `plugin-api`, `ide-api`, and `plugin-runtime` modules, route editor
-language selection through a typed extension registry, and add a dedicated LSP server provider API
-for LSP-backed languages.
+`LspServerDefinition` validates non-empty ids, file extensions, display names, and positive
+timeouts.
+Optional initialization settings are deliberately data-oriented so plugins do not need app classes.
 
-Accepted option: modular monolith with explicit API/runtime boundaries.
+## Custom language servers
 
-Rejected option: keep plugin/hook classes in `util`. It preserves current coupling and makes every
-plugin depend on internal runtime mechanics.
+Settings > Extensions contains a built-in Custom language servers extension. Users can add a server
+without building a plugin by supplying:
 
-Rejected option: full VS Code-style extension host process now. It improves isolation but requires
-IPC, process lifecycle policy, and a much larger API surface before the app has stable extension
-points.
+- a display name;
+- one file extension, without a leading dot;
+- shell starter code that launches an LSP server using standard input and output.
 
-Follow-up risks:
+Example:
 
-- Add plugin signing and repository trust before enabling remote install.
-- Persist user enable/disable state instead of relying on `enabledByDefault`.
-- Formatter providers are separate from LSP providers. An LSP integration can also register an
-  `EditorFormatterProvider`, but local formatters such as ktfmt and google-java-format should not be
-  coupled to LSP server startup.
-- Route commands, project import, diagnostics, and terminal contributions through typed extension
-  points.
-- Add lifecycle ownership for starting/stopping plugin-provided LSP server processes.
-- Add compatibility/version checks for `PluginDescriptor.dependencies`.
+```sh
+rust-analyzer
+```
+
+Starter code runs through `sh -c` with the project root as its working directory. The process
+receives
+Cosmic IDE's toolchain environment and these additional variables:
+
+| Variable              | Value                                            |
+|-----------------------|--------------------------------------------------|
+| `COSMIC_PROJECT_ROOT` | Absolute path of the open project root           |
+| `COSMIC_FILE`         | Absolute path of the file that triggered startup |
+
+The server must speak LSP over stdin/stdout and must remain attached to the shell process. For a
+multi-step script, use `exec` for the final server command so closing the editor connection also
+terminates the server cleanly:
+
+```sh
+export RUST_LOG=warn
+exec rust-analyzer
+```
+
+Custom entries have their own enabled switch. The Custom language servers provider also has a global
+switch. Both must be enabled for an entry to match. Entries are persisted as JSON in application
+preferences and are read on each routing request, so add, edit, delete, and enable operations do not
+require an app restart.
+
+The custom provider has priority `500`. A custom entry for `java`, for example, takes precedence
+over
+the bundled Java provider while that entry is enabled. Disable the entry to restore bundled routing.
+Only the first enabled custom entry for a file extension is selected; avoid duplicate enabled
+entries
+for the same extension.
+
+Starter code is executable user configuration. It has the same filesystem and process permissions as
+Cosmic IDE. Remote plugin repositories must never populate or execute custom starter code without an
+explicit trust and confirmation flow.
+
+## Formatter providers
+
+Formatters are independent contributions. They do not need an LSP server and do not start one.
+
+```kotlin
+class RustfmtProvider : EditorFormatterProvider {
+    override val id = "com.example.rustfmt"
+    override val displayName = "rustfmt"
+    override val description = "Formats Rust source files"
+    override val priority = 200
+
+    override fun supports(request: EditorFormatterRequest): Boolean {
+        return request.file.extension == "rs"
+    }
+
+    override fun format(request: EditorFormatterRequest): EditorFormatterResult {
+        return EditorFormatterResult(text = formatRust(request.text))
+    }
+}
+```
+
+The formatter router filters disabled providers, calls matching providers by priority, logs
+failures,
+and uses the first successful result. A result can replace the whole document or a specific
+`TextRange`.
+
+An LSP plugin may also register a formatter provider, but that provider should be a separate class
+and registration. Keeping formatting separate prevents a local formatter from accidentally coupling
+its lifecycle to a language server process.
+
+## Plugin manifest
+
+Installed plugins live in their own directory under the app plugin root and include a manifest:
+
+```json
+{
+  "id": "com.example.cosmic.rust",
+  "name": "Rust Support",
+  "version": "1.0.0",
+  "entryClass": "com.example.rust.RustPlugin",
+  "classPath": ["plugin.apk"],
+  "capabilities": ["editor.lsp", "editor.formatter"],
+  "enabledByDefault": true
+}
+```
+
+Manifest `enabledByDefault` controls initial plugin activation. It is separate from
+`ConfigurableExtension.enabledByDefault`, which controls an individual contribution after the plugin
+has activated.
+
+Plugin activation is atomic with respect to owned registrations. If activation fails, the runtime
+disposes collected resources and unregisters the owner. Unload calls `deactivate`, disposes plugin
+resources, and unregisters all contributions owned by the plugin id.
+
+## Failure behavior
+
+- A failing plugin activation leaves no active registrations from that owner.
+- A provider throwing from `supports`, `configure`, or `format` is logged; routing continues where
+  the
+  caller can safely try another provider.
+- An LSP process that cannot start causes connection failure and leaves the editor adapter
+  responsible
+  for reporting and recovery.
+- Malformed custom LSP JSON is ignored and logged instead of crashing settings or editor startup.
+- Invalid custom names, file extensions, and empty starter code are rejected before persistence.
+- Disabling a provider affects future requests. It does not kill existing process connections.
+
+## Compatibility rules for plugin authors
+
+1. Treat extension ids as permanent persisted API.
+2. Depend only on `:plugin-api` and the extension contracts needed from `:ide-api`.
+3. Do not cast registry, request, or service objects to app implementation types.
+4. Keep `supports` side-effect free.
+5. Start processes and allocate resources lazily.
+6. Close every process, stream, listener, and registration through plugin lifecycle disposal.
+7. Use additive manifest and API evolution; older hosts may not understand new capabilities.
+8. Keep server logs off stdout when using LSP stdio transport.
+
+## Testing guidance
+
+Extension tests should cover:
+
+- stable id and metadata;
+- supported and unsupported file extensions;
+- priority conflicts with another matching provider;
+- default enablement and persisted overrides;
+- disabled providers never receiving `supports` calls;
+- process startup failure and connection close;
+- whole-document and range formatter results;
+- plugin activation rollback and unload cleanup;
+- malformed custom configuration persistence;
+- custom LSP precedence over bundled providers.
+
+The app compilation task used for integration verification is:
+
+```sh
+./gradlew :app:compileDevDebugKotlin
+```
+
+## Architectural decisions
+
+Cosmic IDE uses a modular monolith. Separate extension-host processes would provide stronger
+isolation, but require IPC, process supervision, API serialization, compatibility negotiation, and a
+permission model. Those costs are not justified until the typed in-process API stabilizes.
+
+Typed extension points were chosen over arbitrary method hooks. Hooks remain in `:plugin-runtime`
+for app-owned compatibility work, but are not a supported plugin contract because they couple
+plugins
+to implementation details and cannot provide reliable compatibility or cleanup.
+
+Enablement is a resolution policy instead of registry mutation. This preserves plugin ownership,
+makes settings reversible, avoids reactivation for a single contribution, and keeps registry
+inspection truthful.
+
+Bundled language servers implement the same `LspServerProvider` contract as plugins and custom user
+configuration. This prevents language-specific editor wiring from diverging and gives precedence,
+enablement, failure handling, and connection lifecycle one implementation path.
+
+## Remaining work
+
+- Define plugin signing, repository trust, and install/update/delete transactions before remote
+  installation is enabled.
+- Add explicit plugin-level persisted enable/disable and reload controls in addition to contribution
+  switches.
+- Add dependency and host API compatibility checks before plugin activation.
+- Introduce process-group ownership so custom shell scripts with child processes are always stopped.
+- Add typed extension points for commands, project import, diagnostics, terminals, and settings
+  pages.
+- Consider an out-of-process extension host when the API and permission model are mature enough to
+  serialize safely.

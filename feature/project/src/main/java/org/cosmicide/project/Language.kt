@@ -7,10 +7,7 @@
 
 package org.cosmicide.project
 
-import org.cosmicide.project.templates.javaClass
-import org.cosmicide.project.templates.kotlinClass
 import java.io.Serializable
-import java.util.Locale
 
 /**
  * A sealed class representing a programming language.
@@ -23,28 +20,11 @@ sealed class Language(val extension: String) : Serializable {
     abstract val name: String
 
     /**
-     * Generates the content of a class file for the language.
-     *
-     * @param name the name of the class
-     * @param packageName the name of the package the class belongs to
-     * @return the generated class file content as a string
-     */
-    abstract fun classFileContent(name: String, packageName: String): String
-
-    /**
      * An object representing the Java programming language.
      */
     @kotlinx.serialization.Serializable
     object Java : Language("java") {
         override val name = "Java"
-
-        override fun classFileContent(name: String, packageName: String): String {
-            return javaClass(
-                name, packageName, """
-                System.out.println("Hello, World!");
-            """.trimIndent()
-            )
-        }
     }
 
     /**
@@ -53,14 +33,14 @@ sealed class Language(val extension: String) : Serializable {
     @kotlinx.serialization.Serializable
     object Kotlin : Language("kt") {
         override val name = "Kotlin"
+    }
 
-        override fun classFileContent(name: String, packageName: String): String {
-            return kotlinClass(
-                name, packageName, """
-                println("Hello World!")
-            """.trimIndent()
-            )
-        }
+    /**
+     * An object representing the Scala programming language.
+     */
+    @kotlinx.serialization.Serializable
+    object Scala : Language("scala") {
+        override val name = "Scala"
     }
 }
 
@@ -75,6 +55,7 @@ fun language(extension: String): Language {
     return when (extension) {
         "java" -> Language.Java
         "kt" -> Language.Kotlin
+        "scala" -> Language.Scala
         else -> throw IllegalArgumentException("Unsupported extension: $extension")
     }
 }

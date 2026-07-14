@@ -37,9 +37,15 @@ data class Project(
      * The source directory of the project, based on the language used.
      */
     val srcDir: File
-        get() = when (language) {
-            is Language.Java -> File(root, "src/main/java")
-            is Language.Kotlin -> File(root, "src/main/kotlin")
+        get() {
+            val languageDirectory = when (language) {
+                is Language.Java -> "java"
+                is Language.Kotlin -> "kotlin"
+                is Language.Scala -> "scala"
+            }
+            val sourceSet = root.resolve("src/main/$languageDirectory")
+            val applicationSourceSet = root.resolve("app/src/main/$languageDirectory")
+            return applicationSourceSet.takeIf { it.isDirectory } ?: sourceSet
         }
 
     /**

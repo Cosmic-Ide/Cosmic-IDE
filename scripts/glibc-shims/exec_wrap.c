@@ -3,11 +3,13 @@
 #include "exec_wrap.h"
 
 #include <dlfcn.h>
+#include <elf.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <pthread.h>
 #include <spawn.h>
+#include <stdint.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -209,8 +211,93 @@ static int is_probably_elf_file(const char* path) {
     return n == 4 && magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F';
 }
 
+/*
+ * Returns:
+ *   1  ELF has PT_INTERP and may be started through a dynamic linker
+ *   0  valid ELF with no PT_INTERP (static executable / static PIE)
+ *  -1  unreadable, malformed, unsupported, or truncated ELF
+ *
+ * Merely checking the ELF magic is not enough. A static ELF cannot be passed
+ * to ld-linux as the program argument.
+ */
+static int elf_has_program_interpreter(const char* path) {
+    if (!path || !*path) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    int fd = open(path, O_RDONLY | O_CLOEXEC);
+    if (fd < 0) return -1;
+
+    unsigned char ident[EI_NIDENT];
+    ssize_t n = pread(fd, ident, sizeof(ident), 0);
+    if (n != (ssize_t) sizeof(ident) ||
+        ident[EI_MAG0] != ELFMAG0 ||
+        ident[EI_MAG1] != ELFMAG1 ||
+        ident[EI_MAG2] != ELFMAG2 ||
+        ident[EI_MAG3] != ELFMAG3) {
+        close(fd);
+        errno = ENOEXEC;
+        return -1;
+    }
+
+    /* Cosmic currently launches aarch64 Linux binaries, hence ELF64/LSB. */
+    if (ident[EI_CLASS] != ELFCLASS64 || ident[EI_DATA] != ELFDATA2LSB) {
+        close(fd);
+        errno = ENOEXEC;
+        return -1;
+    }
+
+    Elf64_Ehdr ehdr;
+    n = pread(fd, &ehdr, sizeof(ehdr), 0);
+    if (n != (ssize_t) sizeof(ehdr) ||
+        ehdr.e_ehsize < sizeof(Elf64_Ehdr) ||
+        ehdr.e_phentsize < sizeof(Elf64_Phdr)) {
+        close(fd);
+        errno = ENOEXEC;
+        return -1;
+    }
+
+    /* PN_XNUM is extremely unusual for executables; reject it safely. */
+    if (ehdr.e_phnum == PN_XNUM) {
+        close(fd);
+        errno = ENOEXEC;
+        return -1;
+    }
+
+    for (Elf64_Half i = 0; i < ehdr.e_phnum; i++) {
+        uint64_t offset = (uint64_t) ehdr.e_phoff +
+                          (uint64_t) i * (uint64_t) ehdr.e_phentsize;
+        if ((off_t) offset < 0 || (uint64_t) (off_t) offset != offset) {
+            close(fd);
+            errno = ENOEXEC;
+            return -1;
+        }
+
+        Elf64_Phdr phdr;
+        n = pread(fd, &phdr, sizeof(phdr), (off_t) offset);
+        if (n != (ssize_t) sizeof(phdr)) {
+            close(fd);
+            errno = ENOEXEC;
+            return -1;
+        }
+
+        if (phdr.p_type == PT_INTERP) {
+            close(fd);
+            return 1;
+        }
+    }
+
+    close(fd);
+    return 0;
+}
+
 static int is_readable_elf_file(const char* path) {
     return is_readable_path(path) && is_probably_elf_file(path);
+}
+
+static int is_readable_dynamic_elf_file(const char* path) {
+    return is_readable_elf_file(path) && elf_has_program_interpreter(path) == 1;
 }
 
 static int is_known_shell_name(const char* name) {
@@ -744,9 +831,9 @@ static int delegate_android_spawn_if_needed(
 #endif
 }
 
-static char* first_existing_elf_path(const char* a, const char* b) {
-    if (a && *a && is_readable_elf_file(a)) return duplicate_string(a);
-    if (b && *b && is_readable_elf_file(b)) return duplicate_string(b);
+static char* first_existing_dynamic_elf_path(const char* a, const char* b) {
+    if (a && *a && is_readable_dynamic_elf_file(a)) return duplicate_string(a);
+    if (b && *b && is_readable_dynamic_elf_file(b)) return duplicate_string(b);
     return NULL;
 }
 
@@ -768,7 +855,7 @@ static char* resolve_script_shell(char* const envp[], const char* glibc_root) {
     char* sh = join_path2(bin, "sh");
     free(bin);
 
-    char* shell = first_existing_elf_path(bash, sh);
+    char* shell = first_existing_dynamic_elf_path(bash, sh);
     free(bash);
     free(sh);
     return shell;
@@ -978,8 +1065,27 @@ static int prepare_wrap(
     const char* script_path = NULL;
 
     if (is_probably_elf_file(resolved)) {
-        kind = KIND_ELF;
-        program_path = duplicate_string(resolved);
+        int has_interpreter = elf_has_program_interpreter(resolved);
+        if (has_interpreter == 1) {
+            kind = KIND_ELF;
+            program_path = duplicate_string(resolved);
+        } else if (has_interpreter == 0) {
+            /*
+             * Static ELF: never feed it to ld-linux. Let the real exec/spawn
+             * path try it directly. On Android 10+ with targetSdk >= 29 this
+             * may still fail with EACCES for app-writable files because of the
+             * platform W^X policy, but routing it through ld-linux is invalid.
+             */
+            tracef("skip %s -> %s: static ELF has no PT_INTERP", requested_path, resolved);
+            free(resolved);
+            free(ld_linux);
+            return 0;
+        } else {
+            tracef("skip %s -> %s: malformed or unsupported ELF", requested_path, resolved);
+            free(resolved);
+            free(ld_linux);
+            return 0;
+        }
     }
 
 #if EXEC_WRAP_ENABLE_SCRIPT_WRAP

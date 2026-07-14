@@ -161,6 +161,32 @@ DECLARE_REAL_SYMBOL(__unlinkat)
 DECLARE_REAL_SYMBOL(__xstat)
 DECLARE_REAL_SYMBOL(__xstat64)
 
+/*
+ * Always use the next libc syscall implementation from internal fallbacks.
+ * Calling syscall() here would re-enter this interposer, redirect paths twice,
+ * and (for calls with fewer than six arguments) used to trigger varargs UB.
+ */
+static long real_syscall_call(
+    long number,
+    long argument1,
+    long argument2,
+    long argument3,
+    long argument4,
+    long argument5,
+    long argument6
+) {
+    long (*fn)(long, ...) = REAL(syscall, long (*)(long, ...));
+    return fn(
+        number,
+        argument1,
+        argument2,
+        argument3,
+        argument4,
+        argument5,
+        argument6
+    );
+}
+
 /* ------------------------------------------------------------------------- */
 /* Debugging                                                                  */
 /* ------------------------------------------------------------------------- */
@@ -757,22 +783,41 @@ int faccessat(int dirfd, const char* pathname, int mode, int flags) {
 }
 
 int faccessat2(int dirfd, const char* pathname, int mode, int flags) {
+    int caller_errno = errno;
     char path_buffer[REDIR_BUF_SIZE];
     const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
     if (path == NULL) return -1;
 
+    int result = -1;
     int (*fn)(int, const char*, int, int) =
         OPT_REAL(faccessat2, int (*)(int, const char*, int, int));
-    if (fn != NULL) return fn(dirfd, path, mode, flags);
+
+    if (fn != NULL) {
+        result = fn(dirfd, path, mode, flags);
+    } else {
 #ifdef SYS_faccessat2
-    return (int)syscall(SYS_faccessat2, dirfd, path, mode, flags);
+        result = (int)real_syscall_call(
+            SYS_faccessat2,
+            dirfd,
+            (long)path,
+            mode,
+            flags,
+            0,
+            0
+        );
 #else
-    if (flags != 0) {
         errno = ENOSYS;
-        return -1;
-    }
-    return faccessat(dirfd, path, mode, 0);
 #endif
+    }
+
+    if (result != -1 || errno != ENOSYS) return result;
+
+    /* libc's faccessat wrapper can emulate flags on older kernels. */
+    int (*fallback)(int, const char*, int, int) =
+        REAL(faccessat, int (*)(int, const char*, int, int));
+    result = fallback(dirfd, path, mode, flags);
+    if (result == 0) errno = caller_errno;
+    return result;
 }
 
 int chdir(const char* pathname) {
@@ -1021,7 +1066,15 @@ int statx(int dirfd, const char* pathname, int flags, unsigned int mask, struct 
         result = fn(dirfd, path, flags, mask, st);
     } else {
 #ifdef SYS_statx
-        result = (int)syscall(SYS_statx, dirfd, path, flags, mask, st);
+        result = (int)real_syscall_call(
+            SYS_statx,
+            dirfd,
+            (long)path,
+            flags,
+            mask,
+            (long)st,
+            0
+        );
 #else
         errno = ENOSYS;
         return -1;
@@ -1142,7 +1195,8 @@ int __xstat(int version, const char* pathname, struct stat* st) {
     char path_buffer[REDIR_BUF_SIZE];
     const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
     if (path == NULL) return -1;
-    int result = fn != NULL ? fn(version, path, st) : stat(path, st);
+    int result = fn != NULL ? fn(version, path, st)
+                            : REAL(stat, int (*)(const char*, struct stat*))(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
     return result;
 }
@@ -1153,7 +1207,8 @@ int __lxstat(int version, const char* pathname, struct stat* st) {
     char path_buffer[REDIR_BUF_SIZE];
     const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
     if (path == NULL) return -1;
-    int result = fn != NULL ? fn(version, path, st) : lstat(path, st);
+    int result = fn != NULL ? fn(version, path, st)
+                            : REAL(lstat, int (*)(const char*, struct stat*))(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
     return result;
 }
@@ -1161,7 +1216,8 @@ int __lxstat(int version, const char* pathname, struct stat* st) {
 int __fxstat(int version, int fd, struct stat* st) {
     int (*fn)(int, int, struct stat*) =
         OPT_REAL(__fxstat, int (*)(int, int, struct stat*));
-    int result = fn != NULL ? fn(version, fd, st) : fstat(fd, st);
+    int result = fn != NULL ? fn(version, fd, st)
+                            : REAL(fstat, int (*)(int, struct stat*))(fd, st);
     if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat_if_perf_data(st);
     return result;
 }
@@ -1173,7 +1229,9 @@ int __fxstatat(int version, int dirfd, const char* pathname, struct stat* st, in
     const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
     if (path == NULL) return -1;
     int result = fn != NULL ? fn(version, dirfd, path, st, flags)
-                            : fstatat(dirfd, path, st, flags);
+                            : REAL(fstatat, int (*)(int, const char*, struct stat*, int))(
+                                  dirfd, path, st, flags
+                              );
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
     return result;
 }
@@ -1396,18 +1454,60 @@ int remove(const char* pathname) {
     return fn(path);
 }
 
-static int should_emulate_hardlink(int error) {
-    return error == EACCES ||
-           error == EPERM ||
-           error == EXDEV ||
-           error == EOPNOTSUPP;
+static int path_is_android_external_storage(const char* path) {
+    if (path == NULL || path[0] != '/') return 0;
+
+    return path_starts_with_component(path, "/storage/emulated") ||
+           path_starts_with_component(path, "/sdcard") ||
+           path_starts_with_component(path, "/mnt/user") ||
+           path_starts_with_component(path, "/mnt/runtime");
+}
+
+static int path_reference_is_android_external_storage(
+    int dirfd,
+    const char* path
+) {
+    if (path == NULL || path[0] == '\0') return 0;
+    if (path[0] == '/') return path_is_android_external_storage(path);
+
+    char directory[REDIR_BUF_SIZE];
+    if (dirfd == AT_FDCWD) {
+        if (getcwd(directory, sizeof(directory)) == NULL) return 0;
+    } else if (!read_dirfd_path(dirfd, directory, sizeof(directory))) {
+        return 0;
+    }
+
+    return path_is_android_external_storage(directory);
+}
+
+static int should_emulate_hardlink(
+    int error,
+    int source_dirfd,
+    const char* source,
+    int destination_dirfd,
+    const char* destination
+) {
+    int saved_errno = errno;
+    int external =
+        path_reference_is_android_external_storage(source_dirfd, source) ||
+        path_reference_is_android_external_storage(destination_dirfd, destination);
+
+    int should_emulate = external &&
+        (error == EACCES ||
+         error == EPERM ||
+         error == EXDEV ||
+         error == EOPNOTSUPP);
+
+    errno = saved_errno;
+    return should_emulate;
 }
 
 static int copy_regular_file_at(
     int source_dirfd,
     const char* source,
     int destination_dirfd,
-    const char* destination
+    const char* destination,
+    int follow_source_symlink
 ) {
     int (*real_openat_fn)(int, const char*, int, ...) =
         REAL(openat, int (*)(int, const char*, int, ...));
@@ -1415,10 +1515,15 @@ static int copy_regular_file_at(
     int (*real_unlinkat_fn)(int, const char*, int) =
         REAL(unlinkat, int (*)(int, const char*, int));
 
+    int source_flags = O_RDONLY | O_CLOEXEC;
+#ifdef O_NOFOLLOW
+    if (!follow_source_symlink) source_flags |= O_NOFOLLOW;
+#endif
+
     int source_fd = real_openat_fn(
         source_dirfd,
         source,
-        O_RDONLY | O_CLOEXEC
+        source_flags
     );
 
     if (source_fd < 0) {
@@ -1491,6 +1596,12 @@ static int copy_regular_file_at(
                 break;
             }
 
+            if (written == 0) {
+                errno = EIO;
+                result = -1;
+                break;
+            }
+
             offset += written;
         }
 
@@ -1507,6 +1618,14 @@ static int copy_regular_file_at(
          * because setuid/setgid bits cannot be restored.
          */
         (void)fchmod(destination_fd, source_stat.st_mode & 07777);
+
+#if defined(__linux__)
+        const struct timespec source_times[2] = {
+            source_stat.st_atim,
+            source_stat.st_mtim
+        };
+        (void)futimens(destination_fd, source_times);
+#endif
     }
 
     if (close(destination_fd) < 0 && result == 0) {
@@ -1528,21 +1647,23 @@ static int emulate_hardlink_at(
     int source_dirfd,
     const char* source,
     int destination_dirfd,
-    const char* destination
+    const char* destination,
+    int follow_source_symlink
 ) {
     int result = copy_regular_file_at(
         source_dirfd,
         source,
         destination_dirfd,
-        destination
+        destination,
+        follow_source_symlink
     );
 
     if (result == 0 && path_redirect_debug_enabled()) {
         fprintf(
             stderr,
             "path_redirect: emulated hardlink by copying %s -> %s\n",
-            destination,
-            source
+            source,
+            destination
         );
     }
 
@@ -1550,6 +1671,7 @@ static int emulate_hardlink_at(
 }
 
 int link(const char* oldpath, const char* newpath) {
+    int caller_errno = errno;
     int (*fn)(const char*, const char*) =
         REAL(link, int (*)(const char*, const char*));
 
@@ -1574,7 +1696,13 @@ int link(const char* oldpath, const char* newpath) {
 
     int link_errno = errno;
 
-    if (!should_emulate_hardlink(link_errno)) {
+    if (!should_emulate_hardlink(
+            link_errno,
+            AT_FDCWD,
+            old_redirected,
+            AT_FDCWD,
+            new_redirected
+        )) {
         return -1;
     }
 
@@ -1582,8 +1710,10 @@ int link(const char* oldpath, const char* newpath) {
             AT_FDCWD,
             old_redirected,
             AT_FDCWD,
-            new_redirected
+            new_redirected,
+            0
         ) == 0) {
+        errno = caller_errno;
         return 0;
     }
 
@@ -1605,6 +1735,7 @@ int linkat(
     const char* newpath,
     int flags
 ) {
+    int caller_errno = errno;
     int (*fn)(int, const char*, int, const char*, int) =
         REAL(linkat, int (*)(int, const char*, int, const char*, int));
 
@@ -1643,7 +1774,13 @@ int linkat(
 
     int link_errno = errno;
 
-    if (!should_emulate_hardlink(link_errno)) {
+    if (!should_emulate_hardlink(
+            link_errno,
+            olddirfd,
+            old_redirected,
+            newdirfd,
+            new_redirected
+        )) {
         return -1;
     }
 
@@ -1660,8 +1797,10 @@ int linkat(
             olddirfd,
             old_redirected,
             newdirfd,
-            new_redirected
+            new_redirected,
+            (flags & AT_SYMLINK_FOLLOW) != 0
         ) == 0) {
+        errno = caller_errno;
         return 0;
     }
 
@@ -1714,6 +1853,68 @@ int renameat(int olddirfd, const char* oldpath, int newdirfd, const char* newpat
     return fn(olddirfd, old_redirected, newdirfd, new_redirected);
 }
 
+static int renameat2_can_fall_back(int error, unsigned int flags) {
+    if (flags != 0) return 0;
+
+    return error == ENOSYS ||
+           error == EINVAL ||
+           error == EOPNOTSUPP;
+}
+
+static int call_renameat2_compat(
+    int olddirfd,
+    const char* oldpath,
+    int newdirfd,
+    const char* newpath,
+    unsigned int flags
+) {
+    int caller_errno = errno;
+    int result;
+    int (*fn)(int, const char*, int, const char*, unsigned int) =
+        OPT_REAL(renameat2, int (*)(int, const char*, int, const char*, unsigned int));
+
+    if (fn != NULL) {
+        result = fn(olddirfd, oldpath, newdirfd, newpath, flags);
+    } else {
+#ifdef SYS_renameat2
+        result = (int)real_syscall_call(
+            SYS_renameat2,
+            olddirfd,
+            (long)oldpath,
+            newdirfd,
+            (long)newpath,
+            flags,
+            0
+        );
+#else
+        errno = ENOSYS;
+        result = -1;
+#endif
+    }
+
+    if (result != -1 || !renameat2_can_fall_back(errno, flags)) {
+        return result;
+    }
+
+    /* renameat2(..., flags = 0) is exactly renameat(). */
+    int original_errno = errno;
+    int (*fallback)(int, const char*, int, const char*) =
+        REAL(renameat, int (*)(int, const char*, int, const char*));
+
+    result = fallback(olddirfd, oldpath, newdirfd, newpath);
+    if (result == 0) {
+        if (path_redirect_debug_enabled()) {
+            fprintf(
+                stderr,
+                "path_redirect: renameat2(flags=0) fell back to renameat after errno=%d\n",
+                original_errno
+            );
+        }
+        errno = caller_errno;
+    }
+    return result;
+}
+
 int renameat2(
     int olddirfd,
     const char* oldpath,
@@ -1723,22 +1924,19 @@ int renameat2(
 ) {
     char old_buffer[REDIR_BUF_SIZE];
     char new_buffer[REDIR_BUF_SIZE];
-    const char* old_redirected = redirect_at_path(olddirfd, oldpath, old_buffer, sizeof(old_buffer));
-    const char* new_redirected = redirect_at_path(newdirfd, newpath, new_buffer, sizeof(new_buffer));
+    const char* old_redirected =
+        redirect_at_path(olddirfd, oldpath, old_buffer, sizeof(old_buffer));
+    const char* new_redirected =
+        redirect_at_path(newdirfd, newpath, new_buffer, sizeof(new_buffer));
     if (old_redirected == NULL || new_redirected == NULL) return -1;
 
-    int (*fn)(int, const char*, int, const char*, unsigned int) =
-        OPT_REAL(renameat2, int (*)(int, const char*, int, const char*, unsigned int));
-    if (fn != NULL) return fn(olddirfd, old_redirected, newdirfd, new_redirected, flags);
-#ifdef SYS_renameat2
-    return (int)syscall(SYS_renameat2, olddirfd, old_redirected, newdirfd, new_redirected, flags);
-#else
-    if (flags != 0) {
-        errno = ENOSYS;
-        return -1;
-    }
-    return renameat(olddirfd, old_redirected, newdirfd, new_redirected);
-#endif
+    return call_renameat2_compat(
+        olddirfd,
+        old_redirected,
+        newdirfd,
+        new_redirected,
+        flags
+    );
 }
 
 
@@ -1749,7 +1947,8 @@ int renameat2(
 /* call syscall(2) directly and would otherwise bypass path redirection.      */
 /* ------------------------------------------------------------------------- */
 
-static long real_syscall_call(
+__attribute__((visibility("hidden"), noinline, used))
+long path_redirect_syscall_dispatch(
     long number,
     long argument1,
     long argument2,
@@ -1758,31 +1957,6 @@ static long real_syscall_call(
     long argument5,
     long argument6
 ) {
-    long (*fn)(long, ...) = REAL(syscall, long (*)(long, ...));
-    return fn(
-        number,
-        argument1,
-        argument2,
-        argument3,
-        argument4,
-        argument5,
-        argument6
-    );
-}
-
-long syscall(long number, ...) {
-    va_list arguments;
-    va_start(arguments, number);
-
-    long argument1 = va_arg(arguments, long);
-    long argument2 = va_arg(arguments, long);
-    long argument3 = va_arg(arguments, long);
-    long argument4 = va_arg(arguments, long);
-    long argument5 = va_arg(arguments, long);
-    long argument6 = va_arg(arguments, long);
-
-    va_end(arguments);
-
     char path_buffer[REDIR_BUF_SIZE];
     char second_path_buffer[REDIR_BUF_SIZE];
 
@@ -2166,6 +2340,7 @@ long syscall(long number, ...) {
 
 #ifdef SYS_link
     if (number == SYS_link) {
+        int caller_errno = errno;
         const char* old_original = (const char*)argument1;
         const char* new_original = (const char*)argument2;
 
@@ -2201,13 +2376,21 @@ long syscall(long number, ...) {
 
         int link_errno = errno;
 
-        if (should_emulate_hardlink(link_errno) &&
-            emulate_hardlink_at(
+        if (should_emulate_hardlink(
+                link_errno,
                 AT_FDCWD,
                 old_path,
                 AT_FDCWD,
                 new_path
+            ) &&
+            emulate_hardlink_at(
+                AT_FDCWD,
+                old_path,
+                AT_FDCWD,
+                new_path,
+                0
             ) == 0) {
+            errno = caller_errno;
             return 0;
         }
 
@@ -2221,6 +2404,7 @@ long syscall(long number, ...) {
 
 #ifdef SYS_linkat
     if (number == SYS_linkat) {
+        int caller_errno = errno;
         int olddirfd = (int)argument1;
         const char* old_original = (const char*)argument2;
         int newdirfd = (int)argument3;
@@ -2264,13 +2448,21 @@ long syscall(long number, ...) {
         if ((flags & AT_EMPTY_PATH) == 0 &&
             old_original != NULL &&
             old_original[0] != '\0' &&
-            should_emulate_hardlink(link_errno) &&
-            emulate_hardlink_at(
+            should_emulate_hardlink(
+                link_errno,
                 olddirfd,
                 old_path,
                 newdirfd,
                 new_path
+            ) &&
+            emulate_hardlink_at(
+                olddirfd,
+                old_path,
+                newdirfd,
+                new_path,
+                (flags & AT_SYMLINK_FOLLOW) != 0
             ) == 0) {
+            errno = caller_errno;
             return 0;
         }
 
@@ -2344,7 +2536,13 @@ long syscall(long number, ...) {
         if (old_path == NULL || new_path == NULL) return -1;
         debug_path_operation("syscall(SYS_renameat2 old)", old_original, old_path);
         debug_path_operation("syscall(SYS_renameat2 new)", new_original, new_path);
-        return real_syscall_call(number, argument1, (long)old_path, argument3, (long)new_path, argument5, argument6);
+        return call_renameat2_compat(
+            olddirfd,
+            old_path,
+            newdirfd,
+            new_path,
+            (unsigned int)argument5
+        );
     }
 #endif
 
@@ -2457,6 +2655,7 @@ long syscall(long number, ...) {
 
 #ifdef SYS_inotify_add_watch
     if (number == SYS_inotify_add_watch) {
+        int caller_errno = errno;
         const char* original = (const char*)argument2;
         const char* path = redirect_path(original, path_buffer, sizeof(path_buffer));
         if (path == NULL) return -1;
@@ -2483,7 +2682,10 @@ long syscall(long number, ...) {
                 argument5,
                 argument6
             );
-            if (result != -1) return result;
+            if (result != -1) {
+                errno = caller_errno;
+                return result;
+            }
             errno = saved_errno;
         }
         return result;
@@ -2651,6 +2853,62 @@ long syscall(long number, ...) {
     );
 }
 
+/*
+ * On AArch64 the syscall number and six possible arguments arrive in x0-x6,
+ * exactly matching path_redirect_syscall_dispatch(). A naked tail branch keeps
+ * those registers intact and avoids reading varargs that the caller did not
+ * provide. The old implementation unconditionally consumed six va_args, which
+ * is undefined behaviour for common calls such as syscall(SYS_gettid).
+ */
+#if defined(__aarch64__)
+/*
+ * Define the public variadic symbol in assembly. Clang still emits a variadic
+ * register-save sequence for a C "naked" function, which would write below the
+ * caller's stack pointer before our branch and corrupt memory.
+ */
+__asm__(
+    ".text\n"
+    ".global syscall\n"
+    ".type syscall, %function\n"
+    "syscall:\n"
+    "b path_redirect_syscall_dispatch\n"
+    ".size syscall, .-syscall\n"
+);
+#elif defined(__x86_64__)
+__asm__(
+    ".text\n"
+    ".global syscall\n"
+    ".type syscall, @function\n"
+    "syscall:\n"
+    "jmp path_redirect_syscall_dispatch\n"
+    ".size syscall, .-syscall\n"
+);
+#else
+long syscall(long number, ...) {
+    va_list arguments;
+    va_start(arguments, number);
+
+    long argument1 = va_arg(arguments, long);
+    long argument2 = va_arg(arguments, long);
+    long argument3 = va_arg(arguments, long);
+    long argument4 = va_arg(arguments, long);
+    long argument5 = va_arg(arguments, long);
+    long argument6 = va_arg(arguments, long);
+
+    va_end(arguments);
+
+    return path_redirect_syscall_dispatch(
+        number,
+        argument1,
+        argument2,
+        argument3,
+        argument4,
+        argument5,
+        argument6
+    );
+}
+#endif
+
 /* ------------------------------------------------------------------------- */
 /* Timestamps, sizes and filesystem metadata                                  */
 /* ------------------------------------------------------------------------- */
@@ -2685,6 +2943,7 @@ int lutimes(const char* pathname, const struct timeval times[2]) {
 int futimesat(int dirfd, const char* pathname, const struct timeval times[2]) {
     int (*fn)(int, const char*, const struct timeval[2]) =
         REAL(futimesat, int (*)(int, const char*, const struct timeval[2]));
+    if (pathname == NULL) return fn(dirfd, NULL, times);
     char path_buffer[REDIR_BUF_SIZE];
     const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
     if (path == NULL) return -1;
@@ -2914,6 +3173,7 @@ char* canonicalize_file_name(const char* pathname) {
 /* ------------------------------------------------------------------------- */
 
 int inotify_add_watch(int fd, const char* pathname, uint32_t mask) {
+    int caller_errno = errno;
     int (*fn)(int, const char*, uint32_t) =
         REAL(inotify_add_watch, int (*)(int, const char*, uint32_t));
 
@@ -2924,13 +3184,16 @@ int inotify_add_watch(int fd, const char* pathname, uint32_t mask) {
     int watch = fn(fd, path, mask);
 
     /* Android rejects a watch on the real filesystem root. */
-    if (watch == -1 && errno == EACCES && strcmp(pathname, "/") == 0) {
+    if (watch == -1 && errno == EACCES && pathname != NULL &&
+        strcmp(pathname, "/") == 0) {
         int saved_errno = errno;
         watch = fn(fd, app_files_dir(), mask);
-        if (watch != -1) return watch;
+        if (watch != -1) {
+            errno = caller_errno;
+            return watch;
+        }
         errno = saved_errno;
     }
 
     return watch;
 }
-

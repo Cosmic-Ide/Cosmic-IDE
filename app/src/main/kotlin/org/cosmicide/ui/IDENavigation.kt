@@ -89,9 +89,7 @@ fun IDENavigation() {
             }
 
             is Editor -> NavEntry(key) {
-                EditorScreen(key.project, onRunGradleTask = { task ->
-                    backStack.add(GradleTask(task))
-                })
+                EditorScreen(key.project)
             }
 
             is NewProject -> NavEntry(key) {

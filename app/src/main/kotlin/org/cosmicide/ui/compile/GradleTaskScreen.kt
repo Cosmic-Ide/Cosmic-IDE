@@ -1,7 +1,6 @@
 package org.cosmicide.ui.compile
 
 import android.graphics.Typeface
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Column
@@ -35,27 +34,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
-import com.termux.terminal.TerminalEmulator
-import com.termux.terminal.TerminalOutput
 import com.termux.view.TerminalView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.cosmicide.R
-import org.cosmicide.exec.PtyProcessExecutor
-import org.cosmicide.exec.linux.PtyProcess
+import org.cosmicide.common.Prefs
+import org.cosmicide.ui.terminal.BasicTerminalViewClient
 import org.cosmicide.ui.terminal.MaxTerminalTextSizeDp
 import org.cosmicide.ui.terminal.MinTerminalTextSizeDp
-import org.cosmicide.ui.terminal.TerminalTranscriptRows
-import org.cosmicide.ui.terminal.TerminalZoomInThreshold
-import org.cosmicide.ui.terminal.TerminalZoomOutThreshold
-import org.cosmicide.ui.terminal.applyTerminalAppearance
+import org.cosmicide.ui.terminal.TerminalController
+import org.cosmicide.ui.terminal.TerminalModifierLatch
 import org.cosmicide.ui.terminal.applyTerminalColors
-import org.cosmicide.ui.terminal.calculateGeometry
 import org.cosmicide.util.ProjectHandler
+import org.cosmicide.util.jdksDir
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -147,7 +136,7 @@ fun GradleTaskScreen(
 }
 
 @Composable
-private fun GradleTaskTerminal(
+internal fun GradleTaskTerminal(
     context: android.content.Context,
     projectRoot: File,
     task: String,
@@ -170,240 +159,90 @@ private fun GradleTaskTerminal(
                     FrameLayout.LayoutParams.MATCH_PARENT
                 )
                 setBackgroundColor(colorScheme.surfaceContainer.toArgb())
-                applyTerminalAppearance(currentTextSizeDp, terminalTypeface)
                 isFocusable = true
                 isFocusableInTouchMode = true
             }
 
-            val ptyProcess = PtyProcessExecutor.startGradleTask(
-                context = context,
-                projectRoot = projectRoot,
-                task = task,
-                terminalRows = 25,
-                terminalColumns = 80
-            )
-
-            val terminalOutput = object : TerminalOutput() {
-                override fun write(data: ByteArray, offset: Int, count: Int) {
-                    try {
-                        ptyProcess.getOutputStream().write(data, offset, count)
-                        ptyProcess.getOutputStream().flush()
-                    } catch (_: Exception) {
+            val controller = TerminalController(
+                context = context.applicationContext,
+                commandLine = "./gradlew $task",
+                workingDir = projectRoot,
+                jdkDir = context.applicationContext.jdksDir().resolve(Prefs.currentJDK),
+                terminalView = terminalView,
+                modifierLatch = TerminalModifierLatch(),
+                scope = scope,
+                onTitleChanged = {},
+                onFailure = { error ->
+                    onTaskError("Gradle task '$task' failed: ${error.message.orEmpty()}")
+                },
+                onProcessExit = { exitCode ->
+                    if (exitCode == 0) {
+                        onTaskSuccess()
+                    } else {
+                        onTaskError("Gradle task '$task' failed with exit code $exitCode")
                     }
                 }
-
-                override fun titleChanged(oldTitle: String?, newTitle: String?) {}
-                override fun onCopyTextToClipboard(text: String?) {}
-                override fun onPasteTextFromClipboard() {}
-                override fun onBell() {}
-                override fun onColorsChanged() {
-                    terminalView.onScreenUpdated()
-                }
-            }
-
-            val emulator = TerminalEmulator(
-                terminalOutput, 80, 25, 1, 1,
-                TerminalTranscriptRows, null
             )
-            terminalView.mEmulator = emulator
-            terminalView.invalidate()
-
             val runtime = GradleTaskTerminalRuntime(
-                process = ptyProcess,
-                emulator = emulator,
+                controller = controller,
                 textSizeDp = currentTextSizeDp,
                 typeface = terminalTypeface
             )
             terminalView.tag = runtime
 
-            fun resizeTerminal() {
-                terminalView.calculateGeometry(runtime.textSizeDp, runtime.typeface)?.let { geom ->
-                    emulator.resize(
-                        geom.columns,
-                        geom.rows,
-                        geom.cellWidthPixels,
-                        geom.cellHeightPixels
-                    )
-                    ptyProcess.setTerminalSize(geom.rows, geom.columns)
-                    terminalView.invalidate()
+            terminalView.addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
+                view.post {
+                    controller.startOrResize(runtime.textSizeDp, runtime.typeface)
                 }
             }
 
-            terminalView.addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
-                view.post { resizeTerminal() }
-            }
+            terminalView.setTerminalViewClient(
+                BasicTerminalViewClient(
+                    controller = controller,
+                    showKeyboard = {
+                        terminalView.requestFocus()
+                        val imm = viewContext.getSystemService(InputMethodManager::class.java)
+                        imm.showSoftInput(terminalView, 0)
+                    },
+                    onZoom = { increase ->
+                        runtime.textSizeDp =
+                            (runtime.textSizeDp + if (increase) 1 else -1)
+                                .coerceIn(MinTerminalTextSizeDp, MaxTerminalTextSizeDp)
+                        onTextSizeChange(runtime.textSizeDp)
+                    }
+                )
+            )
 
-            var readerJob: Job? = null
+            terminalView.setOnClickListener {
+                terminalView.requestFocus()
+                val imm = viewContext.getSystemService(InputMethodManager::class.java)
+                imm.showSoftInput(terminalView, 0)
+            }
 
             terminalView.post {
-                val textSizePx = viewContext.resources.displayMetrics.density * currentTextSizeDp
-                terminalView.mRenderer = com.termux.view.TerminalRenderer(
-                    textSizePx.toInt(),
-                    terminalTypeface
-                )
-                terminalView.invalidate()
-                resizeTerminal()
-
-                readerJob = scope.launch(Dispatchers.IO) {
-                    val inputStream = ptyProcess.getInputStream()
-                    val buffer = ByteArray(8192)
-                    while (isActive) {
-                        try {
-                            val read = inputStream.read(buffer)
-                            if (read <= 0) break
-                            withContext(Dispatchers.Main) {
-                                emulator.append(buffer, read)
-                                terminalView.onScreenUpdated()
-                            }
-                        } catch (_: Exception) {
-                            break
-                        }
-                    }
-                    val exitCode = ptyProcess.waitFor()
-                    withContext(Dispatchers.Main) {
-                        if (exitCode == 0) onTaskSuccess()
-                        else onTaskError("Gradle task '$task' failed with exit code $exitCode")
-                    }
-                }
+                controller.startOrResize(currentTextSizeDp, terminalTypeface)
             }
-
-            terminalView.setTerminalViewClient(object : com.termux.view.TerminalViewClient {
-                override fun onScale(scale: Float): Float {
-                    return when {
-                        scale < TerminalZoomOutThreshold -> {
-                            runtime.textSizeDp =
-                                (runtime.textSizeDp - 1).coerceAtLeast(MinTerminalTextSizeDp)
-                            onTextSizeChange(runtime.textSizeDp)
-                            1f
-                        }
-
-                        scale > TerminalZoomInThreshold -> {
-                            runtime.textSizeDp =
-                                (runtime.textSizeDp + 1).coerceAtMost(MaxTerminalTextSizeDp)
-                            onTextSizeChange(runtime.textSizeDp)
-                            1f
-                        }
-
-                        else -> scale
-                    }
-                }
-
-                override fun onSingleTapUp(e: android.view.MotionEvent) {
-                    terminalView.requestFocus()
-                    val imm = context.getSystemService(InputMethodManager::class.java)
-                    imm.showSoftInput(terminalView, 0)
-                }
-
-                override fun onKeyDown(
-                    keyCode: Int,
-                    e: android.view.KeyEvent,
-                    session: com.termux.terminal.TerminalSession?
-                ): Boolean {
-                    return try {
-                        if (e.action == android.view.KeyEvent.ACTION_DOWN) {
-                            val out = ptyProcess.getOutputStream()
-                            when (keyCode) {
-                                android.view.KeyEvent.KEYCODE_ENTER -> {
-                                    out.write('\n'.code); out.flush(); }
-
-                                android.view.KeyEvent.KEYCODE_DEL -> {
-                                    out.write(127); out.flush(); }
-
-                                else -> {
-                                    val c = e.unicodeChar
-                                    if (c > 0) {
-                                        out.write(c.toString().toByteArray()); out.flush(); }
-                                }
-                            }
-                        }
-                        false
-                    } catch (_: Exception) {
-                        false
-                    }
-                }
-
-                override fun onKeyUp(keyCode: Int, e: android.view.KeyEvent) = false
-                override fun onCodePoint(
-                    codePoint: Int,
-                    ctrlDown: Boolean,
-                    session: com.termux.terminal.TerminalSession?
-                ): Boolean {
-                    return try {
-                        val out = ptyProcess.getOutputStream()
-                        if (codePoint in 0..31 || codePoint == 127) out.write(
-                            codePoint.toByte().toInt()
-                        )
-                        else out.write(codePoint.toString().toByteArray())
-                        out.flush()
-                        true
-                    } catch (_: Exception) {
-                        false
-                    }
-                }
-
-                override fun shouldBackButtonBeMappedToEscape() = false
-                override fun shouldEnforceCharBasedInput() = false
-                override fun shouldUseCtrlSpaceWorkaround() = false
-                override fun isTerminalViewSelected() = true
-                override fun copyModeChanged(copyMode: Boolean) = Unit
-                override fun onLongPress(event: android.view.MotionEvent) = false
-                override fun readControlKey() = false
-                override fun readAltKey() = false
-                override fun readShiftKey() = false
-                override fun readFnKey() = false
-                override fun onEmulatorSet() = Unit
-                override fun logError(tag: String, message: String) = Unit
-                override fun logWarn(tag: String, message: String) = Unit
-                override fun logInfo(tag: String, message: String) = Unit
-                override fun logDebug(tag: String, message: String) = Unit
-                override fun logVerbose(tag: String, message: String) = Unit
-                override fun logStackTraceWithMessage(tag: String, message: String, e: Exception) =
-                    Unit
-
-                override fun logStackTrace(tag: String, e: Exception) = Unit
-            })
-
-            terminalView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                override fun onViewAttachedToWindow(v: View) {}
-                override fun onViewDetachedFromWindow(v: View) {
-                    readerJob?.cancel()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        ptyProcess.terminate()
-                        try {
-                            ptyProcess.waitFor()
-                        } catch (_: Exception) {
-                        }
-                        ptyProcess.close()
-                    }
-                }
-            })
 
             terminalView
         },
         update = { view ->
             view.setBackgroundColor(colorScheme.surfaceContainer.toArgb())
             applyTerminalColors(colorScheme)
-            val runtime = view.tag as? GradleTaskTerminalRuntime
-            runtime?.textSizeDp = currentTextSizeDp
-            runtime?.typeface = terminalTypeface
-            view.applyTerminalAppearance(currentTextSizeDp, terminalTypeface)
-            view.calculateGeometry(currentTextSizeDp, terminalTypeface)?.let { geom ->
-                runtime?.emulator?.resize(
-                    geom.columns,
-                    geom.rows,
-                    geom.cellWidthPixels,
-                    geom.cellHeightPixels
-                )
-                runtime?.process?.setTerminalSize(geom.rows, geom.columns)
-                view.invalidate()
+            (view.tag as? GradleTaskTerminalRuntime)?.let { runtime ->
+                runtime.textSizeDp = currentTextSizeDp
+                runtime.typeface = terminalTypeface
+                runtime.controller.startOrResize(currentTextSizeDp, terminalTypeface)
             }
+        },
+        onRelease = { view ->
+            (view.tag as? GradleTaskTerminalRuntime)?.controller?.close()
+            view.tag = null
         }
     )
 }
 
 private data class GradleTaskTerminalRuntime(
-    val process: PtyProcess,
-    val emulator: TerminalEmulator,
+    val controller: TerminalController,
     var textSizeDp: Int,
     var typeface: Typeface
 )

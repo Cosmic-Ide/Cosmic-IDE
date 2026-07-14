@@ -54,6 +54,10 @@ Named requests cover:
 - interactive input and cooperative cancellation;
 - project connection close, provider shutdown, and health checking.
 
+New-project creation binds a provider to the empty target directory and runs Gradle's built-in
+`init` task through `BuildLauncher` with non-interactive language and package options. The temporary
+provider is stopped after generation; project files are not assembled by the Android process.
+
 An unknown `gradle/<name>` request is treated as a request to run task `<name>`. This is convenient
 for arbitrary tasks, but it also means a misspelled protocol method can become a Gradle invocation.
 

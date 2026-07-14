@@ -60,7 +60,6 @@ internal class TerminalController(
 
         val nextGeometry = terminalView.calculateGeometry(textSizeDp, typeface)
         if (nextGeometry == null) {
-            terminalView.post { startOrResize(textSizeDp, typeface) }
             return
         }
 
@@ -397,6 +396,9 @@ internal class TerminalController(
         val getSelectedTextMethod = controllerClass.getDeclaredMethod("getSelectedText").apply {
             isAccessible = true
         }
+        val terminalViewField = controllerClass.getDeclaredField("terminalView").apply {
+            isAccessible = true
+        }
 
         fun outerController(callbackObject: Any): Any {
             val field = callbackObject.javaClass.getDeclaredField("this$0").apply {
@@ -405,8 +407,8 @@ internal class TerminalController(
             return field.get(callbackObject)!!
         }
 
-        fun selectedText(callbackObject: Any): String {
-            return getSelectedTextMethod.invoke(outerController(callbackObject)) as? String ?: ""
+        fun selectedText(selectionController: Any): String {
+            return getSelectedTextMethod.invoke(selectionController) as? String ?: ""
         }
 
         HookManager.registerHook(object : Hook(
@@ -415,11 +417,14 @@ internal class TerminalController(
             type = Class.forName("com.termux.view.textselection.TextSelectionCursorController$2")
         ) {
             override fun before(param: Pine.CallFrame) {
+                val selectionController = outerController(param.thisObject)
+                if (terminalViewField.get(selectionController) !== terminalView) return
+
                 val item = param.args[1] as MenuItem
 
                 when (item.itemId) {
                     1 -> {
-                        terminalOutput.onCopyTextToClipboard(selectedText(param.thisObject))
+                        terminalOutput.onCopyTextToClipboard(selectedText(selectionController))
                         terminalView.stopTextSelectionMode()
                         param.result = true
                     }

@@ -65,6 +65,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -92,16 +93,13 @@ import kotlinx.coroutines.withContext
 import me.saket.cascade.CascadeDropdownMenu
 import org.cosmicide.common.Prefs
 import org.cosmicide.exec.linux.LinuxProcessRunner
+import org.cosmicide.model.EditorToolingViewModel
 import org.cosmicide.model.EditorViewModel
 import org.cosmicide.project.Project
 import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.jdksDir
-import org.gradle.tooling.ProjectConnection
-import org.gradle.tooling.model.gradle.BuildInvocations
 import java.io.File
 import kotlin.time.ExperimentalTime
-
-private const val EDITOR_SCREEN_TAG = "EditorScreen"
 
 sealed class TreeDialogState {
     data class Create(val parent: File, val type: CreateType) : TreeDialogState()
@@ -120,13 +118,27 @@ sealed class TreeDialogState {
 @Composable
 fun EditorScreen(
     project: Project,
-    onRunGradleTask: (String) -> Unit,
     viewModel: EditorViewModel = viewModel()
 ) {
     val state = remember { CodeEditorState() }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val toolingViewModel: EditorToolingViewModel = viewModel(
+        key = "editor-tooling:${project.root.absolutePath}"
+    )
+    var toolWindowHeightDp by rememberSaveable(project.root.absolutePath) {
+        mutableStateOf(CollapsedEditorToolWindowHeightDp)
+    }
+    var selectedToolWindowTabId by remember(project.root.absolutePath) {
+        mutableStateOf(SyncToolWindowTabId)
+    }
+    var buildSessions by remember(project.root.absolutePath) {
+        mutableStateOf<List<EditorBuildSession>>(emptyList())
+    }
+    var nextBuildSessionId by remember(project.root.absolutePath) {
+        mutableIntStateOf(0)
+    }
 
     val openFiles = viewModel.openFiles
     val activeFile = viewModel.activeFile
@@ -136,24 +148,31 @@ fun EditorScreen(
     }
     val isApplyingEditorContent = remember { mutableStateOf(false) }
 
-    val connector = remember(context, project.root.absolutePath) {
-        org.cosmicide.tooling.RemoteGradleConnector(context)
-            .forProjectDirectory(project.root)
+    val runGradleTask: (String) -> Unit = { task ->
+        viewModel.saveActiveDocument(editor.text.toString())
+        val existingSession = buildSessions.firstOrNull { it.task == task }
+        if (existingSession != null) {
+            buildSessions = buildSessions.map { session ->
+                if (session.id == existingSession.id) {
+                    session.copy(runId = session.runId + 1, status = "Running")
+                } else {
+                    session
+                }
+            }
+            selectedToolWindowTabId = existingSession.tabId
+        } else {
+            val session = EditorBuildSession(id = ++nextBuildSessionId, task = task)
+            buildSessions = buildSessions + session
+            selectedToolWindowTabId = session.tabId
+        }
+        if (toolWindowHeightDp <= CollapsedEditorToolWindowHeightDp) {
+            toolWindowHeightDp = DefaultEditorToolWindowHeightDp
+        }
     }
-
-    var connection: ProjectConnection? by remember { mutableStateOf(null) }
 
     LaunchedEffect(project.root.absolutePath) {
         ProjectHandler.setProject(project)
-        connection = runCatching {
-            withContext(Dispatchers.IO) { connector.connect() }
-        }.onFailure { error ->
-            Toast.makeText(
-                context,
-                "Failed to connect to Gradle: ${error.message}",
-                Toast.LENGTH_LONG
-            ).show()
-        }.getOrNull()
+        toolingViewModel.initialize(context, project.root)
     }
 
     val openFile = { newFile: File ->
@@ -204,11 +223,10 @@ fun EditorScreen(
                     openFile(file)
                     scope.launch { drawerState.close() }
                 }, onExecuteFile = { file ->
-                    viewModel.saveActiveDocument(editor.text.toString())
                     val executionPath =
                         file.absolutePath.replace(project.srcDir.absolutePath + "/", "")
                     ProjectHandler.clazz = executionPath.substringBeforeLast('.')
-                    onRunGradleTask("build")
+                    runGradleTask("build")
                     scope.launch { drawerState.close() }
                 })
             }
@@ -221,12 +239,16 @@ fun EditorScreen(
                         file = activeFile,
                         editor = editor,
                         onOpenDrawer = { scope.launch { drawerState.open() } },
-                        connection = connection,
-                        onRunGradleTask = { task ->
-                            viewModel.saveActiveDocument(editor.text.toString())
-                            onRunGradleTask(task)
-                        }
+                        tasks = toolingViewModel.tasks,
+                        isGradleSyncing = toolingViewModel.isSyncing,
+                        gradleSyncError = toolingViewModel.syncError,
+                        onResyncGradle = { toolingViewModel.resyncGradle(context) },
+                        onRunGradleTask = runGradleTask
                     )
+
+                    if (toolingViewModel.isSyncing) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
 
                     if (openFiles.isNotEmpty()) {
                         PrimaryScrollableTabRow(
@@ -268,16 +290,66 @@ fun EditorScreen(
                 }
             }) { innerPadding ->
             Box(
-                Modifier
+                modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                if (activeFile != null) {
-                    TextEditorContent(editor)
-                } else {
-                    EmptyWorkspaceState(onOpenDrawer = { scope.launch { drawerState.open() } })
-                }
+                EditorToolWindowLayout(
+                    project = project,
+                    toolingOutput = toolingViewModel.output,
+                    selectedTabId = selectedToolWindowTabId,
+                    heightDp = toolWindowHeightDp,
+                    buildSessions = buildSessions,
+                    onSelectTab = { tabId ->
+                        if (selectedToolWindowTabId == tabId &&
+                            toolWindowHeightDp > CollapsedEditorToolWindowHeightDp
+                        ) {
+                            toolWindowHeightDp = CollapsedEditorToolWindowHeightDp
+                        } else {
+                            selectedToolWindowTabId = tabId
+                            if (toolWindowHeightDp <= CollapsedEditorToolWindowHeightDp) {
+                                toolWindowHeightDp = DefaultEditorToolWindowHeightDp
+                            }
+                        }
+                    },
+                    onHeightChange = { toolWindowHeightDp = it },
+                    onCloseBuild = { sessionId ->
+                        val remaining = buildSessions.filterNot { it.id == sessionId }
+                        val closedTabId = buildSessions
+                            .firstOrNull { it.id == sessionId }
+                            ?.tabId
+                        buildSessions = remaining
+                        if (selectedToolWindowTabId == closedTabId) {
+                            selectedToolWindowTabId = remaining.lastOrNull()?.tabId
+                                ?: SyncToolWindowTabId
+                        }
+                    },
+                    onRerunBuild = { sessionId ->
+                        buildSessions = buildSessions.map { session ->
+                            if (session.id == sessionId) {
+                                session.copy(runId = session.runId + 1, status = "Running")
+                            } else {
+                                session
+                            }
+                        }
+                    },
+                    onBuildStatusChange = { sessionId, status ->
+                        buildSessions = buildSessions.map { session ->
+                            if (session.id == sessionId) session.copy(status = status)
+                            else session
+                        }
+                    },
+                    editorContent = {
+                        if (activeFile != null) {
+                            TextEditorContent(editor)
+                        } else {
+                            EmptyWorkspaceState(
+                                onOpenDrawer = { scope.launch { drawerState.open() } }
+                            )
+                        }
+                    }
+                )
             }
         }
     }
@@ -574,7 +646,10 @@ fun EditorToolbar(
     project: Project,
     file: File?,
     editor: CodeEditor,
-    connection: ProjectConnection?,
+    tasks: List<String>,
+    isGradleSyncing: Boolean,
+    gradleSyncError: String?,
+    onResyncGradle: () -> Unit,
     onOpenDrawer: () -> Unit,
     onRunGradleTask: (String) -> Unit
 ) {
@@ -628,7 +703,7 @@ fun EditorToolbar(
             Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
         }
     }, actions = {
-        IconButton(onClick = { onRunGradleTask("build") }) {
+        IconButton(onClick = { onRunGradleTask("run") }) {
             Icon(
                 Icons.Filled.PlayArrow,
                 contentDescription = "Run Gradle build",
@@ -696,21 +771,29 @@ fun EditorToolbar(
                         showMenu = false
                     })
                 })
-                if (connection != null) {
-                    DropdownMenuItem(text = { Text("Gradle") }, children = {
-                        DropdownMenuItem(text = { Text("Tasks") }, onClick = {
-                            showTasksDialog = true
-                            showMenu = false
-                        })
+                DropdownMenuItem(text = { Text("Gradle") }, children = {
+                    DropdownMenuItem(text = { Text("Tasks") }, onClick = {
+                        showTasksDialog = true
+                        showMenu = false
                     })
-                }
+                    DropdownMenuItem(
+                        text = { Text("Resync Gradle") },
+                        enabled = !isGradleSyncing,
+                        onClick = {
+                            onResyncGradle()
+                            showMenu = false
+                        }
+                    )
+                })
             }
         }
     })
 
     if (showTasksDialog) {
         TasksDialog(
-            connection = connection!!,
+            tasks = tasks,
+            isLoading = isGradleSyncing,
+            loadError = gradleSyncError,
             onDismiss = { showTasksDialog = false },
             onTaskSelected = { task ->
                 onRunGradleTask(task)
@@ -767,31 +850,12 @@ fun EditorToolbar(
 
 @Composable
 fun TasksDialog(
-    connection: ProjectConnection,
+    tasks: List<String>,
+    isLoading: Boolean,
+    loadError: String?,
     onDismiss: () -> Unit,
     onTaskSelected: (String) -> Unit
 ) {
-    val context = LocalContext.current
-    var tasks by remember { mutableStateOf<List<String>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
-    var loadError by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(connection) {
-        val result = runCatching {
-            withContext(Dispatchers.IO) {
-                val buildInvocations = connection.getModel(BuildInvocations::class.java)
-                (buildInvocations.tasks.map { it.path } +
-                        buildInvocations.taskSelectors.map { it.name })
-                    .distinct()
-                    .sorted()
-            }
-        }
-
-        result.onSuccess { tasks = it }
-            .onFailure { error -> loadError = error.message ?: "Unknown Gradle error" }
-        isLoading = false
-    }
-
     AlertDialog(onDismissRequest = onDismiss, title = { Text("Gradle Tasks") }, text = {
         when {
             isLoading -> {

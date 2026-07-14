@@ -31,11 +31,13 @@ class ProjectViewModel : ViewModel() {
             val projectsList = FileUtil.projectDir.listFiles { file -> file.isDirectory }
                 ?.sortedByDescending { it.lastModified() }
                 ?.map {
-                    if (File(it, "src/main/java").exists()) {
-                        Project(it, Language.Java)
-                    } else {
-                        Project(it, Language.Kotlin)
+                    val language = when {
+                        hasSourceDirectory(it, "java") -> Language.Java
+                        hasSourceDirectory(it, "kotlin") -> Language.Kotlin
+                        hasSourceDirectory(it, "scala") -> Language.Scala
+                        else -> Language.Kotlin
                     }
+                    Project(it, language)
                 }
                 ?: emptyList()
 
@@ -44,6 +46,11 @@ class ProjectViewModel : ViewModel() {
                 _isLoading.value = false
             }
         }
+    }
+
+    private fun hasSourceDirectory(projectRoot: File, languageDirectory: String): Boolean {
+        return projectRoot.resolve("src/main/$languageDirectory").isDirectory ||
+                projectRoot.resolve("app/src/main/$languageDirectory").isDirectory
     }
 
     fun deleteProject(project: Project) {

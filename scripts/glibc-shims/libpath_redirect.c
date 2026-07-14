@@ -1396,14 +1396,206 @@ int remove(const char* pathname) {
     return fn(path);
 }
 
+static int should_emulate_hardlink(int error) {
+    return error == EACCES ||
+           error == EPERM ||
+           error == EXDEV ||
+           error == EOPNOTSUPP;
+}
+
+static int copy_regular_file_at(
+    int source_dirfd,
+    const char* source,
+    int destination_dirfd,
+    const char* destination
+) {
+    int (*real_openat_fn)(int, const char*, int, ...) =
+        REAL(openat, int (*)(int, const char*, int, ...));
+
+    int (*real_unlinkat_fn)(int, const char*, int) =
+        REAL(unlinkat, int (*)(int, const char*, int));
+
+    int source_fd = real_openat_fn(
+        source_dirfd,
+        source,
+        O_RDONLY | O_CLOEXEC
+    );
+
+    if (source_fd < 0) {
+        return -1;
+    }
+
+    struct stat source_stat;
+
+    if (fstat(source_fd, &source_stat) < 0) {
+        int saved_errno = errno;
+        close(source_fd);
+        errno = saved_errno;
+        return -1;
+    }
+
+    if (!S_ISREG(source_stat.st_mode)) {
+        close(source_fd);
+        errno = EOPNOTSUPP;
+        return -1;
+    }
+
+    int destination_fd = real_openat_fn(
+        destination_dirfd,
+        destination,
+        O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC,
+        source_stat.st_mode & 07777
+    );
+
+    if (destination_fd < 0) {
+        int saved_errno = errno;
+        close(source_fd);
+        errno = saved_errno;
+        return -1;
+    }
+
+    char buffer[64 * 1024];
+    int result = 0;
+
+    for (;;) {
+        ssize_t count = read(source_fd, buffer, sizeof(buffer));
+
+        if (count == 0) {
+            break;
+        }
+
+        if (count < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+
+            result = -1;
+            break;
+        }
+
+        ssize_t offset = 0;
+
+        while (offset < count) {
+            ssize_t written = write(
+                destination_fd,
+                buffer + offset,
+                (size_t)(count - offset)
+            );
+
+            if (written < 0) {
+                if (errno == EINTR) {
+                    continue;
+                }
+
+                result = -1;
+                break;
+            }
+
+            offset += written;
+        }
+
+        if (result < 0) {
+            break;
+        }
+    }
+
+    int saved_errno = errno;
+
+    if (result == 0) {
+        /*
+         * Android may reject some mode bits, so do not fail extraction merely
+         * because setuid/setgid bits cannot be restored.
+         */
+        (void)fchmod(destination_fd, source_stat.st_mode & 07777);
+    }
+
+    if (close(destination_fd) < 0 && result == 0) {
+        result = -1;
+        saved_errno = errno;
+    }
+
+    close(source_fd);
+
+    if (result < 0) {
+        real_unlinkat_fn(destination_dirfd, destination, 0);
+        errno = saved_errno;
+    }
+
+    return result;
+}
+
+static int emulate_hardlink_at(
+    int source_dirfd,
+    const char* source,
+    int destination_dirfd,
+    const char* destination
+) {
+    int result = copy_regular_file_at(
+        source_dirfd,
+        source,
+        destination_dirfd,
+        destination
+    );
+
+    if (result == 0 && path_redirect_debug_enabled()) {
+        fprintf(
+            stderr,
+            "path_redirect: emulated hardlink by copying %s -> %s\n",
+            destination,
+            source
+        );
+    }
+
+    return result;
+}
+
 int link(const char* oldpath, const char* newpath) {
-    int (*fn)(const char*, const char*) = REAL(link, int (*)(const char*, const char*));
+    int (*fn)(const char*, const char*) =
+        REAL(link, int (*)(const char*, const char*));
+
     char old_buffer[REDIR_BUF_SIZE];
     char new_buffer[REDIR_BUF_SIZE];
-    const char* old_redirected = redirect_path(oldpath, old_buffer, sizeof(old_buffer));
-    const char* new_redirected = redirect_path(newpath, new_buffer, sizeof(new_buffer));
-    if (old_redirected == NULL || new_redirected == NULL) return -1;
-    return fn(old_redirected, new_redirected);
+
+    const char* old_redirected =
+        redirect_path(oldpath, old_buffer, sizeof(old_buffer));
+
+    const char* new_redirected =
+        redirect_path(newpath, new_buffer, sizeof(new_buffer));
+
+    if (old_redirected == NULL || new_redirected == NULL) {
+        return -1;
+    }
+
+    int result = fn(old_redirected, new_redirected);
+
+    if (result == 0) {
+        return 0;
+    }
+
+    int link_errno = errno;
+
+    if (!should_emulate_hardlink(link_errno)) {
+        return -1;
+    }
+
+    if (emulate_hardlink_at(
+            AT_FDCWD,
+            old_redirected,
+            AT_FDCWD,
+            new_redirected
+        ) == 0) {
+        return 0;
+    }
+
+    /*
+     * Prefer the emulation error when it describes a real copy failure.
+     * Otherwise preserve the original link failure.
+     */
+    if (errno == EOPNOTSUPP) {
+        errno = link_errno;
+    }
+
+    return -1;
 }
 
 int linkat(
@@ -1415,12 +1607,69 @@ int linkat(
 ) {
     int (*fn)(int, const char*, int, const char*, int) =
         REAL(linkat, int (*)(int, const char*, int, const char*, int));
+
     char old_buffer[REDIR_BUF_SIZE];
     char new_buffer[REDIR_BUF_SIZE];
-    const char* old_redirected = redirect_at_path(olddirfd, oldpath, old_buffer, sizeof(old_buffer));
-    const char* new_redirected = redirect_at_path(newdirfd, newpath, new_buffer, sizeof(new_buffer));
-    if (old_redirected == NULL || new_redirected == NULL) return -1;
-    return fn(olddirfd, old_redirected, newdirfd, new_redirected, flags);
+
+    const char* old_redirected = redirect_at_path(
+        olddirfd,
+        oldpath,
+        old_buffer,
+        sizeof(old_buffer)
+    );
+
+    const char* new_redirected = redirect_at_path(
+        newdirfd,
+        newpath,
+        new_buffer,
+        sizeof(new_buffer)
+    );
+
+    if (old_redirected == NULL || new_redirected == NULL) {
+        return -1;
+    }
+
+    int result = fn(
+        olddirfd,
+        old_redirected,
+        newdirfd,
+        new_redirected,
+        flags
+    );
+
+    if (result == 0) {
+        return 0;
+    }
+
+    int link_errno = errno;
+
+    if (!should_emulate_hardlink(link_errno)) {
+        return -1;
+    }
+
+    /*
+     * Tar's normal hard-link extraction uses path-based linkat without
+     * AT_EMPTY_PATH. Leave unusual fd-only operations untouched.
+     */
+    if ((flags & AT_EMPTY_PATH) != 0 || oldpath[0] == '\0') {
+        errno = link_errno;
+        return -1;
+    }
+
+    if (emulate_hardlink_at(
+            olddirfd,
+            old_redirected,
+            newdirfd,
+            new_redirected
+        ) == 0) {
+        return 0;
+    }
+
+    if (errno == EOPNOTSUPP) {
+        errno = link_errno;
+    }
+
+    return -1;
 }
 
 int symlink(const char* target, const char* linkpath) {
@@ -1919,12 +2168,54 @@ long syscall(long number, ...) {
     if (number == SYS_link) {
         const char* old_original = (const char*)argument1;
         const char* new_original = (const char*)argument2;
-        const char* old_path = redirect_path(old_original, path_buffer, sizeof(path_buffer));
-        const char* new_path = redirect_path(new_original, second_path_buffer, sizeof(second_path_buffer));
-        if (old_path == NULL || new_path == NULL) return -1;
-        debug_path_operation("syscall(SYS_link old)", old_original, old_path);
-        debug_path_operation("syscall(SYS_link new)", new_original, new_path);
-        return real_syscall_call(number, (long)old_path, (long)new_path, argument3, argument4, argument5, argument6);
+
+        const char* old_path = redirect_path(
+            old_original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+
+        const char* new_path = redirect_path(
+            new_original,
+            second_path_buffer,
+            sizeof(second_path_buffer)
+        );
+
+        if (old_path == NULL || new_path == NULL) {
+            return -1;
+        }
+
+        long result = real_syscall_call(
+            number,
+            (long)old_path,
+            (long)new_path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
+
+        if (result == 0) {
+            return 0;
+        }
+
+        int link_errno = errno;
+
+        if (should_emulate_hardlink(link_errno) &&
+            emulate_hardlink_at(
+                AT_FDCWD,
+                old_path,
+                AT_FDCWD,
+                new_path
+            ) == 0) {
+            return 0;
+        }
+
+        if (errno == EOPNOTSUPP) {
+            errno = link_errno;
+        }
+
+        return -1;
     }
 #endif
 
@@ -1934,12 +2225,60 @@ long syscall(long number, ...) {
         const char* old_original = (const char*)argument2;
         int newdirfd = (int)argument3;
         const char* new_original = (const char*)argument4;
-        const char* old_path = redirect_at_path(olddirfd, old_original, path_buffer, sizeof(path_buffer));
-        const char* new_path = redirect_at_path(newdirfd, new_original, second_path_buffer, sizeof(second_path_buffer));
-        if (old_path == NULL || new_path == NULL) return -1;
-        debug_path_operation("syscall(SYS_linkat old)", old_original, old_path);
-        debug_path_operation("syscall(SYS_linkat new)", new_original, new_path);
-        return real_syscall_call(number, argument1, (long)old_path, argument3, (long)new_path, argument5, argument6);
+        int flags = (int)argument5;
+
+        const char* old_path = redirect_at_path(
+            olddirfd,
+            old_original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+
+        const char* new_path = redirect_at_path(
+            newdirfd,
+            new_original,
+            second_path_buffer,
+            sizeof(second_path_buffer)
+        );
+
+        if (old_path == NULL || new_path == NULL) {
+            return -1;
+        }
+
+        long result = real_syscall_call(
+            number,
+            argument1,
+            (long)old_path,
+            argument3,
+            (long)new_path,
+            argument5,
+            argument6
+        );
+
+        if (result == 0) {
+            return 0;
+        }
+
+        int link_errno = errno;
+
+        if ((flags & AT_EMPTY_PATH) == 0 &&
+            old_original != NULL &&
+            old_original[0] != '\0' &&
+            should_emulate_hardlink(link_errno) &&
+            emulate_hardlink_at(
+                olddirfd,
+                old_path,
+                newdirfd,
+                new_path
+            ) == 0) {
+            return 0;
+        }
+
+        if (errno == EOPNOTSUPP) {
+            errno = link_errno;
+        }
+
+        return -1;
     }
 #endif
 
@@ -2594,3 +2933,4 @@ int inotify_add_watch(int fd, const char* pathname, uint32_t mask) {
 
     return watch;
 }
+

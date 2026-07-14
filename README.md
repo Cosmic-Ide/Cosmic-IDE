@@ -1,117 +1,122 @@
-> [!NOTE]
-> ~~A new version is currently being developed that will fix most of the errors contained in the latest versions of the application.
-> Release time: unknown.~~
-
 # Cosmic IDE
 
-[![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-Ide)](https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/94a4082a551c496cae031bcdb6f2040d)](https://codacy.com/gh/Cosmic-Ide/Cosmic-Ide/dashboard)
-[![Total downloads](https://img.shields.io/github/downloads/Cosmic-Ide/Cosmic-Ide/total)](https://github.com/Cosmic-Ide/Cosmic-Ide/releases)
+[![Android CI](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml/badge.svg)](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml)
+[![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-IDE)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/Cosmic-Ide/Cosmic-IDE/total)](https://github.com/Cosmic-Ide/Cosmic-IDE/releases)
+[![F-Droid](https://img.shields.io/f-droid/v/org.cosmicide)](https://f-droid.org/packages/org.cosmicide)
 [![Discord](https://img.shields.io/discord/867985135931383809)](https://discord.gg/8Gu6YCq2eS)
-[![Telegram](https://img.shields.io/badge/Telegram-join-blue)](https://t.me/cosmicide)
-[![F-Droid (including pre-releases)](https://img.shields.io/f-droid/v/org.cosmicide)](https://f-droid.org/packages/org.cosmicide)
-![GitHub Repo stars](https://img.shields.io/github/stars/Cosmic-IDE/Cosmic-IDE)
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-alt="Get it on F-Droid"
-height="80">](https://f-droid.org/packages/org.cosmicide)
+Cosmic IDE is an extensible development environment that runs directly on Android. It combines a
+modern code editor, Language Server Protocol support, an interactive terminal, a Linux/aarch64
+toolchain environment, and Gradle integration without requiring a desktop computer.
 
-A next-gen IDE for JVM development on Android.
+> [!IMPORTANT]
+> The current `main` branch is substantially ahead of the latest public release. This README
+> describes development builds; release and F-Droid builds may not yet contain these features.
 
-## Description
+## Language support
 
-Cosmic IDE is a powerful and feature-rich IDE for JVM development on Android. It is built on top of the latest tools, and offers a wide range of features that make it the perfect tool for developers who want to build high-quality, bug-free applications without needing a computer.
+Cosmic IDE is not limited to JVM languages. Java, Kotlin, and Scala are the first-party experience
+provided by default, with integrations for JDT LS, Kotlin Language Server, and Metals. They are the
+starting toolset, not a hard-coded language boundary.
 
-## Screenshots
+For other languages, users can install a Linux/aarch64 toolchain or language server in Cosmic's
+glibc environment and register any standard-input/output language server for a file extension.
+The same environment is available to the terminal, custom commands, compilers, build tools, and
+Gradle processes.
 
-<p align="center">
+This has been tested with Rust, C++, and XML tooling. In practice, other languages can work when
+their compiler or language server is available for Linux/aarch64 and can operate within Android's
+application sandbox. Editor capabilities depend on what the configured language server provides.
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/9.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/10.png">
+Gradle is fully integrated for projects that use it, including model and task discovery, builds,
+tests, progress, cancellation, and interactive input. Projects using Cargo, CMake, or another build
+system can run those tools through the terminal or project commands instead.
 
-</p>
+## Highlights
 
+- Custom LSP configurations with a file extension and shell startup command
+- First-party Java, Kotlin, and Scala language-server integrations
+- App-private glibc environment for Linux/aarch64 compilers and developer tools
+- Interactive PTY terminal with normal shell, signal, and process-group behavior
+- Gradle Tooling API bridge for models, tasks, builds, and tests
+- Installable and selectable glibc-compatible JDK toolchains
+- Optional Android SDK and ARM build-tools setup
+- LSP completion, diagnostics, navigation, hover information, and other advertised capabilities
+- Sora Editor with TextMate grammars, themes, and configurable editing behavior
+- Plugin APIs for editor languages, language servers, and formatters
+- Project creation, import, backup, file management, and custom command execution
+- Material You interface with light and dark themes
+
+## How custom language support works
+
+1. Install the compiler, runtime, and language server from the integrated terminal.
+2. Open **Settings → Extensions → Custom language servers**.
+3. Associate a file extension with the shell command that starts the server over stdio.
+4. Use Gradle integration, a project command, or the terminal for build and run workflows.
+
+Custom startup code executes with the app's permissions. Review commands from projects or third
+parties before adding them.
 
 ## Installation
 
-Currently, Cosmic IDE is in active development. You can download the latest debug app build
-from [here](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/app-universal.zip).
+Current development APKs are produced by the
+[Android CI workflow](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml). The
+[universal development artifact](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/app-universal.zip)
+tracks successful builds from `main`.
 
-If you find any bugs, please report them on our [Discord server](https://discord.gg/8Gu6YCq2eS) or open an issue on GitHub.
+Stable builds are available
+from [GitHub Releases](https://github.com/Cosmic-Ide/Cosmic-IDE/releases)
+and [F-Droid](https://f-droid.org/packages/org.cosmicide). Check the version before installing if
+you need features documented for the development branch.
 
-## Features
+The current development environment targets Android 13 or later and arm64 devices. Initial setup
+downloads the selected JDK and any requested language servers or Android SDK components.
 
-- Supports Java 17 and Kotlin 2.1 (K2 compiler)
-- Plugin support (plugins can be written in Java or Kotlin)
-- Git integration
-- Fast incremental compilation
-- Integrated dependency management
-- Code completion for Java and Kotlin
-- Google Gemini AI chatbot
-- Syntax highlighting
-- Execution of programs
-- Code navigation
-- Support for custom fonts and ligatures
-- Highly customizable editor
-- Google Java Format and ktfmt integration
-- Support for plugins
-- Highly customizable
-- High-performance code editor (Sora Editor)
-- Code navigation
-- Bytecode Disassembler
-- Backup and restore
-- Material You Design
-- Modern UI with prebuilt themes
-- Dark mode (and light mode)
+## Documentation
 
-## Benefits
+Maintainer documentation is indexed in [docs/README.md](docs/README.md). Start with:
 
-- Faster and more efficient development
-- Reduced errors and warnings
-- Improved code readability and maintainability
-- Easier development experience
+- [Codebase architecture](docs/codebase-architecture.md)
+- [glibc runtime and compatibility shims](docs/glibc-runtime-and-shims.md)
+- [Editor and language services](docs/editor-and-language-services.md)
+- [Gradle tooling bridge](docs/gradle-tooling-bridge.md)
+- [Plugin architecture](docs/plugin-architecture.md)
 
-## Contribution Guidelines
+## Contributing
 
-We welcome contributions from everyone. If you have any ideas for features or improvements, please open an issue or submit a pull request.
+Issues and pull requests are welcome. For substantial changes, open an issue first so the design
+and Android/runtime constraints can be discussed before implementation.
+
+When changing the glibc runtime, native shims, or Gradle tooling provider, remember that their
+generated artifacts are packaged separately from their sources. The linked engineering
+documentation identifies the required rebuild step for each artifact.
+
+## Community and support
+
+- [Discord](https://discord.gg/8Gu6YCq2eS)
+- [Telegram](https://t.me/cosmicide)
+- [GitHub Issues](https://github.com/Cosmic-Ide/Cosmic-IDE/issues)
+- [Email](mailto:purwarpranav80@gmail.com)
 
 ## Donate
 
-If you appreciate the work that has been put into Cosmic IDE, you can donate to support the developers:
+If Cosmic IDE is useful to you, you can support its development through
+[Patreon](https://patreon.com/cosmicide).
 
-[![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://patreon.com/cosmicide)
+## Acknowledgments
 
-## Acknowledgment
-
-We would like to thank the following projects and their maintainers for their work, which has been used in Cosmic IDE:
-
-- [Iyxan23](https://github.com/Iyxan23) for the app icon!
-- [Sora Editor](https://github.com/Rosemoe/sora-editor) licensed under the GNU Lesser General Public License v2.1
-- [CodeAssist](https://github.com/tyron12233/CodeAssist/tree/main/kotlin-completion) licensed under GNU GPL-v3
-- [ModernAndroidPreferences](https://github.com/Maxr1998/ModernAndroidPreferences) licensed under the Apache License 2.0
-- [TreeView](https://github.com/lzhiyong/TreeView) licensed under the Apache License 2.0
-- and many more.
-
-## Contributions
+Cosmic IDE builds on projects including [Sora Editor](https://github.com/Rosemoe/sora-editor),
+[Termux](https://github.com/termux/termux-app), the
+[Gradle Tooling API](https://docs.gradle.org/current/userguide/tooling_api.html),
+[Eclipse JDT LS](https://github.com/eclipse-jdtls/eclipse.jdt.ls),
+[Kotlin Language Server](https://github.com/Kotlin/kotlin-lsp), and
+[Metals](https://scalameta.org/metals/). Thanks to
+[Iyxan23](https://github.com/Iyxan23) for the application icon and to every contributor who has
+helped develop and test the project.
 
 [![Contributors](https://contrib.rocks/image?repo=Cosmic-Ide/Cosmic-IDE)](https://github.com/Cosmic-Ide/Cosmic-IDE/graphs/contributors)
 
 ## License
 
-Cosmic IDE is licensed under the GNU GPL-v3 License.
-
-## Contact
-
-If you have any questions or feedback, please contact us at:
-
-- [Discord](https://discord.gg/8Gu6YCq2eS)
-- [Telegram](https://t.me/cosmicide)
-- [Email Address](mailto:purwarpranav80@gmail.com)
+Cosmic IDE is licensed under the [GNU General Public License v3.0](LICENSE).

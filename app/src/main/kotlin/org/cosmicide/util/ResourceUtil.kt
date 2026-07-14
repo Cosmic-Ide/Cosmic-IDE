@@ -30,7 +30,7 @@ object ResourceUtil {
 
     fun isRuntimeMissing(): Boolean {
         val context = App.instance.get()
-        return !context!!.filesDir.resolve("glibc").exists()
+        return !context!!.filesDir.resolve("arch").exists()
     }
 
     fun isJdkMissing(): Boolean {
@@ -70,6 +70,9 @@ object ResourceUtil {
         val script = context.filesDir.resolve("setup.sh")
         context.assets.open("setup.sh").use { input ->
             script.outputStream().use { output -> input.copyTo(output) }
+        }
+        context.assets.open("alarm-pkg").use { input ->
+            context.filesDir.resolve("alarm-pkg").outputStream().use { input.copyTo(it) }
         }
         script.setExecutable(true)
         return script

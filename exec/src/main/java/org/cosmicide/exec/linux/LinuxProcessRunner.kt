@@ -22,6 +22,7 @@ object LinuxProcessRunner {
         val environmentOverrides: Map<String, String> = emptyMap(),
         val pathEntries: List<File> = emptyList(),
         val redirectErrorStream: Boolean = true,
+        val setup: Boolean = false,
         val usePty: Boolean = false,
         val loadShellStartupFiles: Boolean = usePty,
         val terminalRows: Int = 24,
@@ -68,7 +69,7 @@ object LinuxProcessRunner {
             throw IllegalArgumentException("Configuration must have usePty=true")
         }
 
-        val runtime = prepareGlibcRuntime(context)
+        val runtime = prepareGlibcRuntime(context, config.setup)
         val shellArguments = runtime.applyShellStartupArguments(
             binary = config.binary,
             arguments = config.arguments,
@@ -121,7 +122,11 @@ object LinuxProcessRunner {
         onOutputReceived("\n--- Process finished with exit code $exitCode ---")
     }
 
-    fun toolchainPathEntries(context: Context, jdkDir: File): List<File> {
+    fun toolchainPathEntries(
+        context: Context,
+        jdkDir: File,
+        setup: Boolean = false
+    ): List<File> {
         return buildList {
             add(jdkDir.resolve("bin"))
             if (FileUtil.isInitialized) {
@@ -129,7 +134,7 @@ object LinuxProcessRunner {
             }
             add(context.filesDir.resolve("jdtls/bin"))
             add(context.filesDir.resolve("scala/bin"))
-            add(context.filesDir.resolve("glibc/usr/bin"))
+            add(runtimeDir(context, setup).resolve("usr/bin"))
         }
     }
 
@@ -238,7 +243,7 @@ object LinuxProcessRunner {
     }
 
     private fun createProcessBuilder(context: Context, config: Configuration): ProcessBuilder {
-        val runtime = prepareGlibcRuntime(context)
+        val runtime = prepareGlibcRuntime(context, config.setup)
         val shellArguments = runtime.applyShellStartupArguments(
             binary = config.binary,
             arguments = config.arguments,
@@ -533,9 +538,9 @@ object LinuxProcessRunner {
         ) || path.startsWith("/product/")
     }
 
-    private fun prepareGlibcRuntime(context: Context): GlibcRuntime {
+    private fun prepareGlibcRuntime(context: Context, setup: Boolean): GlibcRuntime {
         val tempDir = context.cacheDir.apply { mkdirs() }
-        val appDir = context.filesDir.resolve("glibc")
+        val appDir = runtimeDir(context, setup)
         val homeDir = appDir.resolve("home").apply { mkdirs() }
         ensureBashStartupBridge(homeDir)
         val glibcRoot = appDir.resolve("usr")
@@ -578,6 +583,10 @@ object LinuxProcessRunner {
             passwdFile = passwdFile,
             groupFile = groupFile
         )
+    }
+
+    private fun runtimeDir(context: Context, setup: Boolean): File {
+        return context.filesDir.resolve(if (setup) "glibc" else "arch")
     }
 
     private fun ensureBashStartupBridge(homeDir: File) {
@@ -879,4 +888,3 @@ object LinuxProcessRunner {
     private const val PAGE_SIZE_BYTES = 4096L
     private const val BYTES_PER_KB = 1024L
 }
-

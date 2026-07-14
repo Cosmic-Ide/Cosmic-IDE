@@ -57,9 +57,10 @@ fun TerminalScreen(
     onNavigateBack: () -> Unit,
     initialCommand: String = "bash -i",
     workingDir: File? = null,
+    setup: Boolean = false,
     terminalTextSizeDp: Int = 14,
     terminalFontResId: Int = R.font.firacode_medium,
-    onProcessExit: (Int) -> Unit = {}
+    onProcessExit: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
     val appContext = context.applicationContext
@@ -129,6 +130,7 @@ fun TerminalScreen(
                     context = appContext,
                     commandLine = initialCommand,
                     workingDir = terminalWorkingDir,
+                    setup = setup,
                     jdkDir = jdkDir,
                     terminalView = terminalView,
                     modifierLatch = modifierLatch,

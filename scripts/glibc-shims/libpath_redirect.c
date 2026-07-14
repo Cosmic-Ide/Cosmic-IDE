@@ -38,7 +38,6 @@
 #define ARRAY_LEN(a) (sizeof(a) / sizeof((a)[0]))
 
 #define TERMUX_FILES_PREFIX   "/data/data/com.termux/files"
-#define TERMUX_GLIBC_PREFIX   "/data/data/com.termux/files/usr/glibc"
 #define APP_FILES_DIR_DEFAULT "/data/data/org.cosmicide/files/glibc"
 
 /* ------------------------------------------------------------------------- */
@@ -322,6 +321,38 @@ static const char* app_files_dir(void) {
     return value != NULL && value[0] != '\0' ? value : APP_FILES_DIR_DEFAULT;
 }
 
+static const char* termux_runtime_prefix(char* buffer, size_t buffer_size) {
+    const char* root = app_files_dir();
+    size_t root_length = strlen(root);
+
+    while (root_length > 0 && root[root_length - 1] == '/') {
+        root_length--;
+    }
+
+    const char* name = root;
+    for (size_t i = root_length; i > 0; --i) {
+        if (root[i - 1] == '/') {
+            name = root + i;
+            break;
+        }
+    }
+
+    size_t name_length = root + root_length - name;
+    if (name_length == 0) return NULL;
+
+    int result = snprintf(
+        buffer,
+        buffer_size,
+        "%s/usr/%.*s",
+        TERMUX_FILES_PREFIX,
+        (int)name_length,
+        name
+    );
+
+    if (result < 0 || (size_t)result >= buffer_size) return NULL;
+    return buffer;
+}
+
 static int path_starts_with_component(const char* path, const char* prefix) {
     if (path == NULL || prefix == NULL) return 0;
     size_t length = strlen(prefix);
@@ -395,15 +426,22 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
         return buffer;
     }
 
-    if (path_starts_with_component(path, TERMUX_GLIBC_PREFIX)) {
+    char termux_runtime_buffer[REDIR_BUF_SIZE];
+    const char* active_termux_runtime = termux_runtime_prefix(
+        termux_runtime_buffer,
+        sizeof(termux_runtime_buffer)
+    );
+
+    if (active_termux_runtime != NULL &&
+        path_starts_with_component(path, active_termux_runtime)) {
         const char* redirected = redirect_virtual_root(
             path,
-            TERMUX_GLIBC_PREFIX,
+            active_termux_runtime,
             "/usr",
             buffer,
             buffer_size
         );
-        debug_redirect("termux-glibc", path, redirected);
+        debug_redirect("termux-runtime", path, redirected);
         return redirected;
     }
 
@@ -525,6 +563,17 @@ static int dirfd_path_can_contain_virtual_root(const char* path) {
     if (path_starts_with_component(path, "/lib")) return 1;
     if (path_starts_with_component(path, "/lib64")) return 1;
     if (path_starts_with_component(path, "/tmp")) return 1;
+    char termux_runtime_buffer[REDIR_BUF_SIZE];
+    const char* active_termux_runtime = termux_runtime_prefix(
+        termux_runtime_buffer,
+        sizeof(termux_runtime_buffer)
+    );
+
+    if (active_termux_runtime != NULL &&
+        path_starts_with_component(path, active_termux_runtime)) {
+        return 1;
+    }
+
     if (path_starts_with_component(path, TERMUX_FILES_PREFIX)) return 1;
     return 0;
 }
@@ -3197,3 +3246,4 @@ int inotify_add_watch(int fd, const char* pathname, uint32_t mask) {
 
     return watch;
 }
+

@@ -1,0 +1,515 @@
+#!/bin/sh
+
+set -eu
+
+ARCH="${ALARM_ARCH:-aarch64}"
+PACKAGE_SITE="${ALARM_PACKAGE_SITE:-https://archlinuxarm.org/packages}"
+MIRROR="${ALARM_MIRROR:-https://mirror.archlinuxarm.org}"
+
+usage() {
+    cat >&2 <<EOF
+usage:
+  alarm-pkg <package-name> [package-name...]
+  alarm-pkg --download-only <package-name> [package-name...]
+  alarm-pkg --install-file <package.pkg.tar.*> [package.pkg.tar.*]
+  alarm-pkg --prefix <path> <package-name> [package-name...]
+
+environment:
+  ALARM_ARCH          package architecture, default: aarch64
+  ALARM_MIRROR        mirror base, default: https://mirror.archlinuxarm.org
+  ALARM_PACKAGE_SITE  package metadata site
+  ALARM_CACHE         package download directory
+  ALARM_PREFIX        target Arch root override; paths ending in /usr are accepted
+
+examples:
+  alarm-pkg pacman
+  alarm-pkg pacman libarchive gpgme
+  alarm-pkg --download-only pacman
+  alarm-pkg --install-file pacman.pkg.tar.xz
+EOF
+    exit 1
+}
+
+die() {
+    echo "error: $*" >&2
+    exit 1
+}
+
+command_path() {
+    command -v "$1" 2>/dev/null || return 1
+}
+
+resolve_path() {
+    path="$1"
+
+    if command -v readlink >/dev/null 2>&1; then
+        resolved="$(readlink -f "$path" 2>/dev/null || true)"
+        if [ -n "$resolved" ]; then
+            path="$resolved"
+        fi
+    fi
+
+    printf '%s\n' "$path"
+}
+
+normalize_prefix() {
+    prefix="${1%/}"
+
+    [ -n "$prefix" ] || die "installation prefix cannot be empty"
+
+    # Accept either the target root or its effective /usr directory.
+    # Internally always keep the target Arch root.
+    case "$prefix" in
+        /usr)
+            ;;
+        */usr)
+            prefix="${prefix%/usr}"
+            ;;
+    esac
+
+    printf '%s\n' "$prefix"
+}
+
+detect_prefix() {
+    if [ -n "${ALARM_PREFIX:-}" ]; then
+        normalize_prefix "$ALARM_PREFIX"
+        return
+    fi
+
+    for executable in xz tar curl wget sh; do
+        path="$(command_path "$executable" || true)"
+        [ -n "$path" ] || continue
+
+        path="$(resolve_path "$path")"
+
+        case "$path" in
+            # Bootstrap tools live under $FILES_DIR/glibc/usr. Packages must be
+            # installed into the separate pacman-managed $FILES_DIR/arch tree.
+            */glibc/usr/bin/*|*/glibc/usr/sbin/*)
+                files_dir="${path%%/glibc/usr/*}"
+                printf '%s\n' "$files_dir/arch"
+                return
+                ;;
+
+            # Once the Arch tree is usable, tools may resolve from arch/usr.
+            */arch/usr/bin/*|*/arch/usr/sbin/*)
+                printf '%s\n' "${path%%/usr/*}"
+                return
+                ;;
+
+            */usr/bin/*)
+                usr_prefix="${path%%/bin/*}"
+
+                case "$usr_prefix" in
+                    /usr)
+                        ;;
+                    */usr)
+                        normalize_prefix "$usr_prefix"
+                        return
+                        ;;
+                esac
+                ;;
+
+            */usr/sbin/*)
+                usr_prefix="${path%%/sbin/*}"
+
+                case "$usr_prefix" in
+                    /usr)
+                        ;;
+                    */usr)
+                        normalize_prefix "$usr_prefix"
+                        return
+                        ;;
+                esac
+                ;;
+        esac
+    done
+
+    die "could not detect the target Arch root; use --prefix or ALARM_PREFIX"
+}
+
+download_to() {
+    download_url="$1"
+    download_destination="$2"
+
+    if command -v curl >/dev/null 2>&1; then
+        curl -fL \
+            --retry 3 \
+            --retry-delay 1 \
+            "$download_url" \
+            -o "$download_destination"
+        return
+    fi
+
+    if command -v wget >/dev/null 2>&1; then
+        wget -O "$download_destination" "$download_url"
+        return
+    fi
+
+    die "curl or wget is required"
+}
+
+fetch_text() {
+    fetch_url="$1"
+
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL \
+            --retry 3 \
+            --retry-delay 1 \
+            "$fetch_url"
+        return
+    fi
+
+    if command -v wget >/dev/null 2>&1; then
+        wget -qO- "$fetch_url"
+        return
+    fi
+
+    die "curl or wget is required"
+}
+
+html_decode() {
+    sed \
+        -e 's/&amp;/\&/g' \
+        -e 's/&#39;/'"'"'/g' \
+        -e 's/&quot;/"/g' \
+        -e 's/&lt;/</g' \
+        -e 's/&gt;/>/g'
+}
+
+resolve_package() {
+    package="$1"
+    page_url="$PACKAGE_SITE/$ARCH/$package"
+
+    echo "resolving: $package" >&2
+
+    page="$(fetch_text "$page_url")" ||
+        die "could not open package page: $page_url"
+
+    heading="$(
+        printf '%s\n' "$page" |
+            tr '\n' ' ' |
+            sed -n 's/.*<h1[^>]*>[[:space:]]*\([^<]*\)<\/h1>.*/\1/p' |
+            html_decode |
+            head -n 1
+    )"
+
+    if [ -z "$heading" ]; then
+        heading="$(
+            printf '%s\n' "$page" |
+                sed -n 's/.*<title>[[:space:]]*\([^<]*\).*/\1/p' |
+                html_decode |
+                head -n 1
+        )"
+    fi
+
+    version="$(
+        printf '%s\n' "$heading" |
+            sed "s/^${package}[[:space:]]*//"
+    )"
+
+    repository="$(
+        printf '%s\n' "$page" |
+            tr '\n' ' ' |
+            sed -n 's/.*Repository:[[:space:]]*<\/[^>]*>[[:space:]]*<[^>]*>[[:space:]]*\([^<[:space:]]*\).*/\1/p' |
+            head -n 1
+    )"
+
+    if [ -z "$repository" ]; then
+        repository="$(
+            printf '%s\n' "$page" |
+                sed -n 's/.*Repository:[[:space:]]*\([^<[:space:]]*\).*/\1/p' |
+                head -n 1
+        )"
+    fi
+
+    download_url="$(
+        printf '%s\n' "$page" |
+            grep -o 'https://mirror\.archlinuxarm\.org/[^"<> ]*\.pkg\.tar\.[a-z0-9]*' |
+            head -n 1
+    )"
+
+    if [ -z "$download_url" ]; then
+        download_url="$(
+            printf '%s\n' "$page" |
+                grep -o 'href="[^"]*"' |
+                sed 's/^href="//; s/"$//' |
+                grep 'mirror\.archlinuxarm\.org' |
+                grep '\.pkg\.tar\.' |
+                head -n 1
+        )"
+    fi
+
+    if [ -z "$download_url" ]; then
+        [ -n "$version" ] ||
+            die "could not determine version for package: $package"
+
+        [ -n "$repository" ] ||
+            die "could not determine repository for package: $package"
+
+        filename="${package}-${version}-${ARCH}.pkg.tar.xz"
+        download_url="$MIRROR/$ARCH/$repository/$filename"
+    else
+        filename="${download_url##*/}"
+    fi
+
+    printf '%s|%s|%s|%s\n' \
+        "$package" \
+        "$repository" \
+        "$filename" \
+        "$download_url"
+}
+
+extract_archive() {
+    package_file="$1"
+    destination="$2"
+
+    tar_bin="$(command_path tar || true)"
+    [ -n "$tar_bin" ] || die "tar is required"
+
+    case "$package_file" in
+        *.pkg.tar.xz|*.tar.xz|*.txz)
+            xz_bin="$(command_path xz || true)"
+            [ -n "$xz_bin" ] || die "xz is required for $package_file"
+
+            "$xz_bin" -dc "$package_file" |
+                "$tar_bin" -xpf - \
+                    --no-same-owner \
+                    --no-same-permissions \
+                    -C "$destination"
+            ;;
+
+        *.pkg.tar.zst|*.tar.zst)
+            zstd_bin="$(command_path zstd || true)"
+            [ -n "$zstd_bin" ] || die "zstd is required for $package_file"
+
+            "$zstd_bin" -dc "$package_file" |
+                "$tar_bin" -xpf - \
+                    --no-same-owner \
+                    --no-same-permissions \
+                    -C "$destination"
+            ;;
+
+        *.pkg.tar.gz|*.tar.gz|*.tgz)
+            gzip_bin="$(command_path gzip || true)"
+            [ -n "$gzip_bin" ] || die "gzip is required for $package_file"
+
+            "$gzip_bin" -dc "$package_file" |
+                "$tar_bin" -xpf - \
+                    --no-same-owner \
+                    --no-same-permissions \
+                    -C "$destination"
+            ;;
+
+        *.pkg.tar.bz2|*.tar.bz2|*.tbz2)
+            bzip2_bin="$(command_path bzip2 || true)"
+            [ -n "$bzip2_bin" ] || die "bzip2 is required for $package_file"
+
+            "$bzip2_bin" -dc "$package_file" |
+                "$tar_bin" -xpf - \
+                    --no-same-owner \
+                    --no-same-permissions \
+                    -C "$destination"
+            ;;
+
+        *.pkg.tar|*.tar)
+            "$tar_bin" -xpf "$package_file" \
+                --no-same-owner \
+                --no-same-permissions \
+                -C "$destination"
+            ;;
+
+        *)
+            die "unsupported package archive: $package_file"
+            ;;
+    esac
+}
+
+merge_tree() {
+    source="$1"
+    destination="$2"
+
+    [ -d "$source" ] || return 0
+
+    tar_bin="$(command_path tar || true)"
+    [ -n "$tar_bin" ] || die "tar is required"
+
+    mkdir -p "$destination"
+
+    (
+        cd "$source"
+        "$tar_bin" -cpf - .
+    ) |
+        (
+            cd "$destination"
+            "$tar_bin" -xpf - \
+                --no-same-owner \
+                --no-same-permissions
+        )
+}
+
+merge_root_directory() {
+    source="$1"
+    destination="$2"
+
+    # Root-level bin/lib/sbin entries in modern Arch packages are usually
+    # symlinks into /usr. The compatibility layer already virtualizes those
+    # paths, so do not follow and duplicate those symlink targets.
+    [ -d "$source" ] || return 0
+    [ ! -L "$source" ] || return 0
+
+    merge_tree "$source" "$destination"
+}
+
+install_archive() {
+    package_file="$1"
+    root_prefix="$2"
+    usr_prefix="$root_prefix/usr"
+
+    [ -f "$package_file" ] ||
+        die "package file not found: $package_file"
+
+    mkdir -p "$usr_prefix"
+
+    tmp_base="${TMPDIR:-$usr_prefix/tmp}"
+    mkdir -p "$tmp_base"
+
+    stage="$(mktemp -d "$tmp_base/alarm-pkg.XXXXXX")"
+
+    cleanup_stage() {
+        rm -rf "$stage"
+    }
+
+    trap cleanup_stage EXIT HUP INT TERM
+
+    echo "extracting: $package_file" >&2
+    extract_archive "$package_file" "$stage"
+
+    # Keep the flattened Cosmic Arch layout:
+    #
+    #   package /usr/* -> arch/usr/*
+    #   package /etc/* -> arch/usr/etc/*
+    #   package /var/* -> arch/usr/var/*
+    #
+    # Only selected top-level directories are copied. Package metadata and
+    # other root entries such as .BUILDINFO, .INSTALL, .MTREE and .PKGINFO
+    # remain in the temporary staging directory and are discarded.
+    merge_tree "$stage/usr" "$usr_prefix"
+
+    merge_root_directory "$stage/etc" "$usr_prefix/etc"
+    merge_root_directory "$stage/var" "$usr_prefix/var"
+    merge_root_directory "$stage/opt" "$usr_prefix/opt"
+    merge_root_directory "$stage/run" "$usr_prefix/run"
+    merge_root_directory "$stage/srv" "$usr_prefix/srv"
+    merge_root_directory "$stage/home" "$usr_prefix/home"
+
+    # Copy genuine legacy directories, but ignore modern root symlinks such as
+    # /bin -> usr/bin and /lib -> usr/lib to avoid duplicating their contents.
+    merge_root_directory "$stage/bin" "$usr_prefix/bin"
+    merge_root_directory "$stage/sbin" "$usr_prefix/sbin"
+    merge_root_directory "$stage/lib" "$usr_prefix/lib"
+    merge_root_directory "$stage/lib64" "$usr_prefix/lib64"
+
+    trap - EXIT HUP INT TERM
+    cleanup_stage
+
+    echo "installed: $package_file" >&2
+}
+
+DOWNLOAD_ONLY=0
+INSTALL_FILES=0
+PREFIX_OVERRIDE=""
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --download-only|-d)
+            DOWNLOAD_ONLY=1
+            shift
+            ;;
+
+        --install-file|-i)
+            INSTALL_FILES=1
+            shift
+            break
+            ;;
+
+        --prefix)
+            [ "$#" -ge 2 ] || usage
+            PREFIX_OVERRIDE="$2"
+            shift 2
+            ;;
+
+        --prefix=*)
+            PREFIX_OVERRIDE="${1#*=}"
+            shift
+            ;;
+
+        --help|-h)
+            usage
+            ;;
+
+        --)
+            shift
+            break
+            ;;
+
+        -*)
+            die "unknown option: $1"
+            ;;
+
+        *)
+            break
+            ;;
+    esac
+done
+
+[ "$#" -gt 0 ] || usage
+
+if [ -n "$PREFIX_OVERRIDE" ]; then
+    ALARM_PREFIX="$PREFIX_OVERRIDE"
+    export ALARM_PREFIX
+fi
+
+PREFIX="$(detect_prefix)"
+USR_PREFIX="$PREFIX/usr"
+CACHE="${ALARM_CACHE:-$USR_PREFIX/var/cache/alarm-pkg}"
+
+mkdir -p "$USR_PREFIX" "$CACHE"
+
+echo "root:   $PREFIX" >&2
+echo "usr:    $USR_PREFIX" >&2
+echo "cache:  $CACHE" >&2
+
+if [ "$INSTALL_FILES" -eq 1 ]; then
+    for package_file in "$@"; do
+        install_archive "$package_file" "$PREFIX"
+    done
+
+    exit 0
+fi
+
+for package in "$@"; do
+    result="$(resolve_package "$package")"
+
+    repository="$(printf '%s\n' "$result" | cut -d '|' -f 2)"
+    filename="$(printf '%s\n' "$result" | cut -d '|' -f 3)"
+    url="$(printf '%s\n' "$result" | cut -d '|' -f 4-)"
+
+    archive_path="$CACHE/$filename"
+    partial_path="$archive_path.part"
+
+    echo "repository: ${repository:-unknown}" >&2
+    echo "downloading: $url" >&2
+
+    rm -f "$partial_path"
+
+    download_to "$url" "$partial_path"
+
+    mv -f "$partial_path" "$archive_path"
+
+    echo "saved: $archive_path" >&2
+
+    if [ "$DOWNLOAD_ONLY" -eq 0 ]; then
+        install_archive "$archive_path" "$PREFIX"
+    fi
+done

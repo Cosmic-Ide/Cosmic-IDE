@@ -30,6 +30,7 @@ internal class TerminalController(
     private val context: Context,
     private val commandLine: String,
     private val workingDir: File,
+    private val setup: Boolean = false,
     private val jdkDir: File,
     private val terminalView: TerminalView,
     private val modifierLatch: TerminalModifierLatch,
@@ -243,6 +244,7 @@ internal class TerminalController(
                     context = context,
                     commandLine = commandLine,
                     workingDir = workingDir,
+                    setup = setup,
                     jdkDir = jdkDir,
                     rows = initialGeometry.rows,
                     columns = initialGeometry.columns
@@ -483,6 +485,7 @@ private fun createTerminalConfig(
     context: Context,
     commandLine: String,
     workingDir: File,
+    setup: Boolean,
     jdkDir: File,
     rows: Int,
     columns: Int
@@ -492,7 +495,11 @@ private fun createTerminalConfig(
         throw IllegalArgumentException("No command provided")
     }
 
-    val pathEntries = LinuxProcessRunner.toolchainPathEntries(context, jdkDir)
+    val pathEntries = LinuxProcessRunner.toolchainPathEntries(
+        context = context,
+        jdkDir = jdkDir,
+        setup = setup
+    )
 
     val binary = LinuxProcessRunner.resolveExecutable(
         commandName = commandParts.first(),
@@ -506,6 +513,7 @@ private fun createTerminalConfig(
         binary = binary,
         arguments = commandParts.drop(1),
         workingDir = workingDir,
+        setup = setup,
         environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
             jdkDir
         ) + mapOf(

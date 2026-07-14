@@ -9,13 +9,6 @@ OUT_DIR="$OUT_ROOT/usr"
 ASSETS_TAR_ZST="$ROOT/app/src/main/assets/glibc.tar.zst"
 REUSE_GLIBC=0
 
-PACMAN_VERSION="${PACMAN_VERSION:-7.1.0.r9.g54d9411-2}"
-PACMAN_FILENAME="${PACMAN_FILENAME:-pacman-${PACMAN_VERSION}-aarch64.pkg.tar.xz}"
-PACMAN_MIRROR="${PACMAN_MIRROR:-https://mirrors.dotsrc.org/archlinuxarm}"
-PACMAN_URL="${PACMAN_URL:-$PACMAN_MIRROR/aarch64/core/$PACMAN_FILENAME}"
-PACMAN_CACHE_DIR="$ROOT/gpkg-cache/archlinuxarm"
-PACMAN_ARCHIVE="$PACMAN_CACHE_DIR/$PACMAN_FILENAME"
-
 usage() {
     echo "usage: $0 [--reuse-glibc]" >&2
     echo "  --reuse-glibc  reuse existing ./glibc tree; skip clean + gpkg extraction" >&2
@@ -90,52 +83,6 @@ download_file() {
     mv -f "$temporary" "$destination"
 }
 
-install_pacman() {
-    pacman_bin="$OUT_DIR/bin/pacman"
-
-    if [ -e "$pacman_bin" ]; then
-        echo "pacman is already installed: $pacman_bin"
-        return 0
-    fi
-
-    echo "installing Arch Linux ARM pacman..."
-    echo "  version: $PACMAN_VERSION"
-    echo "  source:  $PACMAN_URL"
-
-    mkdir -p "$PACMAN_CACHE_DIR" "$OUT_ROOT"
-
-    if [ -s "$PACMAN_ARCHIVE" ]; then
-        echo "using cached pacman package: $PACMAN_ARCHIVE"
-    else
-        echo "downloading pacman package..."
-        download_file "$PACMAN_URL" "$PACMAN_ARCHIVE"
-    fi
-
-    echo "checking pacman package..."
-
-    if ! tar -tf "$PACMAN_ARCHIVE" | grep -q '^\(\./\)\?usr/bin/pacman$'; then
-        echo "error: archive does not contain usr/bin/pacman: $PACMAN_ARCHIVE" >&2
-        echo "error: remove the cached archive and retry if it is corrupted" >&2
-        exit 1
-    fi
-
-    echo "extracting pacman into $OUT_ROOT..."
-
-    if ! tar -xf "$PACMAN_ARCHIVE" -C "$OUT_ROOT"; then
-        echo "error: failed to extract pacman package: $PACMAN_ARCHIVE" >&2
-        exit 1
-    fi
-
-    if [ ! -e "$pacman_bin" ]; then
-        echo "error: pacman was not installed at: $pacman_bin" >&2
-        exit 1
-    fi
-
-    chmod +x "$pacman_bin"
-
-    echo "pacman installed: $pacman_bin"
-}
-
 cd "$ROOT"
 
 chmod +x "$ROOT/scripts/build-shims.sh"
@@ -156,7 +103,6 @@ else
 
     set -- \
         glibc \
-        gcc-libs-glibc \
         coreutils-glibc \
         bash-glibc \
         binutils-glibc \
@@ -164,10 +110,7 @@ else
         ncurses-utils-glibc \
         xz-utils-glibc \
         libseccomp-glibc \
-        ca-certificates-glibc \
-        clang-glibc \
-        cmake-glibc \
-        make-glibc
+        ca-certificates-glibc
 
     echo "requested packages:"
     printf '  %s\n' "$@"
@@ -200,8 +143,6 @@ else
     done
 fi
 
-install_pacman
-
 "$ROOT/scripts/build-shims.sh"
 
 echo "checking required binaries..."
@@ -231,8 +172,7 @@ for bin in \
     make \
     cmake \
     ar \
-    ranlib \
-    pacman
+    ranlib
 do
     require_bin "$bin"
 done

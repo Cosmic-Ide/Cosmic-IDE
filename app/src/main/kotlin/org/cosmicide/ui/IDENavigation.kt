@@ -169,6 +169,7 @@ fun IDENavigation() {
                     },
                     initialCommand = "bash ${setupScript.absolutePath} ${context.filesDir.absolutePath} ${context.cacheDir.absolutePath}",
                     workingDir = context.filesDir,
+                    setup = true,
                     onProcessExit = { exitCode ->
                         if (exitCode == 0 && !ResourceUtil.isEnvironmentIncomplete()) {
                             backStack.removeLastOrNull()

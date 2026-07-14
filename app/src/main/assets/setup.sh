@@ -285,6 +285,27 @@ fi
 
 echo
 
+echo "Setting up pacman"
+
+mkdir arch
+
+./alarm-pkg gnupg gpgme libassuan libgpg-error pacman pacman-mirrorlist archlinuxarm-keyring sqlite libgcrypt npth
+
+export APP_FILES_DIR="$FILES_DIR/arch"
+export PATH="$FILES_DIR/arch/usr/bin:$FILES_DIR/arch/usr/sbin:$PATH"
+export LD_LIBRARY_PATH="$FILES_DIR/arch/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+unset GNUPGHOME
+hash -r
+
+sed -i "s/DownloadUser/#DownloadUser/" "$FILES_DIR/arch/usr/etc/pacman.conf"
+sed -i "s/CheckSpace/#CheckSpace/" "$FILES_DIR/arch/usr/etc/pacman.conf"
+pacman-key --init
+pacman-key --populate archlinuxarm
+pacman -Sy
+pacman -S glibc
+
+echo
+
 if [[ "$installed_any" == true ]]; then
     echo "Selected development tools are ready."
 else

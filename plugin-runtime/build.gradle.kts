@@ -36,4 +36,6 @@ android {
 dependencies {
     api(projects.pluginApi)
     implementation("top.canyie.pine:core:0.3.0")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20250517")
 }

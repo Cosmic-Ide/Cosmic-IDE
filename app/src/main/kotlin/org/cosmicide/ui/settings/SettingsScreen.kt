@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.cosmicide.R
+import org.cosmicide.ui.SettingsDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +43,7 @@ fun SettingsScreen(
         SettingsCategory.Editor,
         SettingsCategory.Compiler,
         SettingsCategory.Formatter,
-        SettingsCategory.Plugins,
+        SettingsCategory.Extensions,
         SettingsCategory.Terminal,
         SettingsCategory.Toolchains,
         SettingsCategory.About
@@ -75,32 +76,58 @@ fun SettingsScreen(
 }
 
 sealed class SettingsCategory(
+    val destination: SettingsDestination,
     val title: String,
     val summary: String,
     val icon: ImageVector
 ) {
-    data object Editor : SettingsCategory("Code editor", "Customize editor settings", Icons.Default.Code)
-    data object Compiler : SettingsCategory("Compiler", "Configure compiler options and build process", Icons.Default.Build)
+    data object Editor : SettingsCategory(
+        SettingsDestination.EDITOR,
+        "Code editor",
+        "Customize editor settings",
+        Icons.Default.Code
+    )
+
+    data object Compiler : SettingsCategory(
+        SettingsDestination.COMPILER,
+        "Compiler",
+        "Configure compiler options and build process",
+        Icons.Default.Build
+    )
     data object Formatter : SettingsCategory(
+        SettingsDestination.FORMATTER,
         "Formatter",
         "Adjust code formatting preferences",
         Icons.AutoMirrored.Filled.FormatAlignLeft
     )
 
-    data object Plugins :
+    data object Extensions :
         SettingsCategory(
+            SettingsDestination.EXTENSIONS,
             "Extensions",
             "Manage providers, plugins, and language servers",
             Icons.Default.Hub
         )
     data object Terminal : SettingsCategory(
+        SettingsDestination.TERMINAL,
         "Terminal",
         "Run commands in the built-in terminal",
         Icons.Default.Terminal
     )
     data object Toolchains :
-        SettingsCategory("Toolchains", "Configure JDK Toolchain", Icons.Default.Hardware)
-    data object About : SettingsCategory("About", "Learn more about Cosmic IDE", Icons.Default.Info)
+        SettingsCategory(
+            SettingsDestination.TOOLCHAINS,
+            "Toolchains",
+            "Configure JDK Toolchain",
+            Icons.Default.Hardware
+        )
+
+    data object About : SettingsCategory(
+        SettingsDestination.ABOUT,
+        "About",
+        "Learn more about Cosmic IDE",
+        Icons.Default.Info
+    )
 }
 
 @Composable

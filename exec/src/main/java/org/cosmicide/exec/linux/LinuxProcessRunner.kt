@@ -150,15 +150,20 @@ object LinuxProcessRunner {
         val current = StringBuilder()
         var quote: Char? = null
         var escaping = false
+        var tokenStarted = false
 
         commandLine.forEach { char ->
             when {
                 escaping -> {
                     current.append(char)
                     escaping = false
+                    tokenStarted = true
                 }
 
-                char == '\\' -> escaping = true
+                char == '\\' -> {
+                    escaping = true
+                    tokenStarted = true
+                }
 
                 quote != null -> {
                     if (char == quote) {
@@ -168,16 +173,23 @@ object LinuxProcessRunner {
                     }
                 }
 
-                char == '\'' || char == '"' -> quote = char
+                char == '\'' || char == '"' -> {
+                    quote = char
+                    tokenStarted = true
+                }
 
                 char.isWhitespace() -> {
-                    if (current.isNotEmpty()) {
+                    if (tokenStarted) {
                         result.add(current.toString())
                         current.clear()
+                        tokenStarted = false
                     }
                 }
 
-                else -> current.append(char)
+                else -> {
+                    current.append(char)
+                    tokenStarted = true
+                }
             }
         }
 
@@ -185,7 +197,7 @@ object LinuxProcessRunner {
         if (quote != null) {
             throw IllegalArgumentException("Unclosed quote in command")
         }
-        if (current.isNotEmpty()) result.add(current.toString())
+        if (tokenStarted) result.add(current.toString())
 
         return result
     }

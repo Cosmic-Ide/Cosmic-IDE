@@ -26,6 +26,7 @@ import org.cosmicide.editor.completion.CustomCompletionItemAdapter
 import org.cosmicide.editor.completion.CustomCompletionLayout
 import org.cosmicide.editor.language.configureLanguageFor
 import org.cosmicide.extension.setFont
+import org.cosmicide.project.Project
 import java.io.File
 
 data class CodeEditorState(
@@ -68,7 +69,7 @@ fun CodeEditor(
     )
 }
 
-fun CodeEditor.applyEditorSettings(file: File, theme: ColorScheme) {
+fun CodeEditor.applyEditorSettings(project: Project, file: File, theme: ColorScheme) {
     colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
     setTooltipImprovements(theme)
     setFont()
@@ -103,7 +104,7 @@ fun CodeEditor.applyEditorSettings(file: File, theme: ColorScheme) {
         ThemeRegistry.getInstance().currentThemeModel
     )
 
-    configureLanguageFor(file)
+    configureLanguageFor(project, file)
 }
 
 

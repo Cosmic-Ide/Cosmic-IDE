@@ -27,10 +27,6 @@ jobs:
           gradle-version: current
           arguments: test --continue
 
-
-      - name: Run tests
-        run: ./gradlew test --continue
-
       - name: Upload test reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

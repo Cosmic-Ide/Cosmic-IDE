@@ -3,37 +3,20 @@ package org.cosmicide.ui.home
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -60,60 +42,48 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.cosmicide.R
+import org.cosmicide.app.LocalAppContainer
 import org.cosmicide.common.Analytics
 import org.cosmicide.model.ProjectViewModel
-import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.project.Project
-import org.cosmicide.project.ProjectAction
-import org.cosmicide.project.ProjectActionProvider
 import org.cosmicide.project.ProjectCreationProvider
-import org.cosmicide.project.ProjectExtensionPoints
 import org.cosmicide.project.TerminalAction
 import org.cosmicide.ui.plugin.ProjectActionDialog
 import org.cosmicide.ui.plugin.ProjectCreationDialog
-import org.cosmicide.util.FileUtil
-import org.cosmicide.util.compressToZip
-import org.cosmicide.util.unzip
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
-    viewModel: ProjectViewModel = viewModel(),
     onNavigateToSettings: () -> Unit,
     onNavigateToNewProject: () -> Unit,
     onNavigateToTerminal: (TerminalAction, File) -> Unit,
     onNavigateToEditor: (Project) -> Unit
 ) {
     val context = LocalContext.current
+    val container = LocalAppContainer.current
+    val viewModel: ProjectViewModel = viewModel(factory = container.projectViewModelFactory)
     val projects by viewModel.projects.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val archiveRepository = container.homeProjectArchiveRepository
+    val extensionRepository = container.homeExtensionRepository
 
     var projectToDelete by remember { mutableStateOf<Project?>(null) }
     var projectToBackup by remember { mutableStateOf<Project?>(null) }
     var showCreationMenu by remember { mutableStateOf(false) }
     var selectedCreationProvider by remember { mutableStateOf<ProjectCreationProvider?>(null) }
     var selectedProjectAction by remember { mutableStateOf<ProjectActionContribution?>(null) }
-    val creationProviders = CosmicPluginHost
-        .enabledExtensions(ProjectExtensionPoints.CREATION_PROVIDER)
-        .filter(ProjectCreationProvider::isAvailable)
-    val actionProviders = CosmicPluginHost
-        .enabledExtensions(ProjectExtensionPoints.ACTION_PROVIDER)
+    val creationProviders = remember { extensionRepository.creationProviders() }
+    val actionProviders = remember { extensionRepository.actionProviders() }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -122,15 +92,19 @@ fun HomeScreen(
     val backupLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/zip")
     ) { uri ->
-        if (uri != null && projectToBackup != null) {
-            scope.launch(Dispatchers.IO) {
-                context.contentResolver.openOutputStream(uri)?.use { out ->
-                    projectToBackup!!.root.compressToZip(out)
-                }
-                withContext(Dispatchers.Main) {
-                    snackbarHostState.showSnackbar("Project backed up successfully")
-                    projectToBackup = null
-                }
+        val project = projectToBackup
+        if (uri != null && project != null) {
+            scope.launch {
+                runCatching { archiveRepository.backup(project, uri) }
+                    .onSuccess {
+                        snackbarHostState.showSnackbar("Project backed up successfully")
+                    }
+                    .onFailure { error ->
+                        snackbarHostState.showSnackbar(
+                            error.message ?: "Project backup failed"
+                        )
+                    }
+                projectToBackup = null
             }
         }
     }
@@ -139,20 +113,17 @@ fun HomeScreen(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
         if (uri != null) {
-            val name = DocumentFile.fromSingleUri(context, uri)?.name?.substringBefore(".")
-                ?: return@rememberLauncherForActivityResult
-            val projectPath = FileUtil.projectDir.resolve(name)
-            if (projectPath.exists()) {
-                scope.launch { snackbarHostState.showSnackbar("Project already exists") }
-                return@rememberLauncherForActivityResult
-            }
-            projectPath.mkdirs()
-            scope.launch(Dispatchers.IO) {
-                context.contentResolver.openInputStream(uri)?.unzip(projectPath)
-                withContext(Dispatchers.Main) {
-                    viewModel.loadProjects()
-                    snackbarHostState.showSnackbar("Project imported successfully")
-                }
+            scope.launch {
+                runCatching { archiveRepository.importArchive(uri) }
+                    .onSuccess {
+                        viewModel.loadProjects()
+                        snackbarHostState.showSnackbar("Project imported successfully")
+                    }
+                    .onFailure { error ->
+                        snackbarHostState.showSnackbar(
+                            error.message ?: "Project import failed"
+                        )
+                    }
             }
         }
     }
@@ -325,11 +296,11 @@ fun HomeScreen(
     selectedCreationProvider?.let { provider ->
         ProjectCreationDialog(
             provider = provider,
-            projectsDirectory = FileUtil.projectDir,
+            projectsDirectory = archiveRepository.projectsDirectory,
             onDismiss = { selectedCreationProvider = null },
             onRunInTerminal = { action ->
                 selectedCreationProvider = null
-                onNavigateToTerminal(action, FileUtil.projectDir)
+                onNavigateToTerminal(action, archiveRepository.projectsDirectory)
             },
             onProjectCreated = { project, message ->
                 selectedCreationProvider = null
@@ -356,220 +327,4 @@ fun HomeScreen(
             }
         )
     }
-}
-
-data class ProjectActionContribution(
-    val provider: ProjectActionProvider,
-    val action: ProjectAction,
-    val project: Project
-)
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun ProjectCard(
-    project: Project,
-    pluginActions: List<ProjectActionContribution> = emptyList(),
-    onPluginAction: (ProjectActionContribution) -> Unit = {},
-    onClick: () -> Unit,
-    onBackup: () -> Unit,
-    onDelete: () -> Unit
-) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.large)
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = { showMenu = true }
-            ),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 0.dp,
-            pressedElevation = 2.dp
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = project.name,
-                    style = MaterialTheme.typography.titleLargeEmphasized,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = project.language.name,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Box {
-                IconButton(onClick = { showMenu = true }) {
-                    Icon(
-                        Icons.Default.MoreVert,
-                        contentDescription = "More options",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    pluginActions.forEach { contribution ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    contribution.action.label,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            },
-                            onClick = {
-                                showMenu = false
-                                onPluginAction(contribution)
-                            }
-                        )
-                    }
-                    DropdownMenuItem(
-                        text = { Text("Backup", style = MaterialTheme.typography.bodyLarge) },
-                        onClick = {
-                            showMenu = false
-                            onBackup()
-                        },
-                        leadingIcon = { Icon(Icons.Default.CloudUpload, contentDescription = null) }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Delete", style = MaterialTheme.typography.bodyLarge) },
-                        onClick = {
-                            showMenu = false
-                            onDelete()
-                        },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun EmptyProjectsState(onCreateClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(140.dp)
-                .clip(MaterialTheme.shapes.extraLarge)
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.FolderOpen,
-                contentDescription = null,
-                modifier = Modifier.size(72.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(
-            text = "No Projects Yet",
-            style = MaterialTheme.typography.headlineSmallEmphasized,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = "Create a new project or import an existing working directory.",
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            lineHeight = 24.sp
-        )
-        Spacer(modifier = Modifier.height(36.dp))
-        Button(
-            onClick = onCreateClick,
-            shapes = ButtonDefaults.shapes(),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-        ) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(modifier = Modifier.width(12.dp))
-            Text("Create Project", style = MaterialTheme.typography.titleMedium)
-        }
-    }
-}
-
-@Composable
-fun AnalyticsDialog(onDismiss: () -> Unit, onAccept: () -> Unit, onDecline: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.extraLarge,
-        title = {
-            Text(
-                stringResource(R.string.analytics_permission_title),
-                style = MaterialTheme.typography.headlineSmall
-            )
-        },
-        text = {
-            Text(
-                stringResource(R.string.analytics_permission_message),
-                style = MaterialTheme.typography.bodyLarge,
-                lineHeight = 24.sp
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onAccept) {
-                Text(stringResource(R.string.accept))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDecline) {
-                Text(stringResource(R.string.decline))
-            }
-        }
-    )
-}
-
-@Composable
-fun DeleteProjectDialog(project: Project, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.extraLarge,
-        title = { Text("Delete Project", style = MaterialTheme.typography.headlineSmall) },
-        text = {
-            Text(
-                "Are you sure you want to permanently delete ${project.name}?",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("Delete", color = MaterialTheme.colorScheme.error)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
 }

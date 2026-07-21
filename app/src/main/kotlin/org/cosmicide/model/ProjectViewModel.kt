@@ -8,12 +8,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.cosmicide.project.Language
 import org.cosmicide.project.Project
-import org.cosmicide.util.FileUtil
-import java.io.File
 
-class ProjectViewModel : ViewModel() {
+class ProjectViewModel(
+    private val repository: ProjectRepository = FileSystemProjectRepository()
+) : ViewModel() {
 
     private val _projects = MutableStateFlow<List<Project>>(emptyList())
     val projects: StateFlow<List<Project>> = _projects.asStateFlow()
@@ -28,18 +27,7 @@ class ProjectViewModel : ViewModel() {
     fun loadProjects() {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.value = true
-            val projectsList = FileUtil.projectDir.listFiles { file -> file.isDirectory }
-                ?.sortedByDescending { it.lastModified() }
-                ?.map {
-                    val language = when {
-                        hasSourceDirectory(it, "java") -> Language.Java
-                        hasSourceDirectory(it, "kotlin") -> Language.Kotlin
-                        hasSourceDirectory(it, "scala") -> Language.Scala
-                        else -> Language.Kotlin
-                    }
-                    Project(it, language)
-                }
-                ?: emptyList()
+            val projectsList = repository.projects()
 
             withContext(Dispatchers.Main) {
                 _projects.value = projectsList
@@ -48,14 +36,9 @@ class ProjectViewModel : ViewModel() {
         }
     }
 
-    private fun hasSourceDirectory(projectRoot: File, languageDirectory: String): Boolean {
-        return projectRoot.resolve("src/main/$languageDirectory").isDirectory ||
-                projectRoot.resolve("app/src/main/$languageDirectory").isDirectory
-    }
-
     fun deleteProject(project: Project) {
         viewModelScope.launch(Dispatchers.IO) {
-            project.delete()
+            repository.delete(project)
             loadProjects()
         }
     }

@@ -50,4 +50,5 @@ dependencies {
     api(projects.common)
     api(projects.feature.project)
     api("org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0")
+    testImplementation("junit:junit:4.13.2")
 }

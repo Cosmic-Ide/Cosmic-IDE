@@ -84,7 +84,7 @@ object Prefs {
         get() = prefs.getString("javac_flags", "") ?: ""
 
     val compilerJavaVersion: Int
-        get() = Integer.parseInt(prefs.getString("java_version", "21") ?: "21")
+        get() = parseIntPreference(prefs.getString("java_version", "21"), 21)
 
     val kotlinVersion: String
         get() = prefs.getString("kotlin_version", "2.1") ?: "2.1"
@@ -130,9 +130,12 @@ object Prefs {
         ) ?: "https://raw.githubusercontent.com/Cosmic-IDE/plugins-repo/main/plugins.json"
 
     val editorFontSize: Float
-        get() = runCatching {
-            prefs.getString("font_size", "12")?.toFloatOrNull()?.coerceIn(1f, 32f) ?: 12f
-        }.getOrElse { 12f }
+        get() = parseBoundedFloatPreference(
+            prefs.getString("font_size", "12"),
+            default = 12f,
+            minimum = 1f,
+            maximum = 32f
+        )
 
     val geminiApiKey: String
         get() = prefs.getString("gemini_api_key", "") ?: ""
@@ -141,14 +144,20 @@ object Prefs {
         get() = prefs.getString("gemini_model", "gemini-2.0-flash") ?: "gemini-2.0-flash"
 
     val temperature: Float
-        get() = runCatching {
-            prefs.getString("temperature", "0.9")?.toFloatOrNull()?.coerceIn(0f, 1f) ?: 0.9f
-        }.getOrElse { 0.9f }
+        get() = parseBoundedFloatPreference(
+            prefs.getString("temperature", "0.9"),
+            default = 0.9f,
+            minimum = 0f,
+            maximum = 1f
+        )
 
     val topP: Float
-        get() = runCatching {
-            prefs.getString("top_p", "1.0")?.toFloatOrNull()?.coerceIn(0f, 1f) ?: 1.0f
-        }.getOrElse { 1.0f }
+        get() = parseBoundedFloatPreference(
+            prefs.getString("top_p", "1.0"),
+            default = 1f,
+            minimum = 0f,
+            maximum = 1f
+        )
 
     val topK: Float
         get() = prefs.getInt("top_k", 40).coerceIn(1, 100).toFloat()
@@ -158,4 +167,18 @@ object Prefs {
 
     val clientName: String
         get() = prefs.getString("client_name", null)?.replace(" ", "") ?: Build.ID
+}
+
+internal fun parseIntPreference(value: String?, default: Int): Int =
+    value?.trim()?.toIntOrNull() ?: default
+
+internal fun parseBoundedFloatPreference(
+    value: String?,
+    default: Float,
+    minimum: Float,
+    maximum: Float
+): Float {
+    require(minimum <= maximum) { "Minimum must not exceed maximum" }
+    val parsed = value?.trim()?.toFloatOrNull()?.takeIf(Float::isFinite) ?: return default
+    return parsed.coerceIn(minimum, maximum)
 }

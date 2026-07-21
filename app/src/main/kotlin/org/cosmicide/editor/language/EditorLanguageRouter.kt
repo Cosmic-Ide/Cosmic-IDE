@@ -6,13 +6,12 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmicide.editor.EditorExtensionPoints
 import org.cosmicide.editor.EditorLanguageRequest
 import org.cosmicide.plugin.CosmicPluginHost
-import org.cosmicide.util.ProjectHandler
+import org.cosmicide.project.Project
 import java.io.File
 
 private const val TAG = "EditorLanguageRouter"
 
-fun CodeEditor.configureLanguageFor(file: File) {
-    val project = ProjectHandler.getProject() ?: return
+fun CodeEditor.configureLanguageFor(project: Project, file: File) {
     val request = EditorLanguageRequest(
         editor = this,
         project = project,

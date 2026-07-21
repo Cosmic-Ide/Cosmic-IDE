@@ -36,12 +36,19 @@ Plugin-facing code must depend on `:plugin-api` and `:ide-api`, not `:app` or
 `:plugin-runtime`. External-process callers must use `:exec`; direct `ProcessBuilder` calls omit the
 glibc compatibility environment.
 
+`:app` is being reduced to the application composition root through buildable, behavior-preserving
+steps. The target dependency rules and extraction sequence are tracked in
+[App module refactoring](app-module-refactoring.md).
+
 ## Startup
 
 `PreferencesInitializer` establishes persistent external storage through `FileUtil` and initializes
 preferences. `App.onCreate` then loads TextMate assets, runtime hooks, and the plugin host. Built-in
 editor extensions are registered before installed plugins so both use the same registries and
-selection rules.
+selection rules. `MainActivity` creates the activity-scoped `AppContainer`, which owns the concrete
+repositories, project creator, ViewModel factory, and project-session adapter supplied to Compose.
+Screens consume those contracts through `LocalAppContainer`; Android/global implementations remain
+at the composition boundary.
 
 Navigation chooses the first missing capability:
 
@@ -71,6 +78,9 @@ screens stops the provider; application shutdown repeats the cleanup defensively
 - `CosmicPluginHost` owns the extension registry; registrations are owned and removed by plugin id.
 - `LinuxProcessRunner` owns the glibc environment and command wrapping for every external tool.
 - `ToolingServerManager` owns at most one fixed-project Gradle provider process.
+- Project screens request command contributions and tooling cleanup through
+  `ProjectSessionServices`; the default adapter is the only Compose-facing bridge to the plugin and
+  tooling globals.
 - The app-side and provider-side Gradle protocol must change together.
 - HTTPS TextMate grammar cache entries are URL-keyed, parser-validated before replacement, and
   refreshed after seven days. Cache storage is disposable; user configuration remains in

@@ -10,9 +10,10 @@ package org.cosmicide.common
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import com.google.firebase.FirebaseApp
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
+
+//import com.google.firebase.FirebaseApp
+//import com.google.firebase.analytics.ktx.analytics
+//import com.google.firebase.ktx.Firebase
 
 object Analytics {
 

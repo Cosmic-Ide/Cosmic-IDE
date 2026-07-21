@@ -20,4 +20,6 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.5.1")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.1")
     implementation("io.ktor:ktor-client-cio:3.5.1")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("io.ktor:ktor-client-mock:3.5.1")
 }

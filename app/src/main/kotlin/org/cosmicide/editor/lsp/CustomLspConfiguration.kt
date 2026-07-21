@@ -5,10 +5,10 @@ import android.util.Log
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.editor.LspServerDefinition
 import org.cosmicide.editor.LspServerProvider
 import org.cosmicide.editor.LspServerRequest
+import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.util.PreferenceKeys
 import java.io.InputStream
 import java.net.URI
@@ -63,7 +63,7 @@ class CustomLspConfigurationStore(context: Context) {
             gson.fromJson<List<CustomLspConfiguration>>(json, CONFIGURATION_LIST_TYPE)
                 .orEmpty()
                 .map(CustomLspConfiguration::normalized)
-                .withSingleActiveConfigurationPerExtension()
+                .enforceSingleActiveConfigurationPerExtension()
         }.onFailure {
             Log.w(TAG, "Ignoring invalid custom LSP configuration", it)
         }.getOrDefault(emptyList())
@@ -105,7 +105,7 @@ class CustomLspConfigurationStore(context: Context) {
     }
 }
 
-private fun List<CustomLspConfiguration>.withSingleActiveConfigurationPerExtension():
+internal fun List<CustomLspConfiguration>.enforceSingleActiveConfigurationPerExtension():
         List<CustomLspConfiguration> {
     val activeExtensions = mutableSetOf<String>()
     return map { configuration ->

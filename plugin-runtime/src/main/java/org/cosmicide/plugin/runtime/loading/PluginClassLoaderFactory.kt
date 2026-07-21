@@ -41,21 +41,28 @@ class PluginClassLoaderFactory(
     }
 
     fun resolveArtifacts(pluginDir: File, descriptor: PluginDescriptor): List<File> {
-        val declared = descriptor.classPath.map { path ->
-            File(path).takeIf { it.isAbsolute } ?: pluginDir.resolve(path)
-        }
-        if (declared.isNotEmpty()) return declared.filter { it.isFile }
-
-        val knownNames = listOf("plugin.apk", "plugin.dex", "plugin.jar")
-            .map { pluginDir.resolve(it) }
-            .filter { it.isFile }
-        if (knownNames.isNotEmpty()) return knownNames
-
-        return pluginDir
-            .listFiles { file ->
-                file.isFile && file.extension in setOf("apk", "dex", "jar")
-            }
-            ?.sortedBy { it.name }
-            .orEmpty()
+        return resolvePluginArtifacts(pluginDir, descriptor)
     }
+}
+
+internal fun resolvePluginArtifacts(
+    pluginDir: File,
+    descriptor: PluginDescriptor
+): List<File> {
+    val declared = descriptor.classPath.map { path ->
+        File(path).takeIf { it.isAbsolute } ?: pluginDir.resolve(path)
+    }
+    if (declared.isNotEmpty()) return declared.filter { it.isFile }
+
+    val knownNames = listOf("plugin.apk", "plugin.dex", "plugin.jar")
+        .map { pluginDir.resolve(it) }
+        .filter { it.isFile }
+    if (knownNames.isNotEmpty()) return knownNames
+
+    return pluginDir
+        .listFiles { file ->
+            file.isFile && file.extension in setOf("apk", "dex", "jar")
+        }
+        ?.sortedBy { it.name }
+        .orEmpty()
 }

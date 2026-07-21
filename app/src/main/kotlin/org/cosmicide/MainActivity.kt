@@ -13,8 +13,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
+import org.cosmicide.app.AppContainer
+import org.cosmicide.app.LocalAppContainer
 import org.cosmicide.ui.IDENavigation
 import org.cosmicide.ui.editor.resolveTheme
 import org.cosmicide.ui.theme.IDETheme
@@ -27,19 +30,22 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        val appContainer = AppContainer(applicationContext)
 
         setContent {
-            IDETheme {
-                val isDarkTheme = isDeviceInDarkTheme()
-                loadEditorThemes(MaterialTheme.colorScheme)
+            CompositionLocalProvider(LocalAppContainer provides appContainer) {
+                IDETheme {
+                    val isDarkTheme = isDeviceInDarkTheme()
+                    loadEditorThemes(MaterialTheme.colorScheme)
 
-                if (isDarkTheme) {
-                    ThemeRegistry.getInstance().setTheme("darcula")
-                } else {
-                    ThemeRegistry.getInstance().setTheme("light")
+                    if (isDarkTheme) {
+                        ThemeRegistry.getInstance().setTheme("darcula")
+                    } else {
+                        ThemeRegistry.getInstance().setTheme("light")
+                    }
+
+                    IDENavigation()
                 }
-
-                IDENavigation()
             }
         }
     }

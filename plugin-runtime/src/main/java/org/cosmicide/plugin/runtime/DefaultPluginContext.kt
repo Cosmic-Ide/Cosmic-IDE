@@ -14,6 +14,7 @@ import org.cosmicide.plugin.api.PluginDescriptor
 import org.cosmicide.plugin.api.PluginLogger
 import org.cosmicide.plugin.api.ServiceRegistry
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicBoolean
 
 class DefaultPluginContext(
     override val descriptor: PluginDescriptor,
@@ -25,11 +26,18 @@ class DefaultPluginContext(
     private val disposables = CopyOnWriteArrayList<Disposable>()
 
     override fun registerDisposable(disposable: Disposable): Disposable {
-        disposables += disposable
-        return Disposable {
-            disposables.remove(disposable)
-            disposable.dispose()
+        val tracked = object : Disposable {
+            private val disposed = AtomicBoolean(false)
+
+            override fun dispose() {
+                if (disposed.compareAndSet(false, true)) {
+                    disposables.remove(this)
+                    disposable.dispose()
+                }
+            }
         }
+        disposables += tracked
+        return tracked
     }
 
     fun disposeAll() {

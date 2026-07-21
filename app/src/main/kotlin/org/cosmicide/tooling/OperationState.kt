@@ -45,6 +45,7 @@ internal class OperationState {
         if (environmentVariables.isNotEmpty()) add("env", Gson().toJsonTree(environmentVariables))
         javaHome?.let { addProperty("javaHome", it.absolutePath) }
         addProperty("colorOutput", colorOutput)
+        addProperty("detailedFailure", detailedFailure)
     }
 }
 

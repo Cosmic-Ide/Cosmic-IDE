@@ -113,19 +113,33 @@ documentation identifies the required rebuild step for each artifact.
 - [GitHub Issues](https://github.com/Cosmic-Ide/Cosmic-IDE/issues)
 - [Email](mailto:purwarpranav80@gmail.com)
 
-## Donate
+## Support Development
 
-If Cosmic IDE is useful to you, you can support its development through
-[Patreon](https://patreon.com/cosmicide).
+If Reef has been helpful to you, please consider supporting its development with a small donation.
+Every contribution matters.
+
+**Open Collective:** https://opencollective.com/invokevirtual
+
+**Bitcoin (BTC):** `bc1q3eesyfn7lhql4c2khv56cyvw2374zkhe7r97hz`
+
+**Ethereum (ETH):** `0xD80A8D6E0fa433A8bDFC2D3F325159Db70605816`
+
+**Monero (XMR):**
+`848dAWBVk8GMaoRHg6HUP5CbkpY9pJra1KNQAo9yJ6vbJLFsjFD8ZHkGpi6FhVY7rsD4U9iR7brk64eknsC3bS7tV9JRU4f`
+
+**Solana (SOL):** `7FxTAJLmhXFp6wxVbUTpf8jDmzEX1CKVMdE8oLPNQvyb`
+
+**Litecoin (LTC):** `ltc1q3pqyj5ge5rdmqr00w03x4tlhm6rhcc6wrfyx8k`
+
+**UPI (India):** `pranavpurwar@fam`
+
+<img src="https://github.com/PranavPurwar/Reef/raw/refs/heads/main/upi.jpeg" width="200" />
 
 ## Acknowledgments
 
 Cosmic IDE builds on projects including [Sora Editor](https://github.com/Rosemoe/sora-editor),
 [Termux](https://github.com/termux/termux-app), the
 [Gradle Tooling API](https://docs.gradle.org/current/userguide/tooling_api.html),
-[Eclipse JDT LS](https://github.com/eclipse-jdtls/eclipse.jdt.ls),
-[Kotlin Language Server](https://github.com/Kotlin/kotlin-lsp), and
-[Metals](https://scalameta.org/metals/). Thanks to
 [Iyxan23](https://github.com/Iyxan23) for the application icon and to every contributor who has
 helped develop and test the project.
 

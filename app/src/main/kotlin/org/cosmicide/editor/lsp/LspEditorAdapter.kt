@@ -26,8 +26,8 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.editor.LspServerConnection
 import org.cosmicide.editor.LspServerDefinition
 import org.cosmicide.editor.LspServerRequest
-import org.eclipse.tm4e.core.registry.IGrammarSource
 import org.eclipse.lsp4j.DidChangeConfigurationParams
+import org.eclipse.tm4e.core.registry.IGrammarSource
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FilterInputStream
@@ -308,7 +308,7 @@ private fun createTextMateLanguage(
             .getOrNull()
     }
 
-    if (cachedGrammarText != null && cacheFile.isFreshGrammarCache()) {
+    if (cachedGrammarText != null && isTextMateGrammarCacheFresh(cacheFile)) {
         try {
             return createTextMateLanguage(definition, cachedGrammarText)
         } catch (e: Exception) {
@@ -401,10 +401,6 @@ private fun grammarCacheFile(context: Context, grammarLink: String): File {
         .resolve("$cacheKey.grammar")
 }
 
-private fun File.isFreshGrammarCache(): Boolean {
-    return isFile && System.currentTimeMillis() - lastModified() <= GRAMMAR_CACHE_MAX_AGE_MILLIS
-}
-
 private fun cacheGrammar(cacheFile: File, grammarText: String) {
     val temporaryFile = File.createTempFile(cacheFile.name, ".tmp", cacheFile.parentFile)
     try {
@@ -466,4 +462,3 @@ private const val MAX_GRAMMAR_BYTES = 5 * 1024 * 1024
 private const val GRAMMAR_CONNECT_TIMEOUT_MILLIS = 15_000
 private const val GRAMMAR_READ_TIMEOUT_MILLIS = 30_000
 private const val GRAMMAR_CACHE_DIRECTORY = "textmate-grammar-cache"
-private const val GRAMMAR_CACHE_MAX_AGE_MILLIS = 7L * 24 * 60 * 60 * 1000

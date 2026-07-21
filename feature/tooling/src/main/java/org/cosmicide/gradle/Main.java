@@ -2263,8 +2263,12 @@ public final class Main {
                     index++;
                 }
 
+                int integerStart = index;
                 while (!isEnd() && isDigit(input.charAt(index))) {
                     index++;
+                }
+                if (index == integerStart) {
+                    throw new IllegalArgumentException("Invalid number at index " + start);
                 }
 
                 boolean floating = false;
@@ -2273,8 +2277,12 @@ public final class Main {
                     floating = true;
                     index++;
 
+                    int fractionStart = index;
                     while (!isEnd() && isDigit(input.charAt(index))) {
                         index++;
+                    }
+                    if (index == fractionStart) {
+                        throw new IllegalArgumentException("Invalid number at index " + start);
                     }
                 }
 
@@ -2286,8 +2294,12 @@ public final class Main {
                         index++;
                     }
 
+                    int exponentStart = index;
                     while (!isEnd() && isDigit(input.charAt(index))) {
                         index++;
+                    }
+                    if (index == exponentStart) {
+                        throw new IllegalArgumentException("Invalid number at index " + start);
                     }
                 }
 
@@ -2331,4 +2343,3 @@ public final class Main {
         }
     }
 }
-

@@ -93,8 +93,12 @@ implementation types should remain in `:app`. External Linux tools must be launc
 # Assemble APKs
 ./gradlew :app:assembleProdDebug
 
-# Run unit tests across modules and continue after failures
-./gradlew test --continue
+# Run every host-testable production variant
+./gradlew :app:testProdDebugUnitTest :common:testProdDebugUnitTest \
+  :exec:testProdDebugUnitTest :ide-api:testProdDebugUnitTest \
+  :plugin-runtime:testDebugUnitTest :util:testDebugUnitTest \
+  :plugin-api:test :feature:project:test :feature:sdk-manager:test \
+  :feature:tooling:test :feature:code-navigation:testDebugUnitTest
 
 # Run app production unit tests only
 ./gradlew :app:testProdDebugUnitTest
@@ -172,7 +176,7 @@ Important application entry points are:
 | `startup/`                                          | persistent roots and preference initialization |
 | `ui/IDENavigation.kt`                               | setup gates and screen routing                 |
 | `ui/home`, `ui/project`, `ui/editor`                | project lifecycle and editing workspace        |
-| `ui/compile`, `ui/output`, `ui/terminal`            | build/run surfaces and PTY terminal            |
+| `ui/compile`, `ui/terminal`                         | build surfaces and PTY terminal                |
 | `editor/language`, `editor/lsp`, `editor/formatter` | built-in extension implementations             |
 | `tooling/`                                          | app side of the Gradle JSON bridge             |
 | `plugin/` and `plugin-runtime/`                     | extension host and installed-plugin runtime    |
@@ -199,6 +203,29 @@ Run verification in proportion to the changed boundary:
 Android local unit tests cannot prove glibc, loader, PTY, or DocumentsProvider behavior. Those need
 an emulator/device where applicable, and glibc/aarch64 behavior ultimately needs compatible arm64
 hardware or virtualization.
+
+### Current automated coverage
+
+Tests live with the module that owns the behavior:
+
+| Module                 | Host test focus                                                                                                                                                                                                                                                             |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `:app`                 | LSP normalization and selection, grammar-cache age, editor documents and tool-window state, project repositories/tree confinement, Git helpers, project creation, extension forms, terminal control codes, Gradle client parameter encoding, and model proxy reconstruction |
+| `:common`              | Defensive parsing and bounds for persisted numeric preferences                                                                                                                                                                                                              |
+| `:util`                | Persistent directory initialization, ZIP round trips/traversal/prefix/overwrite rules, and JDK executable repair                                                                                                                                                            |
+| `:exec`                | Shell-like command tokenization, empty arguments, executable resolution, and missing-command failures                                                                                                                                                                       |
+| `:feature:project`     | Language lookup/serialization, project paths, source-set precedence, argument persistence, and project serialization                                                                                                                                                        |
+| `:feature:sdk-manager` | Foojay platform aliases, request parameters, response filtering/mapping, failures, downloads, and progress contract using a mock HTTP engine                                                                                                                                |
+| `:feature:tooling`     | Provider subprocess framing, invalid requests, ping/shutdown, strict JSON, startup arguments, and reflection model serialization without connecting to Gradle                                                                                                               |
+| `:plugin-api`          | Descriptor validation, extension ordering/ownership/disposal, service typing/replacement, and required lookup                                                                                                                                                               |
+| `:plugin-runtime`      | Manifest defaults/full parsing, artifact resolution, and reverse/idempotent plugin cleanup                                                                                                                                                                                  |
+| `:ide-api`             | Validation and semantics of plugin forms, commands, progress, actions, and LSP definitions                                                                                                                                                                                  |
+
+`:feature:code-navigation` remains an integration boundary around Kotlin/Java compiler PSI. Its
+meaningful tests require a compiler analysis environment and representative parsed source; testing
+only its navigation data classes would mirror constructors without protecting behavior. `:common`
+editor widgets and `:plugin-runtime` dex/hook adapters similarly require Android/Sora or runtime
+integration tests beyond the host suites above.
 
 ## Documentation and compatibility
 

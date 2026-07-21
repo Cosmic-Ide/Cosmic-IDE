@@ -51,4 +51,5 @@ dependencies {
 
     api("io.github.rosemoe:editor:0.24.6")
     api("io.github.rosemoe:language-textmate:0.24.6")
+    testImplementation("junit:junit:4.13.2")
 }

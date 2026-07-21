@@ -20,16 +20,24 @@ data object NewProject : Screen
 data class Editor(val project: Project) : Screen
 
 @Serializable
-data class GradleTask(val task: String) : Screen
-
-@Serializable
-data object ProjectOutput : Screen
+data class GradleTask(val project: Project, val task: String) : Screen
 
 @Serializable
 data object Settings : Screen
 
 @Serializable
-data class SettingsCategoryScreen(val category: String) : Screen
+data class SettingsCategoryScreen(val destination: SettingsDestination) : Screen
+
+@Serializable
+enum class SettingsDestination {
+    EDITOR,
+    COMPILER,
+    FORMATTER,
+    EXTENSIONS,
+    TERMINAL,
+    TOOLCHAINS,
+    ABOUT
+}
 
 @Serializable
 data object JDKSettingsScreen : Screen

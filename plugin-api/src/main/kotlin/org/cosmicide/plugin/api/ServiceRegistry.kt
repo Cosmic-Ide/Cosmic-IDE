@@ -43,7 +43,7 @@ class DefaultServiceRegistry : MutableServiceRegistry {
         }
         services[key] = instance
         return Disposable {
-            unregister(key)
+            services.remove(key, instance)
         }
     }
 

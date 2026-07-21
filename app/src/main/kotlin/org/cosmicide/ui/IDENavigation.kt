@@ -11,27 +11,26 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import org.cosmicide.tooling.ToolingServerManager
+import org.cosmicide.app.LocalAppContainer
 import org.cosmicide.ui.compile.GradleTaskScreen
 import org.cosmicide.ui.editor.EditorScreen
 import org.cosmicide.ui.home.HomeScreen
-import org.cosmicide.ui.output.ProjectOutputScreen
 import org.cosmicide.ui.project.NewProjectScreen
 import org.cosmicide.ui.resource.InstallResourcesScreen
 import org.cosmicide.ui.resource.JdkSettingsPanel
 import org.cosmicide.ui.settings.AboutSettingsScreen
 import org.cosmicide.ui.settings.CompilerSettingsScreen
 import org.cosmicide.ui.settings.EditorSettingsScreen
-import org.cosmicide.ui.settings.PluginsSettingsScreen
+import org.cosmicide.ui.settings.ExtensionsSettingsScreen
 import org.cosmicide.ui.settings.SettingsScreen
 import org.cosmicide.ui.terminal.TerminalScreen
-import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.ResourceUtil
 import java.io.File
 
 @Composable
 fun IDENavigation() {
     val context = LocalContext.current
+    val projectSessionServices = LocalAppContainer.current.projectSessionServices
     val initialScreen: Screen = when {
         ResourceUtil.isBootstrapIncomplete() -> InstallResourceScreen
         ResourceUtil.isJdkMissing() -> JDKSettingsScreen
@@ -43,18 +42,18 @@ fun IDENavigation() {
     )
 
     val hasProjectSession = backStack.any { screen ->
-        screen is Editor || screen is GradleTask || screen is ProjectOutput
+        screen is Editor || screen is GradleTask
     }
 
     LaunchedEffect(hasProjectSession) {
         if (!hasProjectSession) {
-            ToolingServerManager.stopCurrent()
+            projectSessionServices.stopTooling()
         }
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            ToolingServerManager.stopCurrent()
+            projectSessionServices.stopTooling()
         }
     }
 
@@ -81,9 +80,8 @@ fun IDENavigation() {
             is Home -> NavEntry(key) {
                 HomeScreen(
                     onNavigateToEditor = { project ->
-                    ProjectHandler.setProject(project)
-                    backStack.add(Editor(project))
-                },
+                        backStack.add(Editor(project))
+                    },
                     onNavigateToNewProject = { backStack.add(NewProject) },
                     onNavigateToTerminal = { action, workingDirectory ->
                         backStack.add(
@@ -109,44 +107,42 @@ fun IDENavigation() {
             }
 
             is GradleTask -> NavEntry(key) {
-                GradleTaskScreen(task = key.task, onNavigateBack = {
+                GradleTaskScreen(project = key.project, task = key.task, onNavigateBack = {
                     if (backStack.size > 1) backStack.removeLastOrNull()
-                }, onTaskSuccess = {
-//                    if (key.task == "build") {
-//                        backStack.add(ProjectOutput)
-//                    }
-                })
-            }
-
-            is ProjectOutput -> NavEntry(key) {
-                ProjectOutputScreen {
-                    if (backStack.size > 1) {
-                        backStack.removeLastOrNull() // remove output screen
-                    }
-                }
+                }, onTaskSuccess = {})
             }
 
             is Settings -> NavEntry(key) {
                 SettingsScreen(
                     onBack = { backStack.removeLastOrNull() },
                     onNavigateToCategory = { category ->
-                        backStack.add(SettingsCategoryScreen(category.title))
+                        backStack.add(SettingsCategoryScreen(category.destination))
                     })
             }
 
             is SettingsCategoryScreen -> NavEntry(key) {
-                when (key.category) {
-                    "Code editor" -> EditorSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Compiler" -> CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Extensions" -> PluginsSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Terminal" -> TerminalScreen(onNavigateBack = { backStack.removeLastOrNull() }) //GitSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Toolchains" -> JdkSettingsPanel { backStack.removeLastOrNull() }
-                    "About" -> AboutSettingsScreen(gotoResourceScreen = {
+                when (key.destination) {
+                    SettingsDestination.EDITOR ->
+                        EditorSettingsScreen(onBack = { backStack.removeLastOrNull() })
+
+                    SettingsDestination.COMPILER ->
+                        CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
+
+                    SettingsDestination.FORMATTER -> Text("Category: Formatter")
+                    SettingsDestination.EXTENSIONS ->
+                        ExtensionsSettingsScreen(onBack = { backStack.removeLastOrNull() })
+
+                    SettingsDestination.TERMINAL ->
+                        TerminalScreen(onNavigateBack = { backStack.removeLastOrNull() })
+
+                    SettingsDestination.TOOLCHAINS ->
+                        JdkSettingsPanel { backStack.removeLastOrNull() }
+
+                    SettingsDestination.ABOUT -> AboutSettingsScreen(gotoResourceScreen = {
                         backStack.add(
                             LanguageServerSetupScreen
                         )
                     }, onBack = { backStack.removeLastOrNull() })
-                    else -> Text("Category: ${key.category}")
                 }
             }
 

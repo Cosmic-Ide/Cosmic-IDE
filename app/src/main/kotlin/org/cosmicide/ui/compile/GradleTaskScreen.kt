@@ -37,29 +37,26 @@ import androidx.core.content.res.ResourcesCompat
 import com.termux.view.TerminalView
 import org.cosmicide.R
 import org.cosmicide.common.Prefs
+import org.cosmicide.project.Project
 import org.cosmicide.ui.terminal.BasicTerminalViewClient
 import org.cosmicide.ui.terminal.MaxTerminalTextSizeDp
 import org.cosmicide.ui.terminal.MinTerminalTextSizeDp
 import org.cosmicide.ui.terminal.TerminalController
 import org.cosmicide.ui.terminal.TerminalModifierLatch
 import org.cosmicide.ui.terminal.applyTerminalColors
-import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.jdksDir
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GradleTaskScreen(
+    project: Project,
     task: String,
     onNavigateBack: () -> Unit,
     onTaskSuccess: () -> Unit
 ) {
     val context = LocalContext.current
     val colorScheme = MaterialTheme.colorScheme
-
-    val project = remember {
-        ProjectHandler.getProject() ?: throw IllegalStateException("No project set")
-    }
 
     var taskError by remember { mutableStateOf<String?>(null) }
 

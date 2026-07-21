@@ -11,6 +11,7 @@ dependencies {
     implementation("org.gradle:gradle-tooling-api:9.6.1")
 
     runtimeOnly("org.slf4j:slf4j-nop:2.0.18")
+    testImplementation("junit:junit:4.13.2")
 }
 
 application {

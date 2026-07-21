@@ -18,6 +18,7 @@ setting is absent.
 |-------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
 | [Building and contributing](development-guide.md)                             | Checkout, toolchain, variants, builds, tests, and generated assets                           |
 | [Codebase architecture](codebase-architecture.md)                             | Modules, startup, navigation, storage, and ownership                                         |
+| [App module refactoring](app-module-refactoring.md)                           | Target boundaries, dependency rules, migration stages, and current progress                  |
 | [Application UI and project lifecycle](app-ui-and-project-lifecycle.md)       | Navigation, projects, editor state, Gradle UI, settings, and document surfaces               |
 | [glibc runtime and compatibility shims](glibc-runtime-and-shims.md)           | Why each shim exists and how Linux binaries run on Android                                   |
 | [Process execution and terminal](process-execution-and-terminal.md)           | Process facade, environment, PTY, signals, and terminal bridge                               |

@@ -10,12 +10,16 @@ package org.cosmicide.plugin
 import android.content.Context
 import android.util.Log
 import org.cosmicide.editor.language.registerBuiltinEditorExtensions
-import org.cosmicide.ide.editor.EditorExtensionPoints
+import org.cosmicide.editor.EditorExtensionPoints
 import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.plugin.api.DefaultExtensionRegistry
 import org.cosmicide.plugin.api.DefaultServiceRegistry
 import org.cosmicide.plugin.api.MutableExtensionRegistry
+import org.cosmicide.plugin.git.GitPlugin
+import org.cosmicide.plugin.customproject.CustomProjectTypePlugin
 import org.cosmicide.plugin.runtime.AndroidPluginManager
+import org.cosmicide.project.IdeServices
+import org.cosmicide.project.ProjectExtensionPoints
 import org.cosmicide.util.FileUtil
 
 object CosmicPluginHost {
@@ -39,12 +43,30 @@ object CosmicPluginHost {
 
             extensionSettings = ExtensionSettings(context)
             registerBuiltinEditorExtensions(context, extensionRegistry)
+            serviceRegistry.register(
+                IdeServices.COMMAND_EXECUTION,
+                AndroidCommandExecutionService(context)
+            )
             pluginManager = AndroidPluginManager(
                 context = context,
                 extensionRegistry = extensionRegistry,
                 pluginRoot = FileUtil.pluginDir,
                 serviceRegistry = serviceRegistry
             ).also { manager ->
+                manager.loadBuiltin(
+                    CustomProjectTypePlugin.descriptor,
+                    CustomProjectTypePlugin()
+                ).onFailure { descriptorId, reason, throwable ->
+                    Log.w(TAG, "Failed to load built-in plugin $descriptorId: $reason", throwable)
+                }
+                manager.loadBuiltin(GitPlugin.descriptor, GitPlugin())
+                    .onFailure { descriptorId, reason, throwable ->
+                        Log.w(
+                            TAG,
+                            "Failed to load built-in plugin $descriptorId: $reason",
+                            throwable
+                        )
+                    }
                 manager.loadInstalledPlugins().forEach { result ->
                     result.onFailure { descriptorId, reason, throwable ->
                         Log.w(TAG, "Failed to load plugin $descriptorId: $reason", throwable)
@@ -66,6 +88,9 @@ object CosmicPluginHost {
             addRegistrations(EditorExtensionPoints.LANGUAGE_PROVIDER, "Editor languages")
             addRegistrations(EditorExtensionPoints.LSP_SERVER_PROVIDER, "Language servers")
             addRegistrations(EditorExtensionPoints.FORMATTER_PROVIDER, "Formatters")
+            addRegistrations(ProjectExtensionPoints.CREATION_PROVIDER, "Project creation")
+            addRegistrations(ProjectExtensionPoints.ACTION_PROVIDER, "Project actions")
+            addRegistrations(ProjectExtensionPoints.COMMAND_PROVIDER, "Project commands")
         }.distinctBy { it.extension.id }
     }
 

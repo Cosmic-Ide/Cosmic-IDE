@@ -12,9 +12,9 @@ import android.util.Log
 import org.cosmicide.App
 import org.cosmicide.editor.lsp.ExistingProcessLspConnection
 import org.cosmicide.exec.ProcessExecutor
-import org.cosmicide.ide.editor.LspServerDefinition
-import org.cosmicide.ide.editor.LspServerProvider
-import org.cosmicide.ide.editor.LspServerRequest
+import org.cosmicide.editor.LspServerDefinition
+import org.cosmicide.editor.LspServerProvider
+import org.cosmicide.editor.LspServerRequest
 import org.cosmicide.project.Project
 import java.io.InputStream
 

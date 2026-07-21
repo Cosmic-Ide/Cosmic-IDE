@@ -65,6 +65,50 @@ class AndroidPluginManager(
         return load(descriptor, pluginRoot.resolve(descriptor.id))
     }
 
+    /** Activates an app-bundled plugin through the same context and lifecycle as installed plugins. */
+    fun loadBuiltin(descriptor: PluginDescriptor, plugin: CosmicPlugin): PluginLoadResult {
+        if (!descriptor.enabledByDefault) {
+            updateHandle(descriptor, PluginState.DISABLED)
+            return PluginLoadResult.Failed(descriptor, "Plugin is disabled by default")
+        }
+
+        activePlugins[descriptor.id]?.let {
+            updateHandle(descriptor, PluginState.ACTIVE)
+            return PluginLoadResult.Loaded(descriptor, it.plugin)
+        }
+
+        updateHandle(descriptor, PluginState.DISCOVERED)
+        var pluginContext: DefaultPluginContext? = null
+
+        return try {
+            pluginContext = DefaultPluginContext(
+                descriptor = descriptor,
+                extensions = extensionRegistry,
+                services = serviceRegistry,
+                logger = AndroidPluginLogger(descriptor.id)
+            )
+            plugin.activate(pluginContext)
+
+            activePlugins[descriptor.id] = ActivePlugin(
+                descriptor = descriptor,
+                plugin = plugin,
+                context = pluginContext,
+                classLoader = plugin.javaClass.classLoader ?: javaClass.classLoader
+            )
+            updateHandle(descriptor, PluginState.ACTIVE)
+            PluginLoadResult.Loaded(descriptor, plugin)
+        } catch (throwable: Throwable) {
+            pluginContext?.disposeAll()
+            extensionRegistry.unregisterOwner(descriptor.id)
+            updateHandle(descriptor, PluginState.FAILED, throwable.message)
+            PluginLoadResult.Failed(
+                descriptor = descriptor,
+                reason = throwable.message ?: "Plugin activation failed",
+                cause = throwable
+            )
+        }
+    }
+
     private fun load(descriptor: PluginDescriptor, pluginDir: File): PluginLoadResult {
         if (!descriptor.enabledByDefault) {
             updateHandle(descriptor, PluginState.DISABLED)

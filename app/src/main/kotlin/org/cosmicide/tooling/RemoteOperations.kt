@@ -191,13 +191,13 @@ class RemoteBuildLauncher(private val server: ToolingServer) : BuildLauncher {
     override fun forTasks(vararg tasks: Task): BuildLauncher =
         apply { this.tasks.addAll(tasks.map { it.path }) }
 
-    override fun forTasks(tasks: MutableIterable<out Task>): BuildLauncher =
+    override fun forTasks(tasks: MutableIterable<Task>): BuildLauncher =
         apply { this.tasks.addAll(tasks.map { it.path }) }
 
     override fun forLaunchables(vararg launchables: Launchable): BuildLauncher =
         apply { addLaunchables(launchables.asIterable()) }
 
-    override fun forLaunchables(launchables: MutableIterable<out Launchable>): BuildLauncher =
+    override fun forLaunchables(launchables: MutableIterable<Launchable>): BuildLauncher =
         apply { addLaunchables(launchables) }
 
     private fun addLaunchables(launchables: Iterable<Launchable>) {
@@ -340,7 +340,7 @@ class RemoteTestLauncher(private val server: ToolingServer) : TestLauncher {
         apply { addDescriptors(descriptors.asIterable()) }
 
     override fun withTests(
-        descriptors: MutableIterable<out TestOperationDescriptor>
+        descriptors: MutableIterable<TestOperationDescriptor>
     ): TestLauncher = apply { addDescriptors(descriptors) }
 
     private fun addDescriptors(descriptors: Iterable<TestOperationDescriptor>) {

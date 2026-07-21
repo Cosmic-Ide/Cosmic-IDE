@@ -18,58 +18,58 @@ object Analytics {
 
     private var isAnalyticsCollectionEnabled = true
 
-    private val analytics by lazy { Firebase.analytics }
+//    private val analytics by lazy { Firebase.analytics }
 
     @JvmStatic
     fun init(context: Context) {
-        FirebaseApp.initializeApp(context)
+//        FirebaseApp.initializeApp(context)
     }
 
     fun logEvent(event: String, value: Any) {
-        if (!isAnalyticsCollectionEnabled) return
-        Log.d("Analytics", "Logging event: $event")
-
-        try {
-            analytics.logEvent(event, Bundle().apply {
-                putString("value", value.toString())
-            })
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        if (!isAnalyticsCollectionEnabled) return
+//        Log.d("Analytics", "Logging event: $event")
+//
+//        try {
+//            analytics.logEvent(event, Bundle().apply {
+//                putString("value", value.toString())
+//            })
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
     }
 
     fun logEvent(event: String, bundle: Bundle) {
-        if (!isAnalyticsCollectionEnabled) return
-        Log.d("Analytics", "Logging event: $event")
-
-        try {
-            analytics.logEvent(event, bundle)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        if (!isAnalyticsCollectionEnabled) return
+//        Log.d("Analytics", "Logging event: $event")
+//
+//        try {
+//            analytics.logEvent(event, bundle)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
     }
 
     @JvmStatic
     fun logEvent(event: String, vararg pairs: Pair<String, String>) {
-        if (!isAnalyticsCollectionEnabled) return
-
-        try {
-            val bundle = Bundle()
-            for (pair in pairs) {
-                bundle.putString(pair.first, pair.second)
-            }
-            logEvent(event, bundle)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        if (!isAnalyticsCollectionEnabled) return
+//
+//        try {
+//            val bundle = Bundle()
+//            for (pair in pairs) {
+//                bundle.putString(pair.first, pair.second)
+//            }
+//            logEvent(event, bundle)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
     }
 
     @JvmStatic
     fun setAnalyticsCollectionEnabled(enabled: Boolean) {
-        try {
-            isAnalyticsCollectionEnabled = enabled
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        try {
+//            isAnalyticsCollectionEnabled = enabled
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
     }
 }

@@ -11,7 +11,9 @@ The first supported extension surfaces are:
 
 - editor language providers;
 - Language Server Protocol (LSP) server providers;
-- editor formatter providers.
+- editor formatter providers;
+- project creation providers;
+- project action providers.
 
 Built-in providers use exactly the same registry and resolution rules as plugin contributions.
 
@@ -39,7 +41,9 @@ This module defines IDE-facing extension contracts. It currently owns:
 - `LspServerProvider` for standard LSP-based language support;
 - `EditorFormatterProvider` for document and range formatting;
 - request, result, connection, and server-definition data types;
-- `EditorExtensionPoints`, the canonical extension point identifiers.
+- `EditorExtensionPoints`, the canonical extension point identifiers;
+- declarative project forms, progress events, terminal setup actions, and command execution;
+- `ProjectExtensionPoints`, the canonical project contribution identifiers.
 
 An LSP plugin should normally use `LspServerProvider`. Direct `EditorLanguageProvider`
 implementations are intended for integrations that cannot be represented by the LSP adapter.
@@ -245,7 +249,8 @@ without building a plugin by supplying:
 
 - a display name;
 - one file extension, without a leading dot;
-- shell starter code that launches an LSP server using standard input and output.
+- shell starter code that launches an LSP server using standard input and output;
+- optionally, a direct TextMate grammar URL, Android document URI, file URI, or absolute path.
 
 Example:
 
@@ -253,7 +258,7 @@ Example:
 rust-analyzer
 ```
 
-Starter code runs through `sh -c` with the project root as its working directory. The process
+Starter code runs through `bash -c` with the project root as its working directory. The process
 receives
 Cosmic IDE's toolchain environment and these additional variables:
 
@@ -261,6 +266,7 @@ Cosmic IDE's toolchain environment and these additional variables:
 |-----------------------|--------------------------------------------------|
 | `COSMIC_PROJECT_ROOT` | Absolute path of the open project root           |
 | `COSMIC_FILE`         | Absolute path of the file that triggered startup |
+| `BASH_ENV`            | Cosmic's non-interactive Bash environment file   |
 
 The server must speak LSP over stdin/stdout and must remain attached to the shell process. For a
 multi-step script, use `exec` for the final server command so closing the editor connection also
@@ -279,9 +285,16 @@ require an app restart.
 The custom provider has priority `500`. A custom entry for `java`, for example, takes precedence
 over
 the bundled Java provider while that entry is enabled. Disable the entry to restore bundled routing.
-Only the first enabled custom entry for a file extension is selected; avoid duplicate enabled
-entries
-for the same extension.
+Only one custom entry can be enabled for a file extension. Saving or enabling another entry for the
+same normalized extension disables its peers. This rule applies to custom entries; the normal
+priority router chooses the single runtime winner among custom, bundled, and plugin providers.
+
+Linked grammars do not change LSP semantics; they provide TextMate syntax highlighting and editing
+pairs around the LSP-backed editor. HTTPS grammar content is limited to 5 MB, cached by full URL,
+refreshed after seven days, and replaced only after successful parsing. When refresh fails, the last
+valid stale cache is used. `content://` permissions selected through the Android picker are
+retained;
+local sources are read directly on subsequent editor configuration.
 
 Starter code is executable user configuration. It has the same filesystem and process permissions as
 Cosmic IDE. Remote plugin repositories must never populate or execute custom starter code without an
@@ -316,6 +329,70 @@ and uses the first successful result. A result can replace the whole document or
 An LSP plugin may also register a formatter provider, but that provider should be a separate class
 and registration. Keeping formatting separate prevents a local formatter from accidentally coupling
 its lifecycle to a language server process.
+
+## Project creation and action providers
+
+Project UI extensions are declarative. `ProjectCreationProvider.fields` and
+`ProjectAction.fields` contain text, password, boolean, or choice `PluginFormField` values. Cosmic
+renders
+the form, validates required values, owns coroutine cancellation, caps visible output, and displays
+determinate progress when the provider reports a normalized value. Providers receive a string map
+and an `OperationReporter`; they never depend on Compose classes.
+
+Register project contributions like any other extension:
+
+```kotlin
+class ExamplePlugin : CosmicPlugin {
+    override fun activate(context: PluginContext) {
+        val commands = context.services.require(IdeServices.COMMAND_EXECUTION)
+        context.registerDisposable(
+            context.extensions.register(
+                point = ProjectExtensionPoints.CREATION_PROVIDER,
+                extension = ExampleProjectCreator(commands),
+                ownerPluginId = context.descriptor.id,
+                priority = 200
+            )
+        )
+    }
+}
+```
+
+A creator receives the canonical projects directory in `ProjectCreationRequest`. It must validate
+that its destination remains inside that directory, must not overwrite an existing project, and
+returns `ProjectCreationResult` only after usable project content exists. An action provider's
+`actions(project)` should be fast and side-effect free; return an empty list when it does not apply.
+Execution belongs in the suspending `create` or `execute` method.
+
+Finite tools run through `CommandExecutionService`. Pass the executable and arguments separately;
+do not concatenate user values into a shell command. Output callbacks may arrive from a background
+thread. Check `CommandResult.exitCode` and treat non-zero exit as failure. Commands use Cosmic's
+selected JDK, glibc runtime, and app-private Arch tool paths.
+
+Package installation, authentication prompts, pagers, and other interactive tasks must use a
+`TerminalAction`. Cosmic turns it into a PTY-backed terminal route. Terminal command strings are a
+trusted-code surface, so plugins must not interpolate untrusted form values into them.
+
+The bundled `GitPlugin` is the reference implementation. It contributes clone plus project-scoped
+Git operations, reports progress parsed from `git --progress`, requests installation through
+`pacman -S --needed git`, disables Git's hidden credential prompt for captured commands, and deletes
+only a newly created partial clone when clone fails.
+
+`ProjectCommandProvider` is the editor-facing command surface. Its `commands(project)` method is
+side-effect free and returns sync, build, run, or other `ProjectCommand` values for matching
+projects.
+The editor gives a contributed run command precedence over the Gradle `run` fallback and opens all
+contributed commands in bottom PTY tabs. Command text is intentionally shell code and is passed as
+an exact argument to `bash -lc`; providers must never place untrusted values into it.
+
+The fixed Sync tab has an additional ownership rule: `gradlew` takes precedence and retains Gradle
+sync. If the wrapper is absent, the first enabled `SYNC` command replaces Gradle in that tab and
+Gradle tooling startup is skipped. Providers should therefore return sync commands only for project
+layouts they positively recognize.
+
+The bundled `CustomProjectTypePlugin` is a user-configurable implementation. It contributes one
+dynamic project creator plus a command provider backed by application preferences. Configuration
+can associate existing projects through relative marker paths, while created projects persist the
+type id in `.cosmic/project-type`.
 
 ## Plugin manifest
 
@@ -413,7 +490,7 @@ enablement, failure handling, and connection lifecycle one implementation path.
   switches.
 - Add dependency and host API compatibility checks before plugin activation.
 - Introduce process-group ownership so custom shell scripts with child processes are always stopped.
-- Add typed extension points for commands, project import, diagnostics, terminals, and settings
-  pages.
+- Add typed extension points for general commands, diagnostics, custom terminal panels, and settings
+  pages. Project creation/actions and terminal setup requests are now typed.
 - Consider an out-of-process extension host when the API and permission model are mature enough to
   serialize safely.

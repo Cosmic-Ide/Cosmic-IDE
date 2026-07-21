@@ -46,5 +46,8 @@
     <inspection_tool class="PreviewPickerAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="composableFile" value="true" />
     </inspection_tool>
+    <inspection_tool class="ShellCheck" enabled="true" level="ERROR" enabled_by_default="true">
+      <shellcheck_settings value="SC2016" />
+    </inspection_tool>
   </profile>
 </component>

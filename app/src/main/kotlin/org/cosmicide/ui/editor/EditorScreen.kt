@@ -95,7 +95,12 @@ import org.cosmicide.common.Prefs
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.model.EditorToolingViewModel
 import org.cosmicide.model.EditorViewModel
+import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.project.Project
+import org.cosmicide.project.ProjectCommand
+import org.cosmicide.project.ProjectCommandKind
+import org.cosmicide.project.ProjectExtensionPoints
+import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.jdksDir
 import java.io.File
@@ -139,6 +144,18 @@ fun EditorScreen(
     var nextBuildSessionId by remember(project.root.absolutePath) {
         mutableIntStateOf(0)
     }
+    val projectCommands = remember(project.root.absolutePath) {
+        CosmicPluginHost.enabledExtensions(ProjectExtensionPoints.COMMAND_PROVIDER)
+            .flatMap { provider -> provider.commands(project) }
+    }
+    val hasGradleWrapper = remember(project.root.absolutePath) {
+        project.root.resolve("gradlew").isFile
+    }
+    val projectSyncCommand = projectCommands.firstOrNull {
+        it.kind == ProjectCommandKind.SYNC
+    }.takeIf { !hasGradleWrapper }
+    var projectSyncRunId by remember(project.root.absolutePath) { mutableIntStateOf(0) }
+    var projectSyncStatus by remember(project.root.absolutePath) { mutableStateOf("Running") }
 
     val openFiles = viewModel.openFiles
     val activeFile = viewModel.activeFile
@@ -150,7 +167,9 @@ fun EditorScreen(
 
     val runGradleTask: (String) -> Unit = { task ->
         viewModel.saveActiveDocument(editor.text.toString())
-        val existingSession = buildSessions.firstOrNull { it.task == task }
+        val existingSession = buildSessions.firstOrNull {
+            it.command == null && it.task == task
+        }
         if (existingSession != null) {
             buildSessions = buildSessions.map { session ->
                 if (session.id == existingSession.id) {
@@ -170,9 +189,46 @@ fun EditorScreen(
         }
     }
 
-    LaunchedEffect(project.root.absolutePath) {
+    val openTerminalSession: (String, String, List<String>?) -> Unit =
+        { title, command, arguments ->
+            viewModel.saveActiveDocument(editor.text.toString())
+            val session = EditorBuildSession(
+                id = ++nextBuildSessionId,
+                task = title,
+                command = command,
+                arguments = arguments
+            )
+            buildSessions = buildSessions + session
+            selectedToolWindowTabId = session.tabId
+            if (toolWindowHeightDp <= CollapsedEditorToolWindowHeightDp) {
+                toolWindowHeightDp = DefaultEditorToolWindowHeightDp
+            }
+        }
+
+    val rerunProjectSync: () -> Unit = {
+        projectSyncRunId++
+        projectSyncStatus = "Running"
+        selectedToolWindowTabId = SyncToolWindowTabId
+        if (toolWindowHeightDp <= CollapsedEditorToolWindowHeightDp) {
+            toolWindowHeightDp = DefaultEditorToolWindowHeightDp
+        }
+    }
+
+    val runProjectCommand: (ProjectCommand) -> Unit = { command ->
+        if (projectSyncCommand?.id == command.id) {
+            rerunProjectSync()
+        } else {
+            openTerminalSession(command.label, "bash", listOf("-lc", command.command))
+        }
+    }
+
+    LaunchedEffect(project.root.absolutePath, hasGradleWrapper) {
         ProjectHandler.setProject(project)
-        toolingViewModel.initialize(context, project.root)
+        if (hasGradleWrapper) {
+            toolingViewModel.initialize(context, project.root)
+        } else {
+            ToolingServerManager.stopCurrent()
+        }
     }
 
     val openFile = { newFile: File ->
@@ -240,13 +296,19 @@ fun EditorScreen(
                         editor = editor,
                         onOpenDrawer = { scope.launch { drawerState.open() } },
                         tasks = toolingViewModel.tasks,
-                        isGradleSyncing = toolingViewModel.isSyncing,
+                        isGradleSyncing = hasGradleWrapper && toolingViewModel.isSyncing,
                         gradleSyncError = toolingViewModel.syncError,
                         onResyncGradle = { toolingViewModel.resyncGradle(context) },
-                        onRunGradleTask = runGradleTask
+                        hasGradleWrapper = hasGradleWrapper,
+                        onRunGradleTask = runGradleTask,
+                        projectCommands = projectCommands,
+                        onRunProjectCommand = runProjectCommand,
+                        onOpenTerminal = {
+                            openTerminalSession("Terminal", "bash", listOf("-i"))
+                        }
                     )
 
-                    if (toolingViewModel.isSyncing) {
+                    if (hasGradleWrapper && toolingViewModel.isSyncing) {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     }
 
@@ -298,6 +360,10 @@ fun EditorScreen(
                 EditorToolWindowLayout(
                     project = project,
                     toolingOutput = toolingViewModel.output,
+                    useGradleSync = hasGradleWrapper,
+                    projectSyncCommand = projectSyncCommand,
+                    projectSyncRunId = projectSyncRunId,
+                    projectSyncStatus = projectSyncStatus,
                     selectedTabId = selectedToolWindowTabId,
                     heightDp = toolWindowHeightDp,
                     buildSessions = buildSessions,
@@ -340,6 +406,8 @@ fun EditorScreen(
                             else session
                         }
                     },
+                    onRerunProjectSync = rerunProjectSync,
+                    onProjectSyncStatusChange = { projectSyncStatus = it },
                     editorContent = {
                         if (activeFile != null) {
                             TextEditorContent(editor)
@@ -650,14 +718,17 @@ fun EditorToolbar(
     isGradleSyncing: Boolean,
     gradleSyncError: String?,
     onResyncGradle: () -> Unit,
+    hasGradleWrapper: Boolean,
     onOpenDrawer: () -> Unit,
-    onRunGradleTask: (String) -> Unit
+    onRunGradleTask: (String) -> Unit,
+    projectCommands: List<ProjectCommand>,
+    onRunProjectCommand: (ProjectCommand) -> Unit,
+    onOpenTerminal: () -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showGoToLineDialog by remember { mutableStateOf(false) }
     var showProgramArgsDialog by remember { mutableStateOf(false) }
     var showJREArgsDialog by remember { mutableStateOf(false) }
-    var showCustomCommandDialog by remember { mutableStateOf(false) }
     var showStatsDialog by remember { mutableStateOf(false) }
     var showTasksDialog by remember { mutableStateOf(false) }
 
@@ -691,6 +762,13 @@ fun EditorToolbar(
         }
     }
 
+    val contributedRunCommand = projectCommands.firstOrNull {
+        it.kind == ProjectCommandKind.RUN
+    }
+    val contributedSyncCommand = projectCommands.firstOrNull {
+        it.kind == ProjectCommandKind.SYNC
+    }
+
     TopAppBar(title = {
         Text(
             text = file?.name ?: "Cosmic IDE",
@@ -703,10 +781,17 @@ fun EditorToolbar(
             Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
         }
     }, actions = {
-        IconButton(onClick = { onRunGradleTask("run") }) {
+        IconButton(
+            enabled = contributedRunCommand != null || hasGradleWrapper,
+            onClick = {
+                if (contributedRunCommand != null) onRunProjectCommand(contributedRunCommand)
+                else onRunGradleTask("run")
+            }
+        ) {
             Icon(
                 Icons.Filled.PlayArrow,
-                contentDescription = "Run Gradle build",
+                contentDescription = contributedRunCommand?.label
+                    ?: if (hasGradleWrapper) "Run Gradle task" else "No run command configured",
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -747,11 +832,30 @@ fun EditorToolbar(
                         showJREArgsDialog = true
                         showMenu = false
                     })
-                    DropdownMenuItem(text = { Text("Custom Command") }, onClick = {
-                        showCustomCommandDialog = true
+                    DropdownMenuItem(text = { Text("Terminal") }, onClick = {
+                        onOpenTerminal()
                         showMenu = false
                     })
+                    if (contributedSyncCommand != null) {
+                        DropdownMenuItem(text = { Text(contributedSyncCommand.label) }, onClick = {
+                            onRunProjectCommand(contributedSyncCommand)
+                            showMenu = false
+                        })
+                    }
                 })
+                if (projectCommands.isNotEmpty()) {
+                    DropdownMenuItem(text = { Text("Project Commands") }, children = {
+                        projectCommands.forEach { command ->
+                            DropdownMenuItem(
+                                text = { Text(command.label) },
+                                onClick = {
+                                    onRunProjectCommand(command)
+                                    showMenu = false
+                                }
+                            )
+                        }
+                    })
+                }
                 DropdownMenuItem(text = { Text("Editor") }, children = {
                     DropdownMenuItem(text = { Text("Format") }, onClick = {
                         editor.formatCodeAsync()
@@ -771,7 +875,7 @@ fun EditorToolbar(
                         showMenu = false
                     })
                 })
-                DropdownMenuItem(text = { Text("Gradle") }, children = {
+                if (hasGradleWrapper) DropdownMenuItem(text = { Text("Gradle") }, children = {
                     DropdownMenuItem(text = { Text("Tasks") }, onClick = {
                         showTasksDialog = true
                         showMenu = false
@@ -833,11 +937,6 @@ fun EditorToolbar(
             onDismiss = {
                 showJREArgsDialog = false
             })
-    }
-
-    if (showCustomCommandDialog) {
-        CustomCommandDialog(
-            project = project, onDismiss = { showCustomCommandDialog = false })
     }
 
     if (showStatsDialog) {
@@ -926,142 +1025,6 @@ fun GoToLineDialog(lineCount: Int, onDismiss: () -> Unit, onConfirm: (Int) -> Un
             Text("Cancel")
         }
     })
-}
-
-@Composable
-fun CustomCommandDialog(
-    project: Project, onDismiss: () -> Unit
-) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val outputScrollState = rememberScrollState()
-
-    var commandInput by remember { mutableStateOf("") }
-    var outputLog by remember { mutableStateOf("Ready in ${project.root.absolutePath}\n") }
-    var isRunning by remember { mutableStateOf(false) }
-    var currentProcess by remember { mutableStateOf<Process?>(null) }
-
-    fun appendOutput(chunk: String) {
-        scope.launch(Dispatchers.Main) {
-            outputLog += chunk
-        }
-    }
-
-    LaunchedEffect(outputLog) {
-        outputScrollState.scrollTo(outputScrollState.maxValue)
-    }
-
-    DisposableEffect(currentProcess) {
-        onDispose {
-            currentProcess?.takeIf { it.isAlive }?.destroyForcibly()
-        }
-    }
-
-    AlertDialog(
-        onDismissRequest = { if (!isRunning) onDismiss() },
-        title = { Text("Custom Command") },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = commandInput,
-                    onValueChange = { commandInput = it },
-                    label = { Text("Command") },
-                    placeholder = { Text("java -version") },
-                    singleLine = true,
-                    enabled = !isRunning,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.size(12.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 180.dp, max = 320.dp)
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                        .padding(12.dp)
-                        .verticalScroll(outputScrollState)
-                ) {
-                    SelectionContainer {
-                        Text(
-                            text = outputLog,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontFamily = FontFamily.Monospace, lineHeight = 16.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-
-                if (isRunning) {
-                    Spacer(modifier = Modifier.size(12.dp))
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    val submittedCommand = commandInput.trim()
-                    if (submittedCommand.isEmpty() || isRunning) return@Button
-
-                    isRunning = true
-                    outputLog = "Executing: $submittedCommand\n\n"
-
-                    scope.launch(Dispatchers.IO) {
-                        try {
-                            val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
-                            val pathEntries =
-                                LinuxProcessRunner.toolchainPathEntries(context, jdkDir)
-                            val commandParts = LinuxProcessRunner.parseCommandLine(submittedCommand)
-                            val binary = LinuxProcessRunner.resolveExecutable(
-                                commandName = commandParts.first(),
-                                workingDir = project.root,
-                                pathEntries = pathEntries
-                            )
-                            val runnerConfig = LinuxProcessRunner.Configuration(
-                                binary = binary,
-                                arguments = commandParts.drop(1),
-                                workingDir = project.root,
-                                environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
-                                    jdkDir
-                                ),
-                                pathEntries = pathEntries
-                            )
-
-                            LinuxProcessRunner.execute(
-                                context = context,
-                                config = runnerConfig,
-                                onOutputReceived = ::appendOutput,
-                                onProcessStarted = { process ->
-                                    scope.launch(Dispatchers.Main) {
-                                        currentProcess = process
-                                    }
-                                })
-                        } catch (e: Exception) {
-                            appendOutput("\nExecution failed: ${e.message}\n")
-                        } finally {
-                            withContext(Dispatchers.Main) {
-                                currentProcess = null
-                                isRunning = false
-                            }
-                        }
-                    }
-                },
-                enabled = commandInput.isNotBlank() && !isRunning,
-                shapes = ButtonDefaults.shapes()
-            ) {
-                Text("Run")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss, enabled = !isRunning
-            ) {
-                Text("Close")
-            }
-        })
 }
 
 @Composable

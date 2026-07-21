@@ -22,12 +22,12 @@ import org.cosmicide.ui.resource.JdkSettingsPanel
 import org.cosmicide.ui.settings.AboutSettingsScreen
 import org.cosmicide.ui.settings.CompilerSettingsScreen
 import org.cosmicide.ui.settings.EditorSettingsScreen
-import org.cosmicide.ui.settings.FormatterSettingsScreen
 import org.cosmicide.ui.settings.PluginsSettingsScreen
 import org.cosmicide.ui.settings.SettingsScreen
 import org.cosmicide.ui.terminal.TerminalScreen
 import org.cosmicide.util.ProjectHandler
 import org.cosmicide.util.ResourceUtil
+import java.io.File
 
 @Composable
 fun IDENavigation() {
@@ -85,6 +85,14 @@ fun IDENavigation() {
                     backStack.add(Editor(project))
                 },
                     onNavigateToNewProject = { backStack.add(NewProject) },
+                    onNavigateToTerminal = { action, workingDirectory ->
+                        backStack.add(
+                            TerminalSession(
+                                command = action.command,
+                                workingDirectory = workingDirectory.absolutePath
+                            )
+                        )
+                    },
                     onNavigateToSettings = { backStack.add(Settings) })
             }
 
@@ -130,11 +138,14 @@ fun IDENavigation() {
                 when (key.category) {
                     "Code editor" -> EditorSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Compiler" -> CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
-                    "Formatter" -> FormatterSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Extensions" -> PluginsSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Terminal" -> TerminalScreen(onNavigateBack = { backStack.removeLastOrNull() }) //GitSettingsScreen(onBack = { backStack.removeLastOrNull() })
                     "Toolchains" -> JdkSettingsPanel { backStack.removeLastOrNull() }
-                    "About" -> AboutSettingsScreen(onBack = { backStack.removeLastOrNull() })
+                    "About" -> AboutSettingsScreen(gotoResourceScreen = {
+                        backStack.add(
+                            LanguageServerSetupScreen
+                        )
+                    }, onBack = { backStack.removeLastOrNull() })
                     else -> Text("Category: ${key.category}")
                 }
             }
@@ -176,6 +187,14 @@ fun IDENavigation() {
                             backStack.add(Home)
                         }
                     }
+                )
+            }
+
+            is TerminalSession -> NavEntry(key) {
+                TerminalScreen(
+                    onNavigateBack = { backStack.removeLastOrNull() },
+                    initialCommand = key.command,
+                    workingDir = File(key.workingDirectory)
                 )
             }
 

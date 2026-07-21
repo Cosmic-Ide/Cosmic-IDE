@@ -1,5 +1,6 @@
 package org.cosmicide.ui.home
 
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -70,17 +71,25 @@ import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.R
 import org.cosmicide.common.Analytics
 import org.cosmicide.model.ProjectViewModel
+import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.project.Project
+import org.cosmicide.project.ProjectAction
+import org.cosmicide.project.ProjectActionProvider
+import org.cosmicide.project.ProjectCreationProvider
+import org.cosmicide.project.ProjectExtensionPoints
+import org.cosmicide.project.TerminalAction
+import org.cosmicide.ui.plugin.ProjectActionDialog
+import org.cosmicide.ui.plugin.ProjectCreationDialog
 import org.cosmicide.util.FileUtil
 import org.cosmicide.util.compressToZip
 import org.cosmicide.util.unzip
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -88,6 +97,7 @@ fun HomeScreen(
     viewModel: ProjectViewModel = viewModel(),
     onNavigateToSettings: () -> Unit,
     onNavigateToNewProject: () -> Unit,
+    onNavigateToTerminal: (TerminalAction, File) -> Unit,
     onNavigateToEditor: (Project) -> Unit
 ) {
     val context = LocalContext.current
@@ -96,6 +106,14 @@ fun HomeScreen(
 
     var projectToDelete by remember { mutableStateOf<Project?>(null) }
     var projectToBackup by remember { mutableStateOf<Project?>(null) }
+    var showCreationMenu by remember { mutableStateOf(false) }
+    var selectedCreationProvider by remember { mutableStateOf<ProjectCreationProvider?>(null) }
+    var selectedProjectAction by remember { mutableStateOf<ProjectActionContribution?>(null) }
+    val creationProviders = CosmicPluginHost
+        .enabledExtensions(ProjectExtensionPoints.CREATION_PROVIDER)
+        .filter(ProjectCreationProvider::isAvailable)
+    val actionProviders = CosmicPluginHost
+        .enabledExtensions(ProjectExtensionPoints.ACTION_PROVIDER)
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -140,9 +158,10 @@ fun HomeScreen(
     }
 
     var showAnalyticsDialog by remember { mutableStateOf(false) }
+    val prefs =
+        context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
 
     LaunchedEffect(Unit) {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         if (!prefs.getBoolean("analytics_preference_asked", false)) {
             showAnalyticsDialog = true
         }
@@ -199,6 +218,12 @@ fun HomeScreen(
                         items(projects, key = { it.root.absolutePath }) { project ->
                             ProjectCard(
                                 project = project,
+                                pluginActions = actionProviders.flatMap { provider ->
+                                    provider.actions(project).map { action ->
+                                        ProjectActionContribution(provider, action, project)
+                                    }
+                                },
+                                onPluginAction = { selectedProjectAction = it },
                                 onClick = { onNavigateToEditor(project) },
                                 onBackup = {
                                     projectToBackup = project
@@ -229,6 +254,31 @@ fun HomeScreen(
                     }
                 }
             ) {
+                if (creationProviders.isNotEmpty()) {
+                    Box {
+                        IconButton(onClick = { showCreationMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Default.FolderOpen,
+                                contentDescription = "Create or import with plugin",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showCreationMenu,
+                            onDismissRequest = { showCreationMenu = false }
+                        ) {
+                            creationProviders.forEach { provider ->
+                                DropdownMenuItem(
+                                    text = { Text(provider.displayName) },
+                                    onClick = {
+                                        showCreationMenu = false
+                                        selectedCreationProvider = provider
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
                 IconButton(onClick = { importLauncher.launch(arrayOf("application/zip")) }) {
                     Icon(
                         imageVector = Icons.Default.FileUpload,
@@ -244,7 +294,6 @@ fun HomeScreen(
         AnalyticsDialog(
             onDismiss = { showAnalyticsDialog = false },
             onAccept = {
-                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
                 prefs.edit {
                     putBoolean("analytics_preference", true)
                     putBoolean("analytics_preference_asked", true)
@@ -252,7 +301,6 @@ fun HomeScreen(
                 showAnalyticsDialog = false
             },
             onDecline = {
-                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
                 prefs.edit {
                     putBoolean("analytics_preference", false)
                     putBoolean("analytics_preference_asked", true)
@@ -273,12 +321,55 @@ fun HomeScreen(
             }
         )
     }
+
+    selectedCreationProvider?.let { provider ->
+        ProjectCreationDialog(
+            provider = provider,
+            projectsDirectory = FileUtil.projectDir,
+            onDismiss = { selectedCreationProvider = null },
+            onRunInTerminal = { action ->
+                selectedCreationProvider = null
+                onNavigateToTerminal(action, FileUtil.projectDir)
+            },
+            onProjectCreated = { project, message ->
+                selectedCreationProvider = null
+                viewModel.loadProjects()
+                scope.launch { snackbarHostState.showSnackbar(message) }
+                onNavigateToEditor(project)
+            }
+        )
+    }
+
+    selectedProjectAction?.let { contribution ->
+        ProjectActionDialog(
+            provider = contribution.provider,
+            action = contribution.action,
+            project = contribution.project,
+            onDismiss = { selectedProjectAction = null },
+            onRunInTerminal = { action ->
+                selectedProjectAction = null
+                onNavigateToTerminal(action, contribution.project.root)
+            },
+            onCompleted = { message, refreshProject ->
+                if (refreshProject) viewModel.loadProjects()
+                scope.launch { snackbarHostState.showSnackbar(message) }
+            }
+        )
+    }
 }
+
+data class ProjectActionContribution(
+    val provider: ProjectActionProvider,
+    val action: ProjectAction,
+    val project: Project
+)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProjectCard(
     project: Project,
+    pluginActions: List<ProjectActionContribution> = emptyList(),
+    onPluginAction: (ProjectActionContribution) -> Unit = {},
     onClick: () -> Unit,
     onBackup: () -> Unit,
     onDelete: () -> Unit
@@ -336,6 +427,20 @@ fun ProjectCard(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false }
                 ) {
+                    pluginActions.forEach { contribution ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    contribution.action.label,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            },
+                            onClick = {
+                                showMenu = false
+                                onPluginAction(contribution)
+                            }
+                        )
+                    }
                     DropdownMenuItem(
                         text = { Text("Backup", style = MaterialTheme.typography.bodyLarge) },
                         onClick = {

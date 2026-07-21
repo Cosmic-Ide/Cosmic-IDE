@@ -79,13 +79,12 @@ enum class DslType(val gradleValue: String) {
  */
 enum class TestFramework(val gradleValue: String, val displayName: String) {
     // Java/Kotlin test frameworks
-    JUNIT("junit", "JUnit"),
+    JUNIT("junit-jupiter", "JUnit"),
     TESTNG("testng", "TestNG"),
+    KotlinTest("kotlintest", "KotlinTest"),
 
     // Scala test frameworks
     SCALATEST("scalatest", "ScalaTest"),
-    SPECS2("specs2", "Specs2"),
-    SCALACHECK("scalacheck", "ScalaCheck")
 }
 
 @OptIn(
@@ -284,15 +283,18 @@ fun NewProjectScreen(
 
             val availableTestFrameworks = remember(language) {
                 when (language) {
-                    Language.Java, Language.Kotlin -> listOf(
+                    Language.Java -> listOf(
                         TestFramework.JUNIT,
                         TestFramework.TESTNG
                     )
 
+                    Language.Kotlin -> listOf(
+                        TestFramework.JUNIT,
+                        TestFramework.KotlinTest
+                    )
+
                     Language.Scala -> listOf(
-                        TestFramework.SCALATEST,
-                        TestFramework.SPECS2,
-                        TestFramework.SCALACHECK
+                        TestFramework.SCALATEST
                     )
                 }
             }

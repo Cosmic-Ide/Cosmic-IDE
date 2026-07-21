@@ -5,24 +5,30 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.ide.editor
+package org.cosmicide.editor
 
-import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.text.TextRange
 import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.project.Project
 import java.io.File
 
-data class EditorLanguageRequest(
-    val editor: CodeEditor,
-    val project: Project,
-    val file: File
+data class EditorFormatterRequest(
+    val project: Project?,
+    val file: File,
+    val text: String,
+    val range: TextRange? = null
 )
 
-interface EditorLanguageProvider : ConfigurableExtension {
+data class EditorFormatterResult(
+    val text: String,
+    val replacementRange: TextRange? = null
+)
+
+interface EditorFormatterProvider : ConfigurableExtension {
     val priority: Int
         get() = 0
 
-    fun supports(request: EditorLanguageRequest): Boolean
+    fun supports(request: EditorFormatterRequest): Boolean
 
-    fun configure(request: EditorLanguageRequest): Boolean
+    fun format(request: EditorFormatterRequest): EditorFormatterResult
 }

@@ -13,12 +13,31 @@
 #}
 -adaptclassstrings
 -adaptresourcefilecontents
--dontobfuscate
--dontshrink
--ignorewarnings
--dontoptimize
 -keepattributes SourceFile,LineNumberTable
--optimizationpasses 5
+
+-keep class org.cosmicide.util.*
+-keep class org.cosmicide.editor.*
+-keep class org.cosmicide.plugin.api.*
+-keep class org.cosmicide.plugin.runtime.*
+-keep class org.cosmicide.plugin.runtime.hook.*
+-keep class org.cosmicide.plugin.runtime.loading.*
+
+-keep class com.github.luben.zstd.** { *; }
+
+-keepclassmembers class com.termux.view.TerminalView {
+  public void inputCodePoint(int, int, boolean, boolean);
+  public boolean handleKeyCode(int, int);
+}
+
+-keepclassmembers class com.termux.view.textselection.TextSelectionCursorController {
+  public java.lang.String getSelectedText();
+  private com.termux.view.TerminalView terminalView;
+}
+
+-dontwarn java.lang.management.ManagementFactory
+-dontwarn java.lang.management.RuntimeMXBean
+-dontwarn org.gradle.internal.impldep.com.google.j2objc.annotations.*
+-dontwarn org.gradle.internal.impldep.org.jetbrains.annotations.Contract
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.

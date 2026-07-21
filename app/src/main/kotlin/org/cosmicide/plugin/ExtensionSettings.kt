@@ -1,13 +1,13 @@
 package org.cosmicide.plugin
 
 import android.content.Context
-import androidx.preference.PreferenceManager
 import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.util.PreferenceKeys
+import androidx.core.content.edit
 
 class ExtensionSettings(context: Context) {
     private val preferences =
-        PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+        context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
 
     fun isEnabled(extension: ConfigurableExtension): Boolean {
         if (!extension.canDisable) return true
@@ -21,7 +21,7 @@ class ExtensionSettings(context: Context) {
 
     fun setEnabled(extension: ConfigurableExtension, enabled: Boolean) {
         require(extension.canDisable) { "Extension ${extension.id} cannot be disabled" }
-        preferences.edit().putBoolean(key(extension.id), enabled).apply()
+        preferences.edit { putBoolean(key(extension.id), enabled) }
     }
 
     private fun key(extensionId: String): String {

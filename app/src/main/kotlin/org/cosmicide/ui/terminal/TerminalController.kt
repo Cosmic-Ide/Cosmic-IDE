@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal class TerminalController(
     private val context: Context,
     private val commandLine: String,
+    private val commandArguments: List<String>? = null,
     private val workingDir: File,
     private val setup: Boolean = false,
     private val jdkDir: File,
@@ -243,6 +244,7 @@ internal class TerminalController(
                 val config = createTerminalConfig(
                     context = context,
                     commandLine = commandLine,
+                    commandArguments = commandArguments,
                     workingDir = workingDir,
                     setup = setup,
                     jdkDir = jdkDir,
@@ -484,13 +486,18 @@ internal class TerminalController(
 private fun createTerminalConfig(
     context: Context,
     commandLine: String,
+    commandArguments: List<String>? = null,
     workingDir: File,
     setup: Boolean,
     jdkDir: File,
     rows: Int,
     columns: Int
 ): LinuxProcessRunner.Configuration {
-    val commandParts = LinuxProcessRunner.parseCommandLine(commandLine)
+    val commandParts = if (commandArguments == null) {
+        LinuxProcessRunner.parseCommandLine(commandLine)
+    } else {
+        listOf(commandLine) + commandArguments
+    }
     if (commandParts.isEmpty()) {
         throw IllegalArgumentException("No command provided")
     }

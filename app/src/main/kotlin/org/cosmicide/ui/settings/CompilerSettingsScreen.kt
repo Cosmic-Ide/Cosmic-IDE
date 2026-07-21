@@ -7,6 +7,7 @@
 
 package org.cosmicide.ui.settings
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
 import org.cosmicide.ui.settings.components.EditTextPreference
 import org.cosmicide.ui.settings.components.SingleChoicePreference
 import org.cosmicide.util.PreferenceKeys
@@ -42,10 +42,12 @@ fun CompilerSettingsScreen(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { PreferenceManager.getDefaultSharedPreferences(context) }
-
-    // Read general configurations
-    var repos by remember { mutableStateOf(prefs.getString("repos", "Maven Central: https://repo1.maven.org/maven2\nGoogle Maven: https://maven.google.com\nJitpack: https://jitpack.io\nSonatype Snapshots: https://s01.oss.sonatype.org/content/repositories/snapshots\nJCenter: https://jcenter.bintray.com") ?: "") }
+    val prefs = remember {
+        context.getSharedPreferences(
+            context.packageName + "_preferences",
+            Context.MODE_PRIVATE
+        )
+    }
 
     // Dynamic JDK Selection from org.cosmicide.util
     val installedJdkNames = remember { context.jdkNames() }
@@ -97,30 +99,6 @@ fun CompilerSettingsScreen(
                         currentJdk = selected
                         prefs.edit { putString(PreferenceKeys.COMPILER_CURRENT_JDK, selected) }
                     }
-                }
-            )
-
-            Text(
-                text = "Compiler Diagnostics & Tuning",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 8.dp)
-            )
-
-            Text(
-                text = "Library Download Manager",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 8.dp)
-            )
-
-            EditTextPreference(
-                title = "Repositories",
-                summary = "A list of repositories to search for libraries",
-                value = repos,
-                onValueChange = {
-                    repos = it
-                    prefs.edit().putString("repos", it).apply()
                 }
             )
         }

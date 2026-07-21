@@ -416,7 +416,7 @@ fun SelectionScreen(
                                     distro.name,
                                     fontWeight = if (distro == selectedDistro) FontWeight.Bold else FontWeight.Normal
                                 )
-                            }, trailingIcon = if (distro.apiParam == "semeru") {
+                            }, trailingIcon = if (distro.apiParam == "zulu") {
                                 { Badge { Text("Recommended") } }
                             } else null, onClick = {
                                 onDistroSelected(distro)

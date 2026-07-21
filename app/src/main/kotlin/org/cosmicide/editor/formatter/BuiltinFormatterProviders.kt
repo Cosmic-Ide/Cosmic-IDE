@@ -1,9 +1,9 @@
 package org.cosmicide.editor.formatter
 
-import org.cosmicide.ide.editor.EditorExtensionPoints
-import org.cosmicide.ide.editor.EditorFormatterProvider
-import org.cosmicide.ide.editor.EditorFormatterRequest
-import org.cosmicide.ide.editor.EditorFormatterResult
+import org.cosmicide.editor.EditorExtensionPoints
+import org.cosmicide.editor.EditorFormatterProvider
+import org.cosmicide.editor.EditorFormatterRequest
+import org.cosmicide.editor.EditorFormatterResult
 import org.cosmicide.plugin.api.MutableExtensionRegistry
 import org.cosmicide.plugin.api.PluginIds
 

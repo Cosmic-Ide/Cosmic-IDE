@@ -1,11 +1,11 @@
 package org.cosmicide.editor.lsp
 
 import android.util.Log
-import org.cosmicide.ide.editor.EditorExtensionPoints
-import org.cosmicide.ide.editor.EditorLanguageProvider
-import org.cosmicide.ide.editor.EditorLanguageRequest
-import org.cosmicide.ide.editor.LspServerProvider
-import org.cosmicide.ide.editor.LspServerRequest
+import org.cosmicide.editor.EditorExtensionPoints
+import org.cosmicide.editor.EditorLanguageProvider
+import org.cosmicide.editor.EditorLanguageRequest
+import org.cosmicide.editor.LspServerProvider
+import org.cosmicide.editor.LspServerRequest
 import org.cosmicide.plugin.CosmicPluginHost
 
 object LspEditorLanguageProvider : EditorLanguageProvider {

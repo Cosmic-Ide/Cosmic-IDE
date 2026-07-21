@@ -10,13 +10,12 @@ package org.cosmicide.editor.language
 import android.content.Context
 import android.util.Log
 import org.cosmicide.App
-import org.cosmicide.common.Prefs
 import org.cosmicide.editor.lsp.ExistingProcessLspConnection
 import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.exec.linux.LinuxProcessRunner
-import org.cosmicide.ide.editor.LspServerDefinition
-import org.cosmicide.ide.editor.LspServerProvider
-import org.cosmicide.ide.editor.LspServerRequest
+import org.cosmicide.editor.LspServerDefinition
+import org.cosmicide.editor.LspServerProvider
+import org.cosmicide.editor.LspServerRequest
 import org.cosmicide.project.Project
 import org.eclipse.lsp4j.CodeLensOptions
 import org.eclipse.lsp4j.ServerCapabilities
@@ -35,7 +34,7 @@ object JavaEditorLanguageProvider : LspServerProvider {
     private var jdtProjectRoot: String? = null
 
     override fun supports(request: LspServerRequest): Boolean {
-        return request.extension == "java" && Prefs.useJdtLS
+        return request.extension == "java"
     }
 
     override fun createDefinition(request: LspServerRequest): LspServerDefinition {

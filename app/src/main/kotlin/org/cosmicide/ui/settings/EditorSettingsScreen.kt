@@ -1,5 +1,6 @@
 package org.cosmicide.ui.settings
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
 import org.cosmicide.common.Analytics
 import org.cosmicide.ui.settings.components.EditTextPreference
 import org.cosmicide.ui.settings.components.SliderPreference
@@ -35,11 +35,15 @@ fun EditorSettingsScreen(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { PreferenceManager.getDefaultSharedPreferences(context) }
+    val prefs = remember {
+        context.getSharedPreferences(
+            context.packageName + "_preferences",
+            Context.MODE_PRIVATE
+        )
+    }
 
     var fontSize by remember { mutableFloatStateOf(prefs.getString(PreferenceKeys.EDITOR_FONT_SIZE, "12")?.toFloat() ?: 12f) }
     var tabSize by remember { mutableFloatStateOf(prefs.getInt(PreferenceKeys.EDITOR_TAB_SIZE, 4).toFloat()) }
-    var jdtLs by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_JDT_LS, false)) }
     var editorFont by remember { mutableStateOf(prefs.getString(PreferenceKeys.EDITOR_FONT, "") ?: "") }
     var stickyScroll by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.STICKY_SCROLL, true)) }
     var useSpaces by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_USE_SPACES, true)) }
@@ -93,17 +97,6 @@ fun EditorSettingsScreen(
                 onValueChange = {
                     tabSize = it
                     prefs.edit { putFloat(PreferenceKeys.EDITOR_TAB_SIZE, it) }
-                }
-            )
-
-            SwitchPreference(
-                title = "JDT LS",
-                summary = "Uses JDT Language Server",
-                checked = jdtLs,
-                onCheckedChange = {
-                    jdtLs = it
-                    prefs.edit { putBoolean(PreferenceKeys.EDITOR_JDT_LS, it) }
-                    Analytics.logEvent("experimental_java_completion", it)
                 }
             )
 

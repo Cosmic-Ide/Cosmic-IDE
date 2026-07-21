@@ -6,9 +6,9 @@ import org.cosmicide.editor.formatter.registerBuiltinFormatterExtensions
 import org.cosmicide.editor.lsp.CustomLspConfigurationStore
 import org.cosmicide.editor.lsp.CustomLspServerProvider
 import org.cosmicide.editor.lsp.LspEditorLanguageProvider
-import org.cosmicide.ide.editor.EditorExtensionPoints
-import org.cosmicide.ide.editor.EditorLanguageProvider
-import org.cosmicide.ide.editor.EditorLanguageRequest
+import org.cosmicide.editor.EditorExtensionPoints
+import org.cosmicide.editor.EditorLanguageProvider
+import org.cosmicide.editor.EditorLanguageRequest
 import org.cosmicide.plugin.api.MutableExtensionRegistry
 import org.cosmicide.plugin.api.PluginIds
 

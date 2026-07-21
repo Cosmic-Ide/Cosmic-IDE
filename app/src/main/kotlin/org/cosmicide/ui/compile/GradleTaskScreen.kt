@@ -148,6 +148,39 @@ internal fun GradleTaskTerminal(
     onTaskError: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    CommandTerminal(
+        context = context,
+        workingDirectory = projectRoot,
+        commandLine = "./gradlew $task",
+        colorScheme = colorScheme,
+        currentTextSizeDp = currentTextSizeDp,
+        terminalTypeface = terminalTypeface,
+        onTextSizeChange = onTextSizeChange,
+        onProcessExit = { exitCode ->
+            if (exitCode == 0) onTaskSuccess()
+            else onTaskError("Gradle task '$task' failed with exit code $exitCode")
+        },
+        onFailure = { error ->
+            onTaskError("Gradle task '$task' failed: $error")
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+internal fun CommandTerminal(
+    context: android.content.Context,
+    workingDirectory: File,
+    commandLine: String,
+    commandArguments: List<String>? = null,
+    colorScheme: androidx.compose.material3.ColorScheme,
+    currentTextSizeDp: Int,
+    terminalTypeface: Typeface,
+    onTextSizeChange: (Int) -> Unit,
+    onProcessExit: (Int) -> Unit,
+    onFailure: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val scope = rememberCoroutineScope()
 
     AndroidView(
@@ -165,23 +198,18 @@ internal fun GradleTaskTerminal(
 
             val controller = TerminalController(
                 context = context.applicationContext,
-                commandLine = "./gradlew $task",
-                workingDir = projectRoot,
+                commandLine = commandLine,
+                commandArguments = commandArguments,
+                workingDir = workingDirectory,
                 jdkDir = context.applicationContext.jdksDir().resolve(Prefs.currentJDK),
                 terminalView = terminalView,
                 modifierLatch = TerminalModifierLatch(),
                 scope = scope,
                 onTitleChanged = {},
                 onFailure = { error ->
-                    onTaskError("Gradle task '$task' failed: ${error.message.orEmpty()}")
+                    onFailure(error.message.orEmpty())
                 },
-                onProcessExit = { exitCode ->
-                    if (exitCode == 0) {
-                        onTaskSuccess()
-                    } else {
-                        onTaskError("Gradle task '$task' failed with exit code $exitCode")
-                    }
-                }
+                onProcessExit = onProcessExit
             )
             val runtime = GradleTaskTerminalRuntime(
                 controller = controller,

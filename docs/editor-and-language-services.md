@@ -36,8 +36,8 @@ from the connection factory.
 ## LSP boundary
 
 `LspServerDefinition` describes the server identity, supported extension, connection factory,
-optional TextMate scope, initialization data, feature switches, and timeout. It intentionally does
-not expose Sora classes.
+optional bundled TextMate scope or linked TextMate grammar, initialization data, feature switches,
+and timeout. It intentionally does not expose Sora classes.
 
 The connection exposes server stdin, server stdout, startup, close, and liveness. Stderr is not
 part of the LSP stream and must be drained separately by the provider. Anything written to stdout
@@ -68,13 +68,30 @@ explicit project-scoped owner and separate editor detach from process shutdown.
 Custom entries have higher priority than bundled providers and start with:
 
 ```text
-sh -c <starter code>
+bash -c <starter code>
 ```
 
-The working directory is the project root, with `COSMIC_PROJECT_ROOT` and `COSMIC_FILE` set. Starter
-code is executable configuration with the app's permissions. It must be reviewed before importing
-it from a project or third party. Use `exec` for the final server command so closing the connection
-terminates the real process rather than only its shell parent.
+The working directory is the project root, with `COSMIC_PROJECT_ROOT`, `COSMIC_FILE`, and `BASH_ENV`
+set. `BASH_ENV` points to Cosmic's non-interactive Bash environment file. Starter code is executable
+configuration with the app's permissions. It must be reviewed before importing it from a project or
+third party. Use `exec` for the final server command so closing the connection terminates the real
+process rather than only its shell parent.
+
+Each entry may also carry one TextMate grammar link. Accepted sources are direct HTTP(S) URLs,
+Android `content://` document URIs, `file://` URIs, and absolute paths. JSON, XML/plist, and YAML
+grammars are detected from their content; the grammar's own `scopeName` is used, so users do not
+enter it separately. The source is limited to 5 MB and is loaded on the IO dispatcher.
+
+HTTPS sources use a URL-keyed cache under `cacheDir/textmate-grammar-cache`. A valid cached grammar
+is reused for seven days. On expiry, the app downloads a candidate and replaces the cache atomically
+only after TextMate accepts it. Network errors or invalid refreshed content fall back to the last
+valid stale copy. Changing the link selects a different cache key immediately. Local files and
+document URIs are read directly so edits are visible the next time the language is configured.
+
+The configuration store permits at most one enabled custom server per normalized file extension.
+Enabling or saving an entry disables other custom entries for that extension. Legacy preference
+data containing duplicates is normalized when read. The generic LSP router still selects only the
+highest-priority matching provider across built-in and plugin providers.
 
 ## Editor session behavior
 
@@ -86,8 +103,10 @@ Because the editor instance outlives individual files, every switch must replace
 grammar, formatter, and LSP state. A provider must not retain the editor as though it belonged to
 one document permanently.
 
-TextMate language metadata comes from `assets/textmate/languages.json`. A server may request a
-grammar scope; otherwise its wrapper uses plain highlighting.
+Bundled TextMate language metadata comes from `assets/textmate/languages.json`. A server may request
+a packaged grammar scope or provide a linked grammar. If neither is present, or a linked grammar
+cannot be loaded and has no valid cache, its wrapper uses plain highlighting while the LSP is still
+allowed to connect.
 
 ## Formatting status
 
@@ -106,18 +125,21 @@ For a stdio server:
 2. Return a definition that starts the process lazily through `ProcessExecutor`.
 3. Keep stdout protocol-only and drain stderr continuously.
 4. Close streams and the process through the connection lifecycle.
-5. Add a TextMate scope only when the matching grammar is packaged.
+5. Add a TextMate scope when the grammar is packaged, or a `textMateGrammarLink` when the source is
+   intentionally external.
 6. Test two files at once, project switching, disable/enable, startup failure, and timeout.
 
 Use `EditorLanguageProvider` directly only when the standard LSP adapter is insufficient.
 
 ## Failure clues
 
-| Symptom                           | Check first                                                             |
-|-----------------------------------|-------------------------------------------------------------------------|
-| Supported file remains plain text | provider enablement, extension match, priority, and `supports` failures |
-| Editor stays non-editable         | connection timeout/failure recovery in the app adapter                  |
-| LSP parse errors                  | server logs or stderr reaching stdout                                   |
-| Server restarts on tab changes    | shared-process ownership and connection close behavior                  |
-| Custom server survives close      | starter did not `exec` its final command                                |
-| Format command changes nothing    | the selected provider may be one of the current pass-through built-ins  |
+| Symptom                           | Check first                                                                                        |
+|-----------------------------------|----------------------------------------------------------------------------------------------------|
+| Supported file remains plain text | provider enablement, extension match, priority, and `supports` failures                            |
+| Editor stays non-editable         | connection timeout/failure recovery in the app adapter                                             |
+| LSP parse errors                  | server logs or stderr reaching stdout                                                              |
+| Server restarts on tab changes    | shared-process ownership and connection close behavior                                             |
+| Custom server survives close      | starter did not `exec` its final command                                                           |
+| Linked grammar is not highlighted | URL is not a raw file, document permission expired, file exceeds 5 MB, or grammar is malformed     |
+| HTTPS grammar does not update yet | valid cache is younger than seven days; change the URL or clear app cache for an immediate refetch |
+| Format command changes nothing    | the selected provider may be one of the current pass-through built-ins                             |

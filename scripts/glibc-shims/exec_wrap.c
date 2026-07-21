@@ -1007,6 +1007,64 @@ static int build_wrapped_argv(
     return 0;
 }
 
+static char* prepend_root(
+    const char* root,
+    const char* prefix,
+    const char* remainder
+) {
+    size_t size =
+        strlen(root) +
+        strlen(prefix) +
+        strlen(remainder) + 1;
+
+    char* result = malloc(size);
+    if (!result) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    snprintf(result, size, "%s%s%s", root, prefix, remainder);
+    return result;
+}
+
+static char* redirect_virtual_exec_path(
+    const char* path,
+    char* const envp[]
+) {
+    if (!path || path[0] != '/') {
+        return duplicate_string(path);
+    }
+
+    const char* root = env_get_from(envp, "APP_FILES_DIR");
+    if (!root || !*root) {
+        return duplicate_string(path);
+    }
+
+    if (strcmp(path, "/usr") == 0 ||
+        string_starts_with(path, "/usr/")) {
+        return prepend_root(root, "", path);
+    }
+
+    if (strcmp(path, "/bin") == 0 ||
+        string_starts_with(path, "/bin/")) {
+        return prepend_root(root, "/usr/bin", path + strlen("/bin"));
+    }
+
+    if (strcmp(path, "/sbin") == 0 ||
+        string_starts_with(path, "/sbin/")) {
+        return prepend_root(root, "/usr/sbin", path + strlen("/sbin"));
+    }
+
+    if (strcmp(path, "/lib") == 0 ||
+        string_starts_with(path, "/lib/") ||
+        strcmp(path, "/lib64") == 0 ||
+        string_starts_with(path, "/lib64/")) {
+        return prepend_root(root, "", path);
+    }
+
+    return duplicate_string(path);
+}
+
 static int prepare_wrap(
     const char* requested_path,
     char* const argv[],
@@ -1040,11 +1098,24 @@ static int prepare_wrap(
         return 0;
     }
 
-    char* resolved = search_path ? resolve_from_path(requested_path, envp) : duplicate_string(requested_path);
+    char* resolved = search_path ? resolve_from_path(requested_path, envp) : redirect_virtual_exec_path(requested_path, envp);
     if (!resolved) {
         tracef("skip %s: unable to resolve target path", requested_path ? requested_path : "(null)");
         free(ld_linux);
         return 0;
+    }
+
+    if (search_path && resolved) {
+        char* redirected = redirect_virtual_exec_path(resolved, envp);
+
+        if (!redirected) {
+            free(resolved);
+            free(ld_linux);
+            return -1;
+        }
+
+        free(resolved);
+        resolved = redirected;
     }
 
     char* replacement = resolve_glibc_bin_replacement(resolved, library_path);

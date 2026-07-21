@@ -305,11 +305,11 @@ static const char* executable_identity_for_path(const char* path) {
 /* ------------------------------------------------------------------------- */
 
 typedef struct {
-    const char* suffix;
+    const char* virtual_path;
     const char* environment;
-} suffix_redirect_t;
+} config_redirect_t;
 
-static const suffix_redirect_t suffix_redirects[] = {
+static const config_redirect_t config_redirects[] = {
     { "/etc/resolv.conf",   "RESOLV_CONF_PATH" },
     { "/etc/hosts",         "HOSTS_PATH" },
     { "/etc/nsswitch.conf", "NSSWITCH_CONF_PATH" },
@@ -360,12 +360,88 @@ static int path_starts_with_component(const char* path, const char* prefix) {
     return path[length] == '\0' || path[length] == '/';
 }
 
-static int path_ends_with(const char* path, const char* suffix) {
-    if (path == NULL || suffix == NULL) return 0;
-    size_t path_length = strlen(path);
-    size_t suffix_length = strlen(suffix);
-    return path_length >= suffix_length &&
-           strcmp(path + path_length - suffix_length, suffix) == 0;
+static int app_files_base_dir(char* buffer, size_t buffer_size) {
+    const char* root = app_files_dir();
+    if (root == NULL || root[0] != '/') return 0;
+
+    size_t root_length = strlen(root);
+    while (root_length > 1 && root[root_length - 1] == '/') {
+        root_length--;
+    }
+
+    size_t separator = root_length;
+    while (separator > 0 && root[separator - 1] != '/') {
+        separator--;
+    }
+
+    if (separator <= 1) return 0;
+
+    size_t base_length = separator - 1;
+    if (base_length + 1 > buffer_size) return 0;
+
+    memcpy(buffer, root, base_length);
+    buffer[base_length] = '\0';
+    return 1;
+}
+
+static int path_is_physical_app_path(const char* path) {
+    if (path == NULL || path[0] != '/') return 0;
+
+    if (path_starts_with_component(path, app_files_dir())) return 1;
+
+    /*
+     * APP_FILES_DIR normally points to either .../files/glibc or
+     * .../files/arch. Paths under their common .../files parent are already
+     * real Android filesystem paths and must never be interpreted as virtual
+     * Linux paths. This is especially important while bootstrap pacman runs
+     * from glibc but manages the sibling arch root.
+     */
+    char base[REDIR_BUF_SIZE];
+    if (!app_files_base_dir(base, sizeof(base))) return 0;
+    return path_starts_with_component(path, base);
+}
+
+static int path_is_config_virtual_alias(
+    const char* path,
+    const char* virtual_path
+) {
+    if (path == NULL || virtual_path == NULL) return 0;
+
+    /* The genuine virtual root path, for example /etc/resolv.conf. */
+    if (strcmp(path, virtual_path) == 0) return 1;
+
+    /* A traditional Termux-prefixed spelling of the same virtual path. */
+    char candidate[REDIR_BUF_SIZE];
+    int result = snprintf(
+        candidate,
+        sizeof(candidate),
+        "%s/usr%s",
+        TERMUX_FILES_PREFIX,
+        virtual_path
+    );
+    if (result >= 0 && (size_t)result < sizeof(candidate) &&
+        strcmp(path, candidate) == 0) {
+        return 1;
+    }
+
+    /* The active compatibility runtime's Termux alias. */
+    char runtime[REDIR_BUF_SIZE];
+    const char* runtime_prefix = termux_runtime_prefix(runtime, sizeof(runtime));
+    if (runtime_prefix != NULL) {
+        result = snprintf(
+            candidate,
+            sizeof(candidate),
+            "%s%s",
+            runtime_prefix,
+            virtual_path
+        );
+        if (result >= 0 && (size_t)result < sizeof(candidate) &&
+            strcmp(path, candidate) == 0) {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 static const char* redirect_prefix_path(
@@ -410,12 +486,21 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
     if (path == NULL || path[0] == '\0' || path[0] != '/') return path;
 
     /* Never redirect an already-physical app path a second time. */
-    if (path_starts_with_component(path, app_files_dir())) return path;
+    if (path_is_physical_app_path(path)) return path;
 
-    /* Special config files override the generic /etc mapping. */
-    for (size_t i = 0; i < ARRAY_LEN(suffix_redirects); ++i) {
-        if (!path_ends_with(path, suffix_redirects[i].suffix)) continue;
-        const char* replacement = getenv(suffix_redirects[i].environment);
+    /*
+     * Special config overrides apply only to exact virtual aliases. Never use
+     * a suffix match here: a real package path such as
+     * .../usr/share/factory/etc/hosts must remain literal.
+     */
+    for (size_t i = 0; i < ARRAY_LEN(config_redirects); ++i) {
+        if (!path_is_config_virtual_alias(
+                path,
+                config_redirects[i].virtual_path
+            )) {
+            continue;
+        }
+        const char* replacement = getenv(config_redirects[i].environment);
         if (replacement == NULL || replacement[0] == '\0') break;
         int result = snprintf(buffer, buffer_size, "%s", replacement);
         if (result < 0 || (size_t)result >= buffer_size) {
@@ -458,32 +543,32 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
     }
 
     if (path_starts_with_component(path, "/etc")) {
-        const char* redirected = redirect_virtual_root(path, "/etc", "/usr/etc", buffer, buffer_size);
+        const char* redirected = redirect_virtual_root(path, "/etc", "/etc", buffer, buffer_size);
         debug_redirect("etc", path, redirected);
         return redirected;
     }
 
     /* Avoid absolute /var/run -> /run and /var/lock -> /run/lock symlinks. */
     if (path_starts_with_component(path, "/var/run")) {
-        const char* redirected = redirect_virtual_root(path, "/var/run", "/usr/run", buffer, buffer_size);
+        const char* redirected = redirect_virtual_root(path, "/var/run", "/var/run", buffer, buffer_size);
         debug_redirect("var-run", path, redirected);
         return redirected;
     }
 
     if (path_starts_with_component(path, "/var/lock")) {
-        const char* redirected = redirect_virtual_root(path, "/var/lock", "/usr/run/lock", buffer, buffer_size);
+        const char* redirected = redirect_virtual_root(path, "/var/lock", "/var/lock", buffer, buffer_size);
         debug_redirect("var-lock", path, redirected);
         return redirected;
     }
 
     if (path_starts_with_component(path, "/var")) {
-        const char* redirected = redirect_virtual_root(path, "/var", "/usr/var", buffer, buffer_size);
+        const char* redirected = redirect_virtual_root(path, "/var", "/var", buffer, buffer_size);
         debug_redirect("var", path, redirected);
         return redirected;
     }
 
     if (path_starts_with_component(path, "/run")) {
-        const char* redirected = redirect_virtual_root(path, "/run", "/usr/run", buffer, buffer_size);
+        const char* redirected = redirect_virtual_root(path, "/run", "/run", buffer, buffer_size);
         debug_redirect("run", path, redirected);
         return redirected;
     }
@@ -495,13 +580,13 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
     }
 
     if (path_starts_with_component(path, "/bin")) {
-        const char* redirected = redirect_virtual_root(path, "/bin", "/usr/bin", buffer, buffer_size);
+        const char* redirected = redirect_virtual_root(path, "/bin", "/bin", buffer, buffer_size);
         debug_redirect("bin", path, redirected);
         return redirected;
     }
 
     if (path_starts_with_component(path, "/sbin")) {
-        const char* redirected = redirect_virtual_root(path, "/sbin", "/usr/sbin", buffer, buffer_size);
+        const char* redirected = redirect_virtual_root(path, "/sbin", "/sbin", buffer, buffer_size);
         debug_redirect("sbin", path, redirected);
         return redirected;
     }
@@ -591,8 +676,8 @@ static const char* redirect_at_path(
     char directory[REDIR_BUF_SIZE];
     if (!read_dirfd_path(dirfd, directory, sizeof(directory))) return path;
 
-    /* A relative path below an already redirected physical directory is fine. */
-    if (path_starts_with_component(directory, app_files_dir())) return path;
+    /* A relative path below any physical app directory is already literal. */
+    if (path_is_physical_app_path(directory)) return path;
     if (!dirfd_path_can_contain_virtual_root(directory)) return path;
 
     char absolute[REDIR_BUF_SIZE];
@@ -609,6 +694,28 @@ static const char* redirect_at_path(
 
     const char* redirected = redirect_path(absolute, buffer, buffer_size);
     debug_redirect("dirfd-relative", absolute, redirected);
+    return redirected;
+}
+
+/*
+ * The kernel resolves symlink targets without calling libc again. Therefore an
+ * absolute virtual target such as /usr/lib/go/bin/go cannot be left unchanged:
+ * a symlink stored below APP_FILES_DIR would otherwise escape to Android's real
+ * root when followed. Convert absolute virtual targets to their physical app
+ * paths. Relative targets already resolve relative to the physical link and
+ * must remain byte-for-byte unchanged.
+ */
+static const char* redirect_symlink_target(
+    const char* target,
+    char* buffer,
+    size_t buffer_size
+) {
+    if (target == NULL || target[0] != '/') return target;
+
+    const char* redirected = redirect_path(target, buffer, buffer_size);
+    if (redirected == NULL) return NULL;
+
+    debug_redirect("symlink-target", target, redirected);
     return redirected;
 }
 
@@ -1863,21 +1970,33 @@ int linkat(
 int symlink(const char* target, const char* linkpath) {
     int (*fn)(const char*, const char*) =
         REAL(symlink, int (*)(const char*, const char*));
+
+    char target_buffer[REDIR_BUF_SIZE];
     char link_buffer[REDIR_BUF_SIZE];
-    const char* redirected_link = redirect_path(linkpath, link_buffer, sizeof(link_buffer));
-    if (redirected_link == NULL) return -1;
-    /* Keep the target text virtual; redirect only where the symlink is created. */
-    return fn(target, redirected_link);
+
+    const char* redirected_target =
+        redirect_symlink_target(target, target_buffer, sizeof(target_buffer));
+    const char* redirected_link =
+        redirect_path(linkpath, link_buffer, sizeof(link_buffer));
+
+    if (redirected_target == NULL || redirected_link == NULL) return -1;
+    return fn(redirected_target, redirected_link);
 }
 
 int symlinkat(const char* target, int newdirfd, const char* linkpath) {
     int (*fn)(const char*, int, const char*) =
         REAL(symlinkat, int (*)(const char*, int, const char*));
+
+    char target_buffer[REDIR_BUF_SIZE];
     char link_buffer[REDIR_BUF_SIZE];
+
+    const char* redirected_target =
+        redirect_symlink_target(target, target_buffer, sizeof(target_buffer));
     const char* redirected_link =
         redirect_at_path(newdirfd, linkpath, link_buffer, sizeof(link_buffer));
-    if (redirected_link == NULL) return -1;
-    return fn(target, newdirfd, redirected_link);
+
+    if (redirected_target == NULL || redirected_link == NULL) return -1;
+    return fn(redirected_target, newdirfd, redirected_link);
 }
 
 int rename(const char* oldpath, const char* newpath) {
@@ -2525,24 +2644,62 @@ long path_redirect_syscall_dispatch(
 
 #ifdef SYS_symlink
     if (number == SYS_symlink) {
-        const char* target = (const char*)argument1;
+        const char* target_original = (const char*)argument1;
         const char* link_original = (const char*)argument2;
-        const char* link_path = redirect_path(link_original, path_buffer, sizeof(path_buffer));
-        if (link_path == NULL) return -1;
+
+        const char* target_path = redirect_symlink_target(
+            target_original,
+            second_path_buffer,
+            sizeof(second_path_buffer)
+        );
+        const char* link_path =
+            redirect_path(link_original, path_buffer, sizeof(path_buffer));
+
+        if (target_path == NULL || link_path == NULL) return -1;
+        debug_path_operation("syscall(SYS_symlink target)", target_original, target_path);
         debug_path_operation("syscall(SYS_symlink link)", link_original, link_path);
-        return real_syscall_call(number, (long)target, (long)link_path, argument3, argument4, argument5, argument6);
+        return real_syscall_call(
+            number,
+            (long)target_path,
+            (long)link_path,
+            argument3,
+            argument4,
+            argument5,
+            argument6
+        );
     }
 #endif
 
 #ifdef SYS_symlinkat
     if (number == SYS_symlinkat) {
-        const char* target = (const char*)argument1;
+        const char* target_original = (const char*)argument1;
         int newdirfd = (int)argument2;
         const char* link_original = (const char*)argument3;
-        const char* link_path = redirect_at_path(newdirfd, link_original, path_buffer, sizeof(path_buffer));
-        if (link_path == NULL) return -1;
+
+        const char* target_path = redirect_symlink_target(
+            target_original,
+            second_path_buffer,
+            sizeof(second_path_buffer)
+        );
+        const char* link_path = redirect_at_path(
+            newdirfd,
+            link_original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
+
+        if (target_path == NULL || link_path == NULL) return -1;
+        debug_path_operation("syscall(SYS_symlinkat target)", target_original, target_path);
         debug_path_operation("syscall(SYS_symlinkat link)", link_original, link_path);
-        return real_syscall_call(number, (long)target, argument2, (long)link_path, argument4, argument5, argument6);
+        return real_syscall_call(
+            number,
+            (long)target_path,
+            argument2,
+            (long)link_path,
+            argument4,
+            argument5,
+            argument6
+        );
     }
 #endif
 

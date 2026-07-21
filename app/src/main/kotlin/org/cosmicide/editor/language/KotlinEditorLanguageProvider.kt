@@ -13,9 +13,9 @@ import org.cosmicide.App
 import org.cosmicide.common.Prefs
 import org.cosmicide.editor.lsp.ExistingProcessLspConnection
 import org.cosmicide.exec.ProcessExecutor
-import org.cosmicide.ide.editor.LspServerDefinition
-import org.cosmicide.ide.editor.LspServerProvider
-import org.cosmicide.ide.editor.LspServerRequest
+import org.cosmicide.editor.LspServerDefinition
+import org.cosmicide.editor.LspServerProvider
+import org.cosmicide.editor.LspServerRequest
 import org.cosmicide.project.Project
 import org.cosmicide.util.jdksDir
 import org.eclipse.lsp4j.CodeLensOptions

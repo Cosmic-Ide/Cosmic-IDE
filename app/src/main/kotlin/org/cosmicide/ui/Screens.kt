@@ -36,3 +36,9 @@ data object JDKSettingsScreen : Screen
 
 @Serializable
 data object LanguageServerSetupScreen : Screen
+
+@Serializable
+data class TerminalSession(
+    val command: String,
+    val workingDirectory: String
+) : Screen

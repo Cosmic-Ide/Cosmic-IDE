@@ -16,17 +16,14 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
 import org.cosmicide.plugin.CosmicPluginHost
-import org.cosmicide.plugin.runtime.hook.Hook
 import org.cosmicide.plugin.runtime.hook.HookManager
 import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.util.FileUtil
 import org.lsposed.hiddenapibypass.HiddenApiBypass
-import top.canyie.pine.Pine
 import java.lang.ref.WeakReference
 import java.time.ZonedDateTime
 import java.util.Locale
 import java.util.TimeZone
-import java.util.logging.Logger
 
 class App : Application() {
 
@@ -66,8 +63,6 @@ class App : Application() {
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
 
-        setupHooks()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.addHiddenApiExemptions()
         }
@@ -97,40 +92,5 @@ class App : Application() {
         FileProviderRegistry.getInstance().addFileProvider(fileProvider)
 
         GrammarRegistry.getInstance().loadGrammars("textmate/languages.json")
-    }
-
-    private fun setupHooks() {
-        // Some libraries may call System.exit() to exit the app, which crashes the app.
-        // Currently, only JGit does this.
-        try {
-            HookManager.registerHook(object : Hook(
-                method = "exit",
-                argTypes = arrayOf(Int::class.java),
-                type = System::class.java
-            ) {
-                override fun before(param: Pine.CallFrame) {
-                    System.err.println("System.exit() called!")
-                    // Setting result to null bypasses the original method call.
-                    param.result = null
-                }
-            })
-
-            injectPrint("fine")
-            injectPrint("info")
-        } catch (e: UnsatisfiedLinkError) {
-            Log.e("App", "Failed to setup hooks", e)
-        }
-    }
-
-    private fun injectPrint(method: String) {
-        HookManager.registerHook(object : Hook(
-            method = method,
-            argTypes = arrayOf(String::class.java),
-            type = Logger::class.java
-        ) {
-            override fun before(param: Pine.CallFrame) {
-                println(param.args[0])
-            }
-        })
     }
 }

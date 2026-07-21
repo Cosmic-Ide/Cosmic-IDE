@@ -54,7 +54,9 @@ import androidx.compose.ui.zIndex
 import androidx.core.content.res.ResourcesCompat
 import org.cosmicide.R
 import org.cosmicide.project.Project
+import org.cosmicide.project.ProjectCommand
 import org.cosmicide.ui.compile.GradleTaskTerminal
+import org.cosmicide.ui.compile.CommandTerminal
 
 internal const val SyncToolWindowTabId = "sync"
 internal const val CollapsedEditorToolWindowHeightDp = 64f
@@ -63,6 +65,8 @@ internal const val DefaultEditorToolWindowHeightDp = 280f
 internal data class EditorBuildSession(
     val id: Int,
     val task: String,
+    val command: String? = null,
+    val arguments: List<String>? = null,
     val runId: Int = 0,
     val status: String = "Running"
 ) {
@@ -74,6 +78,10 @@ internal data class EditorBuildSession(
 internal fun EditorToolWindowLayout(
     project: Project,
     toolingOutput: String,
+    useGradleSync: Boolean,
+    projectSyncCommand: ProjectCommand?,
+    projectSyncRunId: Int,
+    projectSyncStatus: String,
     selectedTabId: String,
     heightDp: Float,
     buildSessions: List<EditorBuildSession>,
@@ -82,6 +90,8 @@ internal fun EditorToolWindowLayout(
     onCloseBuild: (Int) -> Unit,
     onRerunBuild: (Int) -> Unit,
     onBuildStatusChange: (Int, String) -> Unit,
+    onRerunProjectSync: () -> Unit,
+    onProjectSyncStatusChange: (String) -> Unit,
     editorContent: @Composable () -> Unit
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -98,6 +108,10 @@ internal fun EditorToolWindowLayout(
             EditorToolWindow(
                 project = project,
                 toolingOutput = toolingOutput,
+                useGradleSync = useGradleSync,
+                projectSyncCommand = projectSyncCommand,
+                projectSyncRunId = projectSyncRunId,
+                projectSyncStatus = projectSyncStatus,
                 selectedTabId = selectedTabId,
                 heightDp = resolvedHeight,
                 buildSessions = buildSessions,
@@ -119,6 +133,8 @@ internal fun EditorToolWindowLayout(
                 onCloseBuild = onCloseBuild,
                 onRerunBuild = onRerunBuild,
                 onBuildStatusChange = onBuildStatusChange,
+                onRerunProjectSync = onRerunProjectSync,
+                onProjectSyncStatusChange = onProjectSyncStatusChange,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -133,6 +149,10 @@ internal fun EditorToolWindowLayout(
 private fun EditorToolWindow(
     project: Project,
     toolingOutput: String,
+    useGradleSync: Boolean,
+    projectSyncCommand: ProjectCommand?,
+    projectSyncRunId: Int,
+    projectSyncStatus: String,
     selectedTabId: String,
     heightDp: Float,
     buildSessions: List<EditorBuildSession>,
@@ -142,6 +162,8 @@ private fun EditorToolWindow(
     onCloseBuild: (Int) -> Unit,
     onRerunBuild: (Int) -> Unit,
     onBuildStatusChange: (Int, String) -> Unit,
+    onRerunProjectSync: () -> Unit,
+    onProjectSyncStatusChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isExpanded = heightDp > CollapsedEditorToolWindowHeightDp + 1f
@@ -247,12 +269,28 @@ private fun EditorToolWindow(
                     .fillMaxWidth()
                     .clipToBounds()
             ) {
-                SyncTab(
-                    output = toolingOutput,
-                    modifier = Modifier.visibleToolWindowTab(
-                        selectedTabId == SyncToolWindowTabId
+                if (projectSyncCommand != null) {
+                    ProjectSyncTab(
+                        project = project,
+                        command = projectSyncCommand,
+                        runId = projectSyncRunId,
+                        status = projectSyncStatus,
+                        onRerun = onRerunProjectSync,
+                        onStatusChange = onProjectSyncStatusChange,
+                        modifier = Modifier.visibleToolWindowTab(
+                            selectedTabId == SyncToolWindowTabId
+                        )
                     )
-                )
+                } else {
+                    SyncTab(
+                        output = if (useGradleSync) toolingOutput else {
+                            "No project sync command is configured."
+                        },
+                        modifier = Modifier.visibleToolWindowTab(
+                            selectedTabId == SyncToolWindowTabId
+                        )
+                    )
+                }
 
                 buildSessions.forEach { session ->
                     key(session.id) {
@@ -309,6 +347,54 @@ private fun SyncTab(
 }
 
 @Composable
+private fun ProjectSyncTab(
+    project: Project,
+    command: ProjectCommand,
+    runId: Int,
+    status: String,
+    onRerun: () -> Unit,
+    onStatusChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .padding(start = 12.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(command.label, style = MaterialTheme.typography.labelLarge)
+            Text(
+                text = "  ·  $status",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelMedium
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = onRerun, modifier = Modifier.size(36.dp)) {
+                Icon(Icons.Default.Refresh, contentDescription = "Rerun ${command.label}")
+            }
+        }
+        HorizontalDivider()
+        key(runId) {
+            EmbeddedCommand(
+                project = project,
+                command = "bash",
+                arguments = listOf("-lc", command.command),
+                onExit = { exitCode ->
+                    onStatusChange(if (exitCode == 0) "Finished" else "Exited ($exitCode)")
+                },
+                onError = onStatusChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp)
+            )
+        }
+    }
+}
+
+@Composable
 private fun BuildTab(
     project: Project,
     session: EditorBuildSession,
@@ -347,18 +433,65 @@ private fun BuildTab(
         HorizontalDivider()
 
         key(session.runId) {
-            EmbeddedGradleBuild(
-                project = project,
-                task = session.task,
-                onSuccess = { onStatusChange("Finished") },
-                onError = onStatusChange,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 6.dp)
-            )
+            if (session.command == null) {
+                EmbeddedGradleBuild(
+                    project = project,
+                    task = session.task,
+                    onSuccess = { onStatusChange("Finished") },
+                    onError = onStatusChange,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp)
+                )
+            } else {
+                EmbeddedCommand(
+                    project = project,
+                    command = session.command,
+                    arguments = session.arguments,
+                    onExit = { exitCode ->
+                        onStatusChange(if (exitCode == 0) "Finished" else "Exited ($exitCode)")
+                    },
+                    onError = onStatusChange,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp)
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun EmbeddedCommand(
+    project: Project,
+    command: String,
+    arguments: List<String>?,
+    onExit: (Int) -> Unit,
+    onError: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val colorScheme = MaterialTheme.colorScheme
+    val typeface = remember(context) {
+        ResourcesCompat.getFont(context, R.font.firacode_medium) ?: Typeface.MONOSPACE
+    }
+    var textSizeDp by rememberSaveable { mutableIntStateOf(12) }
+
+    CommandTerminal(
+        context = context,
+        workingDirectory = project.root,
+        commandLine = command,
+        commandArguments = arguments,
+        colorScheme = colorScheme,
+        currentTextSizeDp = textSizeDp,
+        terminalTypeface = typeface,
+        onTextSizeChange = { textSizeDp = it },
+        onProcessExit = onExit,
+        onFailure = onError,
+        modifier = modifier
+    )
 }
 
 @Composable

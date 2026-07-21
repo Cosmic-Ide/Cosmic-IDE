@@ -5,7 +5,7 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.ide.editor
+package org.cosmicide.editor
 
 import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.project.Project
@@ -43,7 +43,8 @@ data class LspServerDefinition(
     val enableInlayHints: Boolean = true,
     val enableSignatureHelp: Boolean = true,
     val initializationTimeoutMillis: Int = 10_000,
-    val traceIncomingMessages: Boolean = false
+    val traceIncomingMessages: Boolean = false,
+    val textMateGrammarLink: String? = null
 ) {
     init {
         require(id.isNotBlank()) { "LSP definition id must not be blank" }

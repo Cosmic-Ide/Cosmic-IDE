@@ -105,12 +105,19 @@ else
         glibc \
         coreutils-glibc \
         bash-glibc \
-        binutils-glibc \
-        findutils-glibc \
         ncurses-utils-glibc \
+        bsdtar-glibc \
         xz-utils-glibc \
+        ca-certificates-glibc \
+        libgpg-error-glibc \
+        libidn2-glibc \
+        libssh2-glibc \
+        libnghttp2-glibc \
         libseccomp-glibc \
-        ca-certificates-glibc
+        libsqlite-glibc \
+        libgcrypt-glibc \
+        curl-glibc
+
 
     echo "requested packages:"
     printf '  %s\n' "$@"
@@ -144,49 +151,6 @@ else
 fi
 
 "$ROOT/scripts/build-shims.sh"
-
-echo "checking required binaries..."
-
-require_bin() {
-    name="$1"
-
-    if [ -e "$OUT_DIR/bin/$name" ]; then
-        return 0
-    fi
-
-    echo "error: missing required bin: $OUT_DIR/bin/$name" >&2
-    exit 1
-}
-
-for bin in \
-    ls \
-    mkdir \
-    cp \
-    rm \
-    cat \
-    chmod \
-    chown \
-    ln \
-    sh \
-    bash \
-    make \
-    cmake \
-    ar \
-    ranlib
-do
-    require_bin "$bin"
-done
-
-if [ -e "$OUT_DIR/bin/gcc" ]; then
-    require_bin gcc
-    require_bin g++
-elif [ -e "$OUT_DIR/bin/clang" ]; then
-    require_bin clang
-    require_bin clang++
-else
-    echo "error: missing compiler: expected gcc or clang" >&2
-    exit 1
-fi
 
 echo "creating asset archive..."
 mkdir -p "$(dirname "$ASSETS_TAR_ZST")" "$OUT_ROOT"

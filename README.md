@@ -36,6 +36,7 @@ system can run those tools through the terminal or project commands instead.
 ## Highlights
 
 - Custom LSP configurations with a file extension and shell startup command
+- Per-LSP TextMate grammars from HTTPS links, Android documents, or local files
 - First-party Java, Kotlin, and Scala language-server integrations
 - App-private glibc environment for Linux/aarch64 compilers and developer tools
 - Interactive PTY terminal with normal shell, signal, and process-group behavior
@@ -44,8 +45,11 @@ system can run those tools through the terminal or project commands instead.
 - Optional Android SDK and ARM build-tools setup
 - LSP completion, diagnostics, navigation, hover information, and other advertised capabilities
 - Sora Editor with TextMate grammars, themes, and configurable editing behavior
-- Plugin APIs for editor languages, language servers, and formatters
-- Project creation, import, backup, file management, and custom command execution
+- Plugin APIs for editor languages, language servers, formatters, project creation, and project
+  actions
+- Bundled Git plugin with clone, status, fetch, pull, push, stage, commit, branch, and checkout
+- Bundled custom-project plugin for user-defined templates and sync/build/run/utility commands
+- Project creation, import, backup, file management, and bottom-panel PTY command sessions
 - Material You interface with light and dark themes
 
 ## How custom language support works
@@ -53,7 +57,12 @@ system can run those tools through the terminal or project commands instead.
 1. Install the compiler, runtime, and language server from the integrated terminal.
 2. Open **Settings → Extensions → Custom language servers**.
 3. Associate a file extension with the shell command that starts the server over stdio.
-4. Use Gradle integration, a project command, or the terminal for build and run workflows.
+4. Optionally attach a TextMate grammar through a direct link or the Android file picker.
+5. Use Gradle integration, a project command, or the terminal for build and run workflows.
+
+Only one custom server can be active for a file extension. Enabling another entry for the same
+extension disables the previous entry. HTTPS grammars are cached after they parse successfully and
+refreshed after seven days; a stale valid copy is used if refresh fails.
 
 Custom startup code executes with the app's permissions. Review commands from projects or third
 parties before adding them.
@@ -75,13 +84,18 @@ downloads the selected JDK and any requested language servers or Android SDK com
 
 ## Documentation
 
-Maintainer documentation is indexed in [docs/README.md](docs/README.md). Start with:
+The complete index is in [docs/README.md](docs/README.md). Main entry points:
 
-- [Codebase architecture](docs/codebase-architecture.md)
-- [glibc runtime and compatibility shims](docs/glibc-runtime-and-shims.md)
-- [Editor and language services](docs/editor-and-language-services.md)
-- [Gradle tooling bridge](docs/gradle-tooling-bridge.md)
-- [Plugin architecture](docs/plugin-architecture.md)
+- [User guide](docs/user-guide.md) — setup, projects, editor, builds, terminal, and language support
+- [Settings reference](docs/settings-reference.md) — every current settings category and known gaps
+- [Building and contributing](docs/development-guide.md) — local builds, modules, tests, and
+  generated assets
+- [Data, permissions, and trust](docs/data-permissions-and-security.md) — storage, network access,
+  and executable configuration
+- [Codebase architecture](docs/codebase-architecture.md) — module and process boundaries
+- [Editor and language services](docs/editor-and-language-services.md) — LSP, TextMate, routing, and
+  formatting
+- [Plugin architecture](docs/plugin-architecture.md) — extension contracts and lifecycle
 
 ## Contributing
 

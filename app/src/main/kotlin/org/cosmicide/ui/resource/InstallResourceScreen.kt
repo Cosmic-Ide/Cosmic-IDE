@@ -36,27 +36,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.util.Download
-import org.cosmicide.util.FileUtil
-import org.cosmicide.util.ResourceUtil
 import org.cosmicide.util.extractTarZstStream
 import org.cosmicide.util.restoreSymlinksFromManifest
 import java.io.File
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InstallResourcesScreen(
     onMoveToJdkManager: () -> Unit
 ) {
-    val client = remember { HttpClient(CIO) }
     val scope = rememberCoroutineScope()
 
-    val rawUrl = "https://github.com/Cosmic-Ide/binaries/raw/main/"
     var isRunning by remember { mutableStateOf(false) }
     var statusText by remember { mutableStateOf("Ready to configure environment assets.") }
     var progressDetailsText by remember { mutableStateOf("Foundational resources will be deployed.") }
@@ -64,43 +58,9 @@ fun InstallResourcesScreen(
 
     val context = LocalContext.current
 
-    val onProgressUpdate: (Long, Long) -> Unit = { downloaded, total ->
-        val downloadedMB = downloaded / (1024f * 1024f)
-        if (total > 0) {
-            currentProgress = downloaded.toFloat() / total
-            val totalMB = total / (1024f * 1024f)
-            val percent = ((downloaded * 100) / total).toInt()
-            progressDetailsText = String.format(
-                Locale.getDefault(), "%.1f MB / %.1f MB (%d%%)", downloadedMB, totalMB, percent
-            )
-        } else {
-            currentProgress = -1f
-            progressDetailsText =
-                String.format(Locale.getDefault(), "%.1f MB downloaded", downloadedMB)
-        }
-    }
-
     val runSetupChain = {
         isRunning = true
         scope.launch {
-            val missingResources = withContext(Dispatchers.IO) { ResourceUtil.missingResources() }
-            if (missingResources.isNotEmpty()) {
-                statusText = "Downloading Core Internal Resources..."
-                for (res in missingResources) {
-                    val success = installResource(
-                        client,
-                        rawUrl + res.substringAfterLast('/'),
-                        File(FileUtil.dataDir, res),
-                        onProgressUpdate
-                    )
-                    if (!success) {
-                        statusText = "Failed to sync core internal resources."
-                        isRunning = false
-                        return@launch
-                    }
-                }
-            }
-
             val glibcTargetDir = context.filesDir.resolve("glibc")
             if (!glibcTargetDir.exists() || glibcTargetDir.listFiles()?.isEmpty() == true) {
                 glibcTargetDir.mkdirs()
@@ -184,18 +144,5 @@ fun InstallResourcesScreen(
                 Text("Initialize Workspace Environment")
             }
         }
-    }
-}
-
-private suspend fun installResource(
-    client: HttpClient, url: String, destinationFile: File, onProgressUpdate: (Long, Long) -> Unit
-): Boolean = withContext(Dispatchers.IO) {
-    try {
-        if (destinationFile.exists()) destinationFile.delete()
-        Download(client, url, onProgressUpdate).start(destinationFile)
-        true
-    } catch (e: Exception) {
-        e.printStackTrace()
-        false
     }
 }

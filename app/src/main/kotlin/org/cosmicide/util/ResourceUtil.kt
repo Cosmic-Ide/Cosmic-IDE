@@ -12,25 +12,9 @@ import java.io.File
 
 object ResourceUtil {
 
-    val resources =
-        arrayOf<String>(
-        )
-
-    fun missingResources(): List<String> {
-        val missing = mutableListOf<String>()
-        for (resource in resources) {
-            val file = FileUtil.dataDir.resolve(resource)
-            if (!file.exists()) {
-                if (!App.instance.get()!!.filesDir.resolve(resource).exists())
-                    missing.add(resource)
-            }
-        }
-        return missing
-    }
-
     fun isRuntimeMissing(): Boolean {
         val context = App.instance.get()
-        return !context!!.filesDir.resolve("arch").exists()
+        return !context!!.filesDir.resolve("glibc").exists()
     }
 
     fun isJdkMissing(): Boolean {
@@ -58,7 +42,7 @@ object ResourceUtil {
     }
 
     fun isBootstrapIncomplete(): Boolean {
-        return missingResources().isNotEmpty() || isRuntimeMissing()
+        return isRuntimeMissing()
     }
 
     fun isLanguageServerSetupIncomplete(): Boolean {

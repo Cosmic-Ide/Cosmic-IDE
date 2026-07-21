@@ -12,6 +12,17 @@ Use:
 - `PtyProcessExecutor` for interactive commands;
 - `LinuxProcessRunner` directly only when a facade does not expose a required option.
 
+Plugins use the `CommandExecutionService` registered under `IdeServices.COMMAND_EXECUTION`. Its
+`CommandRequest` keeps executable and arguments separate, runs in the same toolchain environment,
+merges output for finite user-facing operations, returns the exit code and a bounded output tail,
+and streams chunks as they arrive. Interactive operations must instead contribute a
+`TerminalAction`; the app opens it through `TerminalScreen` and the PTY path.
+
+Editor `ProjectCommand` contributions use the same PTY bridge inside the resizable bottom tool
+window. The terminal controller can accept an explicit argument list, allowing custom project shell
+code to reach `bash -lc` without string re-tokenization. **Execution > Terminal** opens `bash -i` in
+the project root; each command or terminal receives its own closable/rerunnable tab.
+
 ## Launch flow
 
 `resolveExecutable` accepts an absolute path, a working-directory-relative path containing `/`, or
@@ -101,4 +112,3 @@ dependency update.
 - Garbled protocol JSON/LSP usually means stderr or launcher logs reached stdout.
 - Ctrl+C must target the foreground group, not only the original shell.
 - Every PTY owner must handle signal, reap, and FD-close lifecycle separately.
-

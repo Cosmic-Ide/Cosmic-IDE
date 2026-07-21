@@ -15,6 +15,7 @@ import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import android.provider.DocumentsProvider
 import java.io.File
+import java.io.FileNotFoundException
 
 class FilesDocumentsProvider : DocumentsProvider() {
 
@@ -96,20 +97,25 @@ class FilesDocumentsProvider : DocumentsProvider() {
         return result
     }
 
+    @Throws(FileNotFoundException::class)
     override fun openDocument(
         documentId: String?,
         mode: String?,
         signal: CancellationSignal?
     ): ParcelFileDescriptor? {
         val file = getFileForDocumentId(documentId)
+
+        // External apps might call openDocument before createDocument loop completes
+        val isWrite = mode?.contains("w") == true
+        if (isWrite) {
+            file.parentFile?.mkdirs()
+        }
+
+        val accessMode = ParcelFileDescriptor.parseMode(mode ?: "r")
         return try {
-            if (file.exists()) {
-                ParcelFileDescriptor.open(file, getAccessMode(mode))
-            } else {
-                null
-            }
+            ParcelFileDescriptor.open(file, accessMode)
         } catch (e: Exception) {
-            null
+            throw FileNotFoundException("Failed to open document $documentId: ${e.localizedMessage}")
         }
     }
 
@@ -235,36 +241,6 @@ class FilesDocumentsProvider : DocumentsProvider() {
         return row.toTypedArray()
     }
 
-    private fun getDocumentRow(file: File, documentId: String): Array<Any> {
-        val flags = if (file.isDirectory) {
-            DocumentsContract.Document.FLAG_DIR_SUPPORTS_CREATE or
-                    DocumentsContract.Document.FLAG_SUPPORTS_DELETE or
-                    DocumentsContract.Document.FLAG_SUPPORTS_RENAME or
-                    DocumentsContract.Document.FLAG_SUPPORTS_MOVE or
-                    DocumentsContract.Document.FLAG_SUPPORTS_COPY
-        } else {
-            DocumentsContract.Document.FLAG_SUPPORTS_DELETE or
-                    DocumentsContract.Document.FLAG_SUPPORTS_RENAME or
-                    DocumentsContract.Document.FLAG_SUPPORTS_MOVE or
-                    DocumentsContract.Document.FLAG_SUPPORTS_COPY
-        }
-
-        val mimeType = if (file.isDirectory) {
-            DocumentsContract.Document.MIME_TYPE_DIR
-        } else {
-            getMimeType(file)
-        }
-
-        return arrayOf(
-            documentId,
-            file.name,
-            mimeType,
-            file.length(),
-            file.lastModified(),
-            flags
-        )
-    }
-
     @SuppressLint("SetWorldReadable", "SetWorldWritable")
     private fun getFileForDocumentId(documentId: String?): File {
         val file = if (documentId == ROOT_ID) {
@@ -309,16 +285,6 @@ class FilesDocumentsProvider : DocumentsProvider() {
             "md" -> "text/markdown"
             "png", "jpg", "jpeg", "gif", "webp" -> "image/${extension.lowercase()}"
             else -> "application/octet-stream"
-        }
-    }
-
-    private fun getAccessMode(mode: String?): Int {
-        return when (mode) {
-            "r" -> ParcelFileDescriptor.MODE_READ_ONLY
-            "w" -> ParcelFileDescriptor.MODE_WRITE_ONLY
-            "wa" -> ParcelFileDescriptor.MODE_WRITE_ONLY or ParcelFileDescriptor.MODE_APPEND
-            "rw" -> ParcelFileDescriptor.MODE_READ_WRITE
-            else -> ParcelFileDescriptor.MODE_READ_ONLY
         }
     }
 

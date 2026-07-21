@@ -574,7 +574,10 @@ object LinuxProcessRunner {
             appDir = appDir,
             glibcPath = glibcPath,
             customLinker = "$nativeLibDir/libld_linux.so",
-            combinedPreload = listOf(pathRedirect, nssWrapper).joinToString(":"),
+            combinedPreload = listOfNotNull(
+                pathRedirect,
+                if (setup) nssWrapper else null
+            ).joinToString(":"),
             runtimeUser = RUNTIME_USER,
             resolvConf = resolvConf,
             hostsFile = hostsFile,
@@ -707,6 +710,7 @@ object LinuxProcessRunner {
         put("HOSTS_PATH", runtime.hostsFile.absolutePath)
         put("NSSWITCH_CONF_PATH", runtime.nsswitchConf.absolutePath)
         put("GAI_CONF_PATH", runtime.gaiConf.absolutePath)
+        put("GLIBC_TUNABLES", $$"${GLIBC_TUNABLES:+$GLIBC_TUNABLES:}glibc.pthread.rseq=0")
 
         put("RES_OPTIONS", "attempts:1 timeout:1")
 

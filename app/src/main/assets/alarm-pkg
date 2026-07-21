@@ -3,11 +3,11 @@
 set -eu
 
 ARCH="${ALARM_ARCH:-aarch64}"
-PACKAGE_SITE="${ALARM_PACKAGE_SITE:-https://archlinuxarm.org/packages}"
-MIRROR="${ALARM_MIRROR:-https://mirror.archlinuxarm.org}"
+MIRROR="${ALARM_MIRROR:-http://mirror.archlinuxarm.org}"
+REPOSITORIES="${ALARM_REPOSITORIES:-core extra alarm aur}"
 
 usage() {
-    cat >&2 <<EOF
+    cat >&2 <<EOF_USAGE
 usage:
   alarm-pkg <package-name> [package-name...]
   alarm-pkg --download-only <package-name> [package-name...]
@@ -17,8 +17,9 @@ usage:
 environment:
   ALARM_ARCH          package architecture, default: aarch64
   ALARM_MIRROR        mirror base, default: https://mirror.archlinuxarm.org
-  ALARM_PACKAGE_SITE  package metadata site
-  ALARM_CACHE         package download directory
+  ALARM_REPOSITORIES  space-separated repository priority order,
+                      default: core extra alarm aur
+  ALARM_CACHE         package download and repository database cache
   ALARM_PREFIX        target Arch root override; paths ending in /usr are accepted
 
 examples:
@@ -26,13 +27,18 @@ examples:
   alarm-pkg pacman libarchive gpgme
   alarm-pkg --download-only pacman
   alarm-pkg --install-file pacman.pkg.tar.xz
-EOF
+  ALARM_REPOSITORIES="core extra alarm" alarm-pkg pacman
+EOF_USAGE
     exit 1
 }
 
 die() {
     echo "error: $*" >&2
     exit 1
+}
+
+warn() {
+    echo "warning: $*" >&2
 }
 
 command_path() {
@@ -83,11 +89,12 @@ detect_prefix() {
         path="$(resolve_path "$path")"
 
         case "$path" in
-            # Bootstrap tools live under $FILES_DIR/glibc/usr. Packages must be
-            # installed into the separate pacman-managed $FILES_DIR/arch tree.
+            # Bootstrap tools under glibc/usr install bootstrap packages into
+            # the glibc tree itself. The separate arch tree is managed only by
+            # pacman using --root.
             */glibc/usr/bin/*|*/glibc/usr/sbin/*)
                 files_dir="${path%%/glibc/usr/*}"
-                printf '%s\n' "$files_dir/arch"
+                printf '%s\n' "$files_dir/glibc"
                 return
                 ;;
 
@@ -149,115 +156,364 @@ download_to() {
     die "curl or wget is required"
 }
 
-fetch_text() {
-    fetch_url="$1"
+extract_repository_database() {
+    database_file="$1"
+    destination="$2"
+    tar_bin="$(command_path tar || true)"
 
-    if command -v curl >/dev/null 2>&1; then
-        curl -fsSL \
-            --retry 3 \
-            --retry-delay 1 \
-            "$fetch_url"
+    [ -n "$tar_bin" ] || die "tar is required"
+
+    rm -rf "$destination"
+    mkdir -p "$destination"
+
+    # GNU tar and many other tar implementations auto-detect the compression
+    # from the file contents, even though sync databases normally end in .db.
+    if "$tar_bin" -xpf "$database_file" \
+        --no-same-owner \
+        --no-same-permissions \
+        -C "$destination" 2>/dev/null; then
         return
     fi
 
-    if command -v wget >/dev/null 2>&1; then
-        wget -qO- "$fetch_url"
+    rm -rf "$destination"
+    mkdir -p "$destination"
+
+    if command -v gzip >/dev/null 2>&1 && gzip -t "$database_file" >/dev/null 2>&1; then
+        gzip -dc "$database_file" |
+            "$tar_bin" -xpf - \
+                --no-same-owner \
+                --no-same-permissions \
+                -C "$destination"
         return
     fi
 
-    die "curl or wget is required"
+    if command -v zstd >/dev/null 2>&1 && zstd -t "$database_file" >/dev/null 2>&1; then
+        zstd -dc "$database_file" |
+            "$tar_bin" -xpf - \
+                --no-same-owner \
+                --no-same-permissions \
+                -C "$destination"
+        return
+    fi
+
+    if command -v xz >/dev/null 2>&1 && xz -t "$database_file" >/dev/null 2>&1; then
+        xz -dc "$database_file" |
+            "$tar_bin" -xpf - \
+                --no-same-owner \
+                --no-same-permissions \
+                -C "$destination"
+        return
+    fi
+
+    die "could not extract repository database: $database_file"
 }
 
-html_decode() {
-    sed \
-        -e 's/&amp;/\&/g' \
-        -e 's/&#39;/'"'"'/g' \
-        -e 's/&quot;/"/g' \
-        -e 's/&lt;/</g' \
-        -e 's/&gt;/>/g'
-}
+refresh_repository() {
+    repository="$1"
+    repository_rank="$2"
+    database_file="$DB_CACHE/$repository.db"
+    partial_file="$database_file.part"
+    database_url="$MIRROR/$ARCH/$repository/$repository.db"
+    extracted_dir="$WORK_DIR/repositories/$repository"
 
-resolve_package() {
-    package="$1"
-    page_url="$PACKAGE_SITE/$ARCH/$package"
+    echo "syncing database: $repository" >&2
+    rm -f "$partial_file"
 
-    echo "resolving: $package" >&2
-
-    page="$(fetch_text "$page_url")" ||
-        die "could not open package page: $page_url"
-
-    heading="$(
-        printf '%s\n' "$page" |
-            tr '\n' ' ' |
-            sed -n 's/.*<h1[^>]*>[[:space:]]*\([^<]*\)<\/h1>.*/\1/p' |
-            html_decode |
-            head -n 1
-    )"
-
-    if [ -z "$heading" ]; then
-        heading="$(
-            printf '%s\n' "$page" |
-                sed -n 's/.*<title>[[:space:]]*\([^<]*\).*/\1/p' |
-                html_decode |
-                head -n 1
-        )"
-    fi
-
-    version="$(
-        printf '%s\n' "$heading" |
-            sed "s/^${package}[[:space:]]*//"
-    )"
-
-    repository="$(
-        printf '%s\n' "$page" |
-            tr '\n' ' ' |
-            sed -n 's/.*Repository:[[:space:]]*<\/[^>]*>[[:space:]]*<[^>]*>[[:space:]]*\([^<[:space:]]*\).*/\1/p' |
-            head -n 1
-    )"
-
-    if [ -z "$repository" ]; then
-        repository="$(
-            printf '%s\n' "$page" |
-                sed -n 's/.*Repository:[[:space:]]*\([^<[:space:]]*\).*/\1/p' |
-                head -n 1
-        )"
-    fi
-
-    download_url="$(
-        printf '%s\n' "$page" |
-            grep -o 'https://mirror\.archlinuxarm\.org/[^"<> ]*\.pkg\.tar\.[a-z0-9]*' |
-            head -n 1
-    )"
-
-    if [ -z "$download_url" ]; then
-        download_url="$(
-            printf '%s\n' "$page" |
-                grep -o 'href="[^"]*"' |
-                sed 's/^href="//; s/"$//' |
-                grep 'mirror\.archlinuxarm\.org' |
-                grep '\.pkg\.tar\.' |
-                head -n 1
-        )"
-    fi
-
-    if [ -z "$download_url" ]; then
-        [ -n "$version" ] ||
-            die "could not determine version for package: $package"
-
-        [ -n "$repository" ] ||
-            die "could not determine repository for package: $package"
-
-        filename="${package}-${version}-${ARCH}.pkg.tar.xz"
-        download_url="$MIRROR/$ARCH/$repository/$filename"
+    if download_to "$database_url" "$partial_file"; then
+        mv -f "$partial_file" "$database_file"
+    elif [ -f "$database_file" ]; then
+        rm -f "$partial_file"
+        warn "could not refresh $repository; using cached database"
     else
-        filename="${download_url##*/}"
+        rm -f "$partial_file"
+        warn "repository is unavailable and has no cached database: $repository"
+        return 1
     fi
 
-    printf '%s|%s|%s|%s\n' \
-        "$package" \
-        "$repository" \
-        "$filename" \
-        "$download_url"
+    if ! extract_repository_database "$database_file" "$extracted_dir"; then
+        warn "could not read repository database: $repository"
+        return 1
+    fi
+
+    if ! find "$extracted_dir" -type f -name desc -print -quit | grep -q .; then
+        warn "repository database contains no package descriptions: $repository"
+        return 1
+    fi
+
+    build_repository_index "$repository" "$repository_rank" "$extracted_dir"
+}
+
+build_repository_index() {
+    repository="$1"
+    repository_rank="$2"
+    extracted_dir="$3"
+
+    # One awk process handles many desc files at once. Each desc file follows
+    # the ALPM sync database format with sections such as %NAME%, %FILENAME%,
+    # %VERSION%, %PROVIDES%, and %DEPENDS%.
+    find "$extracted_dir" -type f -name desc -exec awk \
+        -v repository="$repository" \
+        -v repository_rank="$repository_rank" \
+        -v packages_file="$PACKAGES_RAW" \
+        -v providers_file="$PROVIDERS_RAW" '
+        function reset_record() {
+            name = ""
+            version = ""
+            filename = ""
+            provides = ""
+            desc_path = ""
+            section = ""
+        }
+
+        function relation_name(relation, result) {
+            result = relation
+            sub(/[<>=].*$/, "", result)
+            return result
+        }
+
+        function emit_record(    count, values, item_index, provided_name) {
+            if (name == "") {
+                return
+            }
+
+            print repository_rank "|" name "|" repository "|" version "|" filename "|" desc_path >> packages_file
+
+            if (provides == "") {
+                return
+            }
+
+            count = split(provides, values, separator)
+            for (item_index = 1; item_index <= count; item_index++) {
+                provided_name = relation_name(values[item_index])
+                if (provided_name != "") {
+                    print provided_name "|" repository_rank "|" name "|" repository "|" version "|" filename "|" desc_path >> providers_file
+                }
+            }
+        }
+
+        BEGIN {
+            separator = sprintf("%c", 28)
+            have_record = 0
+            reset_record()
+        }
+
+        FNR == 1 {
+            if (have_record) {
+                emit_record()
+            }
+            reset_record()
+            desc_path = FILENAME
+            have_record = 1
+        }
+
+        /^%[^%]+%$/ {
+            section = $0
+            next
+        }
+
+        /^$/ {
+            section = ""
+            next
+        }
+
+        section == "%NAME%" {
+            name = $0
+            next
+        }
+
+        section == "%VERSION%" {
+            version = $0
+            next
+        }
+
+        section == "%FILENAME%" {
+            filename = $0
+            next
+        }
+
+        section == "%PROVIDES%" {
+            if (provides == "") {
+                provides = $0
+            } else {
+                provides = provides separator $0
+            }
+            next
+        }
+
+        END {
+            if (have_record) {
+                emit_record()
+            }
+        }
+    ' {} +
+}
+
+finalize_indexes() {
+    LC_ALL=C sort -t '|' -k1,1n -k2,2 "$PACKAGES_RAW" > "$PACKAGES_INDEX"
+    LC_ALL=C sort -t '|' -k1,1 -k2,2n -k3,3 "$PROVIDERS_RAW" > "$PROVIDERS_INDEX"
+
+    [ -s "$PACKAGES_INDEX" ] || die "no packages were found in the configured repositories"
+}
+
+relation_name() {
+    printf '%s\n' "$1" | sed 's/[<>=].*$//'
+}
+
+lookup_exact_package() {
+    package_name="$1"
+
+    awk -F '|' -v package_name="$package_name" '
+        $2 == package_name {
+            print $2 "|" $3 "|" $4 "|" $5 "|" $6
+            exit
+        }
+    ' "$PACKAGES_INDEX"
+}
+
+lookup_provider() {
+    provided_name="$1"
+
+    awk -F '|' -v provided_name="$provided_name" '
+        $1 == provided_name {
+            print $3 "|" $4 "|" $5 "|" $6 "|" $7
+            exit
+        }
+    ' "$PROVIDERS_INDEX"
+}
+
+count_providers() {
+    provided_name="$1"
+
+    awk -F '|' -v provided_name="$provided_name" '
+        $1 == provided_name {
+            count++
+        }
+        END {
+            print count + 0
+        }
+    ' "$PROVIDERS_INDEX"
+}
+
+resolve_record() {
+    requested_relation="$1"
+    requested_name="$(relation_name "$requested_relation")"
+
+    RESOLVED_RECORD="$(lookup_exact_package "$requested_name")"
+    RESOLVED_VIRTUAL=""
+
+    if [ -z "$RESOLVED_RECORD" ]; then
+        RESOLVED_RECORD="$(lookup_provider "$requested_name")"
+        RESOLVED_VIRTUAL="$requested_name"
+    fi
+
+    [ -n "$RESOLVED_RECORD" ] || return 1
+
+    old_ifs="$IFS"
+    IFS='|'
+    read -r RESOLVED_NAME RESOLVED_REPOSITORY RESOLVED_VERSION RESOLVED_FILENAME RESOLVED_DESC <<EOF_RECORD
+$RESOLVED_RECORD
+EOF_RECORD
+    IFS="$old_ifs"
+
+    [ -n "$RESOLVED_FILENAME" ] ||
+        die "repository record for $RESOLVED_NAME has no package filename"
+
+    if [ -n "$RESOLVED_VIRTUAL" ] && [ "$RESOLVED_VIRTUAL" != "$RESOLVED_NAME" ]; then
+        provider_count="$(count_providers "$RESOLVED_VIRTUAL")"
+        if [ "$provider_count" -gt 1 ]; then
+            echo "provider: $RESOLVED_VIRTUAL -> $RESOLVED_NAME ($provider_count candidates, first by repository priority)" >&2
+        else
+            echo "provider: $RESOLVED_VIRTUAL -> $RESOLVED_NAME" >&2
+        fi
+    fi
+}
+
+read_desc_section() {
+    desc_file="$1"
+    wanted_section="$2"
+    wanted_marker="%${wanted_section}%"
+
+    awk -v wanted="$wanted_marker" '
+        $0 == wanted {
+            inside = 1
+            next
+        }
+
+        inside && /^$/ {
+            exit
+        }
+
+        inside {
+            print
+        }
+    ' "$desc_file"
+}
+
+list_contains() {
+    list_file="$1"
+    value="$2"
+
+    grep -Fqx "$value" "$list_file" 2>/dev/null
+}
+
+remove_from_list() {
+    list_file="$1"
+    value="$2"
+    temporary_file="$list_file.tmp.$$"
+
+    grep -Fvx "$value" "$list_file" > "$temporary_file" 2>/dev/null || true
+    mv -f "$temporary_file" "$list_file"
+}
+
+resolve_recursive() {
+    # Use a subshell to give each recursive call its own variables while
+    # keeping the resolver POSIX-sh compatible. State is shared through files.
+    (
+        requested_relation="$1"
+        required_by="${2:-}"
+
+        if ! resolve_record "$requested_relation"; then
+            if [ -n "$required_by" ]; then
+                die "dependency '$requested_relation' required by '$required_by' was not found in: $REPOSITORIES"
+            fi
+            die "package or provider '$requested_relation' was not found in: $REPOSITORIES"
+        fi
+
+        package_name="$RESOLVED_NAME"
+
+        if list_contains "$RESOLVED_PACKAGES" "$package_name"; then
+            exit 0
+        fi
+
+        if list_contains "$RESOLVING_PACKAGES" "$package_name"; then
+            echo "dependency cycle: $package_name" >&2
+            exit 0
+        fi
+
+        echo "resolving: $package_name ($RESOLVED_REPOSITORY $RESOLVED_VERSION)" >&2
+        printf '%s\n' "$package_name" >> "$RESOLVING_PACKAGES"
+
+        dependencies_file="$(mktemp "$WORK_DIR/dependencies.XXXXXX")"
+        read_desc_section "$RESOLVED_DESC" DEPENDS > "$dependencies_file"
+
+        while IFS= read -r dependency || [ -n "$dependency" ]; do
+            [ -n "$dependency" ] || continue
+            resolve_recursive "$dependency" "$package_name"
+        done < "$dependencies_file"
+
+        rm -f "$dependencies_file"
+        remove_from_list "$RESOLVING_PACKAGES" "$package_name"
+
+        if ! list_contains "$RESOLVED_PACKAGES" "$package_name"; then
+            printf '%s|%s|%s|%s|%s\n' \
+                "$RESOLVED_NAME" \
+                "$RESOLVED_REPOSITORY" \
+                "$RESOLVED_VERSION" \
+                "$RESOLVED_FILENAME" \
+                "$RESOLVED_DESC" >> "$INSTALL_ORDER"
+            printf '%s\n' "$package_name" >> "$RESOLVED_PACKAGES"
+        fi
+    )
 }
 
 extract_archive() {
@@ -371,16 +627,7 @@ install_archive() {
 
     mkdir -p "$usr_prefix"
 
-    tmp_base="${TMPDIR:-$usr_prefix/tmp}"
-    mkdir -p "$tmp_base"
-
-    stage="$(mktemp -d "$tmp_base/alarm-pkg.XXXXXX")"
-
-    cleanup_stage() {
-        rm -rf "$stage"
-    }
-
-    trap cleanup_stage EXIT HUP INT TERM
+    stage="$(mktemp -d "$WORK_DIR/stage.XXXXXX")"
 
     echo "extracting: $package_file" >&2
     extract_archive "$package_file" "$stage"
@@ -410,8 +657,7 @@ install_archive() {
     merge_root_directory "$stage/lib" "$usr_prefix/lib"
     merge_root_directory "$stage/lib64" "$usr_prefix/lib64"
 
-    trap - EXIT HUP INT TERM
-    cleanup_stage
+    rm -rf "$stage"
 
     echo "installed: $package_file" >&2
 }
@@ -473,8 +719,30 @@ fi
 PREFIX="$(detect_prefix)"
 USR_PREFIX="$PREFIX/usr"
 CACHE="${ALARM_CACHE:-$USR_PREFIX/var/cache/alarm-pkg}"
+DB_CACHE="$CACHE/databases"
 
-mkdir -p "$USR_PREFIX" "$CACHE"
+mkdir -p "$USR_PREFIX" "$CACHE" "$DB_CACHE"
+
+TMP_BASE="${TMPDIR:-$CACHE}"
+mkdir -p "$TMP_BASE"
+WORK_DIR="$(mktemp -d "$TMP_BASE/alarm-pkg.XXXXXX")"
+trap 'rm -rf "$WORK_DIR"' EXIT HUP INT TERM
+
+PACKAGES_RAW="$WORK_DIR/packages.raw"
+PROVIDERS_RAW="$WORK_DIR/providers.raw"
+PACKAGES_INDEX="$WORK_DIR/packages.index"
+PROVIDERS_INDEX="$WORK_DIR/providers.index"
+RESOLVING_PACKAGES="$WORK_DIR/resolving"
+RESOLVED_PACKAGES="$WORK_DIR/resolved"
+INSTALL_ORDER="$WORK_DIR/install-order"
+
+: > "$PACKAGES_RAW"
+: > "$PROVIDERS_RAW"
+: > "$RESOLVING_PACKAGES"
+: > "$RESOLVED_PACKAGES"
+: > "$INSTALL_ORDER"
+
+mkdir -p "$WORK_DIR/repositories"
 
 echo "root:   $PREFIX" >&2
 echo "usr:    $USR_PREFIX" >&2
@@ -488,28 +756,48 @@ if [ "$INSTALL_FILES" -eq 1 ]; then
     exit 0
 fi
 
-for package in "$@"; do
-    result="$(resolve_package "$package")"
+repository_rank=0
+repository_count=0
 
-    repository="$(printf '%s\n' "$result" | cut -d '|' -f 2)"
-    filename="$(printf '%s\n' "$result" | cut -d '|' -f 3)"
-    url="$(printf '%s\n' "$result" | cut -d '|' -f 4-)"
+for repository in $REPOSITORIES; do
+    repository_rank=$((repository_rank + 1))
+    if refresh_repository "$repository" "$repository_rank"; then
+        repository_count=$((repository_count + 1))
+    fi
+done
+
+[ "$repository_count" -gt 0 ] || die "none of the configured repositories could be loaded"
+
+finalize_indexes
+
+for requested_package in "$@"; do
+    resolve_recursive "$requested_package"
+done
+
+package_count="$(wc -l < "$INSTALL_ORDER" | tr -d '[:space:]')"
+echo "resolved $package_count package(s), dependencies first" >&2
+
+while IFS='|' read -r package_name repository version filename desc_file || [ -n "$package_name" ]; do
+    [ -n "$package_name" ] || continue
 
     archive_path="$CACHE/$filename"
     partial_path="$archive_path.part"
+    package_url="$MIRROR/$ARCH/$repository/$filename"
 
-    echo "repository: ${repository:-unknown}" >&2
-    echo "downloading: $url" >&2
+    echo "package:    $package_name $version" >&2
+    echo "repository: $repository" >&2
 
-    rm -f "$partial_path"
-
-    download_to "$url" "$partial_path"
-
-    mv -f "$partial_path" "$archive_path"
-
-    echo "saved: $archive_path" >&2
+    if [ -f "$archive_path" ]; then
+        echo "found in cache: $filename" >&2
+    else
+        echo "downloading: $package_url" >&2
+        rm -f "$partial_path"
+        download_to "$package_url" "$partial_path"
+        mv -f "$partial_path" "$archive_path"
+        echo "saved: $archive_path" >&2
+    fi
 
     if [ "$DOWNLOAD_ONLY" -eq 0 ]; then
         install_archive "$archive_path" "$PREFIX"
     fi
-done
+done < "$INSTALL_ORDER"

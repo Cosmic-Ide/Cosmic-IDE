@@ -23,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
         }
     }
 
@@ -47,9 +47,7 @@ android {
 
 dependencies {
 //    "prodImplementation"("io.appwrite:sdk-for-android:25.0.0")
-    "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.5.0")
-
-    api("androidx.preference:preference-ktx:1.2.1")
+//    "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.5.0")
 
     api("io.github.rosemoe:editor:0.24.6")
     api("io.github.rosemoe:language-textmate:0.24.6")

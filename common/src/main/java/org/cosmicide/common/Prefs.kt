@@ -10,7 +10,6 @@ package org.cosmicide.common
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.preference.PreferenceManager
 
 /**
  * A utility object to access shared preferences easily.
@@ -24,7 +23,8 @@ object Prefs {
      * @param context The context of the application.
      */
     fun init(context: Context) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs =
+            context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
     }
 
     val isInitialized: Boolean
@@ -97,9 +97,6 @@ object Prefs {
 
     val disableSymbolsView: Boolean
         get() = prefs.getBoolean("disable_symbols_view", false)
-
-    val useJdtLS: Boolean
-        get() = prefs.getBoolean("jdt_ls", true)
 
     val gitUsername: String
         get() = prefs.getString("git_username", "") ?: ""

@@ -50,6 +50,7 @@ object PreferenceKeys {
 
     const val PLUGIN_REPOSITORY = "plugin_repository"
     const val CUSTOM_LSP_CONFIGURATIONS = "custom_lsp_configurations"
+    const val CUSTOM_PROJECT_TYPES = "custom_project_types"
 
     const val EXTENSION_ENABLED_PREFIX = "extension_enabled."
 

@@ -5,8 +5,8 @@ import io.github.rosemoe.sora.lang.format.AsyncFormatter
 import io.github.rosemoe.sora.lang.format.Formatter
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.TextRange
-import org.cosmicide.ide.editor.EditorExtensionPoints
-import org.cosmicide.ide.editor.EditorFormatterRequest
+import org.cosmicide.editor.EditorExtensionPoints
+import org.cosmicide.editor.EditorFormatterRequest
 import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.project.Project
 import java.io.File

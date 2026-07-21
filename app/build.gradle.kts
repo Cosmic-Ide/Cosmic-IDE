@@ -42,10 +42,15 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             isCrunchPngs = true
-            isShrinkResources = false
+            isShrinkResources = true
             signingConfig = signingConfigs.getByName("debug")
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -60,45 +65,13 @@ android {
 
     lint.abortOnError = false
 
-    configurations.configureEach {
-        exclude(group = "javax.inject", module = "javax.inject")
-        exclude(group = "org.jetbrains", module = "annotations-java5")
-        exclude(group = "com.google.j2objc", module = "j2objc-annotations")
-        exclude(group = "com.google.errorprone", module = "error_prone_annotations")
-        exclude(group = "io.github.itsaky", module = "nb-javac-android")
-        exclude(group = "com.atlassian.commonmark", module = "commonmark")
-    }
-
     packaging.jniLibs.apply {
         useLegacyPackaging = true
     }
 
     packaging {
         resources {
-            excludes.addAll(
-                listOf(
-                    "META-INF/INDEX.LIST",
-                    "META-INF/eclipse.inf",
-                    "META-INF/CHANGES",
-                    "META-INF/README.md",
-                    "META-INF/DEPENDENCIES",
-                    "about_files/LICENSE-2.0.txt",
-                    "META-INF/AL2.0",
-                    "META-INF/LGPL2.1",
-                    "plugin.xml",
-                    "plugin.properties",
-                    "about.mappings",
-                    "about.properties",
-                    "about.ini",
-                    "src/*",
-                )
-            )
 
-            pickFirsts.addAll(
-                listOf(
-                    "OSGI-INF/l10n/plugin.properties"
-                )
-            )
         }
     }
     buildFeatures {
@@ -156,6 +129,7 @@ dependencies {
     implementation("io.github.rosemoe:editor")
     implementation("io.github.rosemoe:language-textmate")
     implementation("io.github.rosemoe:editor-lsp")
+    implementation("io.github.rosemoe:oniguruma-native")
 
     implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0")
 

@@ -5,26 +5,24 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.ide.editor
+package org.cosmicide.editor
 
-import org.cosmicide.plugin.api.ExtensionPoint
+import io.github.rosemoe.sora.widget.CodeEditor
+import org.cosmicide.plugin.api.ConfigurableExtension
+import org.cosmicide.project.Project
+import java.io.File
 
-object EditorExtensionPoints {
-    @JvmField
-    val LANGUAGE_PROVIDER = ExtensionPoint(
-        "org.cosmicide.editor.languageProvider",
-        EditorLanguageProvider::class.java
-    )
+data class EditorLanguageRequest(
+    val editor: CodeEditor,
+    val project: Project,
+    val file: File
+)
 
-    @JvmField
-    val LSP_SERVER_PROVIDER = ExtensionPoint(
-        "org.cosmicide.editor.lspServerProvider",
-        LspServerProvider::class.java
-    )
+interface EditorLanguageProvider : ConfigurableExtension {
+    val priority: Int
+        get() = 0
 
-    @JvmField
-    val FORMATTER_PROVIDER = ExtensionPoint(
-        "org.cosmicide.editor.formatterProvider",
-        EditorFormatterProvider::class.java
-    )
+    fun supports(request: EditorLanguageRequest): Boolean
+
+    fun configure(request: EditorLanguageRequest): Boolean
 }

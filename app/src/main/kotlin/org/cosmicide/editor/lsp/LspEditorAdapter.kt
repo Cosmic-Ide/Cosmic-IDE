@@ -1,11 +1,15 @@
 package org.cosmicide.editor.lsp
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
+import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.model.DefaultGrammarDefinition
 import io.github.rosemoe.sora.lsp.client.connection.StreamConnectionProvider
 import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.CustomLanguageServerDefinition
 import io.github.rosemoe.sora.lsp.editor.LspEditor
@@ -19,15 +23,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.cosmicide.ide.editor.LspServerConnection
-import org.cosmicide.ide.editor.LspServerDefinition
-import org.cosmicide.ide.editor.LspServerRequest
+import org.cosmicide.editor.LspServerConnection
+import org.cosmicide.editor.LspServerDefinition
+import org.cosmicide.editor.LspServerRequest
+import org.eclipse.tm4e.core.registry.IGrammarSource
 import org.eclipse.lsp4j.DidChangeConfigurationParams
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.FilterInputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.URI
+import java.net.URL
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
 
 private const val TAG = "LspEditorAdapter"
 
@@ -68,9 +79,17 @@ fun CodeEditor.configureLspLanguage(
         lspProject.addServerDefinition(serverDefinition)
 
         val lspEditor: LspEditor = lspProject.createEditor(request.file.absolutePath)
-        val wrapperLanguage = definition.grammarScopeName?.let {
-            createTextMateLanguage(it)
-        } ?: EmptyLanguage()
+        var grammarFailure: Throwable? = null
+        val wrapperLanguage = runCatching {
+            createTextMateLanguage(context, definition)
+        }.onFailure {
+            grammarFailure = it
+            Log.w(TAG, "Failed to load TextMate grammar for ${definition.displayName}", it)
+        }.getOrElse {
+            definition.grammarScopeName?.let { scopeName ->
+                runCatching { createTextMateLanguage(scopeName) }.getOrNull()
+            } ?: EmptyLanguage()
+        }
 
         lspEditor.wrapperLanguage = wrapperLanguage
         lspEditor.isEnableInlayHint = definition.enableInlayHints
@@ -78,6 +97,13 @@ fun CodeEditor.configureLspLanguage(
 
         withContext(Dispatchers.Main) {
             lspEditor.editor = this@configureLspLanguage
+            grammarFailure?.let {
+                Toast.makeText(
+                    context,
+                    "Could not load the TextMate grammar: ${it.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
 
         try {
@@ -258,3 +284,186 @@ private fun createTextMateLanguage(grammarScopeName: String): TextMateLanguage {
         grammarScopeName, false
     )
 }
+
+@Synchronized
+private fun createTextMateLanguage(
+    context: Context,
+    definition: LspServerDefinition
+): io.github.rosemoe.sora.lang.Language {
+    val grammarLink = definition.textMateGrammarLink
+        ?: return definition.grammarScopeName?.let(::createTextMateLanguage) ?: EmptyLanguage()
+    if (!grammarLink.startsWith("https://", ignoreCase = true)) {
+        val grammarText = openGrammarStream(context, grammarLink).readGrammarText()
+        return createTextMateLanguage(definition, grammarText)
+    }
+
+    val cacheFile = grammarCacheFile(context, grammarLink)
+    var cachedGrammarText: String? = null
+    if (cacheFile.isFile) {
+        cachedGrammarText = runCatching { cacheFile.inputStream().readGrammarText() }
+            .onFailure {
+                Log.w(TAG, "Discarding unreadable grammar cache ${cacheFile.name}", it)
+                cacheFile.delete()
+            }
+            .getOrNull()
+    }
+
+    if (cachedGrammarText != null && cacheFile.isFreshGrammarCache()) {
+        try {
+            return createTextMateLanguage(definition, cachedGrammarText)
+        } catch (e: Exception) {
+            Log.w(TAG, "Discarding invalid grammar cache ${cacheFile.name}", e)
+            cacheFile.delete()
+            cachedGrammarText = null
+        }
+    }
+
+    val refreshedGrammarText = try {
+        openGrammarStream(context, grammarLink).readGrammarText()
+    } catch (refreshFailure: Exception) {
+        val staleGrammarText = cachedGrammarText ?: throw refreshFailure
+        Log.w(TAG, "Grammar refresh failed; using stale cache for $grammarLink", refreshFailure)
+        return createTextMateLanguage(definition, staleGrammarText)
+    }
+
+    return try {
+        createTextMateLanguage(definition, refreshedGrammarText).also {
+            runCatching { cacheGrammar(cacheFile, refreshedGrammarText) }
+                .onFailure { error ->
+                    Log.w(TAG, "Unable to cache grammar from $grammarLink", error)
+                }
+        }
+    } catch (refreshFailure: Exception) {
+        val staleGrammarText = cachedGrammarText ?: throw refreshFailure
+        Log.w(
+            TAG,
+            "Refreshed grammar is invalid; using stale cache for $grammarLink",
+            refreshFailure
+        )
+        runCatching { createTextMateLanguage(definition, staleGrammarText) }
+            .getOrElse { staleFailure ->
+                refreshFailure.addSuppressed(staleFailure)
+                throw refreshFailure
+            }
+    }
+}
+
+private fun createTextMateLanguage(
+    definition: LspServerDefinition,
+    rawGrammarText: String
+): TextMateLanguage {
+    val grammarText = rawGrammarText.removePrefix("\uFEFF")
+    require(grammarText.isNotBlank()) { "Grammar file is empty" }
+    val contentType = when (grammarText.firstOrNull { !it.isWhitespace() }) {
+        '{', '[' -> IGrammarSource.ContentType.JSON
+        '<' -> IGrammarSource.ContentType.XML
+        else -> IGrammarSource.ContentType.YAML
+    }
+
+    fun createLanguage(): TextMateLanguage {
+        val grammarSource = IGrammarSource.fromString(contentType, grammarText)
+        val grammarDefinition = DefaultGrammarDefinition.withGrammarSource(
+            grammarSource,
+            definition.id,
+            null
+        )
+        val themeRegistry = ThemeRegistry.getInstance()
+        val grammarRegistry = GrammarRegistry(GrammarRegistry.getInstance()).apply {
+            setTheme(themeRegistry.currentThemeModel)
+        }
+        return TextMateLanguage.create(
+            grammarDefinition,
+            grammarRegistry,
+            themeRegistry,
+            false
+        )
+    }
+
+    val language = createLanguage()
+    MarkdownCodeHighlighterRegistry.global.withEditorHighlighter {
+        Pair(
+            createLanguage(),
+            TextMateColorScheme.create(ThemeRegistry.getInstance())
+        )
+    }
+    return language
+}
+
+private fun grammarCacheFile(context: Context, grammarLink: String): File {
+    val cacheKey = MessageDigest.getInstance("SHA-256")
+        .digest(grammarLink.toByteArray(Charsets.UTF_8))
+        .joinToString(separator = "") { byte ->
+            (byte.toInt() and 0xff).toString(16).padStart(2, '0')
+        }
+    return context.cacheDir
+        .resolve(GRAMMAR_CACHE_DIRECTORY)
+        .also(File::mkdirs)
+        .resolve("$cacheKey.grammar")
+}
+
+private fun File.isFreshGrammarCache(): Boolean {
+    return isFile && System.currentTimeMillis() - lastModified() <= GRAMMAR_CACHE_MAX_AGE_MILLIS
+}
+
+private fun cacheGrammar(cacheFile: File, grammarText: String) {
+    val temporaryFile = File.createTempFile(cacheFile.name, ".tmp", cacheFile.parentFile)
+    try {
+        temporaryFile.writeText(grammarText, Charsets.UTF_8)
+        try {
+            Files.move(
+                temporaryFile.toPath(),
+                cacheFile.toPath(),
+                StandardCopyOption.ATOMIC_MOVE,
+                StandardCopyOption.REPLACE_EXISTING
+            )
+        } catch (_: AtomicMoveNotSupportedException) {
+            Files.move(
+                temporaryFile.toPath(),
+                cacheFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING
+            )
+        }
+        cacheFile.setLastModified(System.currentTimeMillis())
+    } finally {
+        temporaryFile.delete()
+    }
+}
+
+private fun openGrammarStream(context: Context, link: String): InputStream {
+    val uri = Uri.parse(link)
+    return when (uri.scheme?.lowercase()) {
+        "http", "https" -> URL(link).openConnection().apply {
+            connectTimeout = GRAMMAR_CONNECT_TIMEOUT_MILLIS
+            readTimeout = GRAMMAR_READ_TIMEOUT_MILLIS
+        }.getInputStream()
+
+        "content" -> context.contentResolver.openInputStream(uri)
+            ?: error("Unable to open grammar content URI")
+
+        "file" -> File(uri.path ?: error("Grammar file path is missing")).inputStream()
+        null -> File(link).inputStream()
+        else -> error("Unsupported grammar link: ${uri.scheme}")
+    }
+}
+
+private fun InputStream.readGrammarText(): String = use { input ->
+    val output = ByteArrayOutputStream()
+    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+    var totalBytes = 0
+    while (true) {
+        val count = input.read(buffer)
+        if (count < 0) break
+        totalBytes += count
+        require(totalBytes <= MAX_GRAMMAR_BYTES) {
+            "Grammar file is larger than ${MAX_GRAMMAR_BYTES / (1024 * 1024)} MB"
+        }
+        output.write(buffer, 0, count)
+    }
+    output.toString(Charsets.UTF_8.name())
+}
+
+private const val MAX_GRAMMAR_BYTES = 5 * 1024 * 1024
+private const val GRAMMAR_CONNECT_TIMEOUT_MILLIS = 15_000
+private const val GRAMMAR_READ_TIMEOUT_MILLIS = 30_000
+private const val GRAMMAR_CACHE_DIRECTORY = "textmate-grammar-cache"
+private const val GRAMMAR_CACHE_MAX_AGE_MILLIS = 7L * 24 * 60 * 60 * 1000

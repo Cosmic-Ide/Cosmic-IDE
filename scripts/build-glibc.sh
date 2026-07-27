@@ -348,7 +348,6 @@ find glibc -type f -print | LC_ALL=C sort > "$TAR_LIST"
 
 tar \
     --no-xattrs \
-    --disable-copyfile \
     -cf - \
     -T "$TAR_LIST" |
     zstd \

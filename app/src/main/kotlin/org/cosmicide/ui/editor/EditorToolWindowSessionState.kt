@@ -56,6 +56,10 @@ internal data class EditorToolWindowSessionState(
         projectSyncStatus = "Running"
     )
 
+    fun stopProjectSync(): EditorToolWindowSessionState = copy(
+        projectSyncStatus = "Stopping"
+    )
+
     fun selectTab(tabId: String): EditorToolWindowSessionState = copy(selectedTabId = tabId)
 
     fun closeBuild(sessionId: Int): EditorToolWindowSessionState {
@@ -79,6 +83,12 @@ internal data class EditorToolWindowSessionState(
             } else {
                 session
             }
+        }
+    )
+
+    fun stopBuild(sessionId: Int): EditorToolWindowSessionState = copy(
+        buildSessions = buildSessions.map { session ->
+            if (session.id == sessionId) session.copy(status = "Stopping") else session
         }
     )
 

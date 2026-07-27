@@ -11,11 +11,12 @@ import android.content.Context
 import android.util.Log
 import org.cosmicide.App
 import org.cosmicide.common.Prefs
-import org.cosmicide.editor.lsp.ExistingProcessLspConnection
-import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.editor.LspServerDefinition
 import org.cosmicide.editor.LspServerProvider
 import org.cosmicide.editor.LspServerRequest
+import org.cosmicide.editor.lsp.ExistingProcessLspConnection
+import org.cosmicide.editor.lsp.LspLogStore
+import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.project.Project
 import org.cosmicide.util.jdksDir
 import org.eclipse.lsp4j.CodeLensOptions
@@ -27,7 +28,7 @@ import java.io.InputStream
 object KotlinEditorLanguageProvider : LspServerProvider {
     override val id = "org.cosmicide.editor.kotlin"
     override val displayName = "Kotlin language support"
-    override val description = "Kotlin editing powered by Kotlin Language Server"
+    override val description = "Kotlin editing powered by fwcd Kotlin Language Server"
     override val priority = 300
 
     private var kotlinLspProcess: Process? = null
@@ -40,10 +41,6 @@ object KotlinEditorLanguageProvider : LspServerProvider {
     override fun createDefinition(request: LspServerRequest): LspServerDefinition {
         val context = App.instance.get()
             ?: throw IllegalStateException("Application context is unavailable")
-        val defaultSdk = context.jdksDir()
-            .resolve(Prefs.currentJDK)
-            .takeIf { it.isDirectory }
-            ?.absolutePath
         return LspServerDefinition(
             id = id,
             fileExtension = "kt",
@@ -54,19 +51,36 @@ object KotlinEditorLanguageProvider : LspServerProvider {
                 }
             },
             grammarScopeName = "source.kotlin",
-            initializationOptions = defaultSdk?.let { mapOf("defaultSdk" to it) },
             expectedCapabilities = ServerCapabilities().apply {
+                // Code actions power Quick Fixes and Refactorings
                 codeActionProvider = Either.forLeft(true)
+
+                // Formatting
                 documentFormattingProvider = Either.forLeft(true)
-                signatureHelpProvider = SignatureHelpOptions(listOf("(", ","))
-                diagnosticProvider = null
+                documentRangeFormattingProvider = Either.forLeft(true)
+
+                // Navigation & Hover
                 definitionProvider = Either.forLeft(true)
+                implementationProvider = Either.forLeft(true)
+                typeDefinitionProvider = Either.forLeft(true)
+                referencesProvider = Either.forLeft(true)
                 hoverProvider = Either.forLeft(true)
+                documentHighlightProvider = Either.forLeft(true)
+
+                // Signatures & Hints
+                signatureHelpProvider = SignatureHelpOptions(listOf("(", ","))
                 inlayHintProvider = Either.forLeft(true)
+
+                // Code Lens (Method references & implementation counts)
                 codeLensProvider = CodeLensOptions(true)
-                semanticTokensProvider = null
-                documentHighlightProvider = Either.forLeft(false)
+
+
+                // NOTE: Standard LSP diagnostic publishing via 'textDocument/publishDiagnostics'
+                // does not require setting 'diagnosticProvider' (which is for pull-diagnostics in LSP 3.17+).
+                // Setting it to null/omitting it lets standard push diagnostics work.
+                diagnosticProvider = null
             },
+            enableInlayHints = false,
             initializationTimeoutMillis = 120_000,
             traceIncomingMessages = true
         )
@@ -81,7 +95,8 @@ object KotlinEditorLanguageProvider : LspServerProvider {
 
         kotlinLspProcess?.takeIf(Process::isAlive)?.destroy()
 
-        val executable = context.filesDir.resolve("kotlin-lsp/bin/intellij-server")
+        val executable =
+            context.filesDir.resolve("kotlin-language-server/bin/kotlin-language-server")
         val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
         check(executable.isFile) {
             "Kotlin language server not found at ${executable.absolutePath}"
@@ -89,29 +104,25 @@ object KotlinEditorLanguageProvider : LspServerProvider {
         check(jdkDir.isDirectory) {
             "Selected JDK not found at ${jdkDir.absolutePath}"
         }
-        val gradleJavaHomeOption =
-            "-Dcom.jetbrains.ls.imports.gradle.java.home=${jdkDir.absolutePath}"
-
-        val systemPath = context.filesDir.resolve("kotlin-lsp/system").also { it.mkdir() }
-
         return try {
             ProcessExecutor.startCommand(
                 context = context,
                 command = executable.absolutePath,
-                args = listOf("--stdio", "--system-path", systemPath.absolutePath),
                 workingDir = project.root,
                 redirectErrorStream = false,
                 environmentOverrides = mapOf(
-                    "IJ_JAVA_OPTIONS" to gradleJavaHomeOption
+                    "JAVA_HOME" to jdkDir.absolutePath
                 )
             ).also { process ->
                 streamStderrToLogcat(process.errorStream)
                 kotlinLspProcess = process
                 kotlinProjectRoot = projectRoot
                 Log.d(TAG, "Kotlin language server started")
+                LspLogStore.info("Kotlin Language Server", "Server process started")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Kotlin language server execution crashed", e)
+            LspLogStore.error("Kotlin Language Server", "Server process crashed", e)
             null
         }
     }
@@ -123,10 +134,12 @@ object KotlinEditorLanguageProvider : LspServerProvider {
                 var line = reader.readLine()
                 while (line != null) {
                     Log.d("KOTLIN-LSP", line)
+                    LspLogStore.debug("Kotlin Language Server", line)
                     line = reader.readLine()
                 }
             } catch (e: Exception) {
                 Log.d("KOTLIN-LSP", "Stderr logger stopped: ${e.message}")
+                LspLogStore.warning("Kotlin Language Server", "Stderr logger stopped", e)
             }
         }.apply {
             name = "Kotlin-LSP-Stderr-Logger"

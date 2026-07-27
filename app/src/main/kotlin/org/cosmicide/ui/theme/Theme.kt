@@ -45,9 +45,10 @@ fun IDETheme(
 @Composable
 fun isDeviceInDarkTheme(): Boolean {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
     val localNightMode = LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK
     val contextNightMode =
-        context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
     if (
         localNightMode == Configuration.UI_MODE_NIGHT_YES ||

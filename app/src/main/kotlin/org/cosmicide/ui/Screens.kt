@@ -32,7 +32,6 @@ data class SettingsCategoryScreen(val destination: SettingsDestination) : Screen
 enum class SettingsDestination {
     EDITOR,
     COMPILER,
-    FORMATTER,
     EXTENSIONS,
     TERMINAL,
     TOOLCHAINS,

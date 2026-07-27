@@ -49,11 +49,11 @@ source text and should be enabled only for diagnostics.
 
 ## Built-in servers
 
-| Files                   | Process                                        |
-|-------------------------|------------------------------------------------|
-| `.java`                 | Eclipse JDT LS through the selected JDK        |
-| `.kt`                   | `files/kotlin-lsp/bin/intellij-server --stdio` |
-| `.scala`, `.sc`, `.sbt` | `files/scala/bin/metals`                       |
+| Files                   | Process                                                   |
+|-------------------------|-----------------------------------------------------------|
+| `.java`                 | Eclipse JDT LS through the selected JDK                   |
+| `.kt`                   | `files/kotlin-language-server/bin/kotlin-language-server` |
+| `.scala`, `.sc`, `.sbt` | `files/scala/bin/metals`                                  |
 
 All launches use `ProcessExecutor`, so they inherit the canonical glibc/JDK environment described
 in [Process execution and terminal](process-execution-and-terminal.md).

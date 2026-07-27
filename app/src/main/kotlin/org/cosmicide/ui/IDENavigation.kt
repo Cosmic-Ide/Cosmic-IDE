@@ -128,7 +128,6 @@ fun IDENavigation() {
                     SettingsDestination.COMPILER ->
                         CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
 
-                    SettingsDestination.FORMATTER -> Text("Category: Formatter")
                     SettingsDestination.EXTENSIONS ->
                         ExtensionsSettingsScreen(onBack = { backStack.removeLastOrNull() })
 

@@ -27,4 +27,10 @@ object EditorExtensionPoints {
         "org.cosmicide.editor.formatterProvider",
         EditorFormatterProvider::class.java
     )
+
+    @JvmField
+    val PREVIEW_PROVIDER = ExtensionPoint(
+        "org.cosmicide.editor.previewProvider",
+        EditorPreviewProvider::class.java
+    )
 }

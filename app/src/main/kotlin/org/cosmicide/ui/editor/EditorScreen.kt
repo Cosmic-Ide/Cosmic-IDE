@@ -29,21 +29,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.app.LocalAppContainer
+import org.cosmicide.editor.EditorPreviewPresentation
+import org.cosmicide.editor.lsp.LspLogStore
+import org.cosmicide.editor.lsp.disposeLspLanguage
+import org.cosmicide.editor.preview.EditorPreviews
 import org.cosmicide.model.EditorToolingViewModel
 import org.cosmicide.model.EditorViewModel
 import org.cosmicide.project.Project
@@ -63,8 +70,9 @@ fun EditorScreen(
     val toolingViewModel: EditorToolingViewModel = viewModel(
         key = "editor-tooling:${project.root.absolutePath}"
     )
+    val toolingState = toolingViewModel.state
     var toolWindowHeightDp by rememberSaveable(project.root.absolutePath) {
-        mutableStateOf(CollapsedEditorToolWindowHeightDp)
+        mutableFloatStateOf(CollapsedEditorToolWindowHeightDp)
     }
     var toolWindowSessionState by remember(project.root.absolutePath) {
         mutableStateOf(EditorToolWindowSessionState())
@@ -83,14 +91,22 @@ fun EditorScreen(
         (projectSyncStrategy as? ProjectSyncStrategy.PluginCommand)?.command
     val openFiles = viewModel.openFiles
     val activeFile = viewModel.activeFile
+    val lspLogs by LspLogStore.entries.collectAsStateWithLifecycle()
 
     val editor = remember {
         setCodeEditorFactory(context = context, state = state)
     }
     val isApplyingEditorContent = remember { mutableStateOf(false) }
+    val activePreviewProvider = activeFile?.let { EditorPreviews.providerFor(project, it) }
+    val isPreviewOnly =
+        activePreviewProvider?.presentation == EditorPreviewPresentation.PREVIEW_ONLY
+    val currentIsPreviewOnly by rememberUpdatedState(isPreviewOnly)
+    val currentEditorContent = {
+        if (isPreviewOnly) null else editor.text.toString()
+    }
 
     val runGradleTask: (String) -> Unit = { task ->
-        viewModel.saveActiveDocument(editor.text.toString())
+        viewModel.saveActiveDocument(currentEditorContent())
         toolWindowSessionState = toolWindowSessionState.openGradleTask(task)
         if (toolWindowHeightDp <= CollapsedEditorToolWindowHeightDp) {
             toolWindowHeightDp = DefaultEditorToolWindowHeightDp
@@ -99,7 +115,7 @@ fun EditorScreen(
 
     val openTerminalSession: (String, String, List<String>?) -> Unit =
         { title, command, arguments ->
-            viewModel.saveActiveDocument(editor.text.toString())
+            viewModel.saveActiveDocument(currentEditorContent())
             toolWindowSessionState = toolWindowSessionState.openTerminal(
                 title = title,
                 command = command,
@@ -134,13 +150,14 @@ fun EditorScreen(
     }
 
     val openFile = { newFile: File ->
-        viewModel.openFile(newFile, editor.text.toString())
+        viewModel.openFile(newFile, currentEditorContent())
     }
 
     val colorScheme = MaterialTheme.colorScheme
 
-    LaunchedEffect(activeFile) {
+    LaunchedEffect(activeFile, activePreviewProvider?.id, isPreviewOnly) {
         activeFile?.let { file ->
+            if (isPreviewOnly) return@let
             val content = viewModel.cachedContent(file)
                 ?: withContext(Dispatchers.IO) { file.readText() }
             viewModel.ensureDocument(file, content)
@@ -152,18 +169,21 @@ fun EditorScreen(
                 isApplyingEditorContent.value = false
             }
             editor.applyEditorSettings(project, file, colorScheme)
+            LspLogStore.clear()
         }
     }
 
     DisposableEffect(editor) {
         val receipt = editor.subscribeEvent(ContentChangeEvent::class.java) { _, _ ->
-            if (!isApplyingEditorContent.value) {
+            if (!isApplyingEditorContent.value && !currentIsPreviewOnly) {
                 viewModel.onActiveContentChanged(editor.text.toString())
             }
         }
 
         onDispose {
             receipt.unsubscribe()
+            editor.disposeLspLanguage()
+            editor.release()
         }
     }
 
@@ -185,18 +205,18 @@ fun EditorScreen(
                     scope.launch { drawerState.close() }
                 })
             }
-        }) {
+        }, gesturesEnabled = drawerState.isOpen
+    ) {
         Scaffold(
             topBar = {
                 Column {
                     EditorToolbar(
-                        project = project,
                         file = activeFile,
                         editor = editor,
                         onOpenDrawer = { scope.launch { drawerState.open() } },
-                        tasks = toolingViewModel.tasks,
-                        isGradleSyncing = useGradleSync && toolingViewModel.isSyncing,
-                        gradleSyncError = toolingViewModel.syncError,
+                        tasks = toolingState.tasks,
+                        isGradleSyncing = useGradleSync && toolingState.isSyncing,
+                        gradleSyncError = toolingState.error,
                         onResyncGradle = { toolingViewModel.resyncGradle(context) },
                         hasGradleWrapper = hasGradleWrapper,
                         onRunGradleTask = runGradleTask,
@@ -207,7 +227,7 @@ fun EditorScreen(
                         }
                     )
 
-                    if (useGradleSync && toolingViewModel.isSyncing) {
+                    if (useGradleSync && toolingState.isSyncing) {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     }
 
@@ -233,7 +253,7 @@ fun EditorScreen(
                                         Spacer(Modifier.width(6.dp))
                                         IconButton(
                                             onClick = {
-                                                viewModel.closeTab(file, editor.text.toString())
+                                                viewModel.closeTab(file, currentEditorContent())
                                             }, modifier = Modifier.size(18.dp)
                                         ) {
                                             Icon(
@@ -258,45 +278,34 @@ fun EditorScreen(
             ) {
                 EditorToolWindowLayout(
                     project = project,
-                    toolingOutput = toolingViewModel.output,
-                    useGradleSync = useGradleSync,
+                    syncOutput = toolingViewModel.output.takeIf { useGradleSync },
+                    isToolingSyncRunning = useGradleSync && toolingState.isSyncing,
+                    onRerunToolingSync = { toolingViewModel.resyncGradle(context) },
+                    onStopToolingSync = toolingViewModel::stopGradleSync,
+                    lspLogs = lspLogs.joinToString("\n", transform = { it.displayText() }),
                     projectSyncCommand = projectSyncCommand,
-                    projectSyncRunId = toolWindowSessionState.projectSyncRunId,
-                    projectSyncStatus = toolWindowSessionState.projectSyncStatus,
-                    selectedTabId = toolWindowSessionState.selectedTabId,
+                    state = toolWindowSessionState,
                     heightDp = toolWindowHeightDp,
-                    buildSessions = toolWindowSessionState.buildSessions,
-                    onSelectTab = { tabId ->
-                        if (toolWindowSessionState.selectedTabId == tabId &&
-                            toolWindowHeightDp > CollapsedEditorToolWindowHeightDp
-                        ) {
-                            toolWindowHeightDp = CollapsedEditorToolWindowHeightDp
-                        } else {
-                            toolWindowSessionState = toolWindowSessionState.selectTab(tabId)
-                            if (toolWindowHeightDp <= CollapsedEditorToolWindowHeightDp) {
-                                toolWindowHeightDp = DefaultEditorToolWindowHeightDp
-                            }
-                        }
-                    },
+                    onStateChange = { toolWindowSessionState = it },
                     onHeightChange = { toolWindowHeightDp = it },
-                    onCloseBuild = { sessionId ->
-                        toolWindowSessionState = toolWindowSessionState.closeBuild(sessionId)
-                    },
-                    onRerunBuild = { sessionId ->
-                        toolWindowSessionState = toolWindowSessionState.rerunBuild(sessionId)
-                    },
-                    onBuildStatusChange = { sessionId, status ->
-                        toolWindowSessionState =
-                            toolWindowSessionState.updateBuildStatus(sessionId, status)
-                    },
-                    onRerunProjectSync = rerunProjectSync,
-                    onProjectSyncStatusChange = { status ->
-                        toolWindowSessionState =
-                            toolWindowSessionState.updateProjectSyncStatus(status)
-                    },
                     editorContent = {
                         if (activeFile != null) {
-                            TextEditorContent(editor)
+                            if (isPreviewOnly) {
+                                PreviewProviderContent(
+                                    provider = activePreviewProvider,
+                                    project = project,
+                                    file = activeFile,
+                                    content = null,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                TextEditorContent(
+                                    editor = editor,
+                                    project = project,
+                                    file = activeFile,
+                                    previewProvider = activePreviewProvider
+                                )
+                            }
                         } else {
                             EmptyWorkspaceState(
                                 onOpenDrawer = { scope.launch { drawerState.open() } }

@@ -2,18 +2,20 @@ package org.cosmicide.editor.language
 
 import android.content.Context
 import io.github.rosemoe.sora.lang.EmptyLanguage
+import org.cosmicide.editor.EditorExtensionPoints
+import org.cosmicide.editor.EditorLanguageProvider
+import org.cosmicide.editor.EditorLanguageRequest
 import org.cosmicide.editor.formatter.registerBuiltinFormatterExtensions
 import org.cosmicide.editor.lsp.CustomLspConfigurationStore
 import org.cosmicide.editor.lsp.CustomLspServerProvider
 import org.cosmicide.editor.lsp.LspEditorLanguageProvider
-import org.cosmicide.editor.EditorExtensionPoints
-import org.cosmicide.editor.EditorLanguageProvider
-import org.cosmicide.editor.EditorLanguageRequest
+import org.cosmicide.editor.preview.registerBuiltinPreviewExtensions
 import org.cosmicide.plugin.api.MutableExtensionRegistry
 import org.cosmicide.plugin.api.PluginIds
 
 fun registerBuiltinEditorExtensions(context: Context, registry: MutableExtensionRegistry) {
     registerBuiltinFormatterExtensions(registry)
+    registerBuiltinPreviewExtensions(registry)
 
     registry.register(
         point = EditorExtensionPoints.LANGUAGE_PROVIDER,
@@ -39,6 +41,12 @@ fun registerBuiltinEditorExtensions(context: Context, registry: MutableExtension
         ownerPluginId = PluginIds.CORE,
         priority = ScalaEditorLanguageProvider.priority
     )
+//    registry.register(
+//        point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
+//        extension = GradleGroovyEditorLanguageProvider,
+//        ownerPluginId = PluginIds.CORE,
+//        priority = GradleGroovyEditorLanguageProvider.priority
+//    )
     val customLspProvider = CustomLspServerProvider(
         context.applicationContext,
         CustomLspConfigurationStore(context)

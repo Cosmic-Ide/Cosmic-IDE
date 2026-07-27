@@ -6,134 +6,129 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.rosemoe.sora.text.Content
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.tooling.RemoteGradleConnector
+import org.gradle.tooling.CancellationTokenSource
+import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
-import org.gradle.tooling.events.OperationType
-import org.gradle.tooling.model.gradle.BuildInvocations
 import java.io.File
-import java.io.OutputStream
+
+data class EditorToolingState(
+    val tasks: List<String> = emptyList(),
+    val isSyncing: Boolean = false,
+    val error: String? = null
+)
 
 class EditorToolingViewModel : ViewModel() {
-    var connection: ProjectConnection? by mutableStateOf(null)
+    var state by mutableStateOf(EditorToolingState())
         private set
-
-    var tasks by mutableStateOf<List<String>>(emptyList())
-        private set
-
-    var isSyncing by mutableStateOf(false)
-        private set
-
-    var syncError by mutableStateOf<String?>(null)
-        private set
-
-    var output by mutableStateOf("")
-        private set
+    val output = Content().apply {
+        setUndoEnabled(false)
+    }
 
     private val pendingOutput = Channel<String>(Channel.UNLIMITED)
+    private var connection: ProjectConnection? = null
     private var projectRoot: File? = null
     private var syncJob: Job? = null
-    private var tasksInitialized = false
+    private var syncCancellation: CancellationTokenSource? = null
 
     init {
-        viewModelScope.launch {
-            for (text in pendingOutput) {
-                val combined = output + text
-                output = if (combined.length > MAX_OUTPUT_CHARS) {
-                    combined.takeLast(MAX_OUTPUT_CHARS)
-                } else {
-                    combined
-                }
-            }
-        }
+        viewModelScope.launch(Dispatchers.Default) { consumeOutput() }
     }
 
     fun initialize(context: Context, root: File) {
         val absoluteRoot = root.absoluteFile
-        if (projectRoot == absoluteRoot && (tasksInitialized || connection != null || syncJob?.isActive == true)) {
+        if (projectRoot == absoluteRoot && (connection != null || syncJob?.isActive == true)) {
             return
         }
-
         projectRoot = absoluteRoot
-        startSync(context.applicationContext)
+        sync(context.applicationContext, absoluteRoot)
     }
 
     fun resyncGradle(context: Context) {
         if (syncJob?.isActive == true) return
-        startSync(context.applicationContext)
+        projectRoot?.let { sync(context.applicationContext, it) }
     }
 
-    private fun startSync(context: Context) {
-        val root = projectRoot ?: return
+    fun stopGradleSync() {
+        if (syncJob?.isActive != true) return
+        append("Stopping Gradle sync...\n")
+        syncCancellation?.cancel()
+    }
+
+    private fun sync(context: Context, root: File) {
+        val cancellation = GradleConnector.newCancellationTokenSource()
+        syncCancellation = cancellation
         syncJob = viewModelScope.launch {
-            isSyncing = true
-            syncError = null
-            enqueueOutput("Syncing Gradle project at ${root.absolutePath}\n")
-
-            val currentConnection = connection
-            val result = runCatching {
-                withContext(Dispatchers.IO) {
-                    val activeConnection = currentConnection
-                        ?: RemoteGradleConnector(context).forProjectDirectory(root).connect()
-
-                    val stream = ToolingLogOutputStream(::enqueueOutput)
-                    val model = activeConnection.model(BuildInvocations::class.java)
-                        .setStandardOutput(stream).setStandardError(stream)
-                        .addProgressListener(
-                            {
-                                enqueueOutput("${it.displayName}\n")
-                            },
-                            OperationType.BUILD_PHASE,
-                            OperationType.FILE_DOWNLOAD,
-                            OperationType.TASK,
-                            OperationType.PROBLEMS
-                        ).get()
-
-                    val loadedTasks =
-                        (model.tasks.map { it.path } + model.taskSelectors.map { it.name }).distinct()
-                            .sorted()
-
-                    activeConnection to loadedTasks
+            state = state.copy(isSyncing = true, error = null)
+            append("Syncing Gradle project at ${root.absolutePath}\n")
+            try {
+                val result = withContext(Dispatchers.IO) {
+                    RemoteGradleConnector.forProject(context, root)
+                        .sync(connection, ::append, cancellation.token())
                 }
+                connection = result.connection
+                state = state.copy(tasks = result.tasks)
+                append("Gradle sync finished: ${result.tasks.size} tasks available.\n")
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Throwable) {
+                if (cancellation.token().isCancellationRequested) {
+                    append("Gradle sync cancelled.\n")
+                } else {
+                    val message = error.message ?: "Unknown Gradle error"
+                    state = state.copy(error = message)
+                    append("Gradle sync failed: $message\n")
+                }
+            } finally {
+                if (syncCancellation === cancellation) syncCancellation = null
+                state = state.copy(isSyncing = false)
             }
-
-            result.onSuccess { (activeConnection, loadedTasks) ->
-                connection = activeConnection
-                tasks = loadedTasks
-                tasksInitialized = true
-                enqueueOutput("Gradle sync finished: ${loadedTasks.size} tasks available.\n")
-            }.onFailure { error ->
-                syncError = error.message ?: "Unknown Gradle error"
-                enqueueOutput("Gradle sync failed: ${syncError}\n")
-            }
-
-            isSyncing = false
         }
     }
 
-    private fun enqueueOutput(text: String) {
+    private fun append(text: String) {
         pendingOutput.trySend(text)
     }
 
+    private suspend fun consumeOutput() {
+        for (firstChunk in pendingOutput) {
+            delay(OUTPUT_BATCH_INTERVAL_MS)
+            val batch = Content(firstChunk).apply { setUndoEnabled(false) }
+            while (true) {
+                batch.appendAtEnd(pendingOutput.tryReceive().getOrNull() ?: break)
+            }
+            withContext(Dispatchers.Main.immediate) {
+                output.appendAtEnd(batch)
+                if (output.length > OUTPUT_TRIM_THRESHOLD_CHARS) {
+                    output.delete(0, output.length - OUTPUT_RETAINED_CHARS)
+                }
+            }
+        }
+    }
+
     private companion object {
-        const val MAX_OUTPUT_CHARS = 100_000
+        const val OUTPUT_BATCH_INTERVAL_MS = 50L
+        const val OUTPUT_RETAINED_CHARS = 100_000
+        const val OUTPUT_TRIM_THRESHOLD_CHARS = 120_000
+    }
+
+    override fun onCleared() {
+        syncCancellation?.cancel()
+        pendingOutput.close()
+        connection?.close()
     }
 }
 
-private class ToolingLogOutputStream(
-    private val onText: (String) -> Unit
-) : OutputStream() {
-    override fun write(value: Int) {
-        onText(byteArrayOf(value.toByte()).toString(Charsets.UTF_8))
-    }
-
-    override fun write(bytes: ByteArray, offset: Int, length: Int) {
-        if (length > 0) {
-            onText(String(bytes, offset, length, Charsets.UTF_8))
-        }
-    }
+private fun Content.appendAtEnd(text: CharSequence) {
+    if (text.isEmpty()) return
+    val lastLine = lineCount - 1
+    insert(lastLine, getColumnCount(lastLine), text)
 }

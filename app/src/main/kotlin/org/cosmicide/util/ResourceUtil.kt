@@ -24,7 +24,9 @@ object ResourceUtil {
 
     fun isKotlinLspMissing(): Boolean {
         val context = App.instance.get() ?: return true
-        return !context.filesDir.resolve("kotlin-lsp/bin/intellij-server").isFile
+        return !context.filesDir
+            .resolve("kotlin-language-server/bin/kotlin-language-server")
+            .isFile
     }
 
     fun isJdtlsMissing(): Boolean {
@@ -41,12 +43,25 @@ object ResourceUtil {
         return !context.filesDir.resolve("scala/bin/metals").isFile
     }
 
+    fun isGradleGroovyLspMissing(): Boolean {
+        val context = App.instance.get() ?: return true
+        return !context.filesDir
+            .resolve(
+                "vscode-gradle/gradle-language-server/build/install/" +
+                        "gradle-language-server/bin/gradle-language-server"
+            )
+            .isFile
+    }
+
     fun isBootstrapIncomplete(): Boolean {
         return isRuntimeMissing()
     }
 
     fun isLanguageServerSetupIncomplete(): Boolean {
-        return isKotlinLspMissing() || isJdtlsMissing() || isMetalsMissing()
+        return isKotlinLspMissing() ||
+                isJdtlsMissing() ||
+                isMetalsMissing() ||
+                isGradleGroovyLspMissing()
     }
 
     fun prepareLanguageServerSetupScript(): File {

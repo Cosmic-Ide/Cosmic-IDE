@@ -34,10 +34,6 @@ private fun adaptLegacyProgressListener(listener: LegacyProgressListener): Progr
         }
     }
 
-// ---------------------------------------------------------------------------------
-// ModelBuilder<T>  (connection.model(X::class.java))
-// ---------------------------------------------------------------------------------
-
 class RemoteModelBuilder<T>(
     private val server: ToolingServer,
     private val modelType: Class<T>
@@ -110,20 +106,22 @@ class RemoteModelBuilder<T>(
         apply { state.cancellationToken = cancellationToken }
 
     override fun addProgressListener(listener: ProgressListener): ModelBuilder<T> =
-        apply { state.progressListeners.add(listener) }
+        apply { state.addProgressListener(listener) }
 
     override fun addProgressListener(
         listener: ProgressListener,
         eventTypes: MutableSet<OperationType>
-    ): ModelBuilder<T> = apply { state.progressListeners.add(listener) }
+    ): ModelBuilder<T> = apply { state.addProgressListener(listener, eventTypes) }
 
     override fun addProgressListener(
         listener: ProgressListener,
         vararg operationTypes: OperationType
-    ): ModelBuilder<T> = apply { state.progressListeners.add(listener) }
+    ): ModelBuilder<T> = apply {
+        state.addProgressListener(listener, operationTypes.asList())
+    }
 
     override fun addProgressListener(listener: LegacyProgressListener): ModelBuilder<T> =
-        apply { state.progressListeners.add(adaptLegacyProgressListener(listener)) }
+        apply { state.addProgressListener(adaptLegacyProgressListener(listener)) }
 
     override fun get(): T {
         val latch = CountDownLatch(1)
@@ -157,9 +155,10 @@ class RemoteModelBuilder<T>(
         }
 
         wireStreams(server, opId, state)
-        wireCancellation(server, opId, state.cancellationToken)
+        val finishCancellationWatch = wireCancellation(server, opId, state.cancellationToken)
 
         server.request("gradle/model", params) { result, error ->
+            finishCancellationWatch()
             if (error != null) {
                 handler.onFailure(wrapAsConnectionException(error))
                 return@request
@@ -270,27 +269,29 @@ class RemoteBuildLauncher(private val server: ToolingServer) : BuildLauncher {
         apply { state.cancellationToken = cancellationToken }
 
     override fun addProgressListener(listener: ProgressListener): BuildLauncher =
-        apply { state.progressListeners.add(listener) }
+        apply { state.addProgressListener(listener) }
 
     override fun addProgressListener(
         listener: ProgressListener,
         eventTypes: MutableSet<OperationType>
-    ): BuildLauncher = apply { state.progressListeners.add(listener) }
+    ): BuildLauncher = apply { state.addProgressListener(listener, eventTypes) }
 
     override fun addProgressListener(
         listener: ProgressListener,
         vararg operationTypes: OperationType
-    ): BuildLauncher = apply { state.progressListeners.add(listener) }
+    ): BuildLauncher = apply {
+        state.addProgressListener(listener, operationTypes.asList())
+    }
 
     override fun addProgressListener(listener: LegacyProgressListener): BuildLauncher =
-        apply { state.progressListeners.add(adaptLegacyProgressListener(listener)) }
+        apply { state.addProgressListener(adaptLegacyProgressListener(listener)) }
 
     override fun run() {
         val latch = CountDownLatch(1)
         var error: Throwable? = null
 
         run(
-            resultHandler<Void?>(
+            resultHandler(
                 onComplete = { latch.countDown() },
                 onFailure = {
                     error = it
@@ -311,9 +312,10 @@ class RemoteBuildLauncher(private val server: ToolingServer) : BuildLauncher {
         }
 
         wireStreams(server, opId, state)
-        wireCancellation(server, opId, state.cancellationToken)
+        val finishCancellationWatch = wireCancellation(server, opId, state.cancellationToken)
 
         server.request("gradle/run", params) { _, error ->
+            finishCancellationWatch()
             if (error != null) handler.onFailure(wrapAsConnectionException(error))
             else handler.onComplete(null)
         }
@@ -456,27 +458,29 @@ class RemoteTestLauncher(private val server: ToolingServer) : TestLauncher {
         apply { state.cancellationToken = cancellationToken }
 
     override fun addProgressListener(listener: ProgressListener): TestLauncher =
-        apply { state.progressListeners.add(listener) }
+        apply { state.addProgressListener(listener) }
 
     override fun addProgressListener(
         listener: ProgressListener,
         eventTypes: MutableSet<OperationType>
-    ): TestLauncher = apply { state.progressListeners.add(listener) }
+    ): TestLauncher = apply { state.addProgressListener(listener, eventTypes) }
 
     override fun addProgressListener(
         listener: ProgressListener,
         vararg operationTypes: OperationType
-    ): TestLauncher = apply { state.progressListeners.add(listener) }
+    ): TestLauncher = apply {
+        state.addProgressListener(listener, operationTypes.asList())
+    }
 
     override fun addProgressListener(listener: LegacyProgressListener): TestLauncher =
-        apply { state.progressListeners.add(adaptLegacyProgressListener(listener)) }
+        apply { state.addProgressListener(adaptLegacyProgressListener(listener)) }
 
     override fun run() {
         val latch = CountDownLatch(1)
         var error: Throwable? = null
 
         run(
-            resultHandler<Void?>(
+            resultHandler<Void>(
                 onComplete = { latch.countDown() },
                 onFailure = {
                     error = it
@@ -511,9 +515,10 @@ class RemoteTestLauncher(private val server: ToolingServer) : TestLauncher {
         }
 
         wireStreams(server, opId, state)
-        wireCancellation(server, opId, state.cancellationToken)
+        val finishCancellationWatch = wireCancellation(server, opId, state.cancellationToken)
 
         server.request("gradle/test", params) { _, error ->
+            finishCancellationWatch()
             if (error != null) handler.onFailure(wrapAsConnectionException(error))
             else handler.onComplete(null)
         }
@@ -572,4 +577,3 @@ private class RecordingTestSpec(
     override fun includePatterns(patterns: MutableCollection<String>): TestSpec =
         apply { data.patterns.addAll(patterns) }
 }
-

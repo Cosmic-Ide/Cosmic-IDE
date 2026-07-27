@@ -3,15 +3,10 @@ package org.cosmicide.ui.editor
 import android.content.Context
 import android.view.inputmethod.EditorInfo
 import androidx.compose.material3.ColorScheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.Content
@@ -48,27 +43,6 @@ fun setCodeEditorFactory(
     return editor
 }
 
-@Composable
-fun CodeEditor(
-    modifier: Modifier = Modifier,
-    state: CodeEditorState
-) {
-    val context = LocalContext.current
-    val editor = remember {
-        setCodeEditorFactory(
-            context = context,
-            state = state
-        )
-    }
-    AndroidView(
-        factory = { editor },
-        modifier = modifier,
-        onRelease = {
-            it.release()
-        }
-    )
-}
-
 fun CodeEditor.applyEditorSettings(project: Project, file: File, theme: ColorScheme) {
     colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
     setTooltipImprovements(theme)
@@ -76,7 +50,11 @@ fun CodeEditor.applyEditorSettings(project: Project, file: File, theme: ColorSch
 
     getComponent(EditorAutoCompletion::class.java).apply {
         setAdapter(CustomCompletionItemAdapter(theme))
-        setLayout(CustomCompletionLayout())
+        setLayout(CustomCompletionLayout(theme))
+    }
+
+    getComponent(EditorDiagnosticTooltipWindow::class.java).apply {
+        this.parentView.setBackgroundColor(theme.surfaceContainer.toArgb())
     }
 
     inputType = EditorInfo.TYPE_CLASS_TEXT or
@@ -99,6 +77,7 @@ fun CodeEditor.applyEditorSettings(project: Project, file: File, theme: ColorSch
     isLineNumberEnabled = Prefs.lineNumbers
     props.deleteEmptyLineFast = Prefs.quickDelete
     props.stickyScroll = Prefs.stickyScroll
+    props.symbolPairAutoCompletion = Prefs.bracketPairAutocomplete
 
     colorScheme = TextMateColorScheme.create(
         ThemeRegistry.getInstance().currentThemeModel
@@ -106,7 +85,6 @@ fun CodeEditor.applyEditorSettings(project: Project, file: File, theme: ColorSch
 
     configureLanguageFor(project, file)
 }
-
 
 private fun CodeEditor.setTooltipImprovements(colorScheme: ColorScheme) {
     getComponent(EditorDiagnosticTooltipWindow::class.java).apply {

@@ -15,10 +15,8 @@ class FileUtilTest {
 
             assertTrue(FileUtil.isInitialized)
             assertEquals(root.resolve("projects"), FileUtil.projectDir)
-            assertEquals(root.resolve("classpath"), FileUtil.classpathDir)
             assertEquals(root.resolve("plugins"), FileUtil.pluginDir)
             assertTrue(FileUtil.projectDir.isDirectory)
-            assertTrue(FileUtil.classpathDir.isDirectory)
             assertTrue(FileUtil.pluginDir.isDirectory)
         } finally {
             root.deleteRecursively()

@@ -59,4 +59,15 @@ class EditorToolWindowSessionStateTest {
         assertEquals(1, state.projectSyncRunId)
         assertEquals("Running", state.projectSyncStatus)
     }
+
+    @Test
+    fun `stopping sync and build updates their running status`() {
+        val state = EditorToolWindowSessionState()
+            .openGradleTask("build")
+            .stopProjectSync()
+            .stopBuild(1)
+
+        assertEquals("Stopping", state.projectSyncStatus)
+        assertEquals("Stopping", state.buildSessions.single().status)
+    }
 }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.FormatAlignLeft
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Hardware
@@ -42,7 +41,6 @@ fun SettingsScreen(
     val categories = listOf(
         SettingsCategory.Editor,
         SettingsCategory.Compiler,
-        SettingsCategory.Formatter,
         SettingsCategory.Extensions,
         SettingsCategory.Terminal,
         SettingsCategory.Toolchains,
@@ -94,13 +92,6 @@ sealed class SettingsCategory(
         "Configure compiler options and build process",
         Icons.Default.Build
     )
-    data object Formatter : SettingsCategory(
-        SettingsDestination.FORMATTER,
-        "Formatter",
-        "Adjust code formatting preferences",
-        Icons.AutoMirrored.Filled.FormatAlignLeft
-    )
-
     data object Extensions :
         SettingsCategory(
             SettingsDestination.EXTENSIONS,

@@ -3,28 +3,28 @@ package org.cosmicide.editor.completion
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.drawable.toDrawable
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
-import io.github.rosemoe.sora.lsp.editor.completion.LspCompletionItem
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import org.cosmicide.databinding.CompletionResultBinding
 
-class CustomCompletionItemAdapter(val colorScheme: ColorScheme) : EditorCompletionAdapter() {
+class CustomCompletionItemAdapter(
+    private val colors: ColorScheme
+) : EditorCompletionAdapter() {
 
     override fun areAllItemsEnabled(): Boolean = true
 
     override fun getItemHeight(): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            52f,
-            context.resources.displayMetrics
-        ).toInt()
+        return dp(56f).toInt()
     }
 
     override fun getView(
@@ -37,97 +37,125 @@ class CustomCompletionItemAdapter(val colorScheme: ColorScheme) : EditorCompleti
             ?: CompletionResultBinding.inflate(LayoutInflater.from(context), parent, false)
 
         val item: CompletionItem = super.getItem(pos)
+        val kindColor = kindColor(item.kind)
 
-        // 1. Bind Label and Description
         binding.resultItemLabel.text = item.label
-        binding.resultItemDesc.text = item.desc
+        binding.resultItemLabel.setTextColor(colors.onSurface.toArgb())
+        binding.resultItemDesc.apply {
+            visibility = if (item.desc.isNullOrBlank()) View.GONE else View.VISIBLE
+            text = item.desc?.toString()
+            setTextColor(colors.onSurfaceVariant.toArgb())
+        }
 
-        // 2. Handle Deprecation (The Strikethrough Effect)
         if (item.deprecated) {
-            binding.resultItemLabel.paintFlags = binding.resultItemLabel.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            binding.resultItemLabel.alpha = 0.6f // Fade it out slightly
+            binding.resultItemLabel.paintFlags =
+                binding.resultItemLabel.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            binding.resultItemLabel.alpha = 0.58f
         } else {
-            binding.resultItemLabel.paintFlags = binding.resultItemLabel.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            binding.resultItemLabel.alpha = 1.0f
+            binding.resultItemLabel.paintFlags =
+                binding.resultItemLabel.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            binding.resultItemLabel.alpha = 1f
         }
 
-        binding.resultItemLabel.setTextColor(colorScheme.onSurface.toArgb())
-        binding.resultItemDesc.setTextColor(colorScheme.onSurfaceVariant.toArgb())
+        binding.resultItemIcon.apply {
+            text = item.kind?.name?.firstOrNull()?.uppercaseChar()?.toString() ?: "T"
+            setTextColor(kindColor)
+            background = roundedBackground(
+                color = ColorUtils.setAlphaComponent(kindColor, 32),
+                radiusDp = 7f
+            )
+            contentDescription = item.kind?.name ?: context.getString(
+                org.cosmicide.R.string.completion_type
+            )
 
-        // 3. Semantic Kind Coloring (The "IDE" Magic)
-        val kindColor = getKindColor(item.kind)
-
-        // Apply a subtle rounded background to the icon (15% opacity)
-        val iconBackground = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6f, context.resources.displayMetrics)
-            setColor(Color.argb(38, Color.red(kindColor), Color.green(kindColor), Color.blue(kindColor)))
-        }
-        binding.resultItemIcon.background = iconBackground
-        binding.resultItemIcon.setImageDrawable(item.icon)
-
-        // 4. Smart Detail Formatting & Coloring
-        val rawDetail = item.detail
-        val formattedDetail = formatDetail(rawDetail)
-
-        if (!formattedDetail.isNullOrEmpty()) {
-            binding.resultItemDetail.text = formattedDetail
-            binding.resultItemDetail.setTextColor(kindColor) // Color the detail text!
-            binding.resultItemDetail.visibility = View.VISIBLE
-        } else {
-            binding.resultItemDetail.visibility = View.GONE
+            if (item.deprecated) paintFlags += Paint.STRIKE_THRU_TEXT_FLAG
         }
 
-        // 5. Extract Literal Colors (For things like Color.parseColor("#FF0000"))
-        val extractedColor = (item as? LspCompletionItem)?.extractColor()
-        if (extractedColor != null && item.kind == CompletionItemKind.Color) {
-            // If it's a literal color, override the icon background with the actual color
-            val colorBackground = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6f, context.resources.displayMetrics)
-                setColor(extractedColor)
+        binding.resultItemDetail.apply {
+            if (item.detail.isNullOrBlank()) {
+                visibility = View.GONE
+                text = null
+            } else {
+                visibility = View.VISIBLE
+                text = item.detail
+                setTextColor(colors.onSurfaceVariant.toArgb())
+                background = roundedBackground(
+                    color = colors.surfaceContainerHighest.toArgb(),
+                    radiusDp = 6f
+                )
             }
-            binding.resultItemIcon.background = colorBackground
         }
 
-        // 6. Material 3 Selection Highlighting
-        if (isCurrentCursorPosition) {
-            binding.root.setBackgroundColor(
-                colorScheme.surfaceVariant.toArgb()
+        binding.root.minimumHeight = dp(56f).toInt()
+        binding.root.background = if (isCurrentCursorPosition) {
+            InsetDrawable(
+                roundedBackground(
+                    color = colors.secondaryContainer.copy(alpha = 0.72f).toArgb(),
+                    radiusDp = 9f,
+                    strokeColor = colors.secondary.copy(alpha = 0.28f).toArgb()
+                ),
+                dp(4f).toInt(),
+                dp(2f).toInt(),
+                dp(4f).toInt(),
+                dp(2f).toInt()
             )
         } else {
-            binding.root.setBackgroundColor(
-                colorScheme.surface.toArgb()
-            )
+            Color.TRANSPARENT.toDrawable()
         }
 
         return binding.root
     }
 
-    // --- Helper: Maps LSP Kinds to Beautiful IDE Colors ---
-    private fun getKindColor(kind: CompletionItemKind?): Int {
-        return when (kind) {
-            CompletionItemKind.Method, CompletionItemKind.Function -> Color.parseColor("#C792EA") // Purple (Methods)
-            CompletionItemKind.Class, CompletionItemKind.Interface -> Color.parseColor("#FFCB6B") // Yellow (Classes)
-            CompletionItemKind.Field, CompletionItemKind.Property -> Color.parseColor("#82AAFF") // Blue (Fields)
-            CompletionItemKind.Variable -> Color.parseColor("#4DB6AC") // Teal (Variables)
-            CompletionItemKind.EnumMember -> Color.parseColor("#4DB6AC")
-            CompletionItemKind.Module -> Color.parseColor("#F78C6C") // Orange (Packages)
-            CompletionItemKind.Keyword -> Color.parseColor("#89DDFF") // Cyan (Keywords)
-            CompletionItemKind.Snippet -> Color.parseColor("#C3E88D") // Green (Snippets)
-            CompletionItemKind.Constant -> Color.parseColor("#F78C6C") // Orange (Constants)
-            else -> Color.parseColor("#90A4AE") // Grey (Default)
+    private fun kindColor(kind: CompletionItemKind?): Int = when (kind) {
+        CompletionItemKind.Method,
+        CompletionItemKind.Function,
+        CompletionItemKind.Constructor,
+        CompletionItemKind.Operator -> colors.tertiaryFixedDim
+
+        CompletionItemKind.Class,
+        CompletionItemKind.Interface,
+        CompletionItemKind.Struct,
+        CompletionItemKind.Enum,
+        CompletionItemKind.TypeParameter -> colors.primary
+
+        CompletionItemKind.Field,
+        CompletionItemKind.Property,
+        CompletionItemKind.Variable,
+        CompletionItemKind.EnumMember -> colors.secondary
+
+        CompletionItemKind.Module,
+        CompletionItemKind.Folder,
+        CompletionItemKind.File -> colors.tertiary
+
+        CompletionItemKind.Keyword,
+        CompletionItemKind.Snippet,
+        CompletionItemKind.Text -> colors.primary
+
+        CompletionItemKind.Constant,
+        CompletionItemKind.Value,
+        CompletionItemKind.Color -> colors.error
+
+        else -> colors.onSurfaceVariant
+    }.toArgb()
+
+    private fun roundedBackground(
+        color: Int,
+        radiusDp: Float,
+        strokeColor: Int? = null
+    ): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dp(radiusDp)
+            setColor(color)
+            strokeColor?.let { setStroke(dp(1f).toInt(), it) }
         }
     }
 
-    private fun formatDetail(detail: CharSequence?): String? {
-        if (detail.isNullOrEmpty()) return null
-        return detail.toString()
-            .replace("java.lang.", "")
-            .replace("java.util.", "")
-            .replace("java.io.", "")
-            .replace("android.", "")
-            .replace("androidx.", "")
-            .replace("org.json.", "")
+    private fun dp(value: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            value,
+            context.resources.displayMetrics
+        )
     }
 }

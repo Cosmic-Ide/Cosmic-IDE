@@ -11,6 +11,7 @@ import org.cosmicide.editor.LspServerRequest
 import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.util.PreferenceKeys
 import java.io.InputStream
+import java.io.InterruptedIOException
 import java.net.URI
 import java.util.UUID
 
@@ -166,8 +167,14 @@ class CustomLspServerProvider(
 
     private fun streamStderr(name: String, stderr: InputStream) {
         Thread {
-            stderr.bufferedReader().useLines { lines ->
-                lines.forEach { Log.d(TAG, "[$name] $it") }
+            try {
+                stderr.bufferedReader().useLines { lines ->
+                    lines.forEach {
+                        Log.d(TAG, "[$name] $it")
+                        LspLogStore.debug(name, it)
+                    }
+                }
+            } catch (e: InterruptedIOException) {
             }
         }.apply {
             this.name = "Custom-LSP-Stderr"

@@ -1,5 +1,7 @@
 package org.cosmicide.gradle;
 
+import static org.gradle.internal.impldep.com.google.common.base.Strings.emptyToNull;
+
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.CancellationTokenSource;
 import org.gradle.tooling.ConfigurableLauncher;
@@ -8,16 +10,10 @@ import org.gradle.tooling.ModelBuilder;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.TestLauncher;
 import org.gradle.tooling.TestSpec;
+import org.gradle.tooling.events.OperationType;
 import org.gradle.tooling.events.ProgressEvent;
 import org.gradle.tooling.events.ProgressListener;
-import org.gradle.tooling.model.GradleProject;
-import org.gradle.tooling.model.Task;
-import org.gradle.tooling.model.TaskSelector;
 import org.gradle.tooling.model.UnsupportedMethodException;
-import org.gradle.tooling.model.build.BuildEnvironment;
-import org.gradle.tooling.model.gradle.BasicGradleProject;
-import org.gradle.tooling.model.gradle.BuildInvocations;
-import org.gradle.tooling.model.gradle.GradleBuild;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -43,13 +39,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -102,125 +99,6 @@ public final class Main {
             }
         } catch (Throwable t) {
             writer.error(null, "ServerError", t.getMessage(), t);
-        }
-    }
-
-    private static Map<String, Object> basicProjectToJson(BasicGradleProject project) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("name", project.getName());
-        map.put("path", project.getPath());
-        map.put("buildTreePath", safeBuildTreePath(project, project.getPath()));
-        map.put("projectDir", project.getProjectDirectory().getAbsolutePath());
-
-        List<Map<String, Object>> children = new ArrayList<>();
-        for (BasicGradleProject child : project.getChildren()) {
-            children.add(basicProjectToJson(child));
-        }
-
-        map.put("children", children);
-        return map;
-    }
-
-    private static List<Map<String, Object>> basicProjectsToJson(Collection<? extends BasicGradleProject> projects) {
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        for (BasicGradleProject project : projects) {
-            Map<String, Object> map = new LinkedHashMap<>();
-            map.put("name", project.getName());
-            map.put("path", project.getPath());
-            map.put("buildTreePath", safeBuildTreePath(project, project.getPath()));
-            map.put("projectDir", project.getProjectDirectory().getAbsolutePath());
-            list.add(map);
-        }
-
-        sortByString(list, "path");
-        return list;
-    }
-
-    private static List<Map<String, Object>> gradleBuildsToJson(Collection<? extends GradleBuild> builds) {
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        for (GradleBuild build : builds) {
-            Map<String, Object> map = new LinkedHashMap<>();
-            map.put("rootProject", basicProjectToJson(build.getRootProject()));
-            map.put("projects", basicProjectsToJson(build.getProjects()));
-            list.add(map);
-        }
-
-        return list;
-    }
-
-    private static List<GradleProject> collectProjects(GradleProject root) {
-        List<GradleProject> result = new ArrayList<>();
-        collectProjectsInto(root, result);
-        return result;
-    }
-
-    private static void collectProjectsInto(GradleProject project, List<GradleProject> result) {
-        result.add(project);
-
-        for (GradleProject child : project.getChildren()) {
-            collectProjectsInto(child, result);
-        }
-    }
-
-    private static Map<String, Object> taskToJson(Task task) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("name", nullToEmpty(task.getName()));
-        map.put("path", nullToEmpty(task.getPath()));
-        map.put("buildTreePath", safeTaskBuildTreePath(task));
-        map.put("group", nullToEmpty(task.getGroup()));
-        map.put("description", nullToEmpty(task.getDescription()));
-        map.put("displayName", nullToEmpty(task.getDisplayName()));
-        map.put("public", task.isPublic());
-
-        try {
-            map.put("projectPath", task.getProjectIdentifier().getProjectPath());
-            map.put("buildRoot", task.getProjectIdentifier().getBuildIdentifier().getRootDir().getAbsolutePath());
-        } catch (Throwable ignored) {
-            map.put("projectPath", "");
-            map.put("buildRoot", "");
-        }
-
-        return map;
-    }
-
-    private static Map<String, Object> taskSelectorToJson(TaskSelector selector) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("name", nullToEmpty(selector.getName()));
-        map.put("displayName", nullToEmpty(selector.getDisplayName()));
-        map.put("description", nullToEmpty(selector.getDescription()));
-        map.put("public", selector.isPublic());
-
-        try {
-            map.put("projectPath", selector.getProjectIdentifier().getProjectPath());
-            map.put("buildRoot", selector.getProjectIdentifier().getBuildIdentifier().getRootDir().getAbsolutePath());
-        } catch (Throwable ignored) {
-            map.put("projectPath", "");
-            map.put("buildRoot", "");
-        }
-
-        return map;
-    }
-
-    private static String safeTaskBuildTreePath(Task task) {
-        try {
-            String value = task.getBuildTreePath();
-            return value == null ? task.getPath() : value;
-        } catch (UnsupportedMethodException ignored) {
-            return task.getPath();
-        } catch (Throwable ignored) {
-            return task.getPath();
-        }
-    }
-
-    private static String safeBuildTreePath(Object object, String fallback) {
-        try {
-            Method method = object.getClass().getMethod("getBuildTreePath");
-            Object value = method.invoke(object);
-            return value == null ? fallback : String.valueOf(value);
-        } catch (Throwable ignored) {
-            return fallback;
         }
     }
 
@@ -289,11 +167,10 @@ public final class Main {
     }
 
     private static List<String> stringList(Object value) {
-        if (!(value instanceof List)) {
+        if (!(value instanceof List<?> raw)) {
             return Collections.emptyList();
         }
 
-        List<?> raw = (List<?>) value;
         List<String> result = new ArrayList<>(raw.size());
 
         for (Object item : raw) {
@@ -306,11 +183,10 @@ public final class Main {
     }
 
     private static Map<String, String> stringMap(Object value) {
-        if (!(value instanceof Map)) {
+        if (!(value instanceof Map<?, ?> raw)) {
             return Collections.emptyMap();
         }
 
-        Map<?, ?> raw = (Map<?, ?>) value;
         Map<String, String> result = new LinkedHashMap<>();
 
         for (Map.Entry<?, ?> entry : raw.entrySet()) {
@@ -331,11 +207,10 @@ public final class Main {
     }
 
     private static List<Map<String, Object>> mapList(Object value) {
-        if (!(value instanceof List)) {
+        if (!(value instanceof List<?> raw)) {
             return Collections.emptyList();
         }
 
-        List<?> raw = (List<?>) value;
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (Object item : raw) {
@@ -385,14 +260,6 @@ public final class Main {
 
     private static String nullToEmpty(String value) {
         return value == null ? "" : value;
-    }
-
-    private static String emptyToNull(String value) {
-        return value == null || value.isEmpty() ? null : value;
-    }
-
-    private static void sortByString(List<Map<String, Object>> list, String key) {
-        list.sort(Comparator.comparing(map -> String.valueOf(map.get(key))));
     }
 
     private static String safeMessage(Throwable t) {
@@ -526,15 +393,6 @@ public final class Main {
             String method = asString(request.get("method"));
 
             switch (method) {
-                case "gradle/environment":
-                    environment(request);
-                    break;
-                case "gradle/projects":
-                    projects(request);
-                    break;
-                case "gradle/tasks":
-                    tasks(request);
-                    break;
                 case "gradle/model":
                     model(request);
                     break;
@@ -568,148 +426,6 @@ public final class Main {
             ));
         }
 
-        private void environment(Map<String, Object> request) {
-            Object id = request.get("id");
-            Map<String, Object> params = params(request);
-            String opId = operationId(id, params);
-
-            CancellationTokenSource token = GradleConnector.newCancellationTokenSource();
-            running.put(opId, token);
-
-            writer.event("gradle/operationStarted", obj(
-                    "opId", opId,
-                    "method", "gradle/environment"
-            ));
-
-            try {
-                ModelBuilder<BuildEnvironment> builder = connection().model(BuildEnvironment.class);
-                configure(builder, params, opId, token);
-
-                BuildEnvironment env = builder.get();
-
-                Map<String, Object> result = new LinkedHashMap<>();
-                result.put("opId", opId);
-                result.put("buildRoot", env.getBuildIdentifier().getRootDir().getAbsolutePath());
-                result.put("gradleVersion", env.getGradle().getGradleVersion());
-                result.put("gradleUserHome", env.getGradle().getGradleUserHome().getAbsolutePath());
-                result.put("versionInfo", env.getVersionInfo());
-
-                try {
-                    result.put("javaHome", env.getJava().getJavaHome().getAbsolutePath());
-                    result.put("jvmArguments", new ArrayList<>(env.getJava().getJvmArguments()));
-                } catch (UnsupportedMethodException ignored) {
-                    result.put("javaHome", "");
-                    result.put("jvmArguments", Collections.emptyList());
-                }
-
-                writer.result(id, result);
-            } finally {
-                running.remove(opId);
-                writer.event("gradle/operationFinished", obj(
-                        "opId", opId,
-                        "method", "gradle/environment"
-                ));
-            }
-        }
-
-        private void projects(Map<String, Object> request) {
-            Object id = request.get("id");
-            Map<String, Object> params = params(request);
-            String opId = operationId(id, params);
-
-            CancellationTokenSource token = GradleConnector.newCancellationTokenSource();
-            running.put(opId, token);
-
-            writer.event("gradle/operationStarted", obj(
-                    "opId", opId,
-                    "method", "gradle/projects"
-            ));
-
-            try {
-                ModelBuilder<GradleBuild> builder = connection().model(GradleBuild.class);
-                configure(builder, params, opId, token);
-
-                GradleBuild build = builder.get();
-
-                Map<String, Object> result = new LinkedHashMap<>();
-                result.put("opId", opId);
-                result.put("rootProject", basicProjectToJson(build.getRootProject()));
-                result.put("projects", basicProjectsToJson(build.getProjects()));
-                result.put("includedBuilds", gradleBuildsToJson(build.getIncludedBuilds()));
-
-                writer.result(id, result);
-            } finally {
-                running.remove(opId);
-                writer.event("gradle/operationFinished", obj(
-                        "opId", opId,
-                        "method", "gradle/projects"
-                ));
-            }
-        }
-
-        private void tasks(Map<String, Object> request) {
-            Object id = request.get("id");
-            Map<String, Object> params = params(request);
-            String opId = operationId(id, params);
-
-            CancellationTokenSource token = GradleConnector.newCancellationTokenSource();
-            running.put(opId, token);
-
-            writer.event("gradle/operationStarted", obj(
-                    "opId", opId,
-                    "method", "gradle/tasks"
-            ));
-
-            try {
-                ProjectConnection connection = connection();
-
-                ModelBuilder<BuildInvocations> invocationsBuilder =
-                        connection.model(BuildInvocations.class);
-                configure(invocationsBuilder, params, opId, token);
-                BuildInvocations invocations = invocationsBuilder.get();
-
-                ModelBuilder<GradleProject> projectBuilder =
-                        connection.model(GradleProject.class);
-                configure(projectBuilder, params, opId, token);
-                GradleProject rootProject = projectBuilder.get();
-
-                List<Map<String, Object>> projectTasks = new ArrayList<>();
-                for (GradleProject project : collectProjects(rootProject)) {
-                    for (Task task : project.getTasks()) {
-                        projectTasks.add(taskToJson(task));
-                    }
-                }
-
-                List<Map<String, Object>> invocationTasks = new ArrayList<>();
-                for (Task task : invocations.getTasks()) {
-                    invocationTasks.add(taskToJson(task));
-                }
-
-                List<Map<String, Object>> selectors = new ArrayList<>();
-                for (TaskSelector selector : invocations.getTaskSelectors()) {
-                    selectors.add(taskSelectorToJson(selector));
-                }
-
-                sortByString(projectTasks, "path");
-                sortByString(invocationTasks, "path");
-                sortByString(selectors, "name");
-
-                Map<String, Object> result = new LinkedHashMap<>();
-                result.put("opId", opId);
-                result.put("tasks", projectTasks);
-                result.put("invocationTasks", invocationTasks);
-                result.put("taskSelectors", selectors);
-
-                writer.result(id, result);
-            } finally {
-                running.remove(opId);
-                writer.event("gradle/operationFinished", obj(
-                        "opId", opId,
-                        "method", "gradle/tasks"
-                ));
-            }
-        }
-
         private void model(Map<String, Object> request) {
             Object id = request.get("id");
             Map<String, Object> params = params(request);
@@ -732,16 +448,14 @@ public final class Main {
             CancellationTokenSource token = GradleConnector.newCancellationTokenSource();
             InteractiveInput input = new InteractiveInput(writer, opId);
 
-            running.put(opId, token);
-            inputs.put(opId, input);
-
-            writer.event("gradle/operationStarted", obj(
-                    "opId", opId,
-                    "method", "gradle/model",
-                    "modelType", modelTypeName
-            ));
-
-            try {
+            try (input) {
+                running.put(opId, token);
+                inputs.put(opId, input);
+                writer.event("gradle/operationStarted", obj(
+                        "opId", opId,
+                        "method", "gradle/model",
+                        "modelType", modelTypeName
+                ));
                 ModelBuilder<?> builder = connection().model(modelType);
                 configure(builder, params, opId, token);
                 builder.setStandardInput(input);
@@ -761,7 +475,6 @@ public final class Main {
             } finally {
                 running.remove(opId);
                 inputs.remove(opId);
-                input.close();
 
                 writer.event("gradle/operationFinished", obj(
                         "opId", opId,
@@ -785,16 +498,14 @@ public final class Main {
             CancellationTokenSource token = GradleConnector.newCancellationTokenSource();
             InteractiveInput input = new InteractiveInput(writer, opId);
 
-            running.put(opId, token);
-            inputs.put(opId, input);
-
-            writer.event("gradle/buildStarted", obj(
-                    "opId", opId,
-                    "tasks", tasks,
-                    "interactive", true
-            ));
-
-            try {
+            try (input) {
+                running.put(opId, token);
+                inputs.put(opId, input);
+                writer.event("gradle/buildStarted", obj(
+                        "opId", opId,
+                        "tasks", tasks,
+                        "interactive", true
+                ));
                 BuildLauncher launcher = connection().newBuild();
                 configure(launcher, params, opId, token);
 
@@ -812,7 +523,6 @@ public final class Main {
             } finally {
                 running.remove(opId);
                 inputs.remove(opId);
-                input.close();
 
                 writer.event("gradle/buildFinished", obj(
                         "opId", opId
@@ -1147,14 +857,27 @@ public final class Main {
             operation.setStandardOutput(new GradleEventOutputStream(writer, opId, "stdout"));
             operation.setStandardError(new GradleEventOutputStream(writer, opId, "stderr"));
 
-            operation.addProgressListener((ProgressListener) event -> {
-                writer.event("gradle/progress", obj(
-                        "opId", opId,
-                        "type", event.getClass().getSimpleName(),
-                        "displayName", safeProgressDisplayName(event),
-                        "descriptor", safeProgressDescriptor(event)
-                ));
-            });
+            ProgressListener progressListener = event ->
+                    writer.event("gradle/progress", obj(
+                            "opId", opId,
+                            "type", event.getClass().getSimpleName(),
+                            "displayName", safeProgressDisplayName(event),
+                            "descriptor", safeProgressDescriptor(event)
+                    ));
+            List<String> requestedTypes = stringList(params.get("operationTypes"));
+            if (requestedTypes.isEmpty()) {
+                operation.addProgressListener(progressListener);
+            } else {
+                EnumSet<OperationType> operationTypes = EnumSet.noneOf(OperationType.class);
+                for (String type : requestedTypes) {
+                    try {
+                        operationTypes.add(OperationType.valueOf(type));
+                    } catch (IllegalArgumentException ignored) {
+                        // Ignore operation types unsupported by this provider version.
+                    }
+                }
+                operation.addProgressListener(progressListener, operationTypes);
+            }
         }
 
         @Override
@@ -1245,11 +968,8 @@ public final class Main {
                 return ((Class<?>) value).getName();
             }
 
-            if (value instanceof Optional<?>) {
-                Optional<?> optional = (Optional<?>) value;
-                return optional.isPresent()
-                        ? serializeValue(optional.get(), Object.class, stack, depth + 1)
-                        : null;
+            if (value instanceof Optional<?> optional) {
+                return optional.map(o -> serializeValue(o, Object.class, stack, depth + 1)).orElse(null);
             }
 
             if (depth >= MAX_DEPTH) {
@@ -1631,7 +1351,7 @@ public final class Main {
                 return;
             }
 
-            String text = new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+            String text = buffer.toString(StandardCharsets.UTF_8);
             buffer.reset();
 
             if (text.isEmpty()) {
@@ -1806,12 +1526,8 @@ public final class Main {
         }
     }
 
-    private static final class ConnectionKey {
-        final String projectDir;
-        final String gradleUserHome;
-        final String gradleVersion;
-        final String gradleInstallation;
-
+    private record ConnectionKey(String projectDir, String gradleUserHome, String gradleVersion,
+                                 String gradleInstallation) {
         private ConnectionKey(
                 String projectDir,
                 String gradleUserHome,
@@ -1893,7 +1609,7 @@ public final class Main {
         }
 
         private static boolean eq(Object a, Object b) {
-            return a == null ? b == null : a.equals(b);
+            return Objects.equals(a, b);
         }
 
         private static int hash(Object value) {
@@ -1902,11 +1618,10 @@ public final class Main {
 
         @Override
         public boolean equals(Object other) {
-            if (!(other instanceof ConnectionKey)) {
+            if (!(other instanceof ConnectionKey that)) {
                 return false;
             }
 
-            ConnectionKey that = (ConnectionKey) other;
             return eq(projectDir, that.projectDir)
                     && eq(gradleUserHome, that.gradleUserHome)
                     && eq(gradleVersion, that.gradleVersion)
@@ -2037,9 +1752,7 @@ public final class Main {
                         if (c < 0x20) {
                             out.append("\\u");
                             String hex = Integer.toHexString(c);
-                            for (int j = hex.length(); j < 4; j++) {
-                                out.append('0');
-                            }
+                            out.append("0".repeat(4 - hex.length()));
                             out.append(hex);
                         } else {
                             out.append(c);
@@ -2083,28 +1796,29 @@ public final class Main {
 
                 char c = input.charAt(index);
 
-                switch (c) {
-                    case '{':
-                        return parseObject();
-                    case '[':
-                        return parseArray();
-                    case '"':
-                        return parseString();
-                    case 't':
+                return switch (c) {
+                    case '{' -> parseObject();
+                    case '[' -> parseArray();
+                    case '"' -> parseString();
+                    case 't' -> {
                         expect("true");
-                        return true;
-                    case 'f':
+                        yield true;
+                    }
+                    case 'f' -> {
                         expect("false");
-                        return false;
-                    case 'n':
+                        yield false;
+                    }
+                    case 'n' -> {
                         expect("null");
-                        return null;
-                    default:
+                        yield null;
+                    }
+                    default -> {
                         if (c == '-' || (c >= '0' && c <= '9')) {
-                            return parseNumber();
+                            yield parseNumber();
                         }
                         throw new IllegalArgumentException("Unexpected character '" + c + "' at index " + index);
-                }
+                    }
+                };
             }
 
             Map<String, Object> parseObject() {

@@ -18,6 +18,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import org.cosmicide.app.AppContainer
 import org.cosmicide.app.LocalAppContainer
+import org.cosmicide.editor.lsp.LspEditorLanguageProvider
 import org.cosmicide.ui.IDENavigation
 import org.cosmicide.ui.editor.resolveTheme
 import org.cosmicide.ui.theme.IDETheme
@@ -65,5 +66,7 @@ class MainActivity : ComponentActivity() {
                 }
             )
         }
+
+        LspEditorLanguageProvider.updateColors(colorScheme)
     }
 }

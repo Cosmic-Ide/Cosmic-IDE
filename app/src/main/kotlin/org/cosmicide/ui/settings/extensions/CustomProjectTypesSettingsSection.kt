@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +43,6 @@ internal fun CustomProjectTypesSettingsSection(
         repository.customProjectTypes()
     }
 
-    HorizontalDivider()
     SectionTitle("Custom project types")
     Text(
         text = "Register creation scripts and build, run, or utility commands. Commands run as trusted shell code.",

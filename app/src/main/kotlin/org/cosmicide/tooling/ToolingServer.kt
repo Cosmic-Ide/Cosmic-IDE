@@ -7,6 +7,7 @@
 
 package org.cosmicide.tooling
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
@@ -56,6 +57,7 @@ class ToolingServer(
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private val context = context.applicationContext
     private val gson = Gson()
     private var process: Process? = null
@@ -181,12 +183,14 @@ class ToolingServer(
             Log.e(TAG, "Error sending shutdown request", e)
         }
 
-        // Clean up resources
+        // Terminate the process before closing the reader. BufferedReader.close() can block
+        // waiting for the same lock held by the server thread while it is blocked in readLine().
+        // Destroying the process closes the pipe and lets that read finish first.
         try {
-            outputWriter?.close()
-            inputReader?.close()
             process?.destroyForcibly()
+            outputWriter?.close()
             serverThread?.join(2000) // Wait up to 2 seconds
+            inputReader?.close()
         } catch (e: Exception) {
             Log.e(TAG, "Error cleaning up tooling server", e)
         } finally {
@@ -247,56 +251,6 @@ class ToolingServer(
     }
 
     /**
-     * Get Gradle environment information.
-     */
-    fun getEnvironment(
-        callback: (result: JsonObject?, error: Throwable?) -> Unit
-    ) {
-        requestObject("gradle/environment", callback = callback)
-    }
-
-    /**
-     * Get Gradle projects for this server's project.
-     */
-    fun getProjects(
-        callback: (result: JsonObject?, error: Throwable?) -> Unit
-    ) {
-        requestObject("gradle/projects", callback = callback)
-    }
-
-    /**
-     * Get Gradle tasks for this server's project.
-     */
-    fun getTasks(
-        callback: (result: JsonObject?, error: Throwable?) -> Unit
-    ) {
-        requestObject("gradle/tasks", callback = callback)
-    }
-
-    /**
-     * Run a Gradle build in this server's project with the given tasks.
-     *
-     * @param tasks List of tasks to execute (e.g., ["build", "clean"])
-     */
-    fun runBuild(
-        tasks: List<String> = listOf("build"),
-        arguments: List<String> = emptyList(),
-        opId: String = generateOperationId(),
-        callback: (result: JsonObject?, error: Throwable?) -> Unit
-    ) {
-        val params = JsonObject().apply {
-            addProperty("opId", opId)
-            add("tasks", gson.toJsonTree(tasks))
-
-            if (arguments.isNotEmpty()) {
-                add("arguments", gson.toJsonTree(arguments))
-            }
-        }
-
-        requestObject("gradle/run", params, callback)
-    }
-
-    /**
      * Cancel a running Gradle operation.
      *
      * @param opId Operation ID to cancel
@@ -350,7 +304,7 @@ class ToolingServer(
     }
 
     private fun generateRequestId(): String {
-        return "req-${UUID.randomUUID().toString()}"
+        return "req-${UUID.randomUUID()}"
     }
 
     private fun installBundledToolingJar() {
@@ -426,8 +380,6 @@ class ToolingServer(
     }
 
     private fun handleServerOutput(line: String) {
-        Log.d(TAG, "Received from server: $line")
-
         try {
             val jsonElement = JsonParser.parseString(line)
             if (!jsonElement.isJsonObject) {

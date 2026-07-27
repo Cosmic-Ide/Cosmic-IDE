@@ -98,7 +98,7 @@ fun SingleChoicePreference(
 
     PreferenceItem(
         title = title,
-        summary = items.find { it.first == selectedItem }?.second ?: selectedItem,
+        summary = summary,
         onClick = { showDialog = true }
     )
 
@@ -143,7 +143,7 @@ fun MultiChoicePreference(
     title: String,
     summary: String? = null,
     selectedItems: Set<String>,
-    items: List<Pair<String, String>>, // value to label
+    items: List<Pair<String, String>>,
     onItemsSelected: (Set<String>) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -151,9 +151,7 @@ fun MultiChoicePreference(
 
     PreferenceItem(
         title = title,
-        summary = if (selectedItems.isEmpty()) "None" else selectedItems.joinToString(", ") { valItem ->
-            items.find { it.first == valItem }?.second ?: valItem
-        },
+        summary = if (selectedItems.isEmpty()) "None" else summary,
         onClick = { showDialog = true }
     )
 
@@ -248,7 +246,7 @@ fun EditTextPreference(
 
     PreferenceItem(
         title = title,
-        summary = if (value.isEmpty()) "Not set" else value,
+        summary = if (value.isEmpty()) "Not set" else summary,
         onClick = { showDialog = true }
     )
 

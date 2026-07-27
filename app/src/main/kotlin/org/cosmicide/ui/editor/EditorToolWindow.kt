@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.BottomSheetDefaults.DragHandle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -50,15 +52,22 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.core.content.res.ResourcesCompat
+import io.github.rosemoe.sora.lang.EmptyLanguage
+import io.github.rosemoe.sora.text.Content
+import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.cosmicide.R
 import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
-import org.cosmicide.ui.compile.GradleTaskTerminal
 import org.cosmicide.ui.compile.CommandTerminal
+import org.cosmicide.ui.compile.GradleTaskTerminal
+import org.cosmicide.ui.compile.TerminalSessionHandle
 
 internal const val SyncToolWindowTabId = "sync"
+internal const val LspLogsToolWindowTabId = "lsp-logs"
 internal const val CollapsedEditorToolWindowHeightDp = 64f
 internal const val DefaultEditorToolWindowHeightDp = 280f
 
@@ -77,21 +86,16 @@ internal data class EditorBuildSession(
 @Composable
 internal fun EditorToolWindowLayout(
     project: Project,
-    toolingOutput: String,
-    useGradleSync: Boolean,
+    syncOutput: Content?,
+    isToolingSyncRunning: Boolean,
+    onRerunToolingSync: () -> Unit,
+    onStopToolingSync: () -> Unit,
+    lspLogs: String,
     projectSyncCommand: ProjectCommand?,
-    projectSyncRunId: Int,
-    projectSyncStatus: String,
-    selectedTabId: String,
+    state: EditorToolWindowSessionState,
     heightDp: Float,
-    buildSessions: List<EditorBuildSession>,
-    onSelectTab: (String) -> Unit,
+    onStateChange: (EditorToolWindowSessionState) -> Unit,
     onHeightChange: (Float) -> Unit,
-    onCloseBuild: (Int) -> Unit,
-    onRerunBuild: (Int) -> Unit,
-    onBuildStatusChange: (Int, String) -> Unit,
-    onRerunProjectSync: () -> Unit,
-    onProjectSyncStatusChange: (String) -> Unit,
     editorContent: @Composable () -> Unit
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -103,19 +107,37 @@ internal fun EditorToolWindowLayout(
         )
 
         Box(modifier = Modifier.fillMaxSize()) {
-            editorContent()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = resolvedHeight.dp)
+            ) {
+                editorContent()
+            }
 
             EditorToolWindow(
                 project = project,
-                toolingOutput = toolingOutput,
-                useGradleSync = useGradleSync,
+                syncOutput = syncOutput,
+                isToolingSyncRunning = isToolingSyncRunning,
+                onRerunToolingSync = onRerunToolingSync,
+                onStopToolingSync = onStopToolingSync,
+                lspLogs = lspLogs,
                 projectSyncCommand = projectSyncCommand,
-                projectSyncRunId = projectSyncRunId,
-                projectSyncStatus = projectSyncStatus,
-                selectedTabId = selectedTabId,
+                state = state,
                 heightDp = resolvedHeight,
-                buildSessions = buildSessions,
-                onSelectTab = onSelectTab,
+                onStateChange = onStateChange,
+                onSelectTab = { tabId ->
+                    if (state.selectedTabId == tabId &&
+                        resolvedHeight > CollapsedEditorToolWindowHeightDp
+                    ) {
+                        onHeightChange(CollapsedEditorToolWindowHeightDp)
+                    } else {
+                        onStateChange(state.selectTab(tabId))
+                        if (resolvedHeight <= CollapsedEditorToolWindowHeightDp) {
+                            onHeightChange(DefaultEditorToolWindowHeightDp)
+                        }
+                    }
+                },
                 onResize = { dragAmountPx ->
                     val dragAmountDp = with(density) { dragAmountPx.toDp().value }
                     onHeightChange(
@@ -130,11 +152,6 @@ internal fun EditorToolWindowLayout(
                         onHeightChange(CollapsedEditorToolWindowHeightDp)
                     }
                 },
-                onCloseBuild = onCloseBuild,
-                onRerunBuild = onRerunBuild,
-                onBuildStatusChange = onBuildStatusChange,
-                onRerunProjectSync = onRerunProjectSync,
-                onProjectSyncStatusChange = onProjectSyncStatusChange,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -148,24 +165,22 @@ internal fun EditorToolWindowLayout(
 @Composable
 private fun EditorToolWindow(
     project: Project,
-    toolingOutput: String,
-    useGradleSync: Boolean,
+    syncOutput: Content?,
+    isToolingSyncRunning: Boolean,
+    onRerunToolingSync: () -> Unit,
+    onStopToolingSync: () -> Unit,
+    lspLogs: String,
     projectSyncCommand: ProjectCommand?,
-    projectSyncRunId: Int,
-    projectSyncStatus: String,
-    selectedTabId: String,
+    state: EditorToolWindowSessionState,
     heightDp: Float,
-    buildSessions: List<EditorBuildSession>,
+    onStateChange: (EditorToolWindowSessionState) -> Unit,
     onSelectTab: (String) -> Unit,
     onResize: (Float) -> Unit,
     onResizeFinished: () -> Unit,
-    onCloseBuild: (Int) -> Unit,
-    onRerunBuild: (Int) -> Unit,
-    onBuildStatusChange: (Int, String) -> Unit,
-    onRerunProjectSync: () -> Unit,
-    onProjectSyncStatusChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val selectedTabId = state.selectedTabId
+    val buildSessions = state.buildSessions
     val isExpanded = heightDp > CollapsedEditorToolWindowHeightDp + 1f
     val currentOnResize by rememberUpdatedState(onResize)
     val currentOnResizeFinished by rememberUpdatedState(onResizeFinished)
@@ -209,6 +224,7 @@ private fun EditorToolWindow(
 
             val selectedTabIndex = when {
                 selectedTabId == SyncToolWindowTabId -> 0
+                selectedTabId == LspLogsToolWindowTabId -> buildSessions.size + 1
                 else -> buildSessions.indexOfFirst { it.tabId == selectedTabId }
                     .takeIf { it >= 0 }
                     ?.plus(1)
@@ -244,7 +260,9 @@ private fun EditorToolWindow(
                                     modifier = Modifier.widthIn(max = 140.dp)
                                 )
                                 IconButton(
-                                    onClick = { onCloseBuild(session.id) },
+                                    onClick = {
+                                        onStateChange(state.closeBuild(session.id))
+                                    },
                                     modifier = Modifier.size(28.dp)
                                 ) {
                                     Icon(
@@ -257,6 +275,12 @@ private fun EditorToolWindow(
                         }
                     )
                 }
+
+                Tab(
+                    selected = selectedTabId == LspLogsToolWindowTabId,
+                    onClick = { onSelectTab(LspLogsToolWindowTabId) },
+                    text = { Text("LSP Logs") }
+                )
             }
 
             if (isExpanded) {
@@ -273,23 +297,40 @@ private fun EditorToolWindow(
                     ProjectSyncTab(
                         project = project,
                         command = projectSyncCommand,
-                        runId = projectSyncRunId,
-                        status = projectSyncStatus,
-                        onRerun = onRerunProjectSync,
-                        onStatusChange = onProjectSyncStatusChange,
-                        modifier = Modifier.visibleToolWindowTab(
-                            selectedTabId == SyncToolWindowTabId
-                        )
-                    )
-                } else {
-                    SyncTab(
-                        output = if (useGradleSync) toolingOutput else {
-                            "No project sync command is configured."
+                        runId = state.projectSyncRunId,
+                        status = state.projectSyncStatus,
+                        onRerun = {
+                            onStateChange(state.rerunProjectSync())
+                        },
+                        onStop = {
+                            onStateChange(state.stopProjectSync())
+                        },
+                        onStatusChange = { status ->
+                            onStateChange(state.updateProjectSyncStatus(status))
                         },
                         modifier = Modifier.visibleToolWindowTab(
                             selectedTabId == SyncToolWindowTabId
                         )
                     )
+                } else if (selectedTabId == SyncToolWindowTabId) {
+                    if (syncOutput != null) {
+                        ToolingSyncTab(
+                            output = syncOutput,
+                            isRunning = isToolingSyncRunning,
+                            onRerun = onRerunToolingSync,
+                            onStop = onStopToolingSync,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        SyncTab(
+                            output = remember {
+                                Content("No project sync command is configured.").apply {
+                                    setUndoEnabled(false)
+                                }
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
 
                 buildSessions.forEach { session ->
@@ -297,15 +338,26 @@ private fun EditorToolWindow(
                         BuildTab(
                             project = project,
                             session = session,
-                            onRerun = { onRerunBuild(session.id) },
+                            onRerun = {
+                                onStateChange(state.rerunBuild(session.id))
+                            },
+                            onStop = {
+                                onStateChange(state.stopBuild(session.id))
+                            },
                             onStatusChange = { status ->
-                                onBuildStatusChange(session.id, status)
+                                onStateChange(state.updateBuildStatus(session.id, status))
                             },
                             modifier = Modifier.visibleToolWindowTab(
                                 selectedTabId == session.tabId
                             )
                         )
                     }
+                }
+                if (selectedTabId == LspLogsToolWindowTabId) {
+                    LspLogsTab(
+                        output = lspLogs,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }
@@ -319,13 +371,103 @@ private fun Modifier.visibleToolWindowTab(selected: Boolean): Modifier {
 }
 
 @Composable
+private fun ToolingSyncTab(
+    output: Content,
+    isRunning: Boolean,
+    onRerun: () -> Unit,
+    onStop: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .padding(start = 12.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Gradle sync", style = MaterialTheme.typography.labelLarge)
+            Text(
+                text = if (isRunning) "  ·  Running" else "  ·  Finished",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelMedium
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = onStop,
+                enabled = isRunning,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(Icons.Default.Stop, contentDescription = "Stop Gradle sync")
+            }
+            IconButton(
+                onClick = onRerun,
+                enabled = !isRunning,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(Icons.Default.Refresh, contentDescription = "Rerun Gradle sync")
+            }
+        }
+        HorizontalDivider()
+        SyncTab(
+            output = output,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        )
+    }
+}
+
+@Composable
 private fun SyncTab(
+    output: Content,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow.toArgb()
+    val textColor = MaterialTheme.colorScheme.onSurfaceVariant.toArgb()
+    val context = LocalContext.current
+    val editor = remember(output, backgroundColor, textColor) {
+        CodeEditor(context).apply {
+            setEditorLanguage(EmptyLanguage())
+            setText(output)
+            setEditable(false)
+            setUndoEnabled(false)
+            setLineNumberEnabled(false)
+            setHighlightCurrentLine(false)
+            setCursorAnimationEnabled(false)
+            setWordwrap(false)
+            setScrollBarEnabled(true)
+            setInterceptParentHorizontalScrollIfNeeded(true)
+            isFocusable = false
+            isFocusableInTouchMode = false
+            typefaceText = Typeface.MONOSPACE
+            setTextSize(SYNC_OUTPUT_TEXT_SIZE_SP)
+            colorScheme.apply {
+                setColor(EditorColorScheme.WHOLE_BACKGROUND, backgroundColor)
+                setColor(EditorColorScheme.TEXT_NORMAL, textColor)
+            }
+        }
+    }
+
+    AndroidView(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .padding(12.dp),
+        factory = { editor },
+        onRelease = CodeEditor::release
+    )
+}
+
+private const val SYNC_OUTPUT_TEXT_SIZE_SP = 14f
+
+@Composable
+private fun LspLogsTab(
     output: String,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(scrollState.maxValue) {
+    LaunchedEffect(output, scrollState.maxValue) {
         scrollState.scrollTo(scrollState.maxValue)
     }
 
@@ -337,7 +479,7 @@ private fun SyncTab(
     ) {
         SelectionContainer {
             Text(
-                text = output.ifEmpty { "No sync output yet." },
+                text = output.ifEmpty { "No LSP logs yet." },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontFamily = FontFamily.Monospace,
                 fontSize = 12.sp
@@ -353,9 +495,12 @@ private fun ProjectSyncTab(
     runId: Int,
     status: String,
     onRerun: () -> Unit,
+    onStop: () -> Unit,
     onStatusChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sessionHandle = remember(runId) { TerminalSessionHandle() }
+
     Column(modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) {
         Row(
             modifier = Modifier
@@ -371,6 +516,16 @@ private fun ProjectSyncTab(
                 style = MaterialTheme.typography.labelMedium
             )
             Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = {
+                    onStop()
+                    sessionHandle.terminate()
+                },
+                enabled = status == "Running",
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(Icons.Default.Stop, contentDescription = "Stop ${command.label}")
+            }
             IconButton(onClick = onRerun, modifier = Modifier.size(36.dp)) {
                 Icon(Icons.Default.Refresh, contentDescription = "Rerun ${command.label}")
             }
@@ -385,6 +540,7 @@ private fun ProjectSyncTab(
                     onStatusChange(if (exitCode == 0) "Finished" else "Exited ($exitCode)")
                 },
                 onError = onStatusChange,
+                sessionHandle = sessionHandle,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -399,9 +555,12 @@ private fun BuildTab(
     project: Project,
     session: EditorBuildSession,
     onRerun: () -> Unit,
+    onStop: () -> Unit,
     onStatusChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sessionHandle = remember(session.runId) { TerminalSessionHandle() }
+
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
@@ -426,6 +585,16 @@ private fun BuildTab(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = {
+                    onStop()
+                    sessionHandle.terminate()
+                },
+                enabled = session.status == "Running",
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(Icons.Default.Stop, contentDescription = "Stop ${session.task}")
+            }
             IconButton(onClick = onRerun, modifier = Modifier.size(36.dp)) {
                 Icon(Icons.Default.Refresh, contentDescription = "Rerun ${session.task}")
             }
@@ -439,6 +608,7 @@ private fun BuildTab(
                     task = session.task,
                     onSuccess = { onStatusChange("Finished") },
                     onError = onStatusChange,
+                    sessionHandle = sessionHandle,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
@@ -453,6 +623,7 @@ private fun BuildTab(
                         onStatusChange(if (exitCode == 0) "Finished" else "Exited ($exitCode)")
                     },
                     onError = onStatusChange,
+                    sessionHandle = sessionHandle,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
@@ -470,6 +641,7 @@ private fun EmbeddedCommand(
     arguments: List<String>?,
     onExit: (Int) -> Unit,
     onError: (String) -> Unit,
+    sessionHandle: TerminalSessionHandle,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -480,6 +652,7 @@ private fun EmbeddedCommand(
     var textSizeDp by rememberSaveable { mutableIntStateOf(12) }
 
     CommandTerminal(
+        modifier = modifier,
         context = context,
         workingDirectory = project.root,
         commandLine = command,
@@ -490,7 +663,7 @@ private fun EmbeddedCommand(
         onTextSizeChange = { textSizeDp = it },
         onProcessExit = onExit,
         onFailure = onError,
-        modifier = modifier
+        sessionHandle = sessionHandle
     )
 }
 
@@ -500,6 +673,7 @@ private fun EmbeddedGradleBuild(
     task: String,
     onSuccess: () -> Unit,
     onError: (String) -> Unit,
+    sessionHandle: TerminalSessionHandle,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -519,6 +693,7 @@ private fun EmbeddedGradleBuild(
         onTextSizeChange = { textSizeDp = it },
         onTaskSuccess = onSuccess,
         onTaskError = onError,
+        sessionHandle = sessionHandle,
         modifier = modifier
     )
 }

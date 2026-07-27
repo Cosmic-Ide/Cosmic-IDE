@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
-import org.cosmicide.ui.settings.components.EditTextPreference
 import org.cosmicide.ui.settings.components.SingleChoicePreference
 import org.cosmicide.util.PreferenceKeys
 import org.cosmicide.util.jdkNames

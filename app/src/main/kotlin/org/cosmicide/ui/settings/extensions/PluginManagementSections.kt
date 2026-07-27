@@ -18,7 +18,6 @@ internal fun InstalledPluginsSection(repository: ExtensionsSettingsRepository) {
     val installedPlugins = remember { repository.installedPlugins() }
     if (installedPlugins.isEmpty()) return
 
-    HorizontalDivider()
     SectionTitle("Installed plugins")
     installedPlugins.forEach { plugin ->
         Text(

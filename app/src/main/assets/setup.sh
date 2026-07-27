@@ -5,14 +5,16 @@ set -euo pipefail
 FILES_DIR="${1:?Cosmic IDE files directory is required}"
 CACHE_DIR="${2:?Cosmic IDE cache directory is required}"
 
-KOTLIN_VERSION="262.8190.0"
-KOTLIN_URL="https://download-cdn.jetbrains.com/language-server/kotlin-server/${KOTLIN_VERSION}/kotlin-server-${KOTLIN_VERSION}-aarch64.tar.gz"
+KOTLIN_VERSION="1.3.13"
+KOTLIN_URL="https://github.com/fwcd/kotlin-language-server/releases/download/${KOTLIN_VERSION}/server.zip"
 JDTLS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.60.0/jdt-language-server-1.60.0-202606262232.tar.gz"
 COURSIER_URL="https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz"
 CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip"
+VSCODE_GRADLE_URL="https://github.com/microsoft/vscode-gradle.git"
 
 SCALA_BIN="$FILES_DIR/scala/bin"
 COURSIER_DIR="$FILES_DIR/coursier"
+VSCODE_GRADLE_DIR="$FILES_DIR/vscode-gradle"
 
 mkdir -p "$CACHE_DIR"
 
@@ -40,27 +42,55 @@ ask_to_install() {
     done
 }
 
+extract_tar_gz() {
+    local archive="$1"
+    local destination="$2"
+
+    if ! command -v unpigz >/dev/null 2>&1; then
+        echo "Error: unpigz is unavailable. Update the Arch runtime to install pigz." >&2
+        return 1
+    fi
+
+    mkdir -p "$destination"
+    unpigz -c "$archive" | tar -xf - -C "$destination"
+}
+
 install_kotlin_lsp() {
-    if [[ -x "$FILES_DIR/kotlin-lsp/bin/intellij-server" ]]; then
+    local install_dir="$FILES_DIR/kotlin-language-server"
+    local archive="$CACHE_DIR/kotlin-language-server.zip"
+    local temporary="$FILES_DIR/kotlin-language-server.tmp"
+    local executable="$install_dir/bin/kotlin-language-server"
+
+    if [[ -x "$executable" ]]; then
         echo "Kotlin language server is already installed."
         return
     fi
 
     echo "Downloading Kotlin language server..."
 
-    local archive="$CACHE_DIR/kotlin-server.tar.gz"
-    local extracted="$FILES_DIR/kotlin-server-$KOTLIN_VERSION"
-
+    rm -rf "$temporary"
     curl -fL "$KOTLIN_URL" -o "$archive"
-    tar -xzf "$archive" -C "$FILES_DIR"
+    mkdir -p "$temporary"
+    if ! unzip -q "$archive" -d "$temporary"; then
+        rm -rf "$temporary"
+        rm -f "$archive"
+        echo "Error: failed to extract Kotlin language server." >&2
+        return 1
+    fi
     rm -f "$archive"
 
-    if [[ -d "$extracted" ]]; then
-        rm -rf "$FILES_DIR/kotlin-lsp"
-        mv "$extracted" "$FILES_DIR/kotlin-lsp"
+    if [[ ! -f "$temporary/server/bin/kotlin-language-server" ]]; then
+        rm -rf "$temporary"
+        echo "Error: Kotlin language server executable was not found after extraction." >&2
+        return 1
     fi
 
-    [[ -x "$FILES_DIR/kotlin-lsp/bin/intellij-server" ]]
+    chmod +x "$temporary/server/bin/kotlin-language-server"
+    rm -rf "$install_dir"
+    mv "$temporary/server" "$install_dir"
+    rm -rf "$temporary"
+
+    [[ -x "$executable" ]]
     echo "Kotlin language support installed."
 }
 
@@ -78,9 +108,11 @@ install_jdtls() {
     rm -rf "$install_dir"
     mkdir -p "$install_dir"
 
-    curl -fL "$JDTLS_URL" -o "$archive"
+    if [[ ! -s "$archive" ]]; then
+        curl -fL "$JDTLS_URL" -o "$archive"
+    fi
 
-    if ! tar -xzf "$archive" -C "$install_dir"; then
+    if ! extract_tar_gz "$archive" "$install_dir"; then
         rm -rf "$install_dir"
         rm -f "$archive"
         echo "Error: failed to extract Eclipse JDT language server." >&2
@@ -106,7 +138,15 @@ install_scala_tools() {
     if [[ ! -x "$cs" ]]; then
         echo "Downloading Coursier..."
 
-        curl -fL "$COURSIER_URL" | gzip -d > "$cs.tmp"
+        if ! command -v unpigz >/dev/null 2>&1; then
+            echo "Error: unpigz is unavailable. Update the Arch runtime to install pigz." >&2
+            return 1
+        fi
+        if ! curl -fL "$COURSIER_URL" | unpigz -c > "$cs.tmp"; then
+            rm -f "$cs.tmp"
+            echo "Error: failed to download or extract Coursier." >&2
+            return 1
+        fi
         chmod +x "$cs.tmp"
         mv "$cs.tmp" "$cs"
     fi
@@ -119,6 +159,78 @@ install_scala_tools() {
 
     [[ -x "$SCALA_BIN/metals" ]]
     echo "Scala language support installed."
+}
+
+install_gradle_language_server() {
+    local server_source="$VSCODE_GRADLE_DIR/gradle-language-server/src/main/java/com/microsoft/gradle/GradleLanguageServer.java"
+    local server_executable="$VSCODE_GRADLE_DIR/gradle-language-server/build/install/gradle-language-server/bin/gradle-language-server"
+
+    if [[ -x "$server_executable" ]]; then
+        echo "Gradle/Groovy language server is already installed."
+        return
+    fi
+
+    if [[ -e "$VSCODE_GRADLE_DIR" && ! -d "$VSCODE_GRADLE_DIR/.git" ]]; then
+        echo "Error: $VSCODE_GRADLE_DIR exists but is not a vscode-gradle checkout." >&2
+        return 1
+    fi
+
+    if [[ ! -d "$VSCODE_GRADLE_DIR/.git" ]]; then
+        if ! command -v git >/dev/null 2>&1; then
+            echo "Error: Git is not installed in the existing Arch runtime." >&2
+            echo "Rerun setup and allow the Arch runtime update to install it." >&2
+            return 1
+        fi
+        echo "Cloning the Gradle language server..."
+        git clone "$VSCODE_GRADLE_URL" "$VSCODE_GRADLE_DIR"
+    fi
+
+    if [[ ! -f "$server_source" ]]; then
+        echo "Error: Gradle language server source was not found at $server_source" >&2
+        return 1
+    fi
+
+    echo "Configuring the Gradle language server for stdio..."
+
+    sed -i \
+        -e '/import com\.microsoft\.gradle\.transport\.NamedPipeStream;/d' \
+        -e '/import java\.io\.IOException;/d' \
+        -e '/NamedPipeStream pipeStream = new NamedPipeStream(args\[0\]);/d' \
+        -e 's/pipeStream\.getInputStream()/System.in/g' \
+        -e 's/pipeStream\.getOutputStream()/System.out/g' \
+        -e 's/catch (IOException e)/catch (Exception e)/g' \
+        "$server_source"
+
+    if ! grep -Fq 'Object settings = initOptions.get("settings");' "$server_source"; then
+        sed -i \
+            '/this\.gradleServices\.applySetting(settings);/i\
+		Object settings = initOptions.get("settings");' \
+            "$server_source"
+    fi
+
+    if grep -Fq 'NamedPipeStream pipeStream' "$server_source" ||
+        grep -Fq 'pipeStream.getInputStream()' "$server_source" ||
+        grep -Fq 'pipeStream.getOutputStream()' "$server_source" ||
+        ! grep -Fq 'Object settings = initOptions.get("settings");' "$server_source"; then
+        echo "Error: failed to apply the Gradle language server stdio patch." >&2
+        return 1
+    fi
+
+    echo "Building the Gradle/Groovy language server..."
+    (
+        cd "$VSCODE_GRADLE_DIR"
+        ./gradlew \
+            :gradle-language-server:spotlessApply \
+            :gradle-language-server:build \
+            :gradle-language-server:installDist
+    )
+
+    if [[ ! -x "$server_executable" ]]; then
+        echo "Error: Gradle language server executable was not created." >&2
+        return 1
+    fi
+
+    echo "Gradle/Groovy language support installed."
 }
 
 install_android_sdk() {
@@ -246,6 +358,41 @@ install_android_sdk() {
     echo "Android SDK installed at $sdk_root."
 }
 
+ask_to_reinstall_arch() {
+    local answer
+
+    while true; do
+        if ! read -r -p "An Arch runtime already exists. Reinstall/update it? [y/N] " answer; then
+            echo
+            return 1
+        fi
+
+        case "${answer,,}" in
+            y|yes)
+                return 0
+                ;;
+            ""|n|no)
+                return 1
+                ;;
+            *)
+                echo "Please enter y or n."
+                ;;
+        esac
+    done
+}
+
+activate_arch_runtime() {
+    local arch_root="$FILES_DIR/arch"
+    local glibc_root="$FILES_DIR/glibc"
+
+    export APP_FILES_DIR="$arch_root"
+    export PATH="$arch_root/usr/bin:$arch_root/usr/sbin:$glibc_root/usr/bin:$glibc_root/usr/sbin:$PATH"
+    export LD_LIBRARY_PATH="$arch_root/usr/lib:$glibc_root/usr/lib:$glibc_root/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    export HOME="$arch_root/home"
+    mkdir -p "$HOME"
+    hash -r
+}
+
 setup_pacman() {
     local arch_root="$FILES_DIR/arch"
     local glibc_root="$FILES_DIR/glibc"
@@ -257,6 +404,15 @@ setup_pacman() {
     local arch_db_path="$arch_root/var/lib/pacman"
     local arch_cache_dir="$arch_root/var/cache/pacman/pkg"
     local arch_log_file="$arch_root/var/log/pacman.log"
+
+    if [[ -d "$arch_root/usr" ]]; then
+        if ! ask_to_reinstall_arch; then
+            activate_arch_runtime
+            echo "Keeping the existing Arch runtime at $arch_root."
+            return
+        fi
+        echo "Updating the existing Arch runtime..."
+    fi
 
     echo "Setting up pacman bootstrap runtime in $glibc_root"
 
@@ -313,7 +469,10 @@ setup_pacman() {
         -e "s|^[[:space:]]*Include[[:space:]]*=[[:space:]]*/etc/pacman.d/mirrorlist|Include = $arch_mirrorlist|" \
         "$arch_pacman_conf"
 
-    echo -e "\n\n[gpkg]\nSigLevel = Never\nServer = http://ftp.agdsn.de/termux-pacman/gpkg/aarch64" >> "$arch_pacman_conf"
+    if ! grep -Fq '[gpkg]' "$arch_pacman_conf"; then
+        printf '\n\n[gpkg]\nSigLevel = Never\nServer = http://ftp.agdsn.de/termux-pacman/gpkg/aarch64\n' \
+            >> "$arch_pacman_conf"
+    fi
 
     echo "Bootstrap root: $glibc_root"
     echo "Pacman root:    $arch_root"
@@ -356,6 +515,7 @@ setup_pacman() {
         -S \
         --needed \
         --noconfirm \
+        --quiet \
         --noscriptlet \
         --hookdir "$CACHE_DIR" \
         filesystem \
@@ -365,14 +525,18 @@ setup_pacman() {
         archlinuxarm-keyring \
         linux-api-headers \
         tzdata \
-        curl
+        curl \
+        git \
+        pigz \
+        tar \
+        unzip
 
     echo "Configuring SSL root certificates bundle..."
     mkdir -p "$arch_root/etc/ssl/certs"
 
     cp -f --remove-destination "$glibc_root/usr/etc/ssl/certs/ca-certificates.crt" "$arch_root/etc/ssl/certs/ca-certificates.crt"
     cp -f --remove-destination "$glibc_root/usr/etc/ssl/certs/ca-bundle.crt" "$arch_root/etc/ssl/certs/ca-bundle.crt"
-    cp -f --remove-destination "$glibc_root/usr/etc/ssl/cert.pem" "$arch_root/etc/ssl/cart.pem"
+    cp -f --remove-destination "$glibc_root/usr/etc/ssl/cert.pem" "$arch_root/etc/ssl/cert.pem"
 
     local termux_glibc="$arch_root/data/data/com.termux/files/usr/glibc"
     if [[ -d "$termux_glibc" ]]; then
@@ -385,31 +549,30 @@ setup_pacman() {
         rm -rf "$arch_root/data"
     fi
 
-    TARGET="$arch_root/home/.bashrc"
-    mkdir -p "$(dirname "$TARGET")"
+    local bashrc="$arch_root/home/.bashrc"
+    local home_declaration='export HOME=$(cd /data/data/org.cosmicide/files/arch/home && pwd -P)'
+    mkdir -p "$(dirname "$bashrc")"
+    touch "$bashrc"
 
-    {
-      printf '%s\n' '[[ $- != *i* ]] && return'
-      printf '%s\n' '[[ $DISPLAY ]] && shopt -s checkwinsize'
-      printf '%s\n' 'export HOME=$(cd /data/data/org.cosmicide/files/arch/home && pwd -P)'
-      printf '%s\n' "PS1='\[\e[0;32m\]\w\[\e[0m\] \[\e[0;97m\]\$\[\e[0m\] '"
-      printf '%s\n' 'case ${TERM} in'
-      printf '%s\n' '  Eterm*|alacritty*|aterm*|foot*|gnome*|konsole*|kterm*|putty*|rxvt*|tmux*|xterm*)'
-      printf '%s\n' '    PROMPT_COMMAND+=('\''printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'\'')'
-      printf '%s\n' '    ;;'
-      printf '%s\n' '  screen*)'
-      printf '%s\n' '    PROMPT_COMMAND+=('\''printf "\033_%s@%s:%s\033\\" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'\'')'
-      printf '%s\n' '    ;;'
-      printf '%s\n' 'esac'
-    } >> "$TARGET"
+    if ! grep -Fqx "$home_declaration" "$bashrc"; then
+        {
+            printf '%s\n' '[[ $- != *i* ]] && return'
+            printf '%s\n' '[[ $DISPLAY ]] && shopt -s checkwinsize'
+            printf '%s\n' "$home_declaration"
+            printf '%s\n' "PS1='\[\e[0;32m\]\w\[\e[0m\] \[\e[0;97m\]\$\[\e[0m\] '"
+            printf '%s\n' 'case ${TERM} in'
+            printf '%s\n' '  Eterm*|alacritty*|aterm*|foot*|gnome*|konsole*|kterm*|putty*|rxvt*|tmux*|xterm*)'
+            printf '%s\n' '    PROMPT_COMMAND+=('\''printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'\'')'
+            printf '%s\n' '    ;;'
+            printf '%s\n' '  screen*)'
+            printf '%s\n' '    PROMPT_COMMAND+=('\''printf "\033_%s@%s:%s\033\\" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'\'')'
+            printf '%s\n' '    ;;'
+            printf '%s\n' 'esac'
+        } >> "$bashrc"
+    fi
 
     # From this point onward, prefer the real pacman-managed Arch userspace.
-    export APP_FILES_DIR="$arch_root"
-    export PATH="$arch_root/usr/bin:$arch_root/usr/sbin:$glibc_root/usr/bin:$glibc_root/usr/sbin:$PATH"
-    export LD_LIBRARY_PATH="$arch_root/usr/lib:$glibc_root/usr/lib:$glibc_root/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-    export HOME="$arch_root/home"
-    mkdir -p "$HOME"
-    hash -r
+    activate_arch_runtime
 
     echo "Pacman-managed Arch root is ready at $arch_root."
 }
@@ -419,43 +582,52 @@ echo
 
 installed_any=false
 
- if ask_to_install "Java language support"; then
-     install_jdtls
-     installed_any=true
- else
-     echo "Skipping Java language support."
- fi
-
- echo
-
- if ask_to_install "Kotlin language support"; then
-     install_kotlin_lsp
-     installed_any=true
- else
-     echo "Skipping Kotlin language support."
- fi
-
- echo
-
- if ask_to_install "Scala language support"; then
-     install_scala_tools
-     installed_any=true
- else
-     echo "Skipping Scala language support."
- fi
+setup_pacman
 
 echo
 
-setup_pacman
+if ask_to_install "Java language support"; then
+    install_jdtls
+    installed_any=true
+else
+    echo "Skipping Java language support."
+fi
 
- echo
+echo
 
- if ask_to_install "Android SDK"; then
-     install_android_sdk
-     installed_any=true
- else
-     echo "Skipping Android SDK."
- fi
+if ask_to_install "Kotlin language support"; then
+    install_kotlin_lsp
+    installed_any=true
+else
+    echo "Skipping Kotlin language support."
+fi
+
+echo
+
+if ask_to_install "Scala language support"; then
+    install_scala_tools
+    installed_any=true
+else
+    echo "Skipping Scala language support."
+fi
+
+echo
+
+#if ask_to_install "Gradle/Groovy language support"; then
+#    install_gradle_language_server
+#    installed_any=true
+#else
+#    echo "Skipping Gradle/Groovy language support."
+#fi
+
+echo
+
+if ask_to_install "Android SDK"; then
+    install_android_sdk
+    installed_any=true
+else
+    echo "Skipping Android SDK."
+fi
 
 echo
 

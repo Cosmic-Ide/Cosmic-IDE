@@ -39,6 +39,7 @@
 
 #define TERMUX_FILES_PREFIX   "/data/data/com.termux/files"
 #define APP_FILES_DIR_DEFAULT "/data/data/org.cosmicide/files/glibc"
+#define PHYSICAL_CANONICAL_ENV "PATH_REDIRECT_PHYSICAL_CANONICAL"
 
 /* ------------------------------------------------------------------------- */
 /* RTLD_NEXT symbol lookup                                                    */
@@ -117,6 +118,8 @@ DECLARE_REAL_SYMBOL(openat64)
 DECLARE_REAL_SYMBOL(opendir)
 DECLARE_REAL_SYMBOL(readlink)
 DECLARE_REAL_SYMBOL(readlinkat)
+DECLARE_REAL_SYMBOL(__readlink_chk)
+DECLARE_REAL_SYMBOL(__readlinkat_chk)
 DECLARE_REAL_SYMBOL(realpath)
 DECLARE_REAL_SYMBOL(remove)
 DECLARE_REAL_SYMBOL(removexattr)
@@ -204,6 +207,158 @@ static void debug_redirect(const char* operation, const char* from, const char* 
 /* Kept for compatibility with the original implementation and its log labels. */
 static void debug_path_operation(const char* operation, const char* from, const char* to) {
     debug_redirect(operation, from, to);
+}
+
+
+/*
+ * GNU readlink -f/-e/-m canonicalizes a path component by component. Merely
+ * redirecting lstat/readlink to the physical root leaves the printed spelling
+ * virtual (for example /usr/bin/ldd). For canonicalizing readlink processes,
+ * present the first virtual root component as a synthetic symlink whose target
+ * is the corresponding physical app-root directory. The canonicalizer then
+ * continues from that absolute physical target and naturally prints a physical
+ * path. Ordinary readlink calls remain unchanged.
+ */
+static ssize_t copy_readlink_result(const char* target, char* out, size_t out_size);
+
+static int environment_flag_enabled(const char* name, int* was_set) {
+    const char* value = getenv(name);
+    if (was_set != NULL) *was_set = value != NULL && value[0] != '\0';
+    return value != NULL && value[0] != '\0' && strcmp(value, "0") != 0;
+}
+
+static const char* path_base_name(const char* path) {
+    if (path == NULL) return "";
+    const char* slash = strrchr(path, '/');
+    return slash != NULL ? slash + 1 : path;
+}
+
+static int short_option_requests_canonicalization(const char* argument) {
+    if (argument == NULL || argument[0] != '-' || argument[1] == '\0' ||
+        argument[1] == '-') {
+        return 0;
+    }
+    for (const char* p = argument + 1; *p != '\0'; ++p) {
+        if (*p == 'f' || *p == 'e' || *p == 'm') return 1;
+    }
+    return 0;
+}
+
+static int detect_readlink_canonical_process(void) {
+    int (*real_open_fn)(const char*, int, ...) =
+        REAL(open, int (*)(const char*, int, ...));
+    int fd = real_open_fn("/proc/self/cmdline", O_RDONLY | O_CLOEXEC);
+    if (fd < 0) return 0;
+
+    char command_line[REDIR_BUF_SIZE];
+    ssize_t count = read(fd, command_line, sizeof(command_line) - 1);
+    int saved_errno = errno;
+    close(fd);
+    errno = saved_errno;
+    if (count <= 0) return 0;
+    command_line[count] = '\0';
+
+    size_t offset = 0;
+    const char* argv0 = command_line;
+    size_t argv0_length = strnlen(argv0, (size_t)count);
+    if (argv0_length == (size_t)count ||
+        strcmp(path_base_name(argv0), "readlink") != 0) {
+        return 0;
+    }
+    offset = argv0_length + 1;
+
+    int parse_options = 1;
+    while (offset < (size_t)count) {
+        const char* argument = command_line + offset;
+        size_t remaining = (size_t)count - offset;
+        size_t length = strnlen(argument, remaining);
+        if (length == remaining) break;
+        offset += length + 1;
+
+        if (!parse_options || argument[0] == '\0') continue;
+        if (strcmp(argument, "--") == 0) {
+            parse_options = 0;
+            continue;
+        }
+        if (strcmp(argument, "--canonicalize") == 0 ||
+            strcmp(argument, "--canonicalize-existing") == 0 ||
+            strcmp(argument, "--canonicalize-missing") == 0 ||
+            short_option_requests_canonicalization(argument)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static pthread_once_t readlink_canonical_once = PTHREAD_ONCE_INIT;
+static int readlink_canonical_process = 0;
+
+static void init_readlink_canonical_process(void) {
+    readlink_canonical_process = detect_readlink_canonical_process();
+}
+
+static int physical_canonical_output_enabled(void) {
+    int was_set = 0;
+    int enabled = environment_flag_enabled(PHYSICAL_CANONICAL_ENV, &was_set);
+    if (was_set) return enabled;
+    pthread_once(&readlink_canonical_once, init_readlink_canonical_process);
+    return readlink_canonical_process;
+}
+
+static int is_virtual_root_component(const char* path) {
+    if (path == NULL) return 0;
+    return strcmp(path, "/usr") == 0 ||
+           strcmp(path, "/bin") == 0 ||
+           strcmp(path, "/sbin") == 0 ||
+           strcmp(path, "/lib") == 0 ||
+           strcmp(path, "/lib64") == 0 ||
+           strcmp(path, "/etc") == 0 ||
+           strcmp(path, "/var") == 0 ||
+           strcmp(path, "/run") == 0 ||
+           strcmp(path, "/home") == 0 ||
+           strcmp(path, "/tmp") == 0;
+}
+
+static int should_synthesize_physical_root_symlink(
+    const char* original,
+    const char* redirected
+) {
+    return physical_canonical_output_enabled() &&
+           is_virtual_root_component(original) &&
+           redirected != NULL && strcmp(original, redirected) != 0;
+}
+
+static void spoof_stat_as_symlink(struct stat* st, const char* target) {
+    st->st_mode = (st->st_mode & ~S_IFMT) | S_IFLNK | 0777;
+    st->st_nlink = 1;
+    st->st_size = (off_t)strlen(target);
+}
+
+#if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
+static void spoof_stat64_as_symlink(struct stat64* st, const char* target) {
+    st->st_mode = (st->st_mode & ~S_IFMT) | S_IFLNK | 0777;
+    st->st_nlink = 1;
+    st->st_size = (off64_t)strlen(target);
+}
+#endif
+
+static void spoof_statx_as_symlink(struct statx* st, const char* target) {
+    st->stx_mode = (st->stx_mode & ~S_IFMT) | S_IFLNK | 0777;
+    st->stx_nlink = 1;
+    st->stx_size = (uint64_t)strlen(target);
+}
+
+static int copy_physical_canonical_target(
+    const char* original,
+    const char* redirected,
+    char* out,
+    size_t out_size,
+    ssize_t* result
+) {
+    if (!should_synthesize_physical_root_symlink(original, redirected)) return 0;
+    debug_path_operation("canonical-physical", original, redirected);
+    *result = copy_readlink_result(redirected, out, out_size);
+    return 1;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -579,9 +734,39 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
         return redirected;
     }
 
+
+    if (path_starts_with_component(path, "/home")) {
+        const char* redirected = redirect_virtual_root(path, "/home", "/home", buffer, buffer_size);
+        debug_redirect("home", path, redirected);
+        return redirected;
+    }
+
     if (path_starts_with_component(path, "/bin")) {
-        const char* redirected = redirect_virtual_root(path, "/bin", "/bin", buffer, buffer_size);
-        debug_redirect("bin", path, redirected);
+        /*
+         * Prefer a genuine entry below /bin. If it is absent, emulate Arch's
+         * merged-/usr layout and resolve the same path below /usr/bin instead.
+         * Use the real lstat implementation so this existence probe cannot
+         * recurse through the interposer.
+         */
+        const char* redirected =
+            redirect_virtual_root(path, "/bin", "/bin", buffer, buffer_size);
+        if (redirected == NULL) return NULL;
+
+        int saved_errno = errno;
+        struct stat st;
+        int (*real_lstat_fn)(const char*, struct stat*) =
+            REAL(lstat, int (*)(const char*, struct stat*));
+        int primary_exists = real_lstat_fn(redirected, &st) == 0;
+        errno = saved_errno;
+
+        if (primary_exists) {
+            debug_redirect("bin", path, redirected);
+            return redirected;
+        }
+
+        redirected =
+            redirect_virtual_root(path, "/bin", "/usr/bin", buffer, buffer_size);
+        debug_redirect("bin-fallback", path, redirected);
         return redirected;
     }
 
@@ -643,6 +828,7 @@ static int dirfd_path_can_contain_virtual_root(const char* path) {
     if (path_starts_with_component(path, "/var")) return 1;
     if (path_starts_with_component(path, "/run")) return 1;
     if (path_starts_with_component(path, "/usr")) return 1;
+    if (path_starts_with_component(path, "/home")) return 1;
     if (path_starts_with_component(path, "/bin")) return 1;
     if (path_starts_with_component(path, "/sbin")) return 1;
     if (path_starts_with_component(path, "/lib")) return 1;
@@ -993,6 +1179,10 @@ ssize_t readlink(const char* pathname, char* out, size_t out_size) {
     char path_buffer[REDIR_BUF_SIZE];
     const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
     if (path == NULL) return -1;
+    ssize_t synthetic_result;
+    if (copy_physical_canonical_target(pathname, path, out, out_size, &synthetic_result)) {
+        return synthetic_result;
+    }
     return fn(path, out, out_size);
 }
 
@@ -1007,7 +1197,75 @@ ssize_t readlinkat(int dirfd, const char* pathname, char* out, size_t out_size) 
     char path_buffer[REDIR_BUF_SIZE];
     const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
     if (path == NULL) return -1;
+    ssize_t synthetic_result;
+    if (copy_physical_canonical_target(pathname, path, out, out_size, &synthetic_result)) {
+        return synthetic_result;
+    }
     return fn(dirfd, path, out, out_size);
+}
+
+/*
+ * glibc _FORTIFY_SOURCE entry points.
+ *
+ * Fortified programs may call these symbols directly instead of the public
+ * readlink/readlinkat symbols. Redirect before forwarding to glibc's real
+ * checked implementation so its normal object-size validation is preserved.
+ */
+ssize_t __readlink_chk(
+    const char* pathname,
+    char* out,
+    size_t out_size,
+    size_t out_object_size
+) {
+    const char* identity = executable_identity_for_path(pathname);
+    if (identity != NULL) {
+        if (out_size > out_object_size) {
+            errno = ERANGE;
+            return -1;
+        }
+        return copy_readlink_result(identity, out, out_size);
+    }
+
+    ssize_t (*fn)(const char*, char*, size_t, size_t) =
+        REAL(__readlink_chk, ssize_t (*)(const char*, char*, size_t, size_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    ssize_t synthetic_result;
+    if (copy_physical_canonical_target(pathname, path, out, out_size, &synthetic_result)) {
+        return synthetic_result;
+    }
+    return fn(path, out, out_size, out_object_size);
+}
+
+ssize_t __readlinkat_chk(
+    int dirfd,
+    const char* pathname,
+    char* out,
+    size_t out_size,
+    size_t out_object_size
+) {
+    if (pathname != NULL && pathname[0] == '/') {
+        const char* identity = executable_identity_for_path(pathname);
+        if (identity != NULL) {
+            if (out_size > out_object_size) {
+                errno = ERANGE;
+                return -1;
+            }
+            return copy_readlink_result(identity, out, out_size);
+        }
+    }
+
+    ssize_t (*fn)(int, const char*, char*, size_t, size_t) =
+        REAL(__readlinkat_chk, ssize_t (*)(int, const char*, char*, size_t, size_t));
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(dirfd, pathname, path_buffer, sizeof(path_buffer));
+    if (path == NULL) return -1;
+    ssize_t synthetic_result;
+    if (copy_physical_canonical_target(pathname, path, out, out_size, &synthetic_result)) {
+        return synthetic_result;
+    }
+    return fn(dirfd, path, out, out_size, out_object_size);
 }
 
 unsigned long getauxval(unsigned long type) {
@@ -1238,6 +1496,11 @@ int statx(int dirfd, const char* pathname, int flags, unsigned int mask, struct 
     }
 
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_statx_if_perf_data(st);
+    if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
+        should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-lstatx", pathname, path);
+        spoof_statx_as_symlink(st, path);
+    }
     return result;
 }
 
@@ -1258,6 +1521,10 @@ int lstat(const char* pathname, struct stat* st) {
     if (path == NULL) return -1;
     int result = fn(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-lstat", pathname, path);
+        spoof_stat_as_symlink(st, path);
+    }
     return result;
 }
 
@@ -1276,6 +1543,11 @@ int fstatat(int dirfd, const char* pathname, struct stat* st, int flags) {
     if (path == NULL) return -1;
     int result = fn(dirfd, path, st, flags);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
+        should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-fstatat", pathname, path);
+        spoof_stat_as_symlink(st, path);
+    }
     return result;
 }
 
@@ -1315,6 +1587,10 @@ int lstat64(const char* pathname, struct stat64* st) {
     if (path == NULL) return -1;
     int result = fn(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-lstat64", pathname, path);
+        spoof_stat64_as_symlink(st, path);
+    }
     return result;
 }
 
@@ -1341,6 +1617,11 @@ int fstatat64(int dirfd, const char* pathname, struct stat64* st, int flags) {
     if (path == NULL) return -1;
     int result = fn(dirfd, path, st, flags);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
+        should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-fstatat64", pathname, path);
+        spoof_stat64_as_symlink(st, path);
+    }
     return result;
 }
 #endif
@@ -1366,6 +1647,10 @@ int __lxstat(int version, const char* pathname, struct stat* st) {
     int result = fn != NULL ? fn(version, path, st)
                             : REAL(lstat, int (*)(const char*, struct stat*))(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-__lxstat", pathname, path);
+        spoof_stat_as_symlink(st, path);
+    }
     return result;
 }
 
@@ -1389,6 +1674,11 @@ int __fxstatat(int version, int dirfd, const char* pathname, struct stat* st, in
                                   dirfd, path, st, flags
                               );
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
+        should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-__fxstatat", pathname, path);
+        spoof_stat_as_symlink(st, path);
+    }
     return result;
 }
 
@@ -1412,6 +1702,10 @@ int __lxstat64(int version, const char* pathname, struct stat64* st) {
     if (path == NULL) return -1;
     int result = fn != NULL ? fn(version, path, st) : lstat64(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-__lxstat64", pathname, path);
+        spoof_stat64_as_symlink(st, path);
+    }
     return result;
 }
 
@@ -1438,6 +1732,11 @@ int __fxstatat64(
     int result = fn != NULL ? fn(version, dirfd, path, st, flags)
                             : fstatat64(dirfd, path, st, flags);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
+        should_synthesize_physical_root_symlink(pathname, path)) {
+        debug_path_operation("canonical-__fxstatat64", pathname, path);
+        spoof_stat64_as_symlink(st, path);
+    }
     return result;
 }
 #endif
@@ -2146,6 +2445,12 @@ long path_redirect_syscall_dispatch(
             sizeof(path_buffer)
         );
         if (path == NULL) return -1;
+        ssize_t synthetic_result;
+        if (copy_physical_canonical_target(
+                original, path, (char*)argument2, (size_t)argument3, &synthetic_result
+            )) {
+            return synthetic_result;
+        }
         debug_path_operation("syscall(SYS_readlink)", original, path);
         return real_syscall_call(
             number,
@@ -2182,6 +2487,12 @@ long path_redirect_syscall_dispatch(
             sizeof(path_buffer)
         );
         if (path == NULL) return -1;
+        ssize_t synthetic_result;
+        if (copy_physical_canonical_target(
+                original, path, (char*)argument3, (size_t)argument4, &synthetic_result
+            )) {
+            return synthetic_result;
+        }
         debug_path_operation("syscall(SYS_readlinkat)", original, path);
         return real_syscall_call(
             number,
@@ -2221,6 +2532,11 @@ long path_redirect_syscall_dispatch(
         if (result == 0 && is_perf_path_either(original, path)) {
             spoof_statx_if_perf_data((struct statx*)argument5);
         }
+        if (result == 0 && (((int)argument3) & AT_SYMLINK_NOFOLLOW) != 0 &&
+            should_synthesize_physical_root_symlink(original, path)) {
+            debug_path_operation("canonical-syscall-statx", original, path);
+            spoof_statx_as_symlink((struct statx*)argument5, path);
+        }
         return result;
     }
 #endif
@@ -2250,6 +2566,11 @@ long path_redirect_syscall_dispatch(
         if (result == 0 && is_perf_path_either(original, path)) {
             spoof_stat_if_perf_data((struct stat*)argument3);
         }
+        if (result == 0 && (((int)argument4) & AT_SYMLINK_NOFOLLOW) != 0 &&
+            should_synthesize_physical_root_symlink(original, path)) {
+            debug_path_operation("canonical-syscall-newfstatat", original, path);
+            spoof_stat_as_symlink((struct stat*)argument3, path);
+        }
         return result;
     }
 #endif
@@ -2278,6 +2599,11 @@ long path_redirect_syscall_dispatch(
         );
         if (result == 0 && is_perf_path_either(original, path)) {
             spoof_stat64_if_perf_data((struct stat64*)argument3);
+        }
+        if (result == 0 && (((int)argument4) & AT_SYMLINK_NOFOLLOW) != 0 &&
+            should_synthesize_physical_root_symlink(original, path)) {
+            debug_path_operation("canonical-syscall-fstatat64", original, path);
+            spoof_stat64_as_symlink((struct stat64*)argument3, path);
         }
         return result;
     }
@@ -2322,6 +2648,10 @@ long path_redirect_syscall_dispatch(
         );
         if (result == 0 && is_perf_path_either(original, path)) {
             spoof_stat_if_perf_data((struct stat*)argument2);
+        }
+        if (result == 0 && should_synthesize_physical_root_symlink(original, path)) {
+            debug_path_operation("canonical-syscall-lstat", original, path);
+            spoof_stat_as_symlink((struct stat*)argument2, path);
         }
         return result;
     }
@@ -3403,4 +3733,3 @@ int inotify_add_watch(int fd, const char* pathname, uint32_t mask) {
 
     return watch;
 }
-

@@ -22,10 +22,6 @@ object FileUtil {
         get() = dataDir.resolve("projects")
 
     @JvmStatic
-    val classpathDir
-        get() = dataDir.resolve("classpath")
-
-    @JvmStatic
     val pluginDir
         get() = dataDir.resolve("plugins")
 
@@ -33,7 +29,6 @@ object FileUtil {
     fun init(dir: File) {
         dataDir = dir
         projectDir.mkdirs()
-        classpathDir.mkdirs()
         pluginDir.mkdirs()
     }
 }

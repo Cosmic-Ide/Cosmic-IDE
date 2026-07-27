@@ -1,28 +1,34 @@
 {
   "languages": [
     {
-      "grammar": "textmate/java/syntaxes/java.tmLanguage.json",
+      "grammar": "textmate/java/java.tmLanguage.json",
       "name": "java",
       "scopeName": "source.java",
       "languageConfiguration": "textmate/java/language-configuration.json"
     },
     {
-      "grammar": "textmate/kotlin/syntaxes/kotlin.tmLanguage.json",
+      "grammar": "textmate/kotlin/kotlin.tmLanguage.json",
       "name": "kotlin",
       "scopeName": "source.kotlin",
       "languageConfiguration": "textmate/kotlin/language-configuration.json"
     },
     {
-      "grammar": "textmate/smali/syntaxes/smali.tmLanguage.json",
+      "grammar": "textmate/smali/smali.tmLanguage.json",
       "name": "smali",
       "scopeName": "source.smali",
       "languageConfiguration": "textmate/smali/language-configuration.json"
     },
     {
-      "grammar": "textmate/scala/syntaxes/scala.tmLanguage.json",
+      "grammar": "textmate/scala/scala.tmLanguage.json",
       "name": "scala",
       "scopeName": "source.scala",
       "languageConfiguration": "textmate/scala/language-configuration.json"
+    },
+    {
+      "grammar": "textmate/groovy/groovy.tmLanguage.json",
+      "name": "groovy",
+      "scopeName": "source.groovy",
+      "languageConfiguration": "textmate/groovy/language-configuration.json"
     }
   ]
 }

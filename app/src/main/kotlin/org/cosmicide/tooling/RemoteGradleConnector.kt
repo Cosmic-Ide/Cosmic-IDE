@@ -6,18 +6,31 @@ import com.google.gson.JsonObject
 import org.gradle.tooling.BuildAction
 import org.gradle.tooling.BuildActionExecuter
 import org.gradle.tooling.BuildLauncher
+import org.gradle.tooling.CancellationToken
 import org.gradle.tooling.GradleConnectionException
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ModelBuilder
 import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.ResultHandler
 import org.gradle.tooling.TestLauncher
+import org.gradle.tooling.events.OperationType
+import org.gradle.tooling.model.gradle.BuildInvocations
 import java.io.File
 import java.net.URI
 import java.nio.file.Path
 import java.util.concurrent.CountDownLatch
 
+data class RemoteGradleSyncResult(
+    val connection: ProjectConnection,
+    val tasks: List<String>
+)
+
 class RemoteGradleConnector(private val context: Context) : GradleConnector() {
+    companion object {
+        fun forProject(context: Context, projectDir: File) =
+            RemoteGradleConnector(context).apply { this.projectDir = projectDir.absoluteFile }
+    }
+
     private var projectDir: File? = null
     private var gradleUserHome: File? = null
     private var gradleVersion: String? = null
@@ -35,7 +48,6 @@ class RemoteGradleConnector(private val context: Context) : GradleConnector() {
     override fun useBuildDistribution(): GradleConnector =
         apply { gradleVersion = null; gradleInstallation = null; gradleDistributionUri = null }
 
-    // Fixed: must actually return GradleConnector (was missing a return statement / wrong param nullability)
     override fun useDistribution(gradleDistribution: URI): GradleConnector = apply {
         gradleVersion = null
         gradleInstallation = null
@@ -63,6 +75,32 @@ class RemoteGradleConnector(private val context: Context) : GradleConnector() {
     override fun disconnect() {
         ToolingServerManager.stopCurrent()
     }
+
+    fun sync(
+        connection: ProjectConnection? = null,
+        onOutput: (String) -> Unit,
+        cancellationToken: CancellationToken? = null
+    ): RemoteGradleSyncResult {
+        val activeConnection = connection ?: connect()
+        val modelBuilder = activeConnection.model(BuildInvocations::class.java)
+            .addProgressListener(
+                { onOutput("${it.displayName}\n") },
+                OperationType.BUILD_PHASE,
+                OperationType.PROJECT_CONFIGURATION,
+                OperationType.PROBLEMS,
+                OperationType.ROOT,
+                OperationType.GENERIC
+            )
+        cancellationToken?.let(modelBuilder::withCancellationToken)
+        val model = modelBuilder.get()
+
+        return RemoteGradleSyncResult(
+            connection = activeConnection,
+            tasks = (model.tasks.map { it.path } + model.taskSelectors.map { it.name })
+                .distinct()
+                .sorted()
+        )
+    }
 }
 
 class RemoteProjectConnection(private val server: ToolingServer) : ProjectConnection {
@@ -71,7 +109,6 @@ class RemoteProjectConnection(private val server: ToolingServer) : ProjectConnec
         val latch = CountDownLatch(1)
         var result: T? = null
         var error: Throwable? = null
-        // Fixed: ResultHandler has 2 abstract methods, can't be a lambda -- build it via resultHandler(...)
         getModel(
             modelType, resultHandler(
             onComplete = { result = it; latch.countDown() },

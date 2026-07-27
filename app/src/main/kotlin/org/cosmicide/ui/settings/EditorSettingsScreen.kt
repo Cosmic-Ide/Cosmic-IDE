@@ -1,6 +1,10 @@
 package org.cosmicide.ui.settings
 
 import android.content.Context
+import android.graphics.Typeface
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,21 +17,29 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
-import org.cosmicide.common.Analytics
-import org.cosmicide.ui.settings.components.EditTextPreference
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.cosmicide.common.Prefs
+import org.cosmicide.ui.settings.components.PreferenceItem
 import org.cosmicide.ui.settings.components.SliderPreference
 import org.cosmicide.ui.settings.components.SwitchPreference
 import org.cosmicide.util.PreferenceKeys
+import java.io.File
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +47,7 @@ fun EditorSettingsScreen(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val prefs = remember {
         context.getSharedPreferences(
             context.packageName + "_preferences",
@@ -42,21 +55,36 @@ fun EditorSettingsScreen(
         )
     }
 
-    var fontSize by remember { mutableFloatStateOf(prefs.getString(PreferenceKeys.EDITOR_FONT_SIZE, "12")?.toFloat() ?: 12f) }
-    var tabSize by remember { mutableFloatStateOf(prefs.getInt(PreferenceKeys.EDITOR_TAB_SIZE, 4).toFloat()) }
-    var editorFont by remember { mutableStateOf(prefs.getString(PreferenceKeys.EDITOR_FONT, "") ?: "") }
-    var stickyScroll by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.STICKY_SCROLL, true)) }
-    var useSpaces by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_USE_SPACES, true)) }
-    var ligatures by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_LIGATURES_ENABLE, false)) }
-    var wordWrap by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_WORDWRAP_ENABLE, false)) }
-    var bracketAutocomplete by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.BRACKET_PAIR_AUTOCOMPLETE, true)) }
-    var scrollbar by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_SCROLLBAR_SHOW, true)) }
-    var quickDelete by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.QUICK_DELETE, true)) }
-    var hwAccel by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_HW_ENABLE, true)) }
-    var nonPrintable by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_NON_PRINTABLE_SYMBOLS_SHOW, false)) }
-    var lineNumbers by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_LINE_NUMBERS_SHOW, false)) }
-    var doubleClickClose by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.EDITOR_DOUBLE_CLICK_CLOSE, false)) }
-    var disableSymbolsView by remember { mutableStateOf(prefs.getBoolean(PreferenceKeys.DISABLE_SYMBOLS_VIEW, false)) }
+    var fontSize by remember { mutableFloatStateOf(Prefs.editorFontSize) }
+    var tabSize by remember { mutableFloatStateOf(Prefs.tabSize.toFloat()) }
+    var editorFont by remember { mutableStateOf(Prefs.editorFont) }
+    var fontSelectionError by remember { mutableStateOf<String?>(null) }
+    var stickyScroll by remember { mutableStateOf(Prefs.stickyScroll) }
+    var useSpaces by remember { mutableStateOf(Prefs.useSpaces) }
+    var ligatures by remember { mutableStateOf(Prefs.useLigatures) }
+    var wordWrap by remember { mutableStateOf(Prefs.wordWrap) }
+    var bracketAutocomplete by remember { mutableStateOf(Prefs.bracketPairAutocomplete) }
+    var scrollbar by remember { mutableStateOf(Prefs.scrollbarEnabled) }
+    var quickDelete by remember { mutableStateOf(Prefs.quickDelete) }
+    var hwAccel by remember { mutableStateOf(Prefs.hardwareAcceleration) }
+    var nonPrintable by remember { mutableStateOf(Prefs.nonPrintableCharacters) }
+    var lineNumbers by remember { mutableStateOf(Prefs.lineNumbers) }
+    val fontPicker =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri != null) {
+                scope.launch {
+                    runCatching {
+                        withContext(Dispatchers.IO) { installEditorFont(context, uri) }
+                    }.onSuccess { path ->
+                        editorFont = path
+                        fontSelectionError = null
+                        prefs.edit { putString(PreferenceKeys.EDITOR_FONT, path) }
+                    }.onFailure { error ->
+                        fontSelectionError = error.message ?: "Could not use the selected font"
+                    }
+                }
+            }
+        }
 
     Scaffold(
         topBar = {
@@ -84,7 +112,7 @@ fun EditorSettingsScreen(
                 steps = 20,
                 onValueChange = {
                     fontSize = it
-                    prefs.edit { putFloat(PreferenceKeys.EDITOR_FONT_SIZE, it) }
+                    prefs.edit { putString(PreferenceKeys.EDITOR_FONT_SIZE, it.toString()) }
                 }
             )
 
@@ -96,19 +124,42 @@ fun EditorSettingsScreen(
                 steps = 12,
                 onValueChange = {
                     tabSize = it
-                    prefs.edit { putFloat(PreferenceKeys.EDITOR_TAB_SIZE, it) }
+                    prefs.edit {
+                        putInt(PreferenceKeys.EDITOR_TAB_SIZE, it.roundToInt())
+                    }
                 }
             )
 
-            EditTextPreference(
+            PreferenceItem(
                 title = "Editor font",
-                summary = "Enter the font path for editor",
-                value = editorFont,
-                onValueChange = {
-                    editorFont = it
-                    prefs.edit { putString(PreferenceKeys.EDITOR_FONT, it) }
+                summary = fontSelectionError ?: if (editorFont.isEmpty()) {
+                    "Bundled Noto Sans Mono • tap to choose a font file"
+                } else {
+                    "Custom font selected • tap to replace"
+                },
+                onClick = {
+                    fontPicker.launch(
+                        arrayOf(
+                            "font/*",
+                            "application/x-font-ttf",
+                            "application/x-font-opentype",
+                            "application/octet-stream"
+                        )
+                    )
                 }
             )
+            if (editorFont.isNotEmpty()) {
+                TextButton(
+                    onClick = {
+                        editorFont = ""
+                        fontSelectionError = null
+                        prefs.edit { remove(PreferenceKeys.EDITOR_FONT) }
+                    },
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) {
+                    Text("Use bundled font")
+                }
+            }
 
             SwitchPreference(
                 title = "Sticky scroll",
@@ -210,25 +261,30 @@ fun EditorSettingsScreen(
                 }
             )
 
-            SwitchPreference(
-                title = "Double click to close",
-                summary = "If enabled, double clicking on an opened tab will close it",
-                checked = doubleClickClose,
-                onCheckedChange = {
-                    doubleClickClose = it
-                    prefs.edit { putBoolean(PreferenceKeys.EDITOR_DOUBLE_CLICK_CLOSE, it) }
-                }
-            )
-
-            SwitchPreference(
-                title = "Disable symbols view",
-                summary = "If enabled, symbols view above will be disabled",
-                checked = disableSymbolsView,
-                onCheckedChange = {
-                    disableSymbolsView = it
-                    prefs.edit { putBoolean(PreferenceKeys.DISABLE_SYMBOLS_VIEW, it) }
-                }
-            )
         }
+    }
+}
+
+private fun installEditorFont(context: Context, uri: Uri): String {
+    val fontsDirectory = context.filesDir.resolve("fonts").apply { mkdirs() }
+    val temporary = File(fontsDirectory, "editor-font.tmp")
+    val destination = File(fontsDirectory, "editor-font")
+
+    try {
+        context.contentResolver.openInputStream(uri)?.use { input ->
+            temporary.outputStream().use(input::copyTo)
+        } ?: error("The selected font could not be opened")
+
+        Typeface.createFromFile(temporary)
+        check(!destination.exists() || destination.delete()) {
+            "Could not replace the existing editor font"
+        }
+        check(temporary.renameTo(destination)) {
+            "Could not save the selected editor font"
+        }
+        return destination.absolutePath
+    } catch (error: Throwable) {
+        temporary.delete()
+        throw error
     }
 }

@@ -23,7 +23,7 @@ android {
         val commit = getGitCommit()
 
         applicationId = "org.cosmicide"
-        minSdk = 33
+        minSdk = 28
         targetSdk = 37
         versionCode = 25
         versionName = "3.0.0"
@@ -137,6 +137,9 @@ dependencies {
     implementation("com.github.termux.termux-app:terminal-emulator:v0.119.0-beta.3")
     implementation("com.github.termux.termux-app:terminal-view:v0.119.0-beta.3")
 
+    implementation("com.mikepenz:multiplatform-markdown-renderer:0.43.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.43.0")
+
     //noinspection Aligned16KB
     implementation("top.canyie.pine:core:0.3.0")
 
@@ -157,14 +160,14 @@ dependencies {
 
     implementation(platform("androidx.compose:compose-bom:2026.06.01"))
 
-    implementation("androidx.compose.material3:material3:1.5.0-alpha23")
+    implementation("androidx.compose.material3:material3:1.5.0-alpha24")
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
     implementation("androidx.compose.material:material-icons-core:1.7.8")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("androidx.compose.material3.adaptive:adaptive-navigation:1.3.0-rc01")
-    implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha05")
-    implementation("androidx.navigation3:navigation3-ui:1.2.0-alpha05")
+    implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha06")
+    implementation("androidx.navigation3:navigation3-ui:1.2.0-alpha06")
     implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.11.0")
 
     implementation("me.saket.cascade:cascade-compose:2.3.0")

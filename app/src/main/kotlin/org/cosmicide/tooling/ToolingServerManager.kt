@@ -1,10 +1,13 @@
 package org.cosmicide.tooling
 
+import android.annotation.SuppressLint
 import android.content.Context
 import java.io.File
 
 object ToolingServerManager {
     private val lock = Any()
+
+    @SuppressLint("StaticFieldLeak")
     private var currentServer: ToolingServer? = null
 
     fun forProject(context: Context, projectDir: File): ToolingServer {

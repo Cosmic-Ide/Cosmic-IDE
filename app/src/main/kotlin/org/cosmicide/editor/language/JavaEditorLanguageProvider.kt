@@ -10,12 +10,13 @@ package org.cosmicide.editor.language
 import android.content.Context
 import android.util.Log
 import org.cosmicide.App
-import org.cosmicide.editor.lsp.ExistingProcessLspConnection
-import org.cosmicide.exec.ProcessExecutor
-import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.editor.LspServerDefinition
 import org.cosmicide.editor.LspServerProvider
 import org.cosmicide.editor.LspServerRequest
+import org.cosmicide.editor.lsp.ExistingProcessLspConnection
+import org.cosmicide.editor.lsp.LspLogStore
+import org.cosmicide.exec.ProcessExecutor
+import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.project.Project
 import org.eclipse.lsp4j.CodeLensOptions
 import org.eclipse.lsp4j.ServerCapabilities
@@ -113,16 +114,19 @@ object JavaEditorLanguageProvider : LspServerProvider {
                 redirectErrorStream = false
             ).also { process ->
                 streamStderrToLogcat(process.errorStream)
+                val pid = LinuxProcessRunner.getNativePid(process)
                 Log.d(
                     TAG,
-                    "JDTLS process started with PID: ${LinuxProcessRunner.getNativePid(process)}"
+                    "JDTLS process started with PID: $pid"
                 )
+                LspLogStore.info("JDT LS", "Server process started with PID: $pid")
                 renice(process)
                 jdtLspProcess = process
                 jdtProjectRoot = projectRoot
             }
         } catch (e: Exception) {
             Log.e(TAG, "JDTLS execution crashed", e)
+            LspLogStore.error("JDT LS", "Server process crashed", e)
             null
         }
     }
@@ -145,10 +149,12 @@ object JavaEditorLanguageProvider : LspServerProvider {
                 var line = reader.readLine()
                 while (line != null) {
                     Log.e("JDTLS-LOG", line)
+                    LspLogStore.error("JDT LS", line)
                     line = reader.readLine()
                 }
             } catch (e: Exception) {
                 Log.w("JDTLS-LOG", "Stderr logger stopped: ${e.message}")
+                LspLogStore.warning("JDT LS", "Stderr logger stopped", e)
             }
         }.apply {
             name = "JDTLS-Stderr-Logger"
@@ -171,16 +177,33 @@ object JavaEditorLanguageProvider : LspServerProvider {
 
     private fun createJdtCapabilities(): ServerCapabilities {
         return ServerCapabilities().apply {
+            // Code actions power Quick Fixes and Refactorings
             codeActionProvider = Either.forLeft(true)
+
+            // Formatting
             documentFormattingProvider = Either.forLeft(true)
-            signatureHelpProvider = SignatureHelpOptions(listOf("(", ","))
-            diagnosticProvider = null
+            documentRangeFormattingProvider = Either.forLeft(true)
+
+            // Navigation & Hover
             definitionProvider = Either.forLeft(true)
+            implementationProvider = Either.forLeft(true)
+            typeDefinitionProvider = Either.forLeft(true)
+            referencesProvider = Either.forLeft(true)
             hoverProvider = Either.forLeft(true)
+            documentHighlightProvider = Either.forLeft(true)
+
+            // Signatures & Hints
+            signatureHelpProvider = SignatureHelpOptions(listOf("(", ","))
             inlayHintProvider = Either.forLeft(true)
+
+            // Code Lens (Method references & implementation counts)
             codeLensProvider = CodeLensOptions(true)
-            semanticTokensProvider = null
-            documentHighlightProvider = Either.forLeft(false)
+
+
+            // NOTE: Standard LSP diagnostic publishing via 'textDocument/publishDiagnostics'
+            // does not require setting 'diagnosticProvider' (which is for pull-diagnostics in LSP 3.17+).
+            // Setting it to null/omitting it lets standard push diagnostics work.
+            diagnosticProvider = null
         }
     }
 
@@ -188,14 +211,34 @@ object JavaEditorLanguageProvider : LspServerProvider {
         return mapOf(
             "settings" to mapOf(
                 "java" to mapOf(
-                    "autobuild" to mapOf("enabled" to false),
-                    "references" to mapOf("includeDecompiledSources" to false),
-                    "completion" to mapOf(
-                        "guessMethodArguments" to false,
-                        "favoriteStaticMembers" to emptyList<String>()
+                    // Auto-building triggers ongoing diagnostics checks
+                    "autobuild" to mapOf("enabled" to true),
+
+                    // Diagnostics and compiler error/warning levels
+                    "format" to mapOf("enabled" to true),
+                    "saveActions" to mapOf("organizeImports" to true),
+
+                    // Code Lens settings (enable for quick insight links)
+                    "implementationsCodeLens" to mapOf("enabled" to true),
+                    "referencesCodeLens" to mapOf("enabled" to true),
+
+                    // Quick Fix & Code Actions settings
+                    "quickfix" to mapOf(
+                        "showInlining" to true
                     ),
-                    "implementationsCodeLens" to mapOf("enabled" to false),
-                    "referencesCodeLens" to mapOf("enabled" to false)
+                    "codeAction" to mapOf(
+                        "sortMembers" to mapOf("enabled" to true)
+                    ),
+
+                    // Completion features
+                    "completion" to mapOf(
+                        "guessMethodArguments" to true,
+                        "overwrite" to true,
+                        "enabled" to true
+                    ),
+
+                    // Code navigation details
+                    "references" to mapOf("includeDecompiledSources" to true)
                 )
             )
         )

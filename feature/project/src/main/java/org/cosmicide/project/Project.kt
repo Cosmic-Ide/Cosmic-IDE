@@ -8,13 +8,13 @@
 package org.cosmicide.project
 
 import kotlinx.serialization.KSerializer
-import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import java.io.File
 
 /**
  * Represents a project.
@@ -32,77 +32,6 @@ data class Project(
      * The name of the project, derived from the root directory.
      */
     val name: String = root.name
-
-    /**
-     * The source directory of the project, based on the language used.
-     */
-    val srcDir: File
-        get() {
-            val languageDirectory = when (language) {
-                is Language.Java -> "java"
-                is Language.Kotlin -> "kotlin"
-                is Language.Scala -> "scala"
-            }
-            val sourceSet = root.resolve("src/main/$languageDirectory")
-            val applicationSourceSet = root.resolve("app/src/main/$languageDirectory")
-            return applicationSourceSet.takeIf { it.isDirectory } ?: sourceSet
-        }
-
-    /**
-     * The build directory of the project.
-     */
-    @Serializable(with = FileSerializer::class)
-    val buildDir = File(root, "build")
-
-    /**
-     * The cache directory of the project.
-     */
-    @Serializable(with = FileSerializer::class)
-    val cacheDir = File(buildDir, "cache")
-
-    /**
-     * The binary directory of the project.
-     */
-    @Serializable(with = FileSerializer::class)
-    val binDir = File(buildDir, "bin")
-
-    /**
-     * The library directory of the project.
-     */
-    @Serializable(with = FileSerializer::class)
-    val libDir = File(root, "libs")
-
-    var runtimeArgs = listOf<String>()
-        get() {
-            val f = cacheDir.resolve("jre.txt")
-            if (f.exists()) {
-                return f.readLines().toMutableList()
-            }
-
-            return listOf()
-        }
-        set(value) {
-            val f = cacheDir.resolve("jre.txt")
-            f.parentFile.mkdirs()
-            f.writeText(value.joinToString("\n"))
-            field = value
-        }
-
-    var args = listOf<String>()
-        get() {
-            val f = cacheDir.resolve("args.txt")
-            if (f.exists()) {
-                return f.readLines().toMutableList()
-            }
-
-            return listOf()
-        }
-        set(value) {
-            val f = cacheDir.resolve("args.txt")
-            f.parentFile.mkdirs()
-            f.writeText(value.joinToString("\n"))
-            field = value
-        }
 
     /**
      * Deletes the project directory.

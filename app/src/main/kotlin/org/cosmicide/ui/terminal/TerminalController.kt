@@ -41,6 +41,7 @@ internal class TerminalController(
     private val onProcessExit: (Int) -> Unit
 ) {
     private val closed = AtomicBoolean(false)
+    private val terminationRequested = AtomicBoolean(false)
     private val lock = Any()
     private val terminalOutput = PtyTerminalOutput()
 
@@ -209,6 +210,7 @@ internal class TerminalController(
     }
 
     fun terminate() {
+        terminationRequested.set(true)
         process?.terminate()
     }
 
@@ -266,6 +268,8 @@ internal class TerminalController(
                     process = newProcess
                     processOutput = newProcess.getOutputStream()
                 }
+
+                if (terminationRequested.get()) newProcess.terminate()
 
                 val input = newProcess.getInputStream()
                 val buffer = ByteArray(8192)

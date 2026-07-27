@@ -46,12 +46,13 @@
 #define EXEC_WRAP_ALLOW_ANDROID_SYSTEM_EXEC 0
 #endif
 
+#define PATH_REDIRECT_PHYSICAL_CANONICAL_ENV "PATH_REDIRECT_PHYSICAL_CANONICAL"
+
 extern char** environ;
 
 typedef int (*execve_fn_t)(const char*, char* const[], char* const[]);
 typedef int (*execvp_fn_t)(const char*, char* const[]);
 typedef int (*execvpe_fn_t)(const char*, char* const[], char* const[]);
-typedef int (*fexecve_fn_t)(int, char* const[], char* const[]);
 typedef int (*posix_spawn_fn_t)(
     pid_t*,
     const char*,
@@ -102,7 +103,6 @@ static void require_symbol_or_abort(const char* name, void* symbol) {
 DECLARE_REAL_SYMBOL(execve)
 DECLARE_REAL_SYMBOL(execvp)
 DECLARE_REAL_SYMBOL(execvpe)
-DECLARE_REAL_SYMBOL(fexecve)
 DECLARE_REAL_SYMBOL(posix_spawn)
 DECLARE_REAL_SYMBOL(posix_spawnp)
 
@@ -165,6 +165,43 @@ static int string_ends_with(const char* value, const char* suffix) {
     size_t suffix_len = strlen(suffix);
     if (value_len < suffix_len) return 0;
     return strcmp(value + value_len - suffix_len, suffix) == 0;
+}
+
+static int readlink_short_option_requests_canonicalization(const char* argument) {
+    if (!argument || argument[0] != '-' || argument[1] == '\0' || argument[1] == '-') {
+        return 0;
+    }
+
+    for (const char* p = argument + 1; *p; p++) {
+        if (*p == 'f' || *p == 'e' || *p == 'm') return 1;
+    }
+    return 0;
+}
+
+static int readlink_argv_requests_physical_canonical(
+    const char* target_path,
+    char* const argv[]
+) {
+    if (!target_path || strcmp(base_name_const(target_path), "readlink") != 0 || !argv) {
+        return 0;
+    }
+
+    int parse_options = 1;
+    for (size_t i = 1; argv[i]; i++) {
+        const char* argument = argv[i];
+        if (!parse_options) continue;
+        if (strcmp(argument, "--") == 0) {
+            parse_options = 0;
+            continue;
+        }
+        if (strcmp(argument, "--canonicalize") == 0 ||
+            strcmp(argument, "--canonicalize-existing") == 0 ||
+            strcmp(argument, "--canonicalize-missing") == 0 ||
+            readlink_short_option_requests_canonicalization(argument)) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 static int is_android_linker_path(const char* path) {
@@ -365,6 +402,67 @@ static char* duplicate_string(const char* value) {
     char* out = strdup(value);
     if (!out) errno = ENOMEM;
     return out;
+}
+
+/*
+ * Some launchers (notably Homebrew's bin/brew) deliberately execute the next
+ * stage through `env -i`. GNU env clears its own `environ` before calling
+ * execvp(), so runtime values that were present when this interposer was loaded
+ * are no longer available from either the supplied envp or getenv().
+ *
+ * Capture only compatibility-runtime state. Normal application variables such
+ * as PATH, HOME, USER and SHELL must continue to obey the caller's filtered
+ * environment.
+ */
+static const char* const persistent_runtime_env_keys[] = {
+    "APP_FILES_DIR",
+    "LD_LIBRARY_PATH",
+    "LD_PRELOAD",
+    "NSS_WEAK_ROUTE_CONFIG",
+    "RESOLV_CONF_PATH",
+    "HOSTS_PATH",
+    "NSSWITCH_CONF_PATH",
+    "GAI_CONF_PATH",
+    "TMPDIR",
+    "HOMEBREW_SPAWN_SYSTEM",
+};
+
+#define PERSISTENT_RUNTIME_ENV_COUNT \
+    (sizeof(persistent_runtime_env_keys) / sizeof(persistent_runtime_env_keys[0]))
+
+static char* persistent_runtime_env_values[PERSISTENT_RUNTIME_ENV_COUNT];
+static pthread_once_t persistent_runtime_env_once = PTHREAD_ONCE_INIT;
+
+static void init_persistent_runtime_env(void) {
+    for (size_t i = 0; i < PERSISTENT_RUNTIME_ENV_COUNT; i++) {
+        const char* value = getenv(persistent_runtime_env_keys[i]);
+        if (value && *value) {
+            persistent_runtime_env_values[i] = strdup(value);
+        }
+    }
+}
+
+__attribute__((constructor))
+static void capture_persistent_runtime_env_at_load(void) {
+    pthread_once(&persistent_runtime_env_once, init_persistent_runtime_env);
+}
+
+static const char* cached_runtime_env_value(const char* key) {
+    if (!key || !*key) return NULL;
+
+    pthread_once(&persistent_runtime_env_once, init_persistent_runtime_env);
+    for (size_t i = 0; i < PERSISTENT_RUNTIME_ENV_COUNT; i++) {
+        if (strcmp(key, persistent_runtime_env_keys[i]) == 0) {
+            return persistent_runtime_env_values[i];
+        }
+    }
+    return NULL;
+}
+
+static const char* runtime_env_get_from(char* const envp[], const char* key) {
+    const char* value = env_get_from(envp, key);
+    if (value && *value) return value;
+    return cached_runtime_env_value(key);
 }
 
 static char* join_key_value(const char* key, const char* value) {
@@ -591,9 +689,32 @@ static int build_child_env(
     const char* preload,
     const char* executable_identity,
     const char* loader_identity,
+    int physical_canonical_readlink,
     owned_vec_t* out
 ) {
     if (env_copy_owned(envp, out) != 0) return -1;
+
+    /*
+     * Re-add compatibility state removed by `env -i`. This keeps path and exec
+     * interposition alive without restoring ordinary user environment values.
+     */
+    const char* restore_keys[] = {
+        "APP_FILES_DIR",
+        "NSS_WEAK_ROUTE_CONFIG",
+        "RESOLV_CONF_PATH",
+        "HOSTS_PATH",
+        "NSSWITCH_CONF_PATH",
+        "GAI_CONF_PATH",
+        "TMPDIR",
+        "HOMEBREW_SPAWN_SYSTEM",
+    };
+    for (size_t i = 0; i < sizeof(restore_keys) / sizeof(restore_keys[0]); i++) {
+        const char* value = runtime_env_get_from(envp, restore_keys[i]);
+        if (value && *value &&
+            env_set_owned(&out->items, &out->count, restore_keys[i], value) != 0) {
+            goto fail;
+        }
+    }
 
     if (library_path && *library_path) {
         if (env_set_owned(&out->items, &out->count, "LD_LIBRARY_PATH", library_path) != 0) goto fail;
@@ -615,6 +736,14 @@ static int build_child_env(
                 &out->count,
                 EXEC_WRAP_LOADER_ENV,
                 loader_identity
+            ) != 0) goto fail;
+    }
+    if (physical_canonical_readlink) {
+        if (env_set_owned(
+                &out->items,
+                &out->count,
+                PATH_REDIRECT_PHYSICAL_CANONICAL_ENV,
+                "1"
             ) != 0) goto fail;
     }
     return 0;
@@ -724,6 +853,7 @@ static int build_android_delegate_env(char* const envp[], owned_vec_t* out) {
     const char* remove_keys[] = {
         "LD_PRELOAD",
         "LD_LIBRARY_PATH",
+        "APP_FILES_DIR",
         "LD_AUDIT",
         "LD_DEBUG",
         "NSS_WEAK_ROUTE_CONFIG",
@@ -831,34 +961,34 @@ static int delegate_android_spawn_if_needed(
 #endif
 }
 
-static char* first_existing_dynamic_elf_path(const char* a, const char* b) {
-    if (a && *a && is_readable_dynamic_elf_file(a)) return duplicate_string(a);
-    if (b && *b && is_readable_dynamic_elf_file(b)) return duplicate_string(b);
-    return NULL;
-}
+/* Defined below; script-shell resolution needs the same virtual-root mapping
+ * used for executable targets. */
+static char* redirect_virtual_exec_path(const char* path, char* const envp[]);
 
-static char* resolve_script_shell(char* const envp[], const char* glibc_root) {
-    const char* explicit_shell = env_get_from(envp, "SHELL");
-    if (explicit_shell && *explicit_shell) {
-        if (is_readable_elf_file(explicit_shell)) {
-            return duplicate_string(explicit_shell);
+static char* resolve_script_shell(char* const envp[]) {
+    const char* candidates[] = {
+        env_get_from(envp, "SHELL"),
+        "/bin/bash",
+        "/bin/sh",
+    };
+
+    for (size_t i = 0; i < sizeof(candidates) / sizeof(candidates[0]); i++) {
+        const char* candidate = candidates[i];
+        if (!candidate || !*candidate) continue;
+
+        char* redirected = redirect_virtual_exec_path(candidate, envp);
+        if (!redirected) return NULL;
+
+        if (is_readable_dynamic_elf_file(redirected)) {
+            tracef("script shell %s -> %s", candidate, redirected);
+            return redirected;
         }
-        tracef("SHELL ignored for script wrapper, not readable ELF: %s", explicit_shell);
+
+        tracef("script shell ignored, not readable dynamic ELF: %s -> %s", candidate, redirected);
+        free(redirected);
     }
 
-    if (!glibc_root || !*glibc_root) return NULL;
-
-    char* bin = join_path2(glibc_root, "bin");
-    if (!bin) return NULL;
-
-    char* bash = join_path2(bin, "bash");
-    char* sh = join_path2(bin, "sh");
-    free(bin);
-
-    char* shell = first_existing_dynamic_elf_path(bash, sh);
-    free(bash);
-    free(sh);
-    return shell;
+    return NULL;
 }
 
 static int should_skip_common(const char* target_path, const char* ld_linux) {
@@ -1027,6 +1157,16 @@ static char* prepend_root(
     return result;
 }
 
+static int path_target_exists(const char* path) {
+    if (!path || !*path) return 0;
+
+    int saved_errno = errno;
+    struct stat st;
+    int exists = stat(path, &st) == 0;
+    errno = saved_errno;
+    return exists;
+}
+
 static char* redirect_virtual_exec_path(
     const char* path,
     char* const envp[]
@@ -1035,7 +1175,7 @@ static char* redirect_virtual_exec_path(
         return duplicate_string(path);
     }
 
-    const char* root = env_get_from(envp, "APP_FILES_DIR");
+    const char* root = runtime_env_get_from(envp, "APP_FILES_DIR");
     if (!root || !*root) {
         return duplicate_string(path);
     }
@@ -1045,9 +1185,37 @@ static char* redirect_virtual_exec_path(
         return prepend_root(root, "", path);
     }
 
+
+
+    if (strcmp(path, "/home") == 0 ||
+        string_starts_with(path, "/home/")) {
+        return prepend_root(root, "", path);
+    }
+
     if (strcmp(path, "/bin") == 0 ||
         string_starts_with(path, "/bin/")) {
-        return prepend_root(root, "/usr/bin", path + strlen("/bin"));
+        /*
+         * Preserve a genuine /bin entry when the package root contains one.
+         * Arch normally aliases /bin to /usr/bin, but that alias may be absent
+         * or unusable in the Android-hosted root, so emulate it as a fallback.
+         */
+        char* primary = prepend_root(root, "", path);
+        if (!primary) return NULL;
+        if (path_target_exists(primary)) return primary;
+
+        char* fallback = prepend_root(
+            root,
+            "/usr/bin",
+            path + strlen("/bin")
+        );
+        if (!fallback) {
+            free(primary);
+            return NULL;
+        }
+
+        tracef("virtual /bin fallback: %s -> %s", primary, fallback);
+        free(primary);
+        return fallback;
     }
 
     if (strcmp(path, "/sbin") == 0 ||
@@ -1088,8 +1256,8 @@ static int prepare_wrap(
     if (wrapping_now) return 0;
 
     char* ld_linux = resolve_ld_linux_path();
-    const char* library_path = env_get_from(envp, "LD_LIBRARY_PATH");
-    const char* preload = env_get_from(envp, "LD_PRELOAD");
+    const char* library_path = runtime_env_get_from(envp, "LD_LIBRARY_PATH");
+    const char* preload = runtime_env_get_from(envp, "LD_PRELOAD");
     const char* java_tmpdir = choose_java_tmpdir(envp);
 
     if (!ld_linux || !*ld_linux || !library_path || !*library_path) {
@@ -1123,6 +1291,9 @@ static int prepare_wrap(
         free(resolved);
         resolved = replacement;
     }
+
+    int physical_canonical_readlink =
+        readlink_argv_requests_physical_canonical(resolved, argv);
 
     if (should_skip_common(resolved, ld_linux)) {
         tracef("skip %s -> %s: explicitly skipped", requested_path, resolved);
@@ -1161,9 +1332,7 @@ static int prepare_wrap(
 
 #if EXEC_WRAP_ENABLE_SCRIPT_WRAP
     if (kind == KIND_NONE && is_shell_script_file(resolved)) {
-        char* glibc_root = first_path_component(library_path);
-        program_path = resolve_script_shell(envp, glibc_root);
-        free(glibc_root);
+        program_path = resolve_script_shell(envp);
         if (program_path) {
             kind = KIND_SCRIPT;
             script_path = resolved;
@@ -1223,6 +1392,7 @@ static int prepare_wrap(
             preload,
             executable_identity,
             loader_identity,
+            physical_canonical_readlink,
             wrapped_env_out
         ) != 0) {
         owned_vec_free(wrapped_argv_out);
@@ -1450,12 +1620,65 @@ int execle(const char* pathname, const char* arg, ...) {
     return rc;
 }
 
-int fexecve(int fd, char* const argv[], char* const envp[]) {
-    fexecve_fn_t real_fexecve = OPT_REAL(fexecve, fexecve_fn_t);
-    if (real_fexecve) return real_fexecve(fd, argv, envp);
+int __execve(
+    const char* pathname,
+    char* const argv[],
+    char* const envp[]
+) {
+    return execve(pathname, argv, envp);
+}
 
-    errno = ENOSYS;
-    return -1;
+int __execv(
+    const char* pathname,
+    char* const argv[]
+) {
+    return execve(pathname, argv, environ);
+}
+
+int fexecve(
+    int fd,
+    char* const argv[],
+    char* const envp[]
+) {
+    if (fd < 0) {
+        errno = EBADF;
+        return -1;
+    }
+
+    char path[64];
+    int length = snprintf(
+        path,
+        sizeof(path),
+        "/proc/self/fd/%d",
+        fd
+    );
+
+    if (length < 0 || (size_t)length >= sizeof(path)) {
+        errno = ENAMETOOLONG;
+        return -1;
+    }
+
+    /*
+     * Keep fd open across the loader exec. The shell or ELF loader must still
+     * be able to access /proc/self/fd/<fd>.
+     */
+    int flags = fcntl(fd, F_GETFD);
+    if (flags == -1) return -1;
+
+    if ((flags & FD_CLOEXEC) != 0 &&
+        fcntl(fd, F_SETFD, flags & ~FD_CLOEXEC) == -1) {
+        return -1;
+    }
+
+    int result = execve(path, argv, envp);
+    int saved_errno = errno;
+
+    if ((flags & FD_CLOEXEC) != 0) {
+        (void)fcntl(fd, F_SETFD, flags);
+    }
+
+    errno = saved_errno;
+    return result;
 }
 
 int posix_spawn(

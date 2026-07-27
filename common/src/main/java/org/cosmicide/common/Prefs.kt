@@ -25,6 +25,7 @@ object Prefs {
     fun init(context: Context) {
         prefs =
             context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
+        migrateEditorPreferences()
     }
 
     val isInitialized: Boolean
@@ -72,7 +73,11 @@ object Prefs {
         get() = prefs.getBoolean("use_spaces", false)
 
     val tabSize: Int
-        get() = prefs.getInt("tab_size", 4)
+        get() = when (val value = prefs.all["tab_size"]) {
+            is Number -> value.toInt()
+            is String -> value.toIntOrNull()
+            else -> null
+        }?.coerceIn(1, 16) ?: 4
 
     val bracketPairAutocomplete: Boolean
         get() = prefs.getBoolean("bracket_pair_autocomplete", true)
@@ -91,12 +96,6 @@ object Prefs {
 
     val analyticsEnabled: Boolean
         get() = prefs.getBoolean("analytics_preference", true)
-
-    val doubleClickClose: Boolean
-        get() = prefs.getBoolean("double_click_close", false)
-
-    val disableSymbolsView: Boolean
-        get() = prefs.getBoolean("disable_symbols_view", false)
 
     val gitUsername: String
         get() = prefs.getString("git_username", "") ?: ""
@@ -130,12 +129,14 @@ object Prefs {
         ) ?: "https://raw.githubusercontent.com/Cosmic-IDE/plugins-repo/main/plugins.json"
 
     val editorFontSize: Float
-        get() = parseBoundedFloatPreference(
-            prefs.getString("font_size", "12"),
-            default = 12f,
-            minimum = 1f,
-            maximum = 32f
-        )
+        get() {
+            val value = when (val stored = prefs.all["font_size"]) {
+                is Number -> stored.toFloat()
+                is String -> stored.trim().toFloatOrNull()
+                else -> null
+            }
+            return value?.takeIf(Float::isFinite)?.coerceIn(1f, 32f) ?: 12f
+        }
 
     val geminiApiKey: String
         get() = prefs.getString("gemini_api_key", "") ?: ""
@@ -167,6 +168,35 @@ object Prefs {
 
     val clientName: String
         get() = prefs.getString("client_name", null)?.replace(" ", "") ?: Build.ID
+
+    private fun migrateEditorPreferences() {
+        val aliases = mapOf(
+            "ligatures_enable" to "font_ligatures",
+            "wordwrap_enable" to "word_wrap",
+            "scrollbar_show" to "scrollbar",
+            "hardware_acceleration_enable" to "hardware_acceleration",
+            "non_printable_symbols_show" to "non_printable_characters",
+            "line_numbers_show" to "line_numbers"
+        )
+        val values = prefs.all
+        prefs.edit().apply {
+            aliases.forEach { (legacyKey, currentKey) ->
+                if (!values.containsKey(currentKey)) {
+                    (values[legacyKey] as? Boolean)?.let { putBoolean(currentKey, it) }
+                }
+                remove(legacyKey)
+            }
+
+            (values["font_size"] as? Number)?.let {
+                putString("font_size", it.toFloat().toString())
+            }
+            (values["tab_size"] as? Number)?.let {
+                putInt("tab_size", it.toInt())
+            }
+            remove("double_click_close")
+            remove("disable_symbols_view")
+        }.apply()
+    }
 }
 
 internal fun parseIntPreference(value: String?, default: Int): Int =

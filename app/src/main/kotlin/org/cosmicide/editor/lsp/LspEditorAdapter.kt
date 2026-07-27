@@ -1,9 +1,10 @@
 package org.cosmicide.editor.lsp
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.material3.ColorScheme
+import androidx.core.net.toUri
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
@@ -19,6 +20,8 @@ import io.github.rosemoe.sora.lsp.editor.text.withEditorHighlighter
 import io.github.rosemoe.sora.lsp.requests.Timeout
 import io.github.rosemoe.sora.lsp.requests.Timeouts
 import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
+import io.github.rosemoe.sora.widget.getComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,20 +42,19 @@ import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
+import java.util.concurrent.ConcurrentHashMap
 
 private const val TAG = "LspEditorAdapter"
 
 fun CodeEditor.configureLspLanguage(
     request: LspServerRequest,
-    definition: LspServerDefinition
+    definition: LspServerDefinition,
+    colorScheme: ColorScheme
 ): Boolean {
-    Toast.makeText(
-        context,
-        "Connecting to ${definition.displayName}...",
-        Toast.LENGTH_SHORT
-    ).show()
+    LspLogStore.info(definition.displayName, "Connecting to language server")
     editable = false
 
+    val lspProject = LspProjects.forRoot(request.project.root.absolutePath)
     Timeouts.entries.forEach {
         Timeout[it] = Timeout[it] + 14000
     }
@@ -64,7 +66,8 @@ fun CodeEditor.configureLspLanguage(
             ext = definition.fileExtension,
             serverConnectProvider = { _ ->
                 definition.connectionFactory.create(request).asStreamConnectionProvider(
-                    traceIncomingMessages = definition.traceIncomingMessages
+                    traceIncomingMessages = definition.traceIncomingMessages,
+                    logSource = definition.displayName
                 )
             },
             name = definition.displayName,
@@ -75,16 +78,31 @@ fun CodeEditor.configureLspLanguage(
             }
         }
 
-        val lspProject = LspProject(request.project.root.absolutePath)
-        lspProject.addServerDefinition(serverDefinition)
+        synchronized(lspProject) {
+            if (
+                lspProject.getServerDefinition(
+                    serverDefinition.ext,
+                    serverDefinition.name
+                ) == null
+            ) {
+                lspProject.addServerDefinition(serverDefinition)
+            }
+        }
 
-        val lspEditor: LspEditor = lspProject.createEditor(request.file.absolutePath)
+        val previousEditors = lspProject.getEditors()
+            .filter { it.editor === this@configureLspLanguage }
+        val lspEditor = lspProject.createEditor(request.file.absolutePath)
         var grammarFailure: Throwable? = null
         val wrapperLanguage = runCatching {
             createTextMateLanguage(context, definition)
         }.onFailure {
             grammarFailure = it
             Log.w(TAG, "Failed to load TextMate grammar for ${definition.displayName}", it)
+            LspLogStore.warning(
+                definition.displayName,
+                "Failed to load TextMate grammar",
+                it
+            )
         }.getOrElse {
             definition.grammarScopeName?.let { scopeName ->
                 runCatching { createTextMateLanguage(scopeName) }.getOrNull()
@@ -108,7 +126,16 @@ fun CodeEditor.configureLspLanguage(
 
         try {
             lspEditor.connectWithTimeout()
-            this@configureLspLanguage.editable = true
+            withContext(Dispatchers.Main) {
+                editable = true
+                lspEditor.hoverWindow?.layout = HoverLayout()
+                lspEditor.signatureHelpWindow?.layout =
+                    ComposeSignatureHelpLayout()
+                getComponent<EditorDiagnosticTooltipWindow>().layout =
+                    LspDiagnosticTooltipLayout(lspEditor, colorScheme)
+            }
+            previousEditors.forEach(LspEditor::dispose)
+            LspLogStore.info(definition.displayName, "Language server connected")
 
             definition.configuration?.let {
                 lspEditor.requestManager.didChangeConfiguration(
@@ -116,11 +143,33 @@ fun CodeEditor.configureLspLanguage(
                 )
             }
         } catch (e: Exception) {
+            lspEditor.dispose()
             Log.w(TAG, "Failed to connect to ${definition.displayName}", e)
+            LspLogStore.error(definition.displayName, "Failed to connect", e)
         }
     }
 
     return true
+}
+
+fun CodeEditor.disposeLspLanguage() {
+    val lspEditors = LspProjects.editorsFor(this)
+    CoroutineScope(Dispatchers.IO).launch {
+        lspEditors.forEach(LspEditor::dispose)
+    }
+}
+
+private object LspProjects {
+    private val projects = ConcurrentHashMap<String, LspProject>()
+
+    fun forRoot(projectRoot: String): LspProject {
+        return projects.computeIfAbsent(projectRoot, ::LspProject)
+    }
+
+    fun editorsFor(editor: CodeEditor): List<LspEditor> {
+        return projects.values.flatMap(LspProject::getEditors)
+            .filter { it.editor === editor }
+    }
 }
 
 @Synchronized
@@ -131,13 +180,14 @@ private fun ensureInitializationTimeout(timeoutMillis: Int) {
 }
 
 private fun LspServerConnection.asStreamConnectionProvider(
-    traceIncomingMessages: Boolean
+    traceIncomingMessages: Boolean,
+    logSource: String
 ): StreamConnectionProvider {
     return object : StreamConnectionProvider {
         private val serverInputStream: InputStream by lazy {
             this@asStreamConnectionProvider.inputStream.let { input ->
                 if (traceIncomingMessages) {
-                    LspMessageTracingInputStream(input, "KOTLIN-LSP-IN")
+                    LspMessageTracingInputStream(input, "KOTLIN-LSP-IN", logSource)
                 } else {
                     input
                 }
@@ -165,7 +215,8 @@ private fun LspServerConnection.asStreamConnectionProvider(
 
 private class LspMessageTracingInputStream(
     input: InputStream,
-    private val logTag: String
+    private val logTag: String,
+    private val logSource: String
 ) : FilterInputStream(input) {
 
     private val pending = ByteArrayOutputStream()
@@ -200,6 +251,10 @@ private class LspMessageTracingInputStream(
 
             if (contentLength == null) {
                 Log.w(logTag, "Unable to trace malformed LSP frame headers: $headers")
+                LspLogStore.warning(
+                    logSource,
+                    "Unable to trace malformed LSP frame headers: $headers"
+                )
                 pending.reset()
                 return
             }
@@ -219,6 +274,7 @@ private class LspMessageTracingInputStream(
     private fun logMessage(message: String) {
         message.chunked(LOG_CHUNK_SIZE).forEachIndexed { index, chunk ->
             Log.d(logTag, "<-- [$index] $chunk")
+            LspLogStore.debug(logSource, "<-- [$index] $chunk")
         }
     }
 
@@ -426,7 +482,7 @@ private fun cacheGrammar(cacheFile: File, grammarText: String) {
 }
 
 private fun openGrammarStream(context: Context, link: String): InputStream {
-    val uri = Uri.parse(link)
+    val uri = link.toUri()
     return when (uri.scheme?.lowercase()) {
         "http", "https" -> URL(link).openConnection().apply {
             connectTimeout = GRAMMAR_CONNECT_TIMEOUT_MILLIS

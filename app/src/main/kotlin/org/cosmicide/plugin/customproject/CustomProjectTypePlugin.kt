@@ -281,20 +281,20 @@ private fun CustomProjectTypeConfiguration.matches(root: File): Boolean {
 
 private fun CustomProjectTypeConfiguration.toProjectCommands(): List<ProjectCommand> = buildList {
     syncCommand?.takeIf(String::isNotBlank)?.let { command ->
-        add(ProjectCommand("$id.sync", "Sync ${name}", command, kind = ProjectCommandKind.SYNC))
+        add(ProjectCommand("$id.sync", "Sync $name", command, kind = ProjectCommandKind.SYNC))
     }
     if (buildCommand.isNotBlank()) {
         add(
             ProjectCommand(
                 "$id.build",
-                "Build ${name}",
+                "Build $name",
                 buildCommand,
                 kind = ProjectCommandKind.BUILD
             )
         )
     }
     if (runCommand.isNotBlank()) {
-        add(ProjectCommand("$id.run", "Run ${name}", runCommand, kind = ProjectCommandKind.RUN))
+        add(ProjectCommand("$id.run", "Run $name", runCommand, kind = ProjectCommandKind.RUN))
     }
     commands.forEach { custom ->
         add(ProjectCommand("$id.${custom.id}", custom.name, custom.command))

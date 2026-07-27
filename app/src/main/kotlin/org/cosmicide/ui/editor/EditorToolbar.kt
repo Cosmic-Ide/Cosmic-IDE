@@ -16,8 +16,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,11 +37,9 @@ import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.subscribeAlways
 import me.saket.cascade.CascadeDropdownMenu
-import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
 import org.cosmicide.project.ProjectCommandKind
 import java.io.File
-import kotlin.time.ExperimentalTime
 
 @Composable
 internal fun EmptyWorkspaceState(onOpenDrawer: () -> Unit) {
@@ -69,14 +65,8 @@ internal fun EmptyWorkspaceState(onOpenDrawer: () -> Unit) {
     }
 }
 
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalTime::class
-)
 @Composable
 internal fun EditorToolbar(
-    project: Project,
     file: File?,
     editor: CodeEditor,
     tasks: List<String>,
@@ -92,8 +82,6 @@ internal fun EditorToolbar(
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showGoToLineDialog by remember { mutableStateOf(false) }
-    var showProgramArgsDialog by remember { mutableStateOf(false) }
-    var showJREArgsDialog by remember { mutableStateOf(false) }
     var showStatsDialog by remember { mutableStateOf(false) }
     var showTasksDialog by remember { mutableStateOf(false) }
 
@@ -156,7 +144,7 @@ internal fun EditorToolbar(
             Icon(
                 Icons.Filled.PlayArrow,
                 contentDescription = contributedRunCommand?.label
-                    ?: if (hasGradleWrapper) "Run Gradle task" else "No run command configured",
+                    ?: if (hasGradleWrapper) "Run" else "No run command configured",
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -189,14 +177,6 @@ internal fun EditorToolbar(
             CascadeDropdownMenu(
                 expanded = showMenu, onDismissRequest = { showMenu = false }) {
                 DropdownMenuItem(text = { Text("Execution") }, children = {
-                    DropdownMenuItem(text = { Text("Program Arguments") }, onClick = {
-                        showProgramArgsDialog = true
-                        showMenu = false
-                    })
-                    DropdownMenuItem(text = { Text("Runtime Arguments") }, onClick = {
-                        showJREArgsDialog = true
-                        showMenu = false
-                    })
                     DropdownMenuItem(text = { Text("Terminal") }, onClick = {
                         onOpenTerminal()
                         showMenu = false
@@ -230,13 +210,10 @@ internal fun EditorToolbar(
                         showGoToLineDialog = true
                         showMenu = false
                     })
-                    DropdownMenuItem(text = { Text("View Statistics") }, onClick = {
-                        showStatsDialog = true
-                        showMenu = false
-                    })
                 })
                 DropdownMenuItem(text = { Text("File Options") }, children = {
                     DropdownMenuItem(text = { Text("View Statistics") }, onClick = {
+                        showStatsDialog = true
                         showMenu = false
                     })
                 })
@@ -277,30 +254,6 @@ internal fun EditorToolbar(
             onConfirm = { lineNumber ->
                 editor.jumpToLine(lineNumber - 1)
                 showGoToLineDialog = false
-            })
-    }
-
-    if (showProgramArgsDialog) {
-        ProgramArgumentDialog(
-            title = "Program Arguments",
-            savedArgs = project.args,
-            onSave = { args ->
-                project.args = args
-            },
-            onDismiss = {
-                showProgramArgsDialog = false
-            })
-    }
-
-    if (showJREArgsDialog) {
-        ProgramArgumentDialog(
-            title = "Runtime Arguments",
-            savedArgs = project.runtimeArgs,
-            onSave = { args ->
-                project.runtimeArgs = args
-            },
-            onDismiss = {
-                showJREArgsDialog = false
             })
     }
 

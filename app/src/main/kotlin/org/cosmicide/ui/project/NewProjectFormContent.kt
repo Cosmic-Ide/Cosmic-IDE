@@ -83,15 +83,15 @@ internal fun NewProjectFormContent(
         FormSection(title = "Build script DSL") {
             ConnectedToggleRow {
                 ToggleButton(
-                    checked = state.dslType == DslType.KOTLIN,
-                    onCheckedChange = { onStateChange(state.copy(dslType = DslType.KOTLIN)) },
+                    checked = state.dslType == DslType.GROOVY,
+                    onCheckedChange = { onStateChange(state.copy(dslType = DslType.GROOVY)) },
                     enabled = !isCreating,
                     shapes = ButtonGroupDefaults.connectedLeadingButtonShapes(),
                     modifier = Modifier.weight(1f)
                 ) { Text("Kotlin", style = MaterialTheme.typography.labelLarge) }
                 ToggleButton(
-                    checked = state.dslType == DslType.GROOVY,
-                    onCheckedChange = { onStateChange(state.copy(dslType = DslType.GROOVY)) },
+                    checked = state.dslType == DslType.KOTLIN,
+                    onCheckedChange = { onStateChange(state.copy(dslType = DslType.KOTLIN)) },
                     enabled = !isCreating,
                     shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
                     modifier = Modifier.weight(1f)

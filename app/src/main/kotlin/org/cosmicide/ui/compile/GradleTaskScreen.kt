@@ -1,5 +1,6 @@
 package org.cosmicide.ui.compile
 
+import android.content.Context
 import android.graphics.Typeface
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,6 +27,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -39,6 +42,7 @@ import org.cosmicide.R
 import org.cosmicide.common.Prefs
 import org.cosmicide.project.Project
 import org.cosmicide.ui.terminal.BasicTerminalViewClient
+import org.cosmicide.ui.terminal.ExtraKeysBar
 import org.cosmicide.ui.terminal.MaxTerminalTextSizeDp
 import org.cosmicide.ui.terminal.MinTerminalTextSizeDp
 import org.cosmicide.ui.terminal.TerminalController
@@ -134,18 +138,20 @@ fun GradleTaskScreen(
 
 @Composable
 internal fun GradleTaskTerminal(
-    context: android.content.Context,
+    context: Context,
     projectRoot: File,
     task: String,
-    colorScheme: androidx.compose.material3.ColorScheme,
+    colorScheme: ColorScheme,
     currentTextSizeDp: Int,
     terminalTypeface: Typeface,
     onTextSizeChange: (Int) -> Unit,
     onTaskSuccess: () -> Unit,
     onTaskError: (String) -> Unit,
+    sessionHandle: TerminalSessionHandle? = null,
     modifier: Modifier = Modifier
 ) {
     CommandTerminal(
+        modifier = modifier,
         context = context,
         workingDirectory = projectRoot,
         commandLine = "./gradlew $task",
@@ -160,30 +166,39 @@ internal fun GradleTaskTerminal(
         onFailure = { error ->
             onTaskError("Gradle task '$task' failed: $error")
         },
-        modifier = modifier
+        sessionHandle = sessionHandle
     )
 }
 
 @Composable
 internal fun CommandTerminal(
-    context: android.content.Context,
+    modifier: Modifier = Modifier,
+    context: Context,
     workingDirectory: File,
     commandLine: String,
     commandArguments: List<String>? = null,
-    colorScheme: androidx.compose.material3.ColorScheme,
+    colorScheme: ColorScheme,
     currentTextSizeDp: Int,
     terminalTypeface: Typeface,
     onTextSizeChange: (Int) -> Unit,
     onProcessExit: (Int) -> Unit,
     onFailure: (String) -> Unit,
-    modifier: Modifier = Modifier
+    sessionHandle: TerminalSessionHandle? = null
 ) {
     val scope = rememberCoroutineScope()
+    val modifierLatch = remember { TerminalModifierLatch() }
+    var activeController by remember { mutableStateOf<TerminalController?>(null) }
+    val currentOnProcessExit by rememberUpdatedState(onProcessExit)
+    val currentOnFailure by rememberUpdatedState(onFailure)
+    val currentOnTextSizeChange by rememberUpdatedState(onTextSizeChange)
 
-    AndroidView(
-        modifier = modifier,
-        factory = { viewContext ->
-            val terminalView = TerminalView(viewContext, null).apply {
+    Column(modifier = modifier) {
+        AndroidView(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            factory = { viewContext ->
+                val terminalView = TerminalView(viewContext, null).apply {
                 layoutParams = FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT
@@ -200,14 +215,16 @@ internal fun CommandTerminal(
                 workingDir = workingDirectory,
                 jdkDir = context.applicationContext.jdksDir().resolve(Prefs.currentJDK),
                 terminalView = terminalView,
-                modifierLatch = TerminalModifierLatch(),
+                modifierLatch = modifierLatch,
                 scope = scope,
                 onTitleChanged = {},
                 onFailure = { error ->
-                    onFailure(error.message.orEmpty())
+                    currentOnFailure(error.message.orEmpty())
                 },
-                onProcessExit = onProcessExit
+                onProcessExit = { exitCode -> currentOnProcessExit(exitCode) }
             )
+                activeController = controller
+                sessionHandle?.bind(controller)
             val runtime = GradleTaskTerminalRuntime(
                 controller = controller,
                 textSizeDp = currentTextSizeDp,
@@ -233,7 +250,7 @@ internal fun CommandTerminal(
                         runtime.textSizeDp =
                             (runtime.textSizeDp + if (increase) 1 else -1)
                                 .coerceIn(MinTerminalTextSizeDp, MaxTerminalTextSizeDp)
-                        onTextSizeChange(runtime.textSizeDp)
+                        currentOnTextSizeChange(runtime.textSizeDp)
                     }
                 )
             )
@@ -248,22 +265,49 @@ internal fun CommandTerminal(
                 controller.startOrResize(currentTextSizeDp, terminalTypeface)
             }
 
-            terminalView
-        },
-        update = { view ->
-            view.setBackgroundColor(colorScheme.surfaceContainer.toArgb())
-            applyTerminalColors(colorScheme)
-            (view.tag as? GradleTaskTerminalRuntime)?.let { runtime ->
-                runtime.textSizeDp = currentTextSizeDp
-                runtime.typeface = terminalTypeface
-                runtime.controller.startOrResize(currentTextSizeDp, terminalTypeface)
+                terminalView
+            },
+            update = { view ->
+                view.setBackgroundColor(colorScheme.surfaceContainer.toArgb())
+                applyTerminalColors(colorScheme)
+                (view.tag as? GradleTaskTerminalRuntime)?.let { runtime ->
+                    runtime.textSizeDp = currentTextSizeDp
+                    runtime.typeface = terminalTypeface
+                    runtime.controller.startOrResize(currentTextSizeDp, terminalTypeface)
+                }
+            },
+            onRelease = { view ->
+                (view.tag as? GradleTaskTerminalRuntime)?.controller?.let { controller ->
+                    sessionHandle?.unbind(controller)
+                    if (activeController === controller) activeController = null
+                    controller.close()
+                }
+                view.tag = null
             }
-        },
-        onRelease = { view ->
-            (view.tag as? GradleTaskTerminalRuntime)?.controller?.close()
-            view.tag = null
-        }
-    )
+        )
+
+        ExtraKeysBar(
+            controller = activeController,
+            modifierLatch = modifierLatch,
+            modifier = Modifier.padding(vertical = 2.dp)
+        )
+    }
+}
+
+internal class TerminalSessionHandle {
+    private var controller: TerminalController? = null
+
+    internal fun bind(controller: TerminalController) {
+        this.controller = controller
+    }
+
+    internal fun unbind(controller: TerminalController) {
+        if (this.controller === controller) this.controller = null
+    }
+
+    fun terminate() {
+        controller?.terminate()
+    }
 }
 
 private data class GradleTaskTerminalRuntime(

@@ -7,37 +7,66 @@
 
 package org.cosmicide.editor.completion
 
-import android.content.res.Resources
+import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.Outline
 import android.graphics.drawable.GradientDrawable
+import android.view.View
 import android.view.ViewGroup
-import androidx.core.graphics.toColorInt
+import android.view.ViewOutlineProvider
+import android.widget.ProgressBar
+import androidx.compose.material3.ColorScheme
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.drawable.toDrawable
 import io.github.rosemoe.sora.widget.component.DefaultCompletionLayout
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
-class CustomCompletionLayout : DefaultCompletionLayout() {
+class CustomCompletionLayout(
+    private val materialColors: ColorScheme
+) : DefaultCompletionLayout() {
+
+    override fun inflate(context: Context): View {
+        return super.inflate(context).also {
+            completionList.apply {
+                selector = Color.TRANSPARENT.toDrawable()
+                cacheColorHint = Color.TRANSPARENT
+                overScrollMode = View.OVER_SCROLL_NEVER
+                isVerticalScrollBarEnabled = true
+            }
+        }
+    }
 
     override fun onApplyColorScheme(colorScheme: EditorColorScheme) {
         super.onApplyColorScheme(colorScheme)
 
-        val completionListParent = completionList.parent as? ViewGroup
-            ?: throw IllegalArgumentException("Completion list parent view is null")
+        val container = completionList.parent as View
+        val radius = container.dp(14f)
+        container.background = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = radius
+            setColor(materialColors.surfaceContainer.toArgb())
+            setStroke(
+                container.dp(1f).toInt(),
+                materialColors.outlineVariant.copy(alpha = 0.72f).toArgb()
+            )
+        }
+        container.elevation = container.dp(10f)
+        container.clipToOutline = true
+        container.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                outline.setRoundRect(0, 0, view.width, view.height, radius)
+            }
+        }
 
-        val backgroundDrawable = completionListParent.background as? GradientDrawable
-            ?: throw IllegalArgumentException("Completion list parent view background is null or not a GradientDrawable")
-
-        backgroundDrawable.setStroke(
-            1f.dpToPx(),
-            requireNotNull(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER))
-        )
-
-        val color = if (colorScheme.isDark) "#1F1F1F" else "#F5F5F5"
-
-        completionListParent.setBackgroundColor(color.toColorInt())
-        backgroundDrawable.setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND))
+        completionList.setBackgroundColor(Color.TRANSPARENT)
+        ((container as? ViewGroup)?.getChildAt(0) as? ProgressBar)?.apply {
+            indeterminateTintList = ColorStateList.valueOf(materialColors.primary.toArgb())
+            progressTintList = ColorStateList.valueOf(materialColors.primary.toArgb())
+        }
     }
 
-    private fun Float.dpToPx(): Int {
-        val scale = Resources.getSystem().displayMetrics.density
-        return (this * scale + 0.5f).toInt()
+    private fun View.dp(value: Float): Float {
+        return value * resources.displayMetrics.density
     }
 }

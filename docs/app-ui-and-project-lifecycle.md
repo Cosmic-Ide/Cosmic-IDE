@@ -58,7 +58,6 @@ provider. A `DisposableEffect` repeats shutdown when navigation leaves compositi
 | Terminal category    | opens terminal directly                                                                |
 | Toolchains           | active                                                                                 |
 | About                | active                                                                                 |
-| Formatter category   | listed, but no dedicated route implementation                                          |
 
 Do not document a route as user-reachable merely because its `Screen` type and composable exist.
 

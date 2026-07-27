@@ -4,8 +4,12 @@ import android.content.Context
 import android.graphics.Typeface
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,13 +43,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import com.termux.view.TerminalView
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.cosmicide.R
 import org.cosmicide.common.Prefs
 import org.cosmicide.util.jdksDir
@@ -227,7 +240,7 @@ private fun TerminalTopBar(
 }
 
 @Composable
-private fun ExtraKeysBar(
+internal fun ExtraKeysBar(
     controller: TerminalController?,
     modifierLatch: TerminalModifierLatch,
     modifier: Modifier = Modifier
@@ -326,6 +339,10 @@ private fun ExtraKeysBar(
                 ExtraKeyButton(
                     label = key.label,
                     selected = false,
+                    repeatOnHold = key.keyCode == android.view.KeyEvent.KEYCODE_DPAD_UP ||
+                            key.keyCode == android.view.KeyEvent.KEYCODE_DPAD_DOWN ||
+                            key.keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT ||
+                            key.keyCode == android.view.KeyEvent.KEYCODE_DPAD_RIGHT,
                     onClick = { send(key) }
                 )
             }
@@ -337,8 +354,14 @@ private fun ExtraKeysBar(
 private fun ExtraKeyButton(
     label: String,
     selected: Boolean,
+    repeatOnHold: Boolean = false,
     onClick: () -> Unit
 ) {
+    if (repeatOnHold) {
+        RepeatableExtraKeyButton(label, selected, onClick)
+        return
+    }
+
     TextButton(
         onClick = onClick,
         modifier = Modifier
@@ -360,6 +383,63 @@ private fun ExtraKeyButton(
             text = label,
             style = MaterialTheme.typography.labelLarge
         )
+    }
+}
+
+@Composable
+private fun RepeatableExtraKeyButton(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val currentOnClick by androidx.compose.runtime.rememberUpdatedState(onClick)
+
+    Surface(
+        color = if (selected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            androidx.compose.ui.graphics.Color.Transparent
+        },
+        contentColor = if (selected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier
+            .height(38.dp)
+            .widthIn(min = 44.dp)
+            .semantics {
+                role = Role.Button
+                onClick {
+                    currentOnClick()
+                    true
+                }
+            }
+            .pointerInput(Unit) {
+                coroutineScope repeatScope@{
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false)
+                        var repeated = false
+                        val repeatJob = this@repeatScope.launch {
+                            delay(400)
+                            repeated = true
+                            while (true) {
+                                currentOnClick()
+                                delay(70)
+                            }
+                        }
+
+                        val released = waitForUpOrCancellation() != null
+                        repeatJob.cancel()
+                        if (released && !repeated) currentOnClick()
+                    }
+                }
+            }
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(text = label, style = MaterialTheme.typography.labelLarge)
+        }
     }
 }
 

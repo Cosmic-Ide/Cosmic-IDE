@@ -8,7 +8,6 @@ Settings is opened from the Projects screen. The current category list is:
 |-------------|----------------------------------------------------------------------------------|
 | Code editor | Editor appearance and interaction controls                                       |
 | Compiler    | Active installed JDK selector                                                    |
-| Formatter   | Placeholder; no dedicated formatter screen is currently routed                   |
 | Extensions  | Provider switches, custom LSP/project entries, installed plugins, repository URL |
 | Terminal    | Interactive terminal session, not a preference form                              |
 | Toolchains  | Foojay distribution/version browser and JDK install/uninstall queue              |
@@ -25,7 +24,7 @@ forcibly restarted when its provider switch changes.
 | Font size                    | Sora editor text size                                   |
 | Tab size                     | Visual tab width                                        |
 | JDT LS                       | Historical/experimental Java language-server preference |
-| Editor font                  | Absolute path to a font file loaded by the editor       |
+| Editor font                  | Font file selected through Android's document picker    |
 | Sticky scroll                | Keep structural context visible at the top              |
 | Use spaces instead of tabs   | Indentation behavior                                    |
 | Font ligatures               | Typeface ligature rendering                             |
@@ -36,21 +35,13 @@ forcibly restarted when its provider switch changes.
 | Hardware acceleration        | Allow accelerated editor drawing                        |
 | Non-printable characters     | Paint whitespace/control markers                        |
 | Line numbers                 | Show the line-number gutter                             |
-| Double click to close        | Close an open tab on double tap                         |
-| Disable symbols view         | Hide the symbols strip/view                             |
 
 Provider selection is controlled under Extensions. In particular, disabling or enabling the Java
 language-server provider there is the authoritative routing operation; the separate JDT LS toggle
 is currently stored but is not consulted by the provider router.
 
-### Current preference migration caveat
-
-The settings screen and the `Prefs` reader currently contain legacy key and value-type differences
-for several editor controls. Font size and tab size also have old string/integer versus float
-storage
-paths. Until those keys are migrated to a single schema, some changes may apply inconsistently after
-reopening the screen or editor. When fixing this, perform a one-time tolerant migration before
-removing old keys; do not silently discard existing user choices.
+Legacy editor preference aliases and numeric value types are migrated to the canonical schema when
+preferences initialize. Editor changes apply the next time a file editor is configured.
 
 ## Compiler
 
@@ -61,17 +52,15 @@ launches derive `JAVA_HOME` from that selection.
 This screen does not download JDKs. Use Toolchains to install or remove distributions. Avoid
 uninstalling the selected JDK while a build, terminal, or language server is running.
 
-## Formatter
-
-Formatter is present in the top-level category list, but `IDENavigation` does not currently map it
-to a dedicated screen. The editor's Format action still invokes the formatter extension router.
-Built-in Java and Kotlin formatter providers currently return unchanged text because their actual
-formatter calls are disabled.
-
-Formatter preference keys for ktfmt and google-java-format remain in the codebase for future UI and
-implementation work. Their existence does not mean formatting is active.
-
 ## Extensions
+
+The Extensions screen is divided into four tabs so unrelated configuration does not share one
+long settings page:
+
+- **Providers** enables or disables registered editor and project extension providers.
+- **Languages** manages custom language servers and linked TextMate grammars.
+- **Projects** manages user-defined project types and their commands.
+- **Plugins** lists installed plugins and configures the plugin index repository.
 
 ### Extension providers
 

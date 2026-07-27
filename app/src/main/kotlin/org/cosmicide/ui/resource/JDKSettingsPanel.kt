@@ -7,6 +7,8 @@
 
 package org.cosmicide.ui.resource
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -84,16 +86,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.sdk.manager.jdk.FoojayClient
+import org.cosmicide.util.PreferenceKeys
+import org.cosmicide.util.jdkNames
 import org.cosmicide.util.jdks
 import org.cosmicide.util.jdksDir
 import org.cosmicide.util.repairJdkExecutablePermissions
+import java.io.EOFException
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.Objects
 import java.util.zip.GZIPInputStream
 
 sealed class JdkAction(val version: String, val vendorParam: String) {
@@ -118,6 +126,23 @@ fun JdkSettingsPanel(
     val foojayClient = remember { FoojayClient() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val preferences = remember(context) {
+        context.getSharedPreferences(
+            context.packageName + "_preferences",
+            Context.MODE_PRIVATE
+        )
+    }
+
+    val updateCurrentJdkIfSystem: (String?) -> Unit = { installedJdk ->
+        if (
+            installedJdk != null &&
+            preferences.getString(PreferenceKeys.COMPILER_CURRENT_JDK, "").isNullOrBlank()
+        ) {
+            preferences.edit {
+                putString(PreferenceKeys.COMPILER_CURRENT_JDK, installedJdk)
+            }
+        }
+    }
 
     // Data State
     var distributions by remember { mutableStateOf<List<FoojayClient.Distribution>>(emptyList()) }
@@ -150,10 +175,124 @@ fun JdkSettingsPanel(
         installedVersions.keys.forEach { targetVersions[it] = true }
     }
 
+    val processTaskQueue: suspend () -> Boolean = {
+        for (i in taskQueue.indices) {
+            val task = taskQueue[i]
+            taskQueue[i] = task.copy(status = TaskStatus.IN_PROGRESS, message = "Starting...")
+
+            val targetDirName = "${task.action.vendorParam}-${task.action.version}"
+
+            when (task.action) {
+                is JdkAction.Install -> {
+                    val hostOs = FoojayClient.OS.resolve("linux")
+                    val hostArch = FoojayClient.Arch.resolve("aarch64")
+                    val hostLibC = FoojayClient.LibCType.resolve("glibc")
+
+                    taskQueue[i] = taskQueue[i].copy(message = "Resolving artifacts...")
+
+                    val resolveResult = foojayClient.resolveLatestArtifact(
+                        task.action.vendorParam,
+                        task.action.version,
+                        hostOs,
+                        hostArch,
+                        hostLibC
+                    )
+                    if (resolveResult.isSuccess) {
+                        val artifact = resolveResult.getOrNull()!!
+                        val targetArchiveFile = context.cacheDir.resolve(artifact.filename)
+
+                        taskQueue[i] = taskQueue[i].copy(message = "Downloading...")
+
+                        val downloadResult = foojayClient.downloadArtifactWithProgress(
+                            artifact,
+                            targetArchiveFile
+                        ) { progress ->
+                            taskQueue[i] = taskQueue[i].copy(
+                                progress = progress / 100f,
+                                message = "Downloading ($progress%)"
+                            )
+                        }
+
+                        if (downloadResult.isSuccess && downloadResult.getOrNull() == true) {
+                            taskQueue[i] = taskQueue[i].copy(
+                                progress = -1f,
+                                message = "Extracting runtime..."
+                            )
+                            val targetDir = context.jdksDir().resolve(targetDirName)
+                            val extracted = extractTarGz(targetArchiveFile, targetDir)
+
+                            if (targetArchiveFile.exists()) targetArchiveFile.delete()
+
+                            if (extracted && repairJdkExecutablePermissions(targetDir)) {
+                                updateCurrentJdkIfSystem(targetDirName)
+                                taskQueue[i] = taskQueue[i].copy(
+                                    status = TaskStatus.SUCCESS,
+                                    message = "Installed successfully"
+                                )
+                            } else {
+                                withContext(Dispatchers.IO) {
+                                    targetDir.deleteRecursively()
+                                }
+                                taskQueue[i] = taskQueue[i].copy(
+                                    status = TaskStatus.ERROR,
+                                    message = "Extraction failed"
+                                )
+                            }
+                        } else {
+                            taskQueue[i] = taskQueue[i].copy(
+                                status = TaskStatus.ERROR,
+                                message = "Download failed"
+                            )
+                        }
+                    } else {
+                        taskQueue[i] = taskQueue[i].copy(
+                            status = TaskStatus.ERROR,
+                            message = "Resolution failed"
+                        )
+                    }
+                }
+
+                is JdkAction.Uninstall -> {
+                    taskQueue[i] =
+                        taskQueue[i].copy(progress = -1f, message = "Deleting files...")
+                    withContext(Dispatchers.IO) {
+                        context.jdksDir().resolve(targetDirName).deleteRecursively()
+                    }
+                    taskQueue[i] = taskQueue[i].copy(
+                        status = TaskStatus.SUCCESS,
+                        progress = 1f,
+                        message = "Uninstalled successfully"
+                    )
+                }
+            }
+        }
+        refreshInstalledRegistry()
+        isAllTasksComplete = true
+        taskQueue.all { it.status == TaskStatus.SUCCESS }
+    }
+
     LaunchedEffect(Unit) {
+        val installedJdk = context.jdkNames().firstOrNull()
+        updateCurrentJdkIfSystem(installedJdk)
+
+        if (installedJdk == null) {
+            taskQueue.clear()
+            taskQueue.add(
+                TaskState(JdkAction.Install(AUTOMATIC_JDK_VERSION, AUTOMATIC_JDK_VENDOR))
+            )
+            isProcessingScreenActive = true
+            isAllTasksComplete = false
+
+            if (processTaskQueue()) {
+                onDismissRequested()
+                return@LaunchedEffect
+            }
+        }
+
         foojayClient.fetchMaintainedDistributions().onSuccess { list ->
             distributions = list
-            selectedDistro = list.find { it.apiParam == "semeru" } ?: list.firstOrNull()
+            selectedDistro =
+                list.find { it.apiParam == AUTOMATIC_JDK_VENDOR } ?: list.firstOrNull()
             refreshInstalledRegistry()
             globalLoading = false
         }.onFailure { globalLoading = false }
@@ -181,87 +320,7 @@ fun JdkSettingsPanel(
         isAllTasksComplete = false
 
         scope.launch {
-            for (i in taskQueue.indices) {
-                val task = taskQueue[i]
-                taskQueue[i] = task.copy(status = TaskStatus.IN_PROGRESS, message = "Starting...")
-
-                val targetDirName = "${task.action.vendorParam}-${task.action.version}"
-
-                when (task.action) {
-                    is JdkAction.Install -> {
-                        val hostOs =
-                            FoojayClient.OS.resolve("linux")
-                        val hostArch =
-                            FoojayClient.Arch.resolve("aarch64")
-                        val hostLibC =
-                            FoojayClient.LibCType.resolve("glibc")
-
-                        taskQueue[i] = taskQueue[i].copy(message = "Resolving artifacts...")
-
-                        val resolveResult = foojayClient.resolveLatestArtifact(
-                            task.action.vendorParam, task.action.version, hostOs, hostArch, hostLibC
-                        )
-                        if (resolveResult.isSuccess) {
-                            val artifact = resolveResult.getOrNull()!!
-                            val targetArchiveFile = context.cacheDir.resolve(artifact.filename)
-
-                            taskQueue[i] = taskQueue[i].copy(message = "Downloading...")
-
-                            val downloadResult = foojayClient.downloadArtifactWithProgress(
-                                artifact, targetArchiveFile
-                            ) { progress ->
-                                taskQueue[i] = taskQueue[i].copy(
-                                    progress = progress / 100f, message = "Downloading ($progress%)"
-                                )
-                            }
-
-                            if (downloadResult.isSuccess && downloadResult.getOrNull() == true) {
-                                taskQueue[i] = taskQueue[i].copy(
-                                    progress = -1f, message = "Extracting runtime..."
-                                )
-                                val targetDir = context.jdksDir().resolve(targetDirName)
-                                val extracted = extractTarGz(targetArchiveFile, targetDir)
-
-                                if (targetArchiveFile.exists()) targetArchiveFile.delete()
-
-                                if (extracted && repairJdkExecutablePermissions(targetDir)) {
-                                    taskQueue[i] = taskQueue[i].copy(
-                                        status = TaskStatus.SUCCESS,
-                                        message = "Installed successfully"
-                                    )
-                                } else {
-                                    taskQueue[i] = taskQueue[i].copy(
-                                        status = TaskStatus.ERROR, message = "Extraction failed"
-                                    )
-                                }
-                            } else {
-                                taskQueue[i] = taskQueue[i].copy(
-                                    status = TaskStatus.ERROR, message = "Download failed"
-                                )
-                            }
-                        } else {
-                            taskQueue[i] = taskQueue[i].copy(
-                                status = TaskStatus.ERROR, message = "Resolution failed"
-                            )
-                        }
-                    }
-
-                    is JdkAction.Uninstall -> {
-                        taskQueue[i] =
-                            taskQueue[i].copy(progress = -1f, message = "Deleting files...")
-                        withContext(Dispatchers.IO) {
-                            context.jdksDir().resolve(targetDirName).deleteRecursively()
-                        }
-                        taskQueue[i] = taskQueue[i].copy(
-                            status = TaskStatus.SUCCESS,
-                            progress = 1f,
-                            message = "Uninstalled successfully"
-                        )
-                    }
-                }
-            }
-            refreshInstalledRegistry()
-            isAllTasksComplete = true
+            processTaskQueue()
         }
     }
 
@@ -354,6 +413,8 @@ fun JdkSettingsPanel(
                 if (isProcessing) {
                     ProcessingScreen(taskQueue, isAllTasksComplete) {
                         isProcessingScreenActive = false
+
+                        onDismissRequested()
                     }
                 } else {
                     SelectionScreen(
@@ -371,6 +432,9 @@ fun JdkSettingsPanel(
         }
     }
 }
+
+private const val AUTOMATIC_JDK_VENDOR = "zulu"
+private const val AUTOMATIC_JDK_VERSION = "21"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -636,7 +700,7 @@ private suspend fun extractTarGz(tarGz: File, targetDir: File): Boolean =
 
             GZIPInputStream(tarGz.inputStream()).use { gisin ->
 
-                while (gisin.readNBytes(header, 0, 512) == 512) {
+                while (gisin.readNBytesCompat(header, 0, 512) == 512) {
                     if (header[0].toInt() == 0) break
 
                     val rawName = header.readTarString(0, 100)
@@ -667,16 +731,17 @@ private suspend fun extractTarGz(tarGz: File, targetDir: File): Boolean =
                             targetFile.outputStream().use { fos ->
                                 gisin.copyBounded(fos, size, buffer)
                             }
+                            @SuppressLint("SetWorldReadable")
                             targetFile.setReadable(true, false)
                             targetFile.setWritable((mode and 0b10_000_000L) != 0L, true)
                             targetFile.setExecutable((mode and 0b001_001_001L) != 0L, false)
                         }
                     } else {
-                        gisin.skipNBytes(size)
+                        gisin.skipNBytesCompat(size)
                     }
 
                     val padding = (512 - (size % 512)) % 512
-                    gisin.skipNBytes(padding)
+                    gisin.skipNBytesCompat(padding)
                 }
             }
             true
@@ -700,4 +765,41 @@ private fun InputStream.copyBounded(out: OutputStream, size: Long, buffer: ByteA
         out.write(buffer, 0, chunk)
         remain -= chunk
     }
+}
+
+fun InputStream.skipNBytesCompat(num: Long) {
+    var n = num
+    while (n > 0) {
+        when (val ns = skip(n)) {
+            in 1..n -> {
+                // adjust number to skip
+                n -= ns
+            }
+
+            0L -> { // no bytes skipped
+                // read one byte to check for EOS
+                if (read() == -1) {
+                    throw EOFException()
+                }
+                // one byte read so decrement number to skip
+                n--
+            }
+
+            else -> { // skipped negative or too many bytes
+                throw IOException("Unable to skip exactly")
+            }
+        }
+    }
+}
+
+fun InputStream.readNBytesCompat(b: ByteArray, off: Int, len: Int): Int {
+    Objects.checkFromIndexSize(off, len, b.size)
+
+    var n = 0
+    while (n < len) {
+        val count: Int = read(b, off + n, len - n)
+        if (count < 0) break
+        n += count
+    }
+    return n
 }

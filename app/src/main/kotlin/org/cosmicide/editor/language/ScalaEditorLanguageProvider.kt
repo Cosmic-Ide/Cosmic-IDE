@@ -10,11 +10,12 @@ package org.cosmicide.editor.language
 import android.content.Context
 import android.util.Log
 import org.cosmicide.App
-import org.cosmicide.editor.lsp.ExistingProcessLspConnection
-import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.editor.LspServerDefinition
 import org.cosmicide.editor.LspServerProvider
 import org.cosmicide.editor.LspServerRequest
+import org.cosmicide.editor.lsp.ExistingProcessLspConnection
+import org.cosmicide.editor.lsp.LspLogStore
+import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.project.Project
 import java.io.InputStream
 
@@ -73,9 +74,11 @@ object ScalaEditorLanguageProvider : LspServerProvider {
                 metalsProcess = process
                 metalsProjectRoot = projectRoot
                 Log.d(TAG, "Metals language server started")
+                LspLogStore.info("Metals", "Server process started")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Metals execution crashed", e)
+            LspLogStore.error("Metals", "Server process crashed", e)
             null
         }
     }
@@ -87,10 +90,12 @@ object ScalaEditorLanguageProvider : LspServerProvider {
                 var line = reader.readLine()
                 while (line != null) {
                     Log.d("METALS-LSP", line)
+                    LspLogStore.debug("Metals", line)
                     line = reader.readLine()
                 }
             } catch (e: Exception) {
                 Log.d("METALS-LSP", "Stderr logger stopped: ${e.message}")
+                LspLogStore.warning("Metals", "Stderr logger stopped", e)
             }
         }.apply {
             name = "Metals-LSP-Stderr-Logger"
@@ -98,9 +103,6 @@ object ScalaEditorLanguageProvider : LspServerProvider {
             start()
         }
     }
-
-    internal val supportedExtensions: Set<String>
-        get() = SCALA_EXTENSIONS
 
     private val SCALA_EXTENSIONS = setOf("scala", "sc", "sbt")
     private const val TAG = "ScalaLanguageProvider"

@@ -15,7 +15,7 @@ import org.cosmicide.util.FileUtil
 class PreferencesInitializer : Initializer<Unit> {
 
     override fun create(context: Context) {
-        FileUtil.init(context.getExternalFilesDir(null)!!)
+        FileUtil.init(context.filesDir)
         Prefs.init(context.applicationContext)
     }
 

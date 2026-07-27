@@ -6,7 +6,7 @@ Cosmic IDE is an Android-hosted development environment. The Android application
 interface, editor, files, and project state. Compilers, shells, Gradle, and language servers run as
 Linux/aarch64 processes inside an app-private glibc compatibility environment.
 
-The current development build targets Android 13 or newer. The packaged Linux environment and
+The current development build targets Android 8 or newer. The packaged Linux environment and
 first-party toolchains are intended for arm64 devices. A project still has the permissions and
 resource limits of an Android application; this is not a virtual machine, container, or root shell.
 

@@ -92,7 +92,7 @@ class FoojayClient(private val httpClient: HttpClient = defaultClient) {
         version: String,
         os: OS,
         arch: Arch,
-        libCType: LibCType = LibCType.GLIBC
+        libCType: LibCType = LibCType.GLIBC,
     ): Result<Artifact> = withContext(Dispatchers.IO) {
         runCatching {
             val packagesResponse: PackagesResponse = httpClient.get("$BASE_URL/packages/jdks") {
@@ -102,10 +102,13 @@ class FoojayClient(private val httpClient: HttpClient = defaultClient) {
                 parameter("architecture", arch.apiValue)
                 parameter("latest", "available")
                 parameter("lib_c_type", libCType.apiValue)
+                parameter("archive_type", "tar.gz")
             }.body()
 
             val pkg = packagesResponse.result.firstOrNull()
-                ?: throw NoSuchElementException("No package found matching: $vendorParam v$version ($os/$arch)")
+                ?: throw NoSuchElementException(
+                    "No package found matching: $vendorParam v$version ($os/$arch)"
+                )
 
             // Step 2: Query the detailed info uri directly to retrieve the checksum block payload
             val infoResponse: InfoResponse = httpClient.get(pkg.links.infoUri).body()

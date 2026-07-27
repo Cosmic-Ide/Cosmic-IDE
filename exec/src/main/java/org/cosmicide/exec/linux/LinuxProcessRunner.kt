@@ -5,15 +5,11 @@ import org.cosmicide.util.FileUtil
 import org.cosmicide.util.repairJdkExecutablePermissions
 import java.io.File
 import java.lang.reflect.Field
-import android.os.Process as AndroidProcess
 
 object LinuxProcessRunner {
 
-    private const val RUNTIME_USER = "cosmicide"
     private const val JSTAT_SAMPLE_INTERVAL_MS = 1000
     private const val EXECUTABLE_IDENTITY_ENV = "COSMIC_EXECUTABLE"
-
-    private val DefaultDnsServers = listOf("1.1.1.1", "8.8.8.8")
 
     data class Configuration(
         val binary: File,
@@ -39,14 +35,7 @@ object LinuxProcessRunner {
         val appDir: File,
         val glibcPath: String,
         val customLinker: String,
-        val combinedPreload: String,
-        val runtimeUser: String,
-        val resolvConf: File,
-        val hostsFile: File,
-        val nsswitchConf: File,
-        val gaiConf: File,
-        val passwdFile: File,
-        val groupFile: File
+        val combinedPreload: String
     )
 
     private enum class ExecutableKind {
@@ -558,25 +547,6 @@ object LinuxProcessRunner {
         val glibcRoot = appDir.resolve("usr")
         val glibcPath = glibcRoot.absolutePath
         val nativeLibDir = context.applicationInfo.nativeLibraryDir
-        val runtimeUid = AndroidProcess.myUid()
-
-        val resolvConf = tempDir.resolve("resolv.conf")
-        val hostsFile = tempDir.resolve("hosts")
-        val nsswitchConf = tempDir.resolve("nsswitch.conf")
-        val gaiConf = tempDir.resolve("gai.conf")
-        val passwdFile = tempDir.resolve("passwd")
-        val groupFile = tempDir.resolve("group")
-
-        writeRuntimeFiles(
-            appDir = appDir,
-            runtimeUid = runtimeUid,
-            resolvConf = resolvConf,
-            hostsFile = hostsFile,
-            nsswitchConf = nsswitchConf,
-            gaiConf = gaiConf,
-            passwdFile = passwdFile,
-            groupFile = groupFile
-        )
 
         val pathRedirect = "$nativeLibDir/libpath_redirect.so"
         val nssWrapper = glibcRoot.resolve("lib/libnss_wrapper.so").absolutePath
@@ -589,14 +559,7 @@ object LinuxProcessRunner {
             combinedPreload = listOfNotNull(
                 pathRedirect,
                 if (setup) nssWrapper else null
-            ).joinToString(":"),
-            runtimeUser = RUNTIME_USER,
-            resolvConf = resolvConf,
-            hostsFile = hostsFile,
-            nsswitchConf = nsswitchConf,
-            gaiConf = gaiConf,
-            passwdFile = passwdFile,
-            groupFile = groupFile
+            ).joinToString(":")
         )
     }
 
@@ -626,46 +589,6 @@ object LinuxProcessRunner {
             fi
             """.trimIndent() + "\n"
         )
-    }
-
-    private fun writeRuntimeFiles(
-        appDir: File,
-        runtimeUid: Int,
-        resolvConf: File,
-        hostsFile: File,
-        nsswitchConf: File,
-        gaiConf: File,
-        passwdFile: File,
-        groupFile: File
-    ) {
-        resolvConf.writeTextIfChanged(
-            buildString {
-                DefaultDnsServers.forEach { ip -> append("nameserver $ip\n") }
-                append("options timeout:2 attempts:2\n")
-            })
-
-        hostsFile.writeTextIfChanged(
-            """
-            127.0.0.1 localhost
-            ::1 localhost ip6-localhost ip6-loopback
-            """.trimIndent() + "\n"
-        )
-
-        nsswitchConf.writeTextIfChanged(
-            """
-            passwd: files
-            group: files
-            hosts: files dns
-            """.trimIndent() + "\n"
-        )
-
-        // Empty file is fine. It just prevents glibc from trying literal /etc/gai.conf.
-        gaiConf.writeTextIfChanged("")
-
-        passwdFile.writeTextIfChanged(
-            "$RUNTIME_USER:x:$runtimeUid:$runtimeUid:Cosmic IDE:${appDir.resolve("home").absolutePath}:/system/bin/sh\n"
-        )
-        groupFile.writeTextIfChanged("$RUNTIME_USER:x:$runtimeUid:\n")
     }
 
     private fun File.writeTextIfChanged(content: String) {
@@ -705,8 +628,6 @@ object LinuxProcessRunner {
         // Only path-bearing value exec_wrap.c cannot infer by itself.
         // Behavior toggles live as compile-time constants at the top of exec_wrap.c.
         put("HOME", runtime.appDir.resolve("home").absolutePath)
-        put("USER", runtime.runtimeUser)
-        put("LOGNAME", runtime.runtimeUser)
         put("SHELL", runtime.defaultShell().absolutePath)
 
         // TMPDIR is required by libpath_redirect for /tmp redirection. TMP/TEMP
@@ -715,22 +636,7 @@ object LinuxProcessRunner {
         put("TMP", runtime.tempDir.absolutePath)
         put("TEMP", runtime.tempDir.absolutePath)
 
-        // libpath_redirect/dns_fallback read these directly. The optional /etc
-        // suffix redirects are only compatibility support for binaries that open
-        // Linux config paths themselves.
-        put("RESOLV_CONF_PATH", runtime.resolvConf.absolutePath)
-        put("HOSTS_PATH", runtime.hostsFile.absolutePath)
-        put("NSSWITCH_CONF_PATH", runtime.nsswitchConf.absolutePath)
-        put("GAI_CONF_PATH", runtime.gaiConf.absolutePath)
-        put("GLIBC_TUNABLES", $$"${GLIBC_TUNABLES:+$GLIBC_TUNABLES:}glibc.pthread.rseq=0")
-
         put("RES_OPTIONS", "attempts:1 timeout:1")
-
-        put("NSS_WRAPPER_PASSWD", runtime.passwdFile.absolutePath)
-        put("NSS_WRAPPER_GROUP", runtime.groupFile.absolutePath)
-
-        // Kept for compatibility with your custom glibc/nss routing layer.
-        put("NSS_WEAK_ROUTE_CONFIG", runtime.nsswitchConf.absolutePath)
 
         // Make paths baked into Termux/gpkg binaries resolve against the app-private
         // files directory. runtime.appDir is the fake Termux files root: <app>/files/glibc.
@@ -743,17 +649,6 @@ object LinuxProcessRunner {
         if (gccFrontendPath.isNotEmpty()) {
             put("COMPILER_PATH", gccFrontendPath)
         }
-
-        val binDir = File(runtime.glibcPath).resolve("bin")
-        put("CC", binDir.resolve("gcc").absolutePath)
-        put("CXX", binDir.resolve("g++").absolutePath)
-        put("AR", binDir.resolve("ar").absolutePath)
-        put("RANLIB", binDir.resolve("ranlib").absolutePath)
-        put("STRIP", binDir.resolve("strip").absolutePath)
-        put("MAKE", binDir.resolve("make").absolutePath)
-        put("CMAKE_C_COMPILER", binDir.resolve("gcc").absolutePath)
-        put("CMAKE_CXX_COMPILER", binDir.resolve("g++").absolutePath)
-        put("CMAKE_MAKE_PROGRAM", binDir.resolve("make").absolutePath)
 
         put(
             "LIBRARY_PATH",

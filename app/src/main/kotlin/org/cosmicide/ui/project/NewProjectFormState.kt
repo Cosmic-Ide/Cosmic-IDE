@@ -17,8 +17,8 @@ internal enum class TestFramework(val gradleValue: String, val displayName: Stri
 internal data class NewProjectFormState(
     val name: String = "",
     val packageName: String = "",
-    val language: Language = Language.Kotlin,
-    val dslType: DslType = DslType.KOTLIN,
+    val language: Language = Language.Java,
+    val dslType: DslType = DslType.GROOVY,
     val splitProject: Boolean = false,
     val testFramework: TestFramework = defaultTestFramework(language)
 ) {

@@ -11,7 +11,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -109,35 +108,6 @@ internal fun GoToLineDialog(lineCount: Int, onDismiss: () -> Unit, onConfirm: (I
     })
 }
 
-@Composable
-internal fun ProgramArgumentDialog(
-    title: String, savedArgs: List<String>, onSave: (List<String>) -> Unit, onDismiss: () -> Unit
-) {
-    var args by remember { mutableStateOf(savedArgs.joinToString(" ")) }
-
-    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = {
-        OutlinedTextField(
-            value = args,
-            label = { Text(title) },
-            singleLine = true,
-            onValueChange = { args = it })
-    }, confirmButton = {
-        Button(
-            onClick = {
-                onSave(args.split(' '))
-                onDismiss()
-            }, shapes = ButtonDefaults.shapes()
-        ) {
-            Text("Save")
-        }
-    }, dismissButton = {
-        TextButton(onClick = onDismiss) {
-            Text("Cancel")
-        }
-    })
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun Statistics(content: Content, onDismiss: () -> Unit) {
     val bytes = content.toString().toByteArray().size

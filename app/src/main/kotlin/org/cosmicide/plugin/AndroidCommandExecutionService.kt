@@ -22,6 +22,7 @@ import org.cosmicide.project.CommandRequest
 import org.cosmicide.project.CommandResult
 import org.cosmicide.util.jdksDir
 import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class AndroidCommandExecutionService(context: Context) : CommandExecutionService {
     private val appContext = context.applicationContext
@@ -56,7 +57,7 @@ internal class AndroidCommandExecutionService(context: Context) : CommandExecuti
         val captured = StringBuilder()
         val callerJob = currentCoroutineContext()[Job]
         val cancellationWatcher = CoroutineScope(Dispatchers.IO).launch {
-            while (callerJob?.isActive == true) delay(CANCELLATION_POLL_MILLIS)
+            while (callerJob?.isActive == true) delay(CANCELLATION_POLL_MILLIS.milliseconds)
             if (callerJob?.isCancelled == true && process.isAlive) process.destroy()
         }
 

@@ -17,10 +17,10 @@ import org.cosmicide.common.Prefs
  * Sets the font and enables highlighting of the current line for the code editor.
  */
 fun CodeEditor.setFont() {
-    typefaceText = if (Prefs.editorFont.isNotEmpty()) {
-        Typeface.createFromFile(Prefs.editorFont)
-    } else {
-        ResourcesCompat.getFont(context, R.font.noto_sans_mono)
-    }
+    val bundledFont = ResourcesCompat.getFont(context, R.font.noto_sans_mono)
+    typefaceText = Prefs.editorFont
+        .takeIf(String::isNotEmpty)
+        ?.let { path -> runCatching { Typeface.createFromFile(path) }.getOrNull() }
+        ?: bundledFont
     isHighlightCurrentLine = true
 }

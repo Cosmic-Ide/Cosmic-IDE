@@ -35,14 +35,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.cosmicide.util.Download
 import org.cosmicide.util.extractTarZstStream
 import org.cosmicide.util.restoreSymlinksFromManifest
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

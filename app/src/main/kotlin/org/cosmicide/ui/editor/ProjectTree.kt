@@ -1,6 +1,7 @@
 package org.cosmicide.ui.editor
 
 import android.content.Intent
+import android.webkit.MimeTypeMap
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -215,11 +216,13 @@ internal fun ProjectTreeView(
                             }
                             DropdownMenuItem(text = { Text("Open External") }, onClick = {
                                 try {
+                                    val mimeType = MimeTypeMap.getSingleton()
+                                        .getMimeTypeFromExtension(file.extension)
                                     val uri = FileProvider.getUriForFile(
-                                        context, "${context.packageName}.provider", file
+                                        context, "${context.packageName}.fileprovider", file
                                     )
                                     val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        setDataAndType(uri, "*/*")
+                                        setDataAndType(uri, mimeType)
                                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     }
                                     context.startActivity(Intent.createChooser(intent, "Open with"))

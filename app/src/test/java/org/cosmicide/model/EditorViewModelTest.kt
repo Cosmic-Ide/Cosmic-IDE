@@ -54,6 +54,22 @@ class EditorViewModelTest {
         }
     }
 
+    @Test
+    fun `preview images are never overwritten with editor text`() {
+        withTempDir { dir ->
+            val image = dir.resolve("preview.PNG").apply {
+                writeBytes(byteArrayOf(1, 2, 3, 4))
+            }
+            val text = dir.resolve("notes.md").apply { writeText("# Notes") }
+            val viewModel = EditorViewModel()
+
+            viewModel.openFile(image)
+            viewModel.openFile(text, currentEditorContent = null)
+
+            assertEquals(listOf<Byte>(1, 2, 3, 4), image.readBytes().toList())
+        }
+    }
+
     private fun withTempDir(block: (File) -> Unit) {
         val dir = createTempDirectory("cosmic-editor-test").toFile()
         try {

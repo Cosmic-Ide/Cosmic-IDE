@@ -6,6 +6,7 @@ import org.gradle.tooling.CancellationToken
 import org.gradle.tooling.GradleConnectionException
 import org.gradle.tooling.ResultHandler
 import org.gradle.tooling.events.OperationDescriptor
+import org.gradle.tooling.events.OperationType
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
 import java.io.File
@@ -33,6 +34,8 @@ internal class OperationState {
     var stderr: OutputStream? = null
     var stdin: InputStream? = null
     val progressListeners = mutableListOf<ProgressListener>()
+    val progressOperationTypes = mutableSetOf<OperationType>()
+    var unfilteredProgress = false
     var cancellationToken: CancellationToken? = null
 
     fun toParams(): JsonObject = JsonObject().apply {
@@ -44,8 +47,23 @@ internal class OperationState {
         )
         if (environmentVariables.isNotEmpty()) add("env", Gson().toJsonTree(environmentVariables))
         javaHome?.let { addProperty("javaHome", it.absolutePath) }
+        if (!unfilteredProgress && progressOperationTypes.isNotEmpty()) {
+            add("operationTypes", Gson().toJsonTree(progressOperationTypes.map { it.name }))
+        }
         addProperty("colorOutput", colorOutput)
         addProperty("detailedFailure", detailedFailure)
+    }
+
+    fun addProgressListener(
+        listener: ProgressListener,
+        operationTypes: Collection<OperationType>? = null
+    ) {
+        progressListeners.add(listener)
+        if (operationTypes == null) {
+            unfilteredProgress = true
+        } else {
+            progressOperationTypes.addAll(operationTypes)
+        }
     }
 }
 
@@ -91,8 +109,8 @@ internal fun wireStreams(server: ToolingServer, opId: String, state: OperationSt
             "gradle/output" -> {
                 val stream = params.get("stream")?.asString
                 val text = params.get("text")?.asString.orEmpty()
-                val bytes = text.toByteArray(Charsets.UTF_8)
-                if (stream == "stderr") state.stderr?.write(bytes) else state.stdout?.write(bytes)
+                val output = if (stream == "stderr") state.stderr else state.stdout
+                output?.write(text.toByteArray(Charsets.UTF_8))
             }
 
             "gradle/progress" -> {
@@ -114,8 +132,12 @@ internal fun wireStreams(server: ToolingServer, opId: String, state: OperationSt
 }
 
 /** Polls a CancellationToken and forwards cancellation to the server for this opId. */
-internal fun wireCancellation(server: ToolingServer, opId: String, token: CancellationToken?) {
-    if (token == null) return
+internal fun wireCancellation(
+    server: ToolingServer,
+    opId: String,
+    token: CancellationToken?
+): () -> Unit {
+    if (token == null) return {}
     val done = java.util.concurrent.atomic.AtomicBoolean(false)
     thread(isDaemon = true) {
         while (!done.get() && !token.isCancellationRequested) Thread.sleep(200)
@@ -123,6 +145,5 @@ internal fun wireCancellation(server: ToolingServer, opId: String, token: Cancel
             server.cancel(opId) { _, _ -> }
         }
     }
-    // caller marks `done` externally by simply letting the daemon thread die once the
-    // op's callback fires -- fine for now since it's a daemon thread and cheap to poll
+    return { done.set(true) }
 }

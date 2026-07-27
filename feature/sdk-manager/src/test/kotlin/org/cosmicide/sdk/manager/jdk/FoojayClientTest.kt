@@ -83,6 +83,7 @@ class FoojayClientTest {
                     assertEquals("linux", request.url.parameters["operating_system"])
                     assertEquals("aarch64", request.url.parameters["architecture"])
                     assertEquals("glibc", request.url.parameters["lib_c_type"])
+                    assertEquals("tar.gz", request.url.parameters["archive_type"])
                     jsonResponse(
                         """{"result":[{"java_version":"21.0.8+9","distribution":"temurin","filename":"fallback.tar.gz","links":{"pkg_info_uri":"https://details.test/package"}}]}"""
                     )

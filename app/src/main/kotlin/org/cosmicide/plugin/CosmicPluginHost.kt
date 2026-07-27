@@ -9,13 +9,12 @@ package org.cosmicide.plugin
 
 import android.content.Context
 import android.util.Log
-import org.cosmicide.editor.language.registerBuiltinEditorExtensions
 import org.cosmicide.editor.EditorExtensionPoints
+import org.cosmicide.editor.language.registerBuiltinEditorExtensions
 import org.cosmicide.plugin.api.ConfigurableExtension
 import org.cosmicide.plugin.api.DefaultExtensionRegistry
 import org.cosmicide.plugin.api.DefaultServiceRegistry
 import org.cosmicide.plugin.api.MutableExtensionRegistry
-import org.cosmicide.plugin.git.GitPlugin
 import org.cosmicide.plugin.customproject.CustomProjectTypePlugin
 import org.cosmicide.plugin.runtime.AndroidPluginManager
 import org.cosmicide.project.IdeServices
@@ -59,14 +58,14 @@ object CosmicPluginHost {
                 ).onFailure { descriptorId, reason, throwable ->
                     Log.w(TAG, "Failed to load built-in plugin $descriptorId: $reason", throwable)
                 }
-                manager.loadBuiltin(GitPlugin.descriptor, GitPlugin())
-                    .onFailure { descriptorId, reason, throwable ->
-                        Log.w(
-                            TAG,
-                            "Failed to load built-in plugin $descriptorId: $reason",
-                            throwable
-                        )
-                    }
+//                manager.loadBuiltin(GitPlugin.descriptor, GitPlugin())
+//                    .onFailure { descriptorId, reason, throwable ->
+//                        Log.w(
+//                            TAG,
+//                            "Failed to load built-in plugin $descriptorId: $reason",
+//                            throwable
+//                        )
+//                    }
                 manager.loadInstalledPlugins().forEach { result ->
                     result.onFailure { descriptorId, reason, throwable ->
                         Log.w(TAG, "Failed to load plugin $descriptorId: $reason", throwable)
@@ -88,6 +87,7 @@ object CosmicPluginHost {
             addRegistrations(EditorExtensionPoints.LANGUAGE_PROVIDER, "Editor languages")
             addRegistrations(EditorExtensionPoints.LSP_SERVER_PROVIDER, "Language servers")
             addRegistrations(EditorExtensionPoints.FORMATTER_PROVIDER, "Formatters")
+            addRegistrations(EditorExtensionPoints.PREVIEW_PROVIDER, "Editor previews")
             addRegistrations(ProjectExtensionPoints.CREATION_PROVIDER, "Project creation")
             addRegistrations(ProjectExtensionPoints.ACTION_PROVIDER, "Project actions")
             addRegistrations(ProjectExtensionPoints.COMMAND_PROVIDER, "Project commands")

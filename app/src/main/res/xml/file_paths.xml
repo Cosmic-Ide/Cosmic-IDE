@@ -1,5 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path
-        name="external_files"
+    <!-- Exposes context.filesDir (internal app storage) -->
+    <files-path
+        name="internal_files"
+        path="." />
+
+    <!-- Exposes context.getExternalFilesDir(...) (sdcard/Android/data/org.cosmicide/files) -->
+    <external-files-path
+        name="external_app_files"
         path="." />
 </paths>

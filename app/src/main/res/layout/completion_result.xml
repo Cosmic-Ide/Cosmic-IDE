@@ -11,22 +11,26 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="8dp">
+    android:foreground="?android:selectableItemBackground"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="5dp">
 
-    <ImageView
+    <TextView
         android:id="@+id/result_item_icon"
         android:layout_width="26dp"
         android:layout_height="26dp"
         android:contentDescription="@string/completion_type"
-        android:padding="4dp"
-        android:scaleType="fitCenter"
-        tools:src="@android:drawable/ic_menu_edit" />
+        android:fontFamily="@font/firacode_medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="M" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="8dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -35,19 +39,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:fontFamily="@font/montserrat_medium"
+            android:fontFamily="@font/firacode_medium"
+            android:includeFontPadding="false"
             android:maxLines="1"
-            android:textSize="15sp"
+            android:textSize="13sp"
             tools:text="myMethod" />
 
         <TextView
             android:id="@+id/result_item_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:fontFamily="@font/noto_sans_mono"
+            android:includeFontPadding="false"
             android:maxLines="1"
-            android:textSize="12sp"
+            android:textSize="10sp"
             tools:text="MyClass" />
     </LinearLayout>
 
@@ -58,9 +65,12 @@
         android:layout_marginStart="8dp"
         android:ellipsize="end"
         android:fontFamily="@font/noto_sans_mono"
+        android:includeFontPadding="false"
+        android:maxWidth="132dp"
         android:maxLines="1"
-        android:textSize="12sp"
-        android:textStyle="italic"
+        android:paddingHorizontal="7dp"
+        android:paddingVertical="3dp"
+        android:textSize="10sp"
         tools:text="void" />
 
 </LinearLayout>

@@ -51,9 +51,7 @@ internal class AndroidGradleProjectCreator(
 
             try {
                 onLog("Starting Gradle Tooling API provider...\n")
-                val connection = RemoteGradleConnector(appContext)
-                    .forProjectDirectory(root)
-                    .connect()
+                val connection = RemoteGradleConnector.forProject(appContext, root).connect()
 
                 try {
                     onLog("Running Gradle init (${request.language.gradleInitType})...\n")

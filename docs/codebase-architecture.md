@@ -61,15 +61,15 @@ screens stops the provider; application shutdown repeats the cleanup defensively
 
 ## Storage ownership
 
-| Location                                         | Contents                                                                                                             |
-|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `files/glibc`                                    | Deployed glibc runtime and its home directory.                                                                       |
-| `files/jdks`                                     | Installed JDK distributions.                                                                                         |
-| `files/kotlin-lsp`, `files/jdtls`, `files/scala` | Language-server installations.                                                                                       |
-| `files/Android/sdk`                              | Optional Android SDK.                                                                                                |
-| `files/gradle-tooling.jar`                       | Runtime copy of the bundled Gradle provider.                                                                         |
-| `cacheDir`                                       | Resolver files, language-server workspaces, downloads, Java temp files, and validated HTTPS TextMate grammar copies. |
-| app-specific external files                      | User projects, plugins, and persistent IDE data managed by `FileUtil`.                                               |
+| Location                                                     | Contents                                                                                                             |
+|--------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| `files/glibc`                                                | Deployed glibc runtime and its home directory.                                                                       |
+| `files/jdks`                                                 | Installed JDK distributions.                                                                                         |
+| `files/kotlin-language-server`, `files/jdtls`, `files/scala` | Language-server installations.                                                                                       |
+| `files/Android/sdk`                                          | Optional Android SDK.                                                                                                |
+| `files/gradle-tooling.jar`                                   | Runtime copy of the bundled Gradle provider.                                                                         |
+| `cacheDir`                                                   | Resolver files, language-server workspaces, downloads, Java temp files, and validated HTTPS TextMate grammar copies. |
+| app-specific external files                                  | User projects, plugins, and persistent IDE data managed by `FileUtil`.                                               |
 
 ## Main ownership rules
 

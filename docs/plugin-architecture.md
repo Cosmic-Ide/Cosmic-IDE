@@ -330,6 +330,37 @@ An LSP plugin may also register a formatter provider, but that provider should b
 and registration. Keeping formatting separate prevents a local formatter from accidentally coupling
 its lifecycle to a language server process.
 
+## Editor preview providers
+
+Preview providers contribute either a code/preview mode or a preview-only editor surface. They use
+Android `View` instances so plugins do not need the Compose compiler.
+
+```kotlin
+class PdfPreviewProvider : EditorPreviewProvider {
+    override val id = "com.example.pdf-preview"
+    override val displayName = "PDF preview"
+    override val presentation = EditorPreviewPresentation.PREVIEW_ONLY
+    override val priority = 200
+
+    override fun supports(request: EditorPreviewMatchRequest): Boolean {
+        return request.file.extension.equals("pdf", ignoreCase = true)
+    }
+
+    override fun createView(request: EditorPreviewRenderRequest): View {
+        return PdfPreviewView(request.context)
+    }
+
+    override fun updateView(view: View, request: EditorPreviewRenderRequest) {
+        (view as PdfPreviewView).open(request.file)
+    }
+}
+```
+
+Register it at `EditorExtensionPoints.PREVIEW_PROVIDER`. Higher-priority providers win. For
+`CODE_AND_PREVIEW`, `content` contains the current editor text; for `PREVIEW_ONLY`, it is `null` and
+Cosmic IDE never loads or saves the file through the text editor. Providers should release WebViews,
+decoders, or other owned resources in `releaseView`.
+
 ## Project creation and action providers
 
 Project UI extensions are declarative. `ProjectCreationProvider.fields` and

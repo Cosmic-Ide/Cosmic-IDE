@@ -31,9 +31,6 @@ object JavaEditorLanguageProvider : LspServerProvider {
     override val description = "Java editing powered by Eclipse JDT Language Server"
     override val priority = 300
 
-    private var jdtLspProcess: Process? = null
-    private var jdtProjectRoot: String? = null
-
     override fun supports(request: LspServerRequest): Boolean {
         return request.extension == "java"
     }
@@ -41,7 +38,7 @@ object JavaEditorLanguageProvider : LspServerProvider {
     override fun createDefinition(request: LspServerRequest): LspServerDefinition {
         return LspServerDefinition(
             id = id,
-            fileExtension = "java",
+            fileExtensions = setOf("java"),
             displayName = "JDT LS",
             connectionFactory = {
                 ExistingProcessLspConnection {
@@ -50,31 +47,25 @@ object JavaEditorLanguageProvider : LspServerProvider {
                     startJdtlsProcess(context, request.project)
                 }
             },
+            initializationTimeoutMillis = 120_000,
             grammarScopeName = "source.java",
             expectedCapabilities = createJdtCapabilities(),
             configuration = createJdtConfiguration()
         )
     }
 
-    @Synchronized
     internal fun startJdtlsProcess(context: Context, project: Project): Process? {
-        val projectRoot = project.root.absolutePath
-        jdtLspProcess
-            ?.takeIf { it.isAlive && jdtProjectRoot == projectRoot }
-            ?.let { return it }
-
-        jdtLspProcess?.takeIf(Process::isAlive)?.destroy()
-
         val jdtlsDir = File(context.filesDir, "jdtls")
         val launcherJar = findMainEquinoxLauncher(jdtlsDir)
             ?: throw IllegalStateException("Equinox launcher jar not found in jdtls/plugins")
         val sharedConfigDir = jdtlsDir.resolve("config_linux")
+        val workspaceId = "${project.name}-${project.root.absolutePath.hashCode().toUInt()}"
 
         // Use a writable local configuration while keeping the shared installation read-only.
         val localConfigDir =
-            File(context.cacheDir, "jdtls_local_config/${project.name}").apply { mkdirs() }
+            File(context.cacheDir, "jdtls_local_config/$workspaceId").apply { mkdirs() }
         val workspaceDir =
-            File(context.cacheDir, "jdtls_workspace/${project.name}").apply { mkdirs() }
+            File(context.cacheDir, "jdtls_workspace/$workspaceId").apply { mkdirs() }
 
         val command = mutableListOf(
             "-Djdk.xml.maxGeneralEntitySizeLimit=0",
@@ -121,8 +112,6 @@ object JavaEditorLanguageProvider : LspServerProvider {
                 )
                 LspLogStore.info("JDT LS", "Server process started with PID: $pid")
                 renice(process)
-                jdtLspProcess = process
-                jdtProjectRoot = projectRoot
             }
         } catch (e: Exception) {
             Log.e(TAG, "JDTLS execution crashed", e)

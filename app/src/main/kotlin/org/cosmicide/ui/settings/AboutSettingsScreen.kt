@@ -16,10 +16,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,8 +29,6 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Handyman
 import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -42,16 +38,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import org.cosmicide.BuildConfig
 import org.cosmicide.R
+import org.cosmicide.ui.donation.DonationSheet
 
 private const val SourceUrl = "https://github.com/Cosmic-IDE/Cosmic-IDE"
 
@@ -219,91 +212,14 @@ private fun ProductHeader() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProjectActions(
     onSource: () -> Unit,
 ) {
-    val context = LocalContext.current
     var showSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberBottomSheetState(SheetValue.Hidden)
 
     if (showSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showSheet = false },
-            sheetState = sheetState
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-                    .navigationBarsPadding(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    Icons.Rounded.Favorite,
-                    contentDescription = null,
-                    modifier = Modifier.size(48.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = "Support",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(Modifier.height(12.dp))
-
-                Text(
-                    text = "Cosmic IDE is completely free with no ads, tracking, or hidden costs. If you find it useful, please consider a small donation to help keep it that way. Your support means everything and keeps this project alive. Thank you!",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                TextButton(
-                    onClick = { showSheet = false },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Later")
-                }
-
-                Spacer(Modifier.height(12.dp))
-
-                Button(
-                    onClick = {
-                        showSheet = false
-                        context.startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                "https://PranavPurwar.github.io/donate.html".toUri()
-                            )
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shapes = ButtonDefaults.shapes(),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Icon(Icons.Rounded.Favorite, null, Modifier.size(24.dp), tint = Color.Red)
-                    Spacer(Modifier.width(12.dp))
-                    Text(
-                        "Donate",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(Modifier.height(16.dp))
-            }
-        }
+        DonationSheet(onDismiss = { showSheet = false })
     }
     Row(
         modifier = Modifier.fillMaxWidth(),

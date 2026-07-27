@@ -34,6 +34,7 @@ class GradleGroovyEditorLanguageProviderTest {
         assertTrue(settings.containsKey("gradleUserHome"))
         assertEquals(settings, definition.configuration)
         assertTrue(definition.traceIncomingMessages)
+        assertEquals(setOf("gradle", "groovy"), definition.fileExtensions)
     }
 
     private fun providerSupports(name: String): Boolean {

@@ -291,8 +291,8 @@ class RemoteBuildLauncher(private val server: ToolingServer) : BuildLauncher {
         var error: Throwable? = null
 
         run(
-            resultHandler(
-                onComplete = { latch.countDown() },
+            voidResultHandler(
+                onComplete = latch::countDown,
                 onFailure = {
                     error = it
                     latch.countDown()
@@ -480,8 +480,8 @@ class RemoteTestLauncher(private val server: ToolingServer) : TestLauncher {
         var error: Throwable? = null
 
         run(
-            resultHandler<Void>(
-                onComplete = { latch.countDown() },
+            voidResultHandler(
+                onComplete = latch::countDown,
                 onFailure = {
                     error = it
                     latch.countDown()

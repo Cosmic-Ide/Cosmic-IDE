@@ -1,5 +1,6 @@
 package org.cosmicide.ui.editor
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.rosemoe.sora.event.ContentChangeEvent
+import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,12 +58,41 @@ import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
 import java.io.File
 
+private class EditorTabSession(
+    val editor: CodeEditor
+) {
+    var initialized = false
+    var isApplyingInitialContent = false
+    var unsubscribeContentChanges: (() -> Unit)? = null
+
+    fun release() {
+        unsubscribeContentChanges?.invoke()
+        editor.disposeLspLanguage()
+        editor.release()
+    }
+}
+
+private fun createEditorTabSession(
+    context: Context,
+    file: File,
+    viewModel: EditorViewModel
+): EditorTabSession {
+    val editor = setCodeEditorFactory(context, CodeEditorState())
+    val session = EditorTabSession(editor)
+    val receipt = editor.subscribeEvent(ContentChangeEvent::class.java) { _, _ ->
+        if (!session.isApplyingInitialContent) {
+            viewModel.onDocumentContentChanged(file, editor.text.toString())
+        }
+    }
+    session.unsubscribeContentChanges = receipt::unsubscribe
+    return session
+}
+
 @Composable
 fun EditorScreen(
     project: Project,
     viewModel: EditorViewModel = viewModel()
 ) {
-    val state = remember { CodeEditorState() }
     val context = LocalContext.current
     val projectSessionServices = LocalAppContainer.current.projectSessionServices
     val scope = rememberCoroutineScope()
@@ -92,15 +122,23 @@ fun EditorScreen(
     val openFiles = viewModel.openFiles
     val activeFile = viewModel.activeFile
     val lspLogs by LspLogStore.entries.collectAsStateWithLifecycle()
-
-    val editor = remember {
-        setCodeEditorFactory(context = context, state = state)
-    }
-    val isApplyingEditorContent = remember { mutableStateOf(false) }
     val activePreviewProvider = activeFile?.let { EditorPreviews.providerFor(project, it) }
     val isPreviewOnly =
         activePreviewProvider?.presentation == EditorPreviewPresentation.PREVIEW_ONLY
-    val currentIsPreviewOnly by rememberUpdatedState(isPreviewOnly)
+    val editorSessions = remember(project.root.absolutePath) {
+        mutableMapOf<File, EditorTabSession>()
+    }
+    val fallbackEditor = remember(project.root.absolutePath) {
+        setCodeEditorFactory(context, CodeEditorState())
+    }
+    val activeEditorSession = activeFile
+        ?.takeUnless { isPreviewOnly }
+        ?.let { file ->
+            editorSessions.getOrPut(file) {
+                createEditorTabSession(context, file, viewModel)
+            }
+        }
+    val editor = activeEditorSession?.editor ?: fallbackEditor
     val currentEditorContent = {
         if (isPreviewOnly) null else editor.text.toString()
     }
@@ -155,35 +193,30 @@ fun EditorScreen(
 
     val colorScheme = MaterialTheme.colorScheme
 
-    LaunchedEffect(activeFile, activePreviewProvider?.id, isPreviewOnly) {
+    LaunchedEffect(activeFile, activeEditorSession, isPreviewOnly) {
         activeFile?.let { file ->
-            if (isPreviewOnly) return@let
+            val session = activeEditorSession ?: return@let
+            if (session.initialized) return@let
             val content = viewModel.cachedContent(file)
                 ?: withContext(Dispatchers.IO) { file.readText() }
             viewModel.ensureDocument(file, content)
 
-            isApplyingEditorContent.value = true
+            session.isApplyingInitialContent = true
             try {
-                editor.setText(content)
+                session.editor.setText(content)
             } finally {
-                isApplyingEditorContent.value = false
+                session.isApplyingInitialContent = false
             }
-            editor.applyEditorSettings(project, file, colorScheme)
-            LspLogStore.clear()
+            session.editor.applyEditorSettings(project, file, colorScheme)
+            session.initialized = true
         }
     }
 
-    DisposableEffect(editor) {
-        val receipt = editor.subscribeEvent(ContentChangeEvent::class.java) { _, _ ->
-            if (!isApplyingEditorContent.value && !currentIsPreviewOnly) {
-                viewModel.onActiveContentChanged(editor.text.toString())
-            }
-        }
-
+    DisposableEffect(editorSessions, fallbackEditor) {
         onDispose {
-            receipt.unsubscribe()
-            editor.disposeLspLanguage()
-            editor.release()
+            editorSessions.values.forEach(EditorTabSession::release)
+            editorSessions.clear()
+            fallbackEditor.release()
         }
     }
 
@@ -254,6 +287,7 @@ fun EditorScreen(
                                         IconButton(
                                             onClick = {
                                                 viewModel.closeTab(file, currentEditorContent())
+                                                editorSessions.remove(file)?.release()
                                             }, modifier = Modifier.size(18.dp)
                                         ) {
                                             Icon(

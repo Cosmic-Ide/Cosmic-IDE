@@ -57,6 +57,8 @@ import org.cosmicide.model.ProjectViewModel
 import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCreationProvider
 import org.cosmicide.project.TerminalAction
+import org.cosmicide.ui.donation.DonationPromptTracker
+import org.cosmicide.ui.donation.DonationSheet
 import org.cosmicide.ui.plugin.ProjectActionDialog
 import org.cosmicide.ui.plugin.ProjectCreationDialog
 import java.io.File
@@ -129,12 +131,20 @@ fun HomeScreen(
     }
 
     var showAnalyticsDialog by remember { mutableStateOf(false) }
+    var showDonationSheet by remember { mutableStateOf(false) }
     val prefs =
         context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
 
     LaunchedEffect(Unit) {
         if (!prefs.getBoolean("analytics_preference_asked", false)) {
             showAnalyticsDialog = true
+        }
+    }
+
+    LaunchedEffect(projects.size, isLoading) {
+        val analyticsChoiceMade = prefs.getBoolean("analytics_preference_asked", false)
+        if (!isLoading && analyticsChoiceMade) {
+            showDonationSheet = DonationPromptTracker.claimPrompt(context, projects.size)
         }
     }
 
@@ -280,6 +290,10 @@ fun HomeScreen(
                 showAnalyticsDialog = false
             }
         )
+    }
+
+    if (showDonationSheet) {
+        DonationSheet(onDismiss = { showDonationSheet = false })
     }
 
     if (projectToDelete != null) {

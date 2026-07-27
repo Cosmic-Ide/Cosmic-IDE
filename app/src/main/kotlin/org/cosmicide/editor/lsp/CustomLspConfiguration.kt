@@ -23,10 +23,17 @@ data class CustomLspConfiguration(
     val textMateGrammarLink: String? = null,
     val enabled: Boolean = true
 ) {
+    val fileExtensions: Set<String>
+        get() = fileExtension
+            .split(FILE_EXTENSION_SEPARATOR)
+            .map { it.trim().removePrefix(".").lowercase() }
+            .filter(String::isNotEmpty)
+            .toSet()
+
     fun normalized(): CustomLspConfiguration {
         return copy(
             name = name.trim(),
-            fileExtension = fileExtension.trim().removePrefix(".").lowercase(),
+            fileExtension = fileExtensions.joinToString(","),
             startScript = startScript.trim(),
             textMateGrammarLink = textMateGrammarLink?.trim()?.ifBlank { null }
         )
@@ -34,8 +41,8 @@ data class CustomLspConfiguration(
 
     fun validate() {
         require(name.isNotBlank()) { "Name is required" }
-        require(FILE_EXTENSION.matches(fileExtension)) {
-            "File type must be an extension such as rs or py"
+        require(fileExtensions.isNotEmpty() && fileExtensions.all(FILE_EXTENSION::matches)) {
+            "File types must be extensions such as rs, py"
         }
         require(startScript.isNotBlank()) { "Starter code is required" }
         textMateGrammarLink?.let { link ->
@@ -48,6 +55,7 @@ data class CustomLspConfiguration(
 
     private companion object {
         val FILE_EXTENSION = Regex("[A-Za-z0-9][A-Za-z0-9_+-]*")
+        val FILE_EXTENSION_SEPARATOR = Regex("[\\s,;]+")
         val SUPPORTED_GRAMMAR_SCHEMES = setOf("http", "https", "content", "file")
     }
 }
@@ -77,7 +85,7 @@ class CustomLspConfigurationStore(context: Context) {
                 if (
                     normalized.enabled &&
                     existing.id != normalized.id &&
-                    existing.fileExtension.equals(normalized.fileExtension, ignoreCase = true)
+                    existing.fileExtensions.any(normalized.fileExtensions::contains)
                 ) {
                     existing.copy(enabled = false)
                 } else {
@@ -110,9 +118,15 @@ internal fun List<CustomLspConfiguration>.enforceSingleActiveConfigurationPerExt
         List<CustomLspConfiguration> {
     val activeExtensions = mutableSetOf<String>()
     return map { configuration ->
-        if (configuration.enabled && !activeExtensions.add(configuration.fileExtension)) {
+        if (
+            configuration.enabled &&
+            configuration.fileExtensions.any(activeExtensions::contains)
+        ) {
             configuration.copy(enabled = false)
         } else {
+            if (configuration.enabled) {
+                activeExtensions.addAll(configuration.fileExtensions)
+            }
             configuration
         }
     }
@@ -136,7 +150,7 @@ class CustomLspServerProvider(
             ?: error("No custom language server configured for .${request.extension}")
         return LspServerDefinition(
             id = "$id.${configuration.id}",
-            fileExtension = configuration.fileExtension,
+            fileExtensions = configuration.fileExtensions,
             displayName = configuration.name,
             connectionFactory = {
                 ExistingProcessLspConnection {
@@ -161,7 +175,7 @@ class CustomLspServerProvider(
 
     private fun matchingConfiguration(request: LspServerRequest): CustomLspConfiguration? {
         return store.configurations().firstOrNull {
-            it.enabled && it.fileExtension.equals(request.extension, ignoreCase = true)
+            it.enabled && request.extension.lowercase() in it.fileExtensions
         }
     }
 

@@ -16,6 +16,67 @@ Android app.
 
 </div>
 
+## Cosmic IDE in action
+
+<p align="center">
+  <a href="docs/images/java-code-completion.jpeg">
+    <img src="docs/images/java-code-completion.jpeg" width="360" alt="Java code completion in Cosmic IDE while a Gradle application is running">
+  </a>
+  <br>
+  <sub><strong>Java completion backed by JDT LS while a Gradle application keeps running</strong></sub>
+</p>
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <a href="docs/images/java-diagnostics-quick-fixes.jpeg">
+        <img src="docs/images/java-diagnostics-quick-fixes.jpeg" width="280" alt="Java error diagnostics and quick fixes in Cosmic IDE">
+      </a>
+      <br>
+      <sub><strong>Inline diagnostics and one-tap quick fixes</strong></sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="docs/images/java-symbol-information.jpeg">
+        <img src="docs/images/java-symbol-information.jpeg" width="280" alt="Java symbol information displayed over the Cosmic IDE editor">
+      </a>
+      <br>
+      <sub><strong>Types and documentation without leaving your code</strong></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <a href="docs/images/scala-code-completion.jpeg">
+        <img src="docs/images/scala-code-completion.jpeg" width="280" alt="Scala code completion in Cosmic IDE">
+      </a>
+      <br>
+      <sub><strong>Metals-powered Scala completion</strong></sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="docs/images/project-explorer.jpeg">
+        <img src="docs/images/project-explorer.jpeg" width="280" alt="A Java repository open in the Cosmic IDE project explorer">
+      </a>
+      <br>
+      <sub><strong>A touch-friendly project tree for real repositories</strong></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <a href="docs/images/java-gradle-run.jpeg">
+        <img src="docs/images/java-gradle-run.jpeg" width="280" alt="Java editing and a running Spring Boot Gradle task in Cosmic IDE">
+      </a>
+      <br>
+      <sub><strong>Edit while Spring Boot runs in an integrated task tab</strong></sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="docs/images/scala-gradle-build.jpeg">
+        <img src="docs/images/scala-gradle-build.jpeg" width="280" alt="A successful Scala Gradle build in the Cosmic IDE terminal">
+      </a>
+      <br>
+      <sub><strong>Readable Gradle output and successful task execution</strong></sub>
+    </td>
+  </tr>
+</table>
+
 ## Your development workspace, in your pocket
 
 Cosmic IDE lets you create, edit, build, run, and manage projects without relying on a desktop
@@ -82,9 +143,14 @@ For a walkthrough of projects, the editor, builds, Git, terminal sessions, and s
 - Material You interface with light and dark themes
 - Touch-friendly project explorer and editor controls
 - Android document picker integration for imports, backups, grammars, and custom fonts
+- An Arch Linux ARM userspace with broad `pacman` support and access to its aarch64 repositories
 - App-private Linux environment—no root access required
 - Phone, tablet, keyboard, and Android desktop workflows
 - Local projects that remain under your control
+
+Most packages from the Arch Linux ARM repositories can be installed directly with `pacman`.
+Packages that require unavailable kernel features, privileged operations, or unsupported hardware
+may still be limited by Android's application sandbox.
 
 <details>
 <summary><strong>Advanced language and tool support</strong></summary>
@@ -159,10 +225,22 @@ GitHub issue.
 Friendly bug reports, feature ideas, documentation improvements, and code contributions are
 welcome. Developers can begin with the [contribution guide](docs/development-guide.md).
 
-## Support Cosmic IDE
+## Help sustain Cosmic IDE
 
-If Cosmic IDE is useful to you, consider supporting its continued development through
-[Open Collective](https://opencollective.com/invokevirtual).
+Cosmic IDE is free, open source, and built without ads or paid feature gates. Support helps with:
+
+- Maintaining the Arch Linux ARM runtime and broad `pacman` compatibility
+- Adapting language servers, JDKs, Gradle, and other development tools for Android
+- Tracking Android platform changes and testing across different devices
+
+<p align="center">
+  <a href="https://opencollective.com/invokevirtual">
+    <img src="https://img.shields.io/badge/Support_Cosmic_IDE-Open_Collective-7FADF2?style=for-the-badge&logo=opencollective&logoColor=white" alt="Support Cosmic IDE on Open Collective">
+  </a>
+</p>
+
+Financial support is optional. Useful bug reports, documentation improvements, and code
+contributions are equally valuable.
 
 <details>
 <summary>Other donation methods</summary>

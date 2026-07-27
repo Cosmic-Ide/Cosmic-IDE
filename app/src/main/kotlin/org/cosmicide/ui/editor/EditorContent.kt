@@ -111,10 +111,12 @@ internal fun TextEditorContent(
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
-                AndroidView(
-                    modifier = Modifier.fillMaxSize(),
-                    factory = { editor }
-                )
+                key(editor) {
+                    AndroidView(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = { editor }
+                    )
+                }
             }
 
             if (supportsPreview) {

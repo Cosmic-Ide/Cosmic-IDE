@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
@@ -338,8 +339,7 @@ private fun SignatureLabel(
         if (isServerSelected) {
             Text(
                 text = "ACTIVE OVERLOAD",
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelSmall
             )
             Spacer(Modifier.height(5.dp))
         }
@@ -355,6 +355,7 @@ private fun SignatureLabel(
                     ),
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
                     fontFamily = codeFontFamily,
+                    fontSize = 12.sp,
                     overflow = TextOverflow.Visible
                 )
             }

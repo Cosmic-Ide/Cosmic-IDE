@@ -78,6 +78,19 @@ internal fun <T> resultHandler(
     override fun onFailure(failure: GradleConnectionException) = onFailure(failure)
 }
 
+/**
+ * Gradle represents successful void operations by invoking onComplete(null).
+ * Keep that platform null out of Kotlin lambdas, where an inferred non-null Void
+ * parameter would otherwise throw before the completion callback can run.
+ */
+internal fun voidResultHandler(
+    onComplete: () -> Unit,
+    onFailure: (Throwable) -> Unit
+): ResultHandler<Void> = object : ResultHandler<Void> {
+    override fun onComplete(result: Void?) = onComplete()
+    override fun onFailure(failure: GradleConnectionException) = onFailure(failure)
+}
+
 internal fun wrapAsConnectionException(t: Throwable): GradleConnectionException =
     t as? GradleConnectionException ?: GradleConnectionException(t.message ?: t.javaClass.name, t)
 

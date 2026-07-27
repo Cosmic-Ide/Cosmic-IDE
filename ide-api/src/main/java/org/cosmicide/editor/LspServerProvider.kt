@@ -33,7 +33,7 @@ interface LspServerProvider : ConfigurableExtension {
 
 data class LspServerDefinition(
     val id: String,
-    val fileExtension: String,
+    val fileExtensions: Set<String>,
     val displayName: String,
     val connectionFactory: LspServerConnectionFactory,
     val grammarScopeName: String? = null,
@@ -48,7 +48,12 @@ data class LspServerDefinition(
 ) {
     init {
         require(id.isNotBlank()) { "LSP definition id must not be blank" }
-        require(fileExtension.isNotBlank()) { "LSP file extension must not be blank" }
+        require(fileExtensions.isNotEmpty()) {
+            "LSP definition must support at least one file extension"
+        }
+        require(fileExtensions.none(String::isBlank)) {
+            "LSP file extensions must not be blank"
+        }
         require(displayName.isNotBlank()) { "LSP display name must not be blank" }
         require(initializationTimeoutMillis > 0) {
             "LSP initialization timeout must be positive"

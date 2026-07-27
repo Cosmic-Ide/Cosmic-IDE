@@ -8,7 +8,6 @@ service registry, settings, and disposal path used by installed plugins. The plu
 - **Clone Git repository** on the Projects floating toolbar;
 - **Initialize Git repository** for directories without `.git`;
 - status, fetch, pull, push, stage-all, commit, branch-list, and checkout actions for repositories;
-- **Install Git with pacman**, launched in the interactive terminal;
 - streamed command output and progress parsed from Git's percentage messages.
 
 Git itself is not embedded in the APK as a separate implementation. Commands resolve `git` from

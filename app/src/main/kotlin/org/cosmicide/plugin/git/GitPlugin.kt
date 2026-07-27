@@ -26,7 +26,6 @@ import org.cosmicide.project.ProjectCreationProvider
 import org.cosmicide.project.ProjectCreationRequest
 import org.cosmicide.project.ProjectCreationResult
 import org.cosmicide.project.ProjectExtensionPoints
-import org.cosmicide.project.TerminalAction
 import java.io.File
 
 class GitPlugin : CosmicPlugin {
@@ -67,13 +66,6 @@ class GitPlugin : CosmicPlugin {
     }
 }
 
-private val installGitAction = TerminalAction(
-    id = "org.cosmicide.git.install",
-    label = "Install Git with pacman",
-    command = "pacman -S --needed git",
-    description = "Opens an interactive terminal and installs Git into Cosmic's Arch environment."
-)
-
 private class GitCloneProjectProvider(
     private val commands: CommandExecutionService
 ) : ProjectCreationProvider {
@@ -106,14 +98,11 @@ private class GitCloneProjectProvider(
             defaultValue = "false"
         )
     )
-    override val setupActions = listOf(installGitAction)
 
     override suspend fun create(
         request: ProjectCreationRequest,
         reporter: OperationReporter
     ): ProjectCreationResult {
-        requireGit(commands, request.projectsDirectory)
-
         val repositoryUrl = request.values[FIELD_URL].orEmpty().trim()
         require(repositoryUrl.isNotEmpty()) { "Repository URL is required" }
         require(!repositoryUrl.startsWith("-")) { "Repository URL cannot start with '-'" }
@@ -174,7 +163,6 @@ private class GitProjectActionProvider(
     override val displayName = "Git operations"
     override val description =
         "Status, fetch, pull, push, stage, commit, branch and checkout actions."
-    override val setupActions = listOf(installGitAction)
 
     override fun actions(project: Project): List<ProjectAction> {
         if (!project.root.resolve(".git").exists()) {
@@ -217,8 +205,6 @@ private class GitProjectActionProvider(
         request: ProjectActionRequest,
         reporter: OperationReporter
     ): ProjectActionResult {
-        requireGit(commands, request.project.root)
-
         val arguments = when (request.actionId) {
             ACTION_INIT -> listOf("init")
             ACTION_STATUS -> listOf("status", "--short", "--branch")
@@ -269,12 +255,6 @@ private class GitProjectActionProvider(
         const val ACTION_CHECKOUT = "checkout"
         const val FIELD_MESSAGE = "message"
         const val FIELD_REF = "ref"
-    }
-}
-
-private fun requireGit(commands: CommandExecutionService, workingDirectory: File) {
-    check(commands.isCommandAvailable("git", workingDirectory)) {
-        "Git is not installed. Use 'Install Git with pacman' first."
     }
 }
 

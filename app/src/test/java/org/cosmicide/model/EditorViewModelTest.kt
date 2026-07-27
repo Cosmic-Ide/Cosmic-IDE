@@ -55,6 +55,26 @@ class EditorViewModelTest {
     }
 
     @Test
+    fun `background tab changes update their own document`() {
+        withTempDir { dir ->
+            val first = dir.resolve("First.scala").apply { writeText("first") }
+            val second = dir.resolve("Second.scala").apply { writeText("second") }
+            val viewModel = EditorViewModel()
+
+            viewModel.openFile(first)
+            viewModel.ensureDocument(first, first.readText())
+            viewModel.openFile(second, "first")
+            viewModel.ensureDocument(second, second.readText())
+
+            viewModel.onDocumentContentChanged(first, "first edited")
+
+            assertEquals("first edited", first.readText())
+            assertEquals("second", second.readText())
+            assertEquals(second, viewModel.activeFile)
+        }
+    }
+
+    @Test
     fun `preview images are never overwritten with editor text`() {
         withTempDir { dir ->
             val image = dir.resolve("preview.PNG").apply {

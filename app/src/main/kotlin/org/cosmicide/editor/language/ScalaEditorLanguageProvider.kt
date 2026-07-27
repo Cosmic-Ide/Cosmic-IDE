@@ -25,9 +25,6 @@ object ScalaEditorLanguageProvider : LspServerProvider {
     override val description = "Scala editing powered by Metals"
     override val priority = 300
 
-    private var metalsProcess: Process? = null
-    private var metalsProjectRoot: String? = null
-
     override fun supports(request: LspServerRequest): Boolean {
         return request.extension in SCALA_EXTENSIONS
     }
@@ -35,7 +32,7 @@ object ScalaEditorLanguageProvider : LspServerProvider {
     override fun createDefinition(request: LspServerRequest): LspServerDefinition {
         return LspServerDefinition(
             id = id,
-            fileExtension = request.extension,
+            fileExtensions = SCALA_EXTENSIONS,
             displayName = "Metals",
             connectionFactory = {
                 ExistingProcessLspConnection {
@@ -49,15 +46,10 @@ object ScalaEditorLanguageProvider : LspServerProvider {
         )
     }
 
-    @Synchronized
-    internal fun startMetalsProcess(context: Context, project: Project): Process? {
-        val projectRoot = project.root.absolutePath
-        metalsProcess
-            ?.takeIf { it.isAlive && metalsProjectRoot == projectRoot }
-            ?.let { return it }
-
-        metalsProcess?.takeIf(Process::isAlive)?.destroy()
-
+    internal fun startMetalsProcess(
+        context: Context,
+        project: Project
+    ): Process? {
         val executable = context.filesDir.resolve("scala/bin/metals")
         check(executable.isFile) {
             "Metals is not installed at ${executable.absolutePath}"
@@ -71,8 +63,6 @@ object ScalaEditorLanguageProvider : LspServerProvider {
                 redirectErrorStream = false
             ).also { process ->
                 streamStderrToLogcat(process.errorStream)
-                metalsProcess = process
-                metalsProjectRoot = projectRoot
                 Log.d(TAG, "Metals language server started")
                 LspLogStore.info("Metals", "Server process started")
             }
@@ -104,6 +94,6 @@ object ScalaEditorLanguageProvider : LspServerProvider {
         }
     }
 
-    private val SCALA_EXTENSIONS = setOf("scala", "sc", "sbt")
+    private val SCALA_EXTENSIONS = setOf("scala", "sc", "sbt", "mill")
     private const val TAG = "ScalaLanguageProvider"
 }

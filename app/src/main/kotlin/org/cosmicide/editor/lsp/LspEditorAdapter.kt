@@ -55,23 +55,28 @@ fun CodeEditor.configureLspLanguage(
     editable = false
 
     val lspProject = LspProjects.forRoot(request.project.root.absolutePath)
-    Timeouts.entries.forEach {
-        Timeout[it] = Timeout[it] + 14000
-    }
+    ensureRequestTimeouts()
 
     CoroutineScope(Dispatchers.IO).launch {
         ensureInitializationTimeout(definition.initializationTimeoutMillis)
+        val fileExtensions = definition.fileExtensions.toList()
+        val requestedFileExtension = fileExtensions.firstOrNull {
+            it.equals(request.extension, ignoreCase = true)
+        } ?: error(
+            "${definition.displayName} does not declare support for .${request.extension}"
+        )
 
         val serverDefinition = object : CustomLanguageServerDefinition(
-            ext = definition.fileExtension,
+            ext = fileExtensions.first(),
             serverConnectProvider = { _ ->
                 definition.connectionFactory.create(request).asStreamConnectionProvider(
                     traceIncomingMessages = definition.traceIncomingMessages,
                     logSource = definition.displayName
                 )
             },
-            name = definition.displayName,
-            expectedCapabilitiesOverride = definition.expectedCapabilities
+            name = definition.id,
+            expectedCapabilitiesOverride = definition.expectedCapabilities,
+            extensionsOverride = fileExtensions
         ) {
             override fun getInitializationOptions(uri: URI?): Any? {
                 return definition.initializationOptions
@@ -92,6 +97,7 @@ fun CodeEditor.configureLspLanguage(
         val previousEditors = lspProject.getEditors()
             .filter { it.editor === this@configureLspLanguage }
         val lspEditor = lspProject.createEditor(request.file.absolutePath)
+        check(lspEditor.fileExt.equals(requestedFileExtension, ignoreCase = true))
         var grammarFailure: Throwable? = null
         val wrapperLanguage = runCatching {
             createTextMateLanguage(context, definition)
@@ -173,11 +179,24 @@ private object LspProjects {
 }
 
 @Synchronized
+private fun ensureRequestTimeouts() {
+    Timeouts.entries
+        .filterNot { it == Timeouts.INIT || it == Timeouts.SHUTDOWN }
+        .forEach { timeout ->
+            if (Timeout[timeout] < MINIMUM_REQUEST_TIMEOUT_MILLIS) {
+                Timeout[timeout] = MINIMUM_REQUEST_TIMEOUT_MILLIS
+            }
+        }
+}
+
+@Synchronized
 private fun ensureInitializationTimeout(timeoutMillis: Int) {
     if (Timeout[Timeouts.INIT] < timeoutMillis) {
         Timeout[Timeouts.INIT] = timeoutMillis
     }
 }
+
+private const val MINIMUM_REQUEST_TIMEOUT_MILLIS = 10_000
 
 private fun LspServerConnection.asStreamConnectionProvider(
     traceIncomingMessages: Boolean,

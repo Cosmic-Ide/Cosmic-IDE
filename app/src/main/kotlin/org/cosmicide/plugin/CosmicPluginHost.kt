@@ -16,6 +16,7 @@ import org.cosmicide.plugin.api.DefaultExtensionRegistry
 import org.cosmicide.plugin.api.DefaultServiceRegistry
 import org.cosmicide.plugin.api.MutableExtensionRegistry
 import org.cosmicide.plugin.customproject.CustomProjectTypePlugin
+import org.cosmicide.plugin.git.GitPlugin
 import org.cosmicide.plugin.runtime.AndroidPluginManager
 import org.cosmicide.project.IdeServices
 import org.cosmicide.project.ProjectExtensionPoints
@@ -58,14 +59,14 @@ object CosmicPluginHost {
                 ).onFailure { descriptorId, reason, throwable ->
                     Log.w(TAG, "Failed to load built-in plugin $descriptorId: $reason", throwable)
                 }
-//                manager.loadBuiltin(GitPlugin.descriptor, GitPlugin())
-//                    .onFailure { descriptorId, reason, throwable ->
-//                        Log.w(
-//                            TAG,
-//                            "Failed to load built-in plugin $descriptorId: $reason",
-//                            throwable
-//                        )
-//                    }
+                manager.loadBuiltin(GitPlugin.descriptor, GitPlugin())
+                    .onFailure { descriptorId, reason, throwable ->
+                        Log.w(
+                            TAG,
+                            "Failed to load built-in plugin $descriptorId: $reason",
+                            throwable
+                        )
+                    }
                 manager.loadInstalledPlugins().forEach { result ->
                     result.onFailure { descriptorId, reason, throwable ->
                         Log.w(TAG, "Failed to load plugin $descriptorId: $reason", throwable)

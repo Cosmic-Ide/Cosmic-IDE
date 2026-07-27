@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -393,20 +394,13 @@ private fun ToolingSyncTab(
                 style = MaterialTheme.typography.labelMedium
             )
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(
-                onClick = onStop,
-                enabled = isRunning,
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(Icons.Default.Stop, contentDescription = "Stop Gradle sync")
-            }
-            IconButton(
-                onClick = onRerun,
-                enabled = !isRunning,
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(Icons.Default.Refresh, contentDescription = "Rerun Gradle sync")
-            }
+            SyncActionButton(
+                isRunning = isRunning,
+                isStopping = false,
+                label = "Gradle sync",
+                onRerun = onRerun,
+                onStop = onStop
+            )
         }
         HorizontalDivider()
         SyncTab(
@@ -516,19 +510,16 @@ private fun ProjectSyncTab(
                 style = MaterialTheme.typography.labelMedium
             )
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(
-                onClick = {
+            SyncActionButton(
+                isRunning = status == "Running",
+                isStopping = status == "Stopping",
+                label = command.label,
+                onRerun = onRerun,
+                onStop = {
                     onStop()
                     sessionHandle.terminate()
-                },
-                enabled = status == "Running",
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(Icons.Default.Stop, contentDescription = "Stop ${command.label}")
-            }
-            IconButton(onClick = onRerun, modifier = Modifier.size(36.dp)) {
-                Icon(Icons.Default.Refresh, contentDescription = "Rerun ${command.label}")
-            }
+                }
+            )
         }
         HorizontalDivider()
         key(runId) {
@@ -546,6 +537,36 @@ private fun ProjectSyncTab(
                     .fillMaxWidth()
                     .padding(horizontal = 6.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun SyncActionButton(
+    isRunning: Boolean,
+    isStopping: Boolean,
+    label: String,
+    onRerun: () -> Unit,
+    onStop: () -> Unit
+) {
+    val showStop = isRunning || isStopping
+    IconButton(
+        onClick = if (showStop) onStop else onRerun,
+        enabled = !isStopping,
+        modifier = Modifier.size(36.dp)
+    ) {
+        if (showStop) {
+            Icon(
+                Icons.Default.Stop,
+                contentDescription = "Stop $label",
+                tint = if (isStopping) {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                } else {
+                    Color.Red
+                }
+            )
+        } else {
+            Icon(Icons.Default.Refresh, contentDescription = "Rerun $label")
         }
     }
 }
@@ -593,7 +614,11 @@ private fun BuildTab(
                 enabled = session.status == "Running",
                 modifier = Modifier.size(36.dp)
             ) {
-                Icon(Icons.Default.Stop, contentDescription = "Stop ${session.task}")
+                Icon(
+                    Icons.Default.Stop,
+                    contentDescription = "Stop ${session.task}",
+                    tint = Color.Red
+                )
             }
             IconButton(onClick = onRerun, modifier = Modifier.size(36.dp)) {
                 Icon(Icons.Default.Refresh, contentDescription = "Rerun ${session.task}")

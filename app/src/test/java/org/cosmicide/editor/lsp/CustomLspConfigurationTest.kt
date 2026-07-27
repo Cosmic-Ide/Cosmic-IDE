@@ -15,7 +15,7 @@ class CustomLspConfigurationTest {
             grammarLink = " https://example.com/rust.tmLanguage.json "
         ).copy(startScript = " rust-analyzer ").normalized()
 
-        assertEquals("rs", configuration.fileExtension)
+        assertEquals(setOf("rs"), configuration.fileExtensions)
         assertEquals("rust-analyzer", configuration.startScript)
         assertEquals(
             "https://example.com/rust.tmLanguage.json",
@@ -37,11 +37,19 @@ class CustomLspConfigurationTest {
     }
 
     @Test
+    fun `normalizes multiple file extensions`() {
+        val configuration = configuration("scala", " .SCALA, sc  ; .mill ").normalized()
+
+        assertEquals("scala,sc,mill", configuration.fileExtension)
+        assertEquals(setOf("scala", "sc", "mill"), configuration.fileExtensions)
+    }
+
+    @Test
     fun `keeps only the first enabled configuration for each extension`() {
         val configurations = listOf(
-            configuration("first-rust", "rs"),
+            configuration("first-rust", "rs, rlib"),
             configuration("python", "py"),
-            configuration("second-rust", "RS")
+            configuration("second-rust", "RLIB, rust")
         ).map(CustomLspConfiguration::normalized)
 
         val resolved = configurations.enforceSingleActiveConfigurationPerExtension()

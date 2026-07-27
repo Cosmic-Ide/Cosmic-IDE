@@ -20,6 +20,7 @@ import org.cosmicide.app.AppContainer
 import org.cosmicide.app.LocalAppContainer
 import org.cosmicide.editor.lsp.LspEditorLanguageProvider
 import org.cosmicide.ui.IDENavigation
+import org.cosmicide.ui.donation.DonationPromptTracker
 import org.cosmicide.ui.editor.resolveTheme
 import org.cosmicide.ui.theme.IDETheme
 import org.cosmicide.ui.theme.isDeviceInDarkTheme
@@ -31,6 +32,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        if (savedInstanceState == null) {
+            DonationPromptTracker.recordLaunch(applicationContext)
+        }
         val appContainer = AppContainer(applicationContext)
 
         setContent {

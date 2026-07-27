@@ -81,7 +81,7 @@ edit action, and delete action.
 The editor accepts:
 
 - a name;
-- one extension without a leading dot;
+- one or more extensions without leading dots, separated by commas or spaces;
 - non-empty Bash starter code;
 - an optional HTTP(S), `content://`, or `file://` grammar link, or an absolute path.
 

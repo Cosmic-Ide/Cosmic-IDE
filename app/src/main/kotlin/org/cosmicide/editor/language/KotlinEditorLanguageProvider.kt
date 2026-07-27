@@ -31,9 +31,6 @@ object KotlinEditorLanguageProvider : LspServerProvider {
     override val description = "Kotlin editing powered by fwcd Kotlin Language Server"
     override val priority = 300
 
-    private var kotlinLspProcess: Process? = null
-    private var kotlinProjectRoot: String? = null
-
     override fun supports(request: LspServerRequest): Boolean {
         return request.extension == "kt"
     }
@@ -43,7 +40,7 @@ object KotlinEditorLanguageProvider : LspServerProvider {
             ?: throw IllegalStateException("Application context is unavailable")
         return LspServerDefinition(
             id = id,
-            fileExtension = "kt",
+            fileExtensions = setOf("kt"),
             displayName = "Kotlin Language Server",
             connectionFactory = {
                 ExistingProcessLspConnection {
@@ -86,15 +83,7 @@ object KotlinEditorLanguageProvider : LspServerProvider {
         )
     }
 
-    @Synchronized
     internal fun startKotlinLspProcess(context: Context, project: Project): Process? {
-        val projectRoot = project.root.absolutePath
-        kotlinLspProcess
-            ?.takeIf { it.isAlive && kotlinProjectRoot == projectRoot }
-            ?.let { return it }
-
-        kotlinLspProcess?.takeIf(Process::isAlive)?.destroy()
-
         val executable =
             context.filesDir.resolve("kotlin-language-server/bin/kotlin-language-server")
         val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
@@ -115,8 +104,6 @@ object KotlinEditorLanguageProvider : LspServerProvider {
                 )
             ).also { process ->
                 streamStderrToLogcat(process.errorStream)
-                kotlinLspProcess = process
-                kotlinProjectRoot = projectRoot
                 Log.d(TAG, "Kotlin language server started")
                 LspLogStore.info("Kotlin Language Server", "Server process started")
             }

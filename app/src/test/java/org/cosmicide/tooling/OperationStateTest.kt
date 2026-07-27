@@ -61,4 +61,17 @@ class OperationStateTest {
         assertEquals("broken", wrapped.message)
         assertSame(cause, wrapped.cause)
     }
+
+    @Test
+    fun `void result handler accepts Gradle null completion`() {
+        var completed = false
+        val handler = voidResultHandler(
+            onComplete = { completed = true },
+            onFailure = { throw AssertionError(it) }
+        )
+
+        handler.onComplete(null)
+
+        assertTrue(completed)
+    }
 }

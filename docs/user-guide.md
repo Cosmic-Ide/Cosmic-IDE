@@ -73,7 +73,6 @@ the destination defaults to the final repository path component. An optional bra
 single-revision shallow clone are supported. Clone output and percentage-bearing Git progress are
 shown in the dialog, and the cloned project opens when the command succeeds.
 
-Git is not installed implicitly. Select **Install Git with pacman** in the clone dialog to open an
 interactive terminal running `pacman -S --needed git`. Confirm the package transaction, wait for the
 terminal to report a successful exit, return to Projects, and retry the clone. This installation is
 stored in Cosmic's app-private Arch/glibc environment and does not modify Android's system image.
@@ -207,11 +206,11 @@ Use the close action to terminate its process group before leaving a long-runnin
 
 ## Built-in language support
 
-| File extensions         | Language server        | Packaged grammar scope |
-|-------------------------|------------------------|------------------------|
-| `.java`                 | Eclipse JDT LS         | `source.java`          |
-| `.kt`                   | Kotlin Language Server | `source.kotlin`        |
-| `.scala`, `.sc`, `.sbt` | Metals                 | `source.scala`         |
+| File extensions                  | Language server        | Packaged grammar scope |
+|----------------------------------|------------------------|------------------------|
+| `.java`                          | Eclipse JDT LS         | `source.java`          |
+| `.kt`                            | Kotlin Language Server | `source.kotlin`        |
+| `.scala`, `.sc`, `.sbt`, `.mill` | Metals                 | `source.scala`         |
 
 The LSP adapter exposes completion, diagnostics, hover, navigation, signature help, inlay hints,
 and other capabilities advertised by the selected server. A server can connect without a grammar;
@@ -225,12 +224,12 @@ uses the highest-priority enabled provider that supports the current file.
 Open Settings > Extensions > Custom language servers and choose **Add language server**. Each entry
 contains:
 
-| Field                 | Meaning                                                      |
-|-----------------------|--------------------------------------------------------------|
-| Name                  | Label shown in settings and connection messages              |
-| File type             | One extension without the leading dot, such as `rs` or `py`  |
-| Starter code          | Bash code that starts a standard-input/output LSP server     |
-| TextMate grammar link | Optional syntax grammar URL, document URI, file URI, or path |
+| Field                 | Meaning                                                        |
+|-----------------------|----------------------------------------------------------------|
+| Name                  | Label shown in settings and connection messages                |
+| File types            | Extensions without leading dots, separated by commas or spaces |
+| Starter code          | Bash code that starts a standard-input/output LSP server       |
+| TextMate grammar link | Optional syntax grammar URL, document URI, file URI, or path   |
 
 For example, after installing `rust-analyzer` and making it available on the Cosmic toolchain
 `PATH`:
@@ -252,7 +251,8 @@ only a parent shell. Server stdout must contain only `Content-Length`-framed LSP
 diagnostics to stderr.
 
 Only one custom server can be enabled per normalized extension. Enabling or saving another entry
-for the same file type disables the previous one. A custom entry has higher routing priority than
+with any overlapping file type disables the previous one. A custom entry has higher routing priority
+than
 the bundled Java, Kotlin, or Scala provider; disable it to restore bundled behavior.
 
 ### Linked TextMate grammars
@@ -313,7 +313,6 @@ when workflows require paths outside app-owned storage. See
 |-------------------------------------------|----------------------------------------------------------------------------------------|
 | Setup returns on every launch             | glibc directory, selected JDK, and all expected language-server launchers              |
 | Project creation fails                    | selected JDK, network, Gradle output, package/title validation                         |
-| Git clone/action says Git is missing      | run **Install Git with pacman**, confirm it completes, then retry                      |
 | Git network operation cannot authenticate | configure credentials or SSH keys from the terminal; dialog operations disable prompts |
 | Gradle tasks never appear                 | Sync output, wrapper availability, provider process, build-script errors               |
 | File remains plain text                   | extension, provider switch, active custom entry, grammar validity                      |

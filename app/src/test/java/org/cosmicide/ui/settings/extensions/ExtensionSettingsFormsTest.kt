@@ -21,13 +21,13 @@ class ExtensionSettingsFormsTest {
         val configuration = buildCustomLspConfiguration(
             existing = existing,
             name = " Rust ",
-            fileExtension = " .RS ",
+            fileExtension = " .RS, rlib ",
             startScript = " rust-analyzer ",
             grammarLink = " https://example.com/rust.json "
         )
 
         assertEquals("existing", configuration.id)
-        assertEquals("rs", configuration.fileExtension)
+        assertEquals(setOf("rs", "rlib"), configuration.fileExtensions)
         assertEquals("rust-analyzer", configuration.startScript)
         assertFalse(configuration.enabled)
     }

@@ -35,7 +35,7 @@ from the connection factory.
 
 ## LSP boundary
 
-`LspServerDefinition` describes the server identity, supported extension, connection factory,
+`LspServerDefinition` describes the server identity, supported extensions, connection factory,
 optional bundled TextMate scope or linked TextMate grammar, initialization data, feature switches,
 and timeout. It intentionally does not expose Sora classes.
 
@@ -49,19 +49,24 @@ source text and should be enabled only for diagnostics.
 
 ## Built-in servers
 
-| Files                   | Process                                                   |
-|-------------------------|-----------------------------------------------------------|
-| `.java`                 | Eclipse JDT LS through the selected JDK                   |
-| `.kt`                   | `files/kotlin-language-server/bin/kotlin-language-server` |
-| `.scala`, `.sc`, `.sbt` | `files/scala/bin/metals`                                  |
+| Files                            | Process                                                   |
+|----------------------------------|-----------------------------------------------------------|
+| `.java`                          | Eclipse JDT LS through the selected JDK                   |
+| `.kt`                            | `files/kotlin-language-server/bin/kotlin-language-server` |
+| `.scala`, `.sc`, `.sbt`, `.mill` | `files/scala/bin/metals`                                  |
 
 All launches use `ProcessExecutor`, so they inherit the canonical glibc/JDK environment described
 in [Process execution and terminal](process-execution-and-terminal.md).
 
-Each built-in provider currently caches one process for the active project. At the same time,
-`ExistingProcessLspConnection.close` destroys that process. This makes ownership implicit when
-several documents share a server. Any move to durable multi-document sessions should introduce an
-explicit project-scoped owner and separate editor detach from process shutdown.
+The app adapter owns one language-server wrapper per provider and project. Every matching document,
+including documents with different extensions declared by the same definition, attaches to that
+wrapper. The wrapper starts one process on the first connection, keeps it alive while any editor is
+attached, and closes it after the final editor disconnects. Providers must return a fresh connection
+from their factory rather than caching processes themselves.
+
+Each open text tab retains its own `CodeEditor` and LSP document session. Tab switches only exchange
+the visible editor; they do not replace its text or disconnect it. This preserves cursor, selection,
+scroll, folding, and undo history while keeping all documents attached to the shared server.
 
 ## Custom servers
 

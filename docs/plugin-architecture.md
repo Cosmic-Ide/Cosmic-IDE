@@ -218,7 +218,7 @@ class RustLspProvider : LspServerProvider {
     override fun createDefinition(request: LspServerRequest): LspServerDefinition {
         return LspServerDefinition(
             id = id,
-            fileExtension = "rs",
+            fileExtensions = setOf("rs"),
             displayName = "rust-analyzer",
             grammarScopeName = "source.rust",
             connectionFactory = RustConnectionFactory(),
@@ -236,6 +236,11 @@ class RustLspProvider : LspServerProvider {
 - report whether it is closed;
 - stop and release resources from `close()`.
 
+The app shares one connection for each definition id and project. All open files whose extensions
+belong to that definition attach to the same server process. Providers must not cache processes;
+the adapter keeps the connection alive until its final editor disconnects and creates a new
+connection when the shared wrapper needs to restart.
+
 Server diagnostics must go to stderr. Writing logs to stdout corrupts LSP framing.
 
 `LspServerDefinition` validates non-empty ids, file extensions, display names, and positive
@@ -248,7 +253,7 @@ Settings > Extensions contains a built-in Custom language servers extension. Use
 without building a plugin by supplying:
 
 - a display name;
-- one file extension, without a leading dot;
+- one or more file extensions, without leading dots;
 - shell starter code that launches an LSP server using standard input and output;
 - optionally, a direct TextMate grammar URL, Android document URI, file URI, or absolute path.
 
@@ -285,8 +290,8 @@ require an app restart.
 The custom provider has priority `500`. A custom entry for `java`, for example, takes precedence
 over
 the bundled Java provider while that entry is enabled. Disable the entry to restore bundled routing.
-Only one custom entry can be enabled for a file extension. Saving or enabling another entry for the
-same normalized extension disables its peers. This rule applies to custom entries; the normal
+Only one custom entry can be enabled for a file extension. Saving or enabling another entry with an
+overlapping normalized extension disables its peers. This rule applies to custom entries; the normal
 priority router chooses the single runtime winner among custom, bundled, and plugin providers.
 
 Linked grammars do not change LSP semantics; they provide TextMate syntax highlighting and editing

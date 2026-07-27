@@ -71,6 +71,10 @@ class EditorViewModel : ViewModel() {
 
     fun onActiveContentChanged(content: String) {
         val file = activeFile ?: return
+        onDocumentContentChanged(file, content)
+    }
+
+    fun onDocumentContentChanged(file: File, content: String) {
         updateDocumentContent(file, content)
         saveDocument(file)
     }

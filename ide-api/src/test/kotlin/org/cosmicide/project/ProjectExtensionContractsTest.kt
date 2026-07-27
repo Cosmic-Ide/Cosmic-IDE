@@ -79,18 +79,21 @@ class ProjectExtensionContractsTest {
             throw UnsupportedOperationException("not started in contract test")
         }
         assertFails<IllegalArgumentException> {
-            LspServerDefinition("", "kt", "Kotlin", factory)
+            LspServerDefinition("", setOf("kt"), "Kotlin", factory)
         }
         assertFails<IllegalArgumentException> {
-            LspServerDefinition("kotlin", "", "Kotlin", factory)
+            LspServerDefinition("kotlin", emptySet(), "Kotlin", factory)
         }
         assertFails<IllegalArgumentException> {
-            LspServerDefinition("kotlin", "kt", "", factory)
+            LspServerDefinition("kotlin", setOf(""), "Kotlin", factory)
+        }
+        assertFails<IllegalArgumentException> {
+            LspServerDefinition("kotlin", setOf("kt"), "", factory)
         }
         assertFails<IllegalArgumentException> {
             LspServerDefinition(
                 "kotlin",
-                "kt",
+                setOf("kt", "kts"),
                 "Kotlin",
                 factory,
                 initializationTimeoutMillis = 0

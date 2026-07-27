@@ -44,7 +44,7 @@ object GradleGroovyEditorLanguageProvider : LspServerProvider {
         )
         return LspServerDefinition(
             id = id,
-            fileExtension = request.extension.lowercase(),
+            fileExtensions = SUPPORTED_EXTENSIONS,
             displayName = "Gradle Language Server",
             connectionFactory = {
                 ExistingProcessLspConnection {

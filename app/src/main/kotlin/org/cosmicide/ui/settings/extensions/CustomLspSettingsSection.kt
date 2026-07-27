@@ -48,7 +48,7 @@ internal fun CustomLspSettingsSection(
 
     SectionTitle("Custom language servers")
     Text(
-        text = "Only one custom server can be active for each file type.",
+        text = "A server can handle multiple file types; only one custom server can be active for each type.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
@@ -110,7 +110,7 @@ private fun CustomLspRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(configuration.name, style = MaterialTheme.typography.titleMedium)
             Text(
-                ".${configuration.fileExtension} - ${
+                "${configuration.fileExtensions.joinToString { ".$it" }} - ${
                     configuration.startScript.lineSequence().first()
                 }${configuration.textMateGrammarLink?.let { "\nGrammar: $it" }.orEmpty()}",
                 style = MaterialTheme.typography.bodyMedium,
@@ -175,9 +175,9 @@ private fun CustomLspDialog(
                 OutlinedTextField(
                     value = extension,
                     onValueChange = { extension = it },
-                    label = { Text("File type") },
-                    placeholder = { Text("rs") },
-                    prefix = { Text(".") },
+                    label = { Text("File types") },
+                    placeholder = { Text("rs, rlib") },
+                    supportingText = { Text("Separate extensions with commas or spaces.") },
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()

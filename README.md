@@ -4,7 +4,7 @@
 
 ### Build real software directly on your Android device
 
-A modern code editor, terminal, Git client, Gradle workspace, and development toolchains—all in one
+A modern code editor, terminal, Gradle workspace, and development toolchains—all in one
 Android app.
 
 [![Android CI](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml/badge.svg)](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml)
@@ -16,17 +16,23 @@ Android app.
 
 </div>
 
-## Cosmic IDE in action
-
-<p align="center">
-  <a href="docs/images/java-code-completion.jpeg">
-    <img src="docs/images/java-code-completion.jpeg" width="260" alt="Java code completion in Cosmic IDE while a Gradle application is running">
-  </a>
-  <br>
-  <sub><strong>Java completion backed by JDT LS while a Gradle application keeps running</strong></sub>
-</p>
-
 <table>
+  <tr>
+    <td align="center" width="50%">
+      <a href="docs/images/scala-code-completion.jpeg">
+        <img src="docs/images/scala-code-completion.jpeg" width="220" alt="Scala code completion in Cosmic IDE">
+      </a>
+      <br>
+      <sub><strong>Metals-powered Scala completion</strong></sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="docs/images/scala-gradle-build.jpeg">
+        <img src="docs/images/scala-gradle-build.jpeg" width="220" alt="A successful Scala Gradle build in the Cosmic IDE terminal">
+      </a>
+      <br>
+      <sub><strong>Readable Gradle output and successful task execution</strong></sub>
+    </td>
+  </tr>
   <tr>
     <td align="center" width="50%">
       <a href="docs/images/java-diagnostics-quick-fixes.jpeg">
@@ -36,20 +42,20 @@ Android app.
       <sub><strong>Inline diagnostics and one-tap quick fixes</strong></sub>
     </td>
     <td align="center" width="50%">
+      <a href="docs/images/java-code-completion.jpeg">
+        <img src="docs/images/java-code-completion.jpeg" width="220" alt="Java code completion in Cosmic IDE while a Gradle application is running">
+      </a>
+      <br>
+      <sub><strong>Java completion backed by JDT LS while a Gradle application keeps running</strong></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
       <a href="docs/images/java-symbol-information.jpeg">
         <img src="docs/images/java-symbol-information.jpeg" width="220" alt="Java symbol information displayed over the Cosmic IDE editor">
       </a>
       <br>
       <sub><strong>Types and documentation without leaving your code</strong></sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <a href="docs/images/scala-code-completion.jpeg">
-        <img src="docs/images/scala-code-completion.jpeg" width="220" alt="Scala code completion in Cosmic IDE">
-      </a>
-      <br>
-      <sub><strong>Metals-powered Scala completion</strong></sub>
     </td>
     <td align="center" width="50%">
       <a href="docs/images/project-explorer.jpeg">
@@ -66,13 +72,6 @@ Android app.
       </a>
       <br>
       <sub><strong>Edit while Spring Boot runs in an integrated task tab</strong></sub>
-    </td>
-    <td align="center" width="50%">
-      <a href="docs/images/scala-gradle-build.jpeg">
-        <img src="docs/images/scala-gradle-build.jpeg" width="220" alt="A successful Scala Gradle build in the Cosmic IDE terminal">
-      </a>
-      <br>
-      <sub><strong>Readable Gradle output and successful task execution</strong></sub>
     </td>
   </tr>
 </table>
@@ -93,6 +92,7 @@ projects from a phone, tablet, or Android desktop setup.
 - Open and edit projects with tabs, a file explorer, autosave, and rich code intelligence.
 - See errors, completions, hover information, signatures, references, and navigation from supported
   language servers.
+- Install packages directly from the Arch Linux ARM repositories through pacman, giving you access to a broad ecosystem of development tools and utilities inside Cosmic IDE.
 - Build, test, run, and inspect Gradle output without leaving the editor.
 - Clone repositories and use common Git actions such as pull, push, commit, branch, and checkout.
 - Work in an interactive Linux terminal with familiar command-line tools.

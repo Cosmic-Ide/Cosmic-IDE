@@ -20,7 +20,7 @@ Android app.
 
 <p align="center">
   <a href="docs/images/java-code-completion.jpeg">
-    <img src="docs/images/java-code-completion.jpeg" width="360" alt="Java code completion in Cosmic IDE while a Gradle application is running">
+    <img src="docs/images/java-code-completion.jpeg" width="260" alt="Java code completion in Cosmic IDE while a Gradle application is running">
   </a>
   <br>
   <sub><strong>Java completion backed by JDT LS while a Gradle application keeps running</strong></sub>
@@ -30,14 +30,14 @@ Android app.
   <tr>
     <td align="center" width="50%">
       <a href="docs/images/java-diagnostics-quick-fixes.jpeg">
-        <img src="docs/images/java-diagnostics-quick-fixes.jpeg" width="280" alt="Java error diagnostics and quick fixes in Cosmic IDE">
+        <img src="docs/images/java-diagnostics-quick-fixes.jpeg" width="220" alt="Java error diagnostics and quick fixes in Cosmic IDE">
       </a>
       <br>
       <sub><strong>Inline diagnostics and one-tap quick fixes</strong></sub>
     </td>
     <td align="center" width="50%">
       <a href="docs/images/java-symbol-information.jpeg">
-        <img src="docs/images/java-symbol-information.jpeg" width="280" alt="Java symbol information displayed over the Cosmic IDE editor">
+        <img src="docs/images/java-symbol-information.jpeg" width="220" alt="Java symbol information displayed over the Cosmic IDE editor">
       </a>
       <br>
       <sub><strong>Types and documentation without leaving your code</strong></sub>
@@ -46,14 +46,14 @@ Android app.
   <tr>
     <td align="center" width="50%">
       <a href="docs/images/scala-code-completion.jpeg">
-        <img src="docs/images/scala-code-completion.jpeg" width="280" alt="Scala code completion in Cosmic IDE">
+        <img src="docs/images/scala-code-completion.jpeg" width="220" alt="Scala code completion in Cosmic IDE">
       </a>
       <br>
       <sub><strong>Metals-powered Scala completion</strong></sub>
     </td>
     <td align="center" width="50%">
       <a href="docs/images/project-explorer.jpeg">
-        <img src="docs/images/project-explorer.jpeg" width="280" alt="A Java repository open in the Cosmic IDE project explorer">
+        <img src="docs/images/project-explorer.jpeg" width="220" alt="A Java repository open in the Cosmic IDE project explorer">
       </a>
       <br>
       <sub><strong>A touch-friendly project tree for real repositories</strong></sub>
@@ -62,14 +62,14 @@ Android app.
   <tr>
     <td align="center" width="50%">
       <a href="docs/images/java-gradle-run.jpeg">
-        <img src="docs/images/java-gradle-run.jpeg" width="280" alt="Java editing and a running Spring Boot Gradle task in Cosmic IDE">
+        <img src="docs/images/java-gradle-run.jpeg" width="220" alt="Java editing and a running Spring Boot Gradle task in Cosmic IDE">
       </a>
       <br>
       <sub><strong>Edit while Spring Boot runs in an integrated task tab</strong></sub>
     </td>
     <td align="center" width="50%">
       <a href="docs/images/scala-gradle-build.jpeg">
-        <img src="docs/images/scala-gradle-build.jpeg" width="280" alt="A successful Scala Gradle build in the Cosmic IDE terminal">
+        <img src="docs/images/scala-gradle-build.jpeg" width="220" alt="A successful Scala Gradle build in the Cosmic IDE terminal">
       </a>
       <br>
       <sub><strong>Readable Gradle output and successful task execution</strong></sub>

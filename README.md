@@ -119,7 +119,7 @@ environment.
 ## Download
 
 Download the latest successful `main` build from
-[nightly.link](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/app-universal.zip).
+[nightly.link](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/app-arm64-v8a.zip).
 
 > [!NOTE]
 > The current development version targets Android 8 or newer and is intended for arm64 devices.

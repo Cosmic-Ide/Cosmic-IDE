@@ -65,14 +65,8 @@ android {
 
     lint.abortOnError = false
 
-    packaging.jniLibs.apply {
-        useLegacyPackaging = true
-    }
-
     packaging {
-        resources {
-
-        }
+        resources.excludes.add("src/**")
     }
     buildFeatures {
         buildConfig = true
@@ -94,6 +88,9 @@ android {
     splits {
         abi {
             isEnable = true
+            reset()
+            include("arm64-v8a")
+            isUniversalApk = false
         }
     }
 }

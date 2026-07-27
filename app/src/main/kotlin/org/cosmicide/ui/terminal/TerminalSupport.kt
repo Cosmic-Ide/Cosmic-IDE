@@ -3,15 +3,8 @@ package org.cosmicide.ui.terminal
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Typeface
-import android.text.Editable
-import android.text.InputType
-import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.FrameLayout
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,72 +68,6 @@ internal val TerminalExtraKeys = listOf(
     ExtraKey("F3", KeyEvent.KEYCODE_F3),
     ExtraKey("F4", KeyEvent.KEYCODE_F4)
 )
-
-internal class TerminalInputBridge(
-    private val context: Context
-) {
-    private var controller: TerminalController? = null
-    private var clearingText = false
-
-    val editText: EditText = EditText(context).apply {
-        layoutParams = FrameLayout.LayoutParams(1, 1)
-        setBackgroundColor(Color.Transparent.toArgb())
-        setTextColor(Color.Transparent.toArgb())
-        setSingleLine(false)
-        isCursorVisible = false
-        includeFontPadding = false
-
-        inputType = InputType.TYPE_CLASS_TEXT or
-                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or
-                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD or
-                InputType.TYPE_TEXT_FLAG_MULTI_LINE
-
-        imeOptions = EditorInfo.IME_ACTION_NONE or
-                EditorInfo.IME_FLAG_NO_EXTRACT_UI or
-                EditorInfo.IME_FLAG_NO_FULLSCREEN
-
-        setOnKeyListener { _, keyCode, event ->
-            controller?.handleKeyEvent(keyCode, event) == true
-        }
-
-        addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-            ) = Unit
-
-            override fun onTextChanged(
-                s: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int
-            ) = Unit
-
-            override fun afterTextChanged(s: Editable) {
-                if (clearingText || s.isEmpty()) return
-
-                controller?.writeInputText(s.toString())
-
-                clearingText = true
-                s.clear()
-                clearingText = false
-            }
-        })
-    }
-
-    fun attachController(controller: TerminalController) {
-        this.controller = controller
-    }
-
-    fun showKeyboard() {
-        editText.requestFocus()
-
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(editText, 0)
-    }
-}
 
 internal class BasicTerminalViewClient(
     private val controller: TerminalController,
@@ -258,7 +185,7 @@ internal fun applyTerminalColors(colorScheme: ColorScheme) {
     colors[1] = dim(Color.Red)
     colors[2] = colorScheme.primary.toArgb()
     colors[3] = dim(Color.Yellow)
-    colors[4] = dim(Color.Blue, 0.65f)
+    colors[4] = dim(Color.Blue)
     colors[5] = dim(Color.Magenta)
     colors[6] = dim(Color.Cyan)
     colors[7] = colorScheme.onSurfaceVariant.toArgb()

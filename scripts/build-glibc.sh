@@ -358,6 +358,7 @@ tar \
         -o "$ASSETS_TMP"
 
 mv -f "$ASSETS_TMP" "$ASSETS_TAR_ZST"
+mv "$OUT_DIR/lib/ld-linux-aarch64.so.1" "$ROOT/app/src/main/jniLibs/arm64-v8a/libld_linux.so"
 
 trap - EXIT HUP INT TERM
 rm -f "$TAR_LIST"

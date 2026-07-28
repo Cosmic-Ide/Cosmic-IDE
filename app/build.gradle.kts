@@ -67,6 +67,8 @@ android {
 
     packaging {
         resources.excludes.add("src/**")
+
+        jniLibs.useLegacyPackaging = true
     }
     buildFeatures {
         buildConfig = true

@@ -60,8 +60,8 @@ object ResourceUtil {
     fun isLanguageServerSetupIncomplete(): Boolean {
         return isKotlinLspMissing() ||
                 isJdtlsMissing() ||
-                isMetalsMissing() ||
-                isGradleGroovyLspMissing()
+                isMetalsMissing()
+//                isGradleGroovyLspMissing()
     }
 
     fun prepareLanguageServerSetupScript(): File {

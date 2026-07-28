@@ -108,7 +108,7 @@ Cosmic IDE provides a guided first-party setup for:
 | Language          | Code intelligence           |
 |-------------------|-----------------------------|
 | Java              | Eclipse JDT Language Server |
-| Kotlin            | fwcd Kotlin Language Server |
+| Kotlin            | Official Kotlin LSP         |
 | Scala             | Metals                      |
 | Gradle and Groovy | Gradle Language Server      |
 

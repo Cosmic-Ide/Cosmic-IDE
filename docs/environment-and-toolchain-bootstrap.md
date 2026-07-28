@@ -51,12 +51,12 @@ bash <files>/setup.sh <filesDir> <cacheDir>
 The script downloads and installs tools directly into `filesDir`; it does not create or enter a
 separate Linux filesystem tree.
 
-| Component                  | Installed path                      | Readiness evidence                     |
-|----------------------------|-------------------------------------|----------------------------------------|
-| Kotlin Language Server     | `files/kotlin-language-server`      | `bin/kotlin-language-server` is a file |
-| Eclipse JDT LS             | `files/jdtls`                       | Equinox launcher JAR under `plugins`   |
-| Coursier and Metals        | `files/coursier`, `files/scala/bin` | `scala/bin/metals` is a file           |
-| Android command-line tools | `files/Android/sdk`                 | `cmdline-tools/latest/bin/sdkmanager`  |
+| Component                  | Installed path                      | Readiness evidence                    |
+|----------------------------|-------------------------------------|---------------------------------------|
+| Kotlin Language Server     | `files/kotlin-lsp`                  | `bin/intellij-server` is a file       |
+| Eclipse JDT LS             | `files/jdtls`                       | Equinox launcher JAR under `plugins`  |
+| Coursier and Metals        | `files/coursier`, `files/scala/bin` | `scala/bin/metals` is a file          |
+| Android command-line tools | `files/Android/sdk`                 | `cmdline-tools/latest/bin/sdkmanager` |
 
 Kotlin and JDT LS are extracted from upstream archives. Coursier installs the Scala toolchain and
 Metals. Android setup selects the latest stable platform and build tools, then uses the external

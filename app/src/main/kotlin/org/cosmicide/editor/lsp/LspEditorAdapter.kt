@@ -14,11 +14,16 @@ import io.github.rosemoe.sora.langs.textmate.registry.model.DefaultGrammarDefini
 import io.github.rosemoe.sora.lsp.client.connection.StreamConnectionProvider
 import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.CustomLanguageServerDefinition
 import io.github.rosemoe.sora.lsp.editor.LspEditor
+import io.github.rosemoe.sora.lsp.editor.LspLanguage
 import io.github.rosemoe.sora.lsp.editor.LspProject
+import io.github.rosemoe.sora.lsp.editor.completion.CompletionItemProvider
 import io.github.rosemoe.sora.lsp.editor.text.MarkdownCodeHighlighterRegistry
 import io.github.rosemoe.sora.lsp.editor.text.withEditorHighlighter
 import io.github.rosemoe.sora.lsp.requests.Timeout
 import io.github.rosemoe.sora.lsp.requests.Timeouts
+import io.github.rosemoe.sora.lsp.utils.FileUri
+import io.github.rosemoe.sora.lsp.utils.toFileUri
+import io.github.rosemoe.sora.lsp.utils.toURI
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
 import io.github.rosemoe.sora.widget.getComponent
@@ -30,6 +35,8 @@ import org.cosmicide.editor.LspServerConnection
 import org.cosmicide.editor.LspServerDefinition
 import org.cosmicide.editor.LspServerRequest
 import org.eclipse.lsp4j.DidChangeConfigurationParams
+import org.eclipse.lsp4j.ShowDocumentParams
+import org.eclipse.lsp4j.ShowDocumentResult
 import org.eclipse.tm4e.core.registry.IGrammarSource
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -42,6 +49,7 @@ import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 private const val TAG = "LspEditorAdapter"
@@ -121,6 +129,14 @@ fun CodeEditor.configureLspLanguage(
 
         withContext(Dispatchers.Main) {
             lspEditor.editor = this@configureLspLanguage
+            (editorLanguage as? LspLanguage)?.completionItemProvider =
+                CompletionItemProvider { completionItem, _, prefixLength ->
+                    CommandAwareLspCompletionItem(
+                        completionItem,
+                        lspEditor,
+                        prefixLength
+                    )
+                }
             grammarFailure?.let {
                 Toast.makeText(
                     context,
@@ -176,6 +192,66 @@ private object LspProjects {
         return projects.values.flatMap(LspProject::getEditors)
             .filter { it.editor === editor }
     }
+
+    fun editorFor(uri: FileUri): LspEditor? {
+        return projects.values.firstNotNullOfOrNull { project ->
+            project.getEditor(uri)
+        }
+    }
+}
+
+internal fun handleLspShowDocument(
+    request: ShowDocumentParams
+): CompletableFuture<ShowDocumentResult> {
+    if (request.external == true) {
+        return CompletableFuture.completedFuture(ShowDocumentResult(false))
+    }
+
+    val fileUri = runCatching { request.uri.toURI().toFileUri() }.getOrNull()
+        ?: return CompletableFuture.completedFuture(ShowDocumentResult(false))
+    val editor = LspProjects.editorFor(fileUri)?.editor
+        ?: return CompletableFuture.completedFuture(ShowDocumentResult(false))
+    val result = CompletableFuture<ShowDocumentResult>()
+
+    CoroutineScope(Dispatchers.Main.immediate).launch {
+        val success = runCatching {
+            request.selection?.let { selection ->
+                val content = editor.text
+                val startLine = selection.start.line.coerceIn(0, content.lineCount - 1)
+                val endLine = selection.end.line.coerceIn(0, content.lineCount - 1)
+                val startColumn = selection.start.character.coerceIn(
+                    0,
+                    content.getColumnCount(startLine)
+                )
+                val endColumn = selection.end.character.coerceIn(
+                    0,
+                    content.getColumnCount(endLine)
+                )
+                val cursorAnimationEnabled = editor.isCursorAnimationEnabled
+                editor.isCursorAnimationEnabled = false
+                try {
+                    if (request.takeFocus == true) {
+                        editor.requestFocus()
+                    }
+                    if (startLine == endLine && startColumn == endColumn) {
+                        editor.setSelection(endLine, endColumn)
+                    } else {
+                        editor.setSelectionRegion(
+                            startLine,
+                            startColumn,
+                            endLine,
+                            endColumn
+                        )
+                    }
+                } finally {
+                    editor.isCursorAnimationEnabled = cursorAnimationEnabled
+                }
+            }
+        }.isSuccess
+        result.complete(ShowDocumentResult(success))
+    }
+
+    return result
 }
 
 @Synchronized

@@ -25,7 +25,7 @@ object ResourceUtil {
     fun isKotlinLspMissing(): Boolean {
         val context = App.instance.get() ?: return true
         return !context.filesDir
-            .resolve("kotlin-language-server/bin/kotlin-language-server")
+            .resolve("kotlin-lsp/bin/intellij-server")
             .isFile
     }
 

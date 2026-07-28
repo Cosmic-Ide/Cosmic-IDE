@@ -5,16 +5,16 @@ set -euo pipefail
 FILES_DIR="${1:?Cosmic IDE files directory is required}"
 CACHE_DIR="${2:?Cosmic IDE cache directory is required}"
 
-KOTLIN_VERSION="1.3.13"
-KOTLIN_URL="https://github.com/fwcd/kotlin-language-server/releases/download/${KOTLIN_VERSION}/server.zip"
+KOTLIN_VERSION="262.9593.0"
+KOTLIN_URL="https://download-cdn.jetbrains.com/language-server/kotlin-server/${KOTLIN_VERSION}/kotlin-server-${KOTLIN_VERSION}-aarch64.tar.gz"
 JDTLS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.60.0/jdt-language-server-1.60.0-202606262232.tar.gz"
-COURSIER_URL="https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz"
+COURSIER_URL="https://github.com/coursier/coursier/releases/download/v2.1.25-M26/cs-aarch64-pc-linux.gz"
 CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip"
 VSCODE_GRADLE_URL="https://github.com/microsoft/vscode-gradle.git"
 
 SCALA_BIN="$FILES_DIR/scala/bin"
-COURSIER_DIR="$FILES_DIR/coursier"
 VSCODE_GRADLE_DIR="$FILES_DIR/vscode-gradle"
+ARCH_DIR="$FILES_DIR/arch"
 
 mkdir -p "$CACHE_DIR"
 
@@ -56,10 +56,11 @@ extract_tar_gz() {
 }
 
 install_kotlin_lsp() {
-    local install_dir="$FILES_DIR/kotlin-language-server"
-    local archive="$CACHE_DIR/kotlin-language-server.zip"
-    local temporary="$FILES_DIR/kotlin-language-server.tmp"
-    local executable="$install_dir/bin/kotlin-language-server"
+    local install_dir="$FILES_DIR/kotlin-lsp"
+    local archive="$CACHE_DIR/kotlin-lsp.tar.gz"
+    local temporary="$FILES_DIR/kotlin-lsp.tmp"
+    local extracted="$temporary/kotlin-server-$KOTLIN_VERSION"
+    local executable="$install_dir/bin/intellij-server"
 
     if [[ -x "$executable" ]]; then
         echo "Kotlin language server is already installed."
@@ -70,8 +71,7 @@ install_kotlin_lsp() {
 
     rm -rf "$temporary"
     curl -fL "$KOTLIN_URL" -o "$archive"
-    mkdir -p "$temporary"
-    if ! unzip -q "$archive" -d "$temporary"; then
+    if ! extract_tar_gz "$archive" "$temporary"; then
         rm -rf "$temporary"
         rm -f "$archive"
         echo "Error: failed to extract Kotlin language server." >&2
@@ -79,16 +79,17 @@ install_kotlin_lsp() {
     fi
     rm -f "$archive"
 
-    if [[ ! -f "$temporary/server/bin/kotlin-language-server" ]]; then
+    if [[ ! -f "$extracted/bin/intellij-server" ]]; then
         rm -rf "$temporary"
         echo "Error: Kotlin language server executable was not found after extraction." >&2
         return 1
     fi
 
-    chmod +x "$temporary/server/bin/kotlin-language-server"
+    chmod +x "$extracted/bin/intellij-server"
     rm -rf "$install_dir"
-    mv "$temporary/server" "$install_dir"
+    mv "$extracted" "$install_dir"
     rm -rf "$temporary"
+    rm -rf "$FILES_DIR/kotlin-language-server"
 
     [[ -x "$executable" ]]
     echo "Kotlin language support installed."
@@ -131,9 +132,9 @@ install_jdtls() {
 }
 
 install_scala_tools() {
-    mkdir -p "$SCALA_BIN" "$COURSIER_DIR"
+    mkdir -p "$SCALA_BIN"
 
-    local cs="$COURSIER_DIR/cs"
+    local cs="$ARCH_DIR/usr/bin/cs"
 
     if [[ ! -x "$cs" ]]; then
         echo "Downloading Coursier..."
@@ -152,10 +153,10 @@ install_scala_tools() {
     fi
 
     echo "Installing the Scala toolchain with Coursier..."
-    "$cs" setup --yes --install-dir "$SCALA_BIN"
+    cs setup --yes --install-dir "$SCALA_BIN"
 
     echo "Installing Metals..."
-    "$cs" install --install-dir "$SCALA_BIN" metals
+    cs install --install-dir "$SCALA_BIN" metals
 
     [[ -x "$SCALA_BIN/metals" ]]
     echo "Scala language support installed."

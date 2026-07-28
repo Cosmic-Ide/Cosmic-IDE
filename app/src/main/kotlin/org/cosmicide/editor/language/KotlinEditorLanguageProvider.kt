@@ -28,7 +28,7 @@ import java.io.InputStream
 object KotlinEditorLanguageProvider : LspServerProvider {
     override val id = "org.cosmicide.editor.kotlin"
     override val displayName = "Kotlin language support"
-    override val description = "Kotlin editing powered by fwcd Kotlin Language Server"
+    override val description = "Kotlin editing powered by the official Kotlin LSP"
     override val priority = 300
 
     override fun supports(request: LspServerRequest): Boolean {
@@ -62,7 +62,7 @@ object KotlinEditorLanguageProvider : LspServerProvider {
                 typeDefinitionProvider = Either.forLeft(true)
                 referencesProvider = Either.forLeft(true)
                 hoverProvider = Either.forLeft(true)
-                documentHighlightProvider = Either.forLeft(true)
+                documentHighlightProvider = null
 
                 // Signatures & Hints
                 signatureHelpProvider = SignatureHelpOptions(listOf("(", ","))
@@ -79,13 +79,12 @@ object KotlinEditorLanguageProvider : LspServerProvider {
             },
             enableInlayHints = false,
             initializationTimeoutMillis = 120_000,
-            traceIncomingMessages = true
+            traceIncomingMessages = false
         )
     }
 
     internal fun startKotlinLspProcess(context: Context, project: Project): Process? {
-        val executable =
-            context.filesDir.resolve("kotlin-language-server/bin/kotlin-language-server")
+        val executable = context.filesDir.resolve("kotlin-lsp/bin/intellij-server")
         val jdkDir = context.jdksDir().resolve(Prefs.currentJDK)
         check(executable.isFile) {
             "Kotlin language server not found at ${executable.absolutePath}"
@@ -97,10 +96,12 @@ object KotlinEditorLanguageProvider : LspServerProvider {
             ProcessExecutor.startCommand(
                 context = context,
                 command = executable.absolutePath,
+                args = listOf("--stdio"),
                 workingDir = project.root,
                 redirectErrorStream = false,
                 environmentOverrides = mapOf(
-                    "JAVA_HOME" to jdkDir.absolutePath
+                    "JAVA_HOME" to jdkDir.absolutePath,
+                    "IJ_JAVA_OPTIONS" to "-XX:+UseZGC -XX:ZAllocationSpikeTolerance=5 -XX:TieredStopAtLevel=1 -XX:+UseStringDeduplication"
                 )
             ).also { process ->
                 streamStderrToLogcat(process.errorStream)
@@ -121,7 +122,6 @@ object KotlinEditorLanguageProvider : LspServerProvider {
                 var line = reader.readLine()
                 while (line != null) {
                     Log.d("KOTLIN-LSP", line)
-                    LspLogStore.debug("Kotlin Language Server", line)
                     line = reader.readLine()
                 }
             } catch (e: Exception) {

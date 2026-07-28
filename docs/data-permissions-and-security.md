@@ -45,16 +45,16 @@ and manual file copies can differ. Project ZIP export is the explicit portable b
 
 The app's private `filesDir` owns executable environment state:
 
-| Location                  | Contents                                      |
-|---------------------------|-----------------------------------------------|
-| `glibc/`                  | deployed compatibility runtime and home       |
-| `jdks/`                   | installed JDK distributions                   |
-| `kotlin-language-server/` | Kotlin Language Server                        |
-| `jdtls/`                  | Eclipse JDT LS                                |
-| `scala/`, `coursier/`     | Metals and Scala/Coursier tools               |
-| `Android/sdk/`            | optional Android command-line SDK             |
-| `gradle-tooling.jar`      | runtime copy of the packaged tooling provider |
-| `setup.sh`                | refreshed language/tool setup script          |
+| Location              | Contents                                      |
+|-----------------------|-----------------------------------------------|
+| `glibc/`              | deployed compatibility runtime and home       |
+| `jdks/`               | installed JDK distributions                   |
+| `kotlin-lsp/`         | Official Kotlin LSP                           |
+| `jdtls/`              | Eclipse JDT LS                                |
+| `scala/`, `coursier/` | Metals and Scala/Coursier tools               |
+| `Android/sdk/`        | optional Android command-line SDK             |
+| `gradle-tooling.jar`  | runtime copy of the packaged tooling provider |
+| `setup.sh`            | refreshed language/tool setup script          |
 
 These directories are implementation state, not project backups. Removing one may trigger setup or
 break the corresponding tool until it is reinstalled.

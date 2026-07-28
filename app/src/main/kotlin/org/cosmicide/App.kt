@@ -16,18 +16,25 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import io.github.rosemoe.sora.lsp.client.languageserver.wrapper.LanguageServerWrapper
 import io.github.rosemoe.sora.lsp.editor.LspProject
 import io.github.rosemoe.sora.lsp.events.EventContext
+import io.github.rosemoe.sora.lsp.events.EventType
+import io.github.rosemoe.sora.lsp.events.document.applyEdits
 import io.github.rosemoe.sora.lsp.events.getByClass
 import io.github.rosemoe.sora.lsp.events.workspace.WorkSpaceApplyEditEvent
 import io.github.rosemoe.sora.lsp.utils.LSPException
 import io.github.rosemoe.sora.lsp.utils.toFileUri
 import io.github.rosemoe.sora.lsp.utils.toURI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.cosmicide.common.Analytics
 import org.cosmicide.common.Prefs
+import org.cosmicide.editor.lsp.handleLspShowDocument
 import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.plugin.runtime.hook.Hook
 import org.cosmicide.plugin.runtime.hook.HookManager
 import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.util.FileUtil
+import org.eclipse.lsp4j.ApplyWorkspaceEditParams
 import org.eclipse.lsp4j.ClientCapabilities
 import org.eclipse.lsp4j.CodeActionCapabilities
 import org.eclipse.lsp4j.CodeActionKind
@@ -51,15 +58,20 @@ import org.eclipse.lsp4j.PublishDiagnosticsCapabilities
 import org.eclipse.lsp4j.RangeFormattingCapabilities
 import org.eclipse.lsp4j.ReferencesCapabilities
 import org.eclipse.lsp4j.RenameCapabilities
+import org.eclipse.lsp4j.ShowDocumentCapabilities
+import org.eclipse.lsp4j.ShowDocumentParams
 import org.eclipse.lsp4j.SignatureHelpCapabilities
 import org.eclipse.lsp4j.SignatureInformationCapabilities
 import org.eclipse.lsp4j.SymbolCapabilities
 import org.eclipse.lsp4j.SynchronizationCapabilities
 import org.eclipse.lsp4j.TextDocumentClientCapabilities
 import org.eclipse.lsp4j.TextEdit
+import org.eclipse.lsp4j.WindowClientCapabilities
 import org.eclipse.lsp4j.WorkspaceClientCapabilities
+import org.eclipse.lsp4j.WorkspaceEdit
 import org.eclipse.lsp4j.WorkspaceEditCapabilities
 import org.eclipse.lsp4j.WorkspaceFolder
+import org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import top.canyie.pine.Pine
 import java.io.File
@@ -228,19 +240,48 @@ class App : Application() {
                     diagnostic =
                         DiagnosticCapabilities(true, true).apply { relatedInformation = true }
                 }
+                val windowClientCapabilities = WindowClientCapabilities().apply {
+                    showDocument = ShowDocumentCapabilities(true)
+                }
 
                 initParams.apply {
                     capabilities =
                         ClientCapabilities(
                             workspaceClientCapabilities,
                             textDocumentClientCapabilities,
-                            null
+                            windowClientCapabilities
                         )
                     initializationOptions =
                         wrapper.serverDefinition.getInitializationOptions(URI.create(initParams.rootUri))
                 }
                 param.result = initParams
                 super.after(param)
+            }
+        })
+
+        HookManager.registerHook(object : Hook(
+            method = "request",
+            argTypes = arrayOf(String::class.java, Any::class.java),
+            type = GenericEndpoint::class.java
+        ) {
+            override fun before(param: Pine.CallFrame) {
+                if (param.args.first() != "window/showDocument") return
+                val request = param.args.last() as? ShowDocumentParams ?: return
+                param.result = handleLspShowDocument(request)
+            }
+        })
+
+        HookManager.registerHook(object : Hook(
+            method = "handle",
+            argTypes = arrayOf(EventContext::class.java),
+            type = WorkSpaceApplyEditEvent::class.java
+        ) {
+            override fun before(param: Pine.CallFrame) {
+                val context = param.args.first() as EventContext
+                if (context.getByClass<ApplyWorkspaceEditParams>() != null) return
+
+                val edit = context.getByClass<WorkspaceEdit>() ?: return
+                context.put(ApplyWorkspaceEditParams(edit))
             }
         })
 
@@ -252,23 +293,42 @@ class App : Application() {
             ),
             type = WorkSpaceApplyEditEvent::class.java
         ) {
-            override fun after(param: Pine.CallFrame) {
+            override fun before(param: Pine.CallFrame) {
                 val context = param.args.first() as EventContext
-                val changes = param.args.last() as Map<String, List<TextEdit>>
+                val changes = param.args.last() as? Map<*, *> ?: return
 
                 val project = context.getByClass<LspProject>() ?: return
 
-                changes.forEach { (uri, textEdits) ->
-                    val fileUri = uri.toURI().toFileUri()
+                runBlocking {
+                    withContext(Dispatchers.Main.immediate) {
+                        changes.forEach { (rawUri, rawTextEdits) ->
+                            val uri = rawUri as? String ?: return@forEach
+                            val textEdits = (rawTextEdits as? List<*>)
+                                ?.filterIsInstance<TextEdit>()
+                                ?: return@forEach
+                            val fileUri = uri.toURI().toFileUri()
 
-                    val editor = project.getEditor(fileUri)
-                        ?: throw LSPException("The url $uri is not opened.")
+                            val editor = project.getEditor(fileUri)
+                                ?: throw LSPException("The url $uri is not opened.")
 
-                    val event = param.thisObject as WorkSpaceApplyEditEvent
-                    WorkSpaceApplyEditEvent::class.java.methods.first { it.name == "applySingleChange" }
-                        .invoke(event, editor, fileUri, textEdits)
+                            val codeEditor = editor.editor
+                                ?: throw LSPException("The editor content $uri is null.")
+                            val cursorAnimationEnabled = codeEditor.isCursorAnimationEnabled
+                            codeEditor.isCursorAnimationEnabled = false
+                            try {
+                                editor.eventManager.emit(EventType.applyEdits) {
+                                    put("edits", textEdits)
+                                    put("content", codeEditor.text)
+                                }
+                            } finally {
+                                codeEditor.isCursorAnimationEnabled = cursorAnimationEnabled
+                            }
+                        }
+                    }
                 }
-                super.after(param)
+
+                // Sora looks up editors with the raw URI here instead of its normalized FileUri.
+                param.result = null
             }
         })
     }

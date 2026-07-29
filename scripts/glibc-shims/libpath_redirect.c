@@ -38,6 +38,7 @@
 #define ARRAY_LEN(a) (sizeof(a) / sizeof((a)[0]))
 
 #define TERMUX_FILES_PREFIX   "/data/data/com.termux/files"
+#define TERMUX_GLIBC_RUNTIME_PREFIX TERMUX_FILES_PREFIX "/usr/glibc"
 #define APP_FILES_DIR_DEFAULT "/data/data/org.cosmicide/files/glibc"
 #define PHYSICAL_CANONICAL_ENV "PATH_REDIRECT_PHYSICAL_CANONICAL"
 
@@ -685,6 +686,29 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
         return redirected;
     }
 
+    /*
+     * Some glibc packages contain linker scripts and metadata with the
+     * Termux glibc build-time prefix embedded as an absolute path. Treat
+     * that prefix as an alias for the active runtime's /usr tree, even when
+     * APP_FILES_DIR currently points to the Arch root.
+     *
+     * Example:
+     *   /data/data/com.termux/files/usr/glibc/lib/libm.so.6
+     * becomes:
+     *   $APP_FILES_DIR/usr/lib/libm.so.6
+     */
+    if (path_starts_with_component(path, TERMUX_GLIBC_RUNTIME_PREFIX)) {
+        const char* redirected = redirect_virtual_root(
+            path,
+            TERMUX_GLIBC_RUNTIME_PREFIX,
+            "/usr",
+            buffer,
+            buffer_size
+        );
+        debug_redirect("termux-glibc-runtime", path, redirected);
+        return redirected;
+    }
+
     if (path_starts_with_component(path, TERMUX_FILES_PREFIX)) {
         const char* redirected = redirect_prefix_path(
             path,
@@ -849,36 +873,129 @@ static int dirfd_path_can_contain_virtual_root(const char* path) {
     return 0;
 }
 
+static void debug_hardlink_operation(
+    const char* operation,
+    int olddirfd,
+    const char* old_original,
+    const char* old_redirected,
+    int newdirfd,
+    const char* new_original,
+    const char* new_redirected,
+    int flags,
+    int result,
+    int operation_errno
+) {
+    if (!path_redirect_debug_enabled()) return;
+
+    if (result == 0) {
+        fprintf(
+            stderr,
+            "path_redirect: %s "
+            "olddirfd=%d old=%s redirected_old=%s "
+            "newdirfd=%d new=%s redirected_new=%s "
+            "flags=0x%x result=0\n",
+            operation,
+            olddirfd,
+            old_original != NULL ? old_original : "(null)",
+            old_redirected != NULL ? old_redirected : "(null)",
+            newdirfd,
+            new_original != NULL ? new_original : "(null)",
+            new_redirected != NULL ? new_redirected : "(null)",
+            flags
+        );
+    } else {
+        fprintf(
+            stderr,
+            "path_redirect: %s "
+            "olddirfd=%d old=%s redirected_old=%s "
+            "newdirfd=%d new=%s redirected_new=%s "
+            "flags=0x%x result=-1 errno=%d (%s)\n",
+            operation,
+            olddirfd,
+            old_original != NULL ? old_original : "(null)",
+            old_redirected != NULL ? old_redirected : "(null)",
+            newdirfd,
+            new_original != NULL ? new_original : "(null)",
+            new_redirected != NULL ? new_redirected : "(null)",
+            flags,
+            operation_errno,
+            strerror(operation_errno)
+        );
+    }
+}
+
 static const char* redirect_at_path(
     int dirfd,
     const char* path,
     char* buffer,
     size_t buffer_size
 ) {
-    if (path == NULL || path[0] == '\0') return path;
-    if (path[0] == '/') return redirect_path(path, buffer, buffer_size);
-    if (dirfd == AT_FDCWD) return path;
+    if (path == NULL || path[0] == '\0') {
+        return path;
+    }
+
+    if (path[0] == '/') {
+        return redirect_path(path, buffer, buffer_size);
+    }
 
     char directory[REDIR_BUF_SIZE];
-    if (!read_dirfd_path(dirfd, directory, sizeof(directory))) return path;
 
-    /* A relative path below any physical app directory is already literal. */
-    if (path_is_physical_app_path(directory)) return path;
-    if (!dirfd_path_can_contain_virtual_root(directory)) return path;
+    /*
+     * AT_FDCWD still needs resolving. Archive extractors commonly use
+     * relative paths with AT_FDCWD, including for hard-link entries.
+     */
+    if (dirfd == AT_FDCWD) {
+        if (getcwd(directory, sizeof(directory)) == NULL) {
+            return path;
+        }
+    } else {
+        if (!read_dirfd_path(dirfd, directory, sizeof(directory))) {
+            return path;
+        }
+    }
+
+    /*
+     * Relative paths below the physical app root are already correct.
+     */
+    if (path_is_physical_app_path(directory)) {
+        return path;
+    }
+
+    if (!dirfd_path_can_contain_virtual_root(directory)) {
+        return path;
+    }
 
     char absolute[REDIR_BUF_SIZE];
     int result;
+
     if (strcmp(directory, "/") == 0) {
-        result = snprintf(absolute, sizeof(absolute), "/%s", path);
+        result = snprintf(
+            absolute,
+            sizeof(absolute),
+            "/%s",
+            path
+        );
     } else {
-        result = snprintf(absolute, sizeof(absolute), "%s/%s", directory, path);
+        result = snprintf(
+            absolute,
+            sizeof(absolute),
+            "%s/%s",
+            directory,
+            path
+        );
     }
+
     if (result < 0 || (size_t)result >= sizeof(absolute)) {
         errno = ENAMETOOLONG;
         return NULL;
     }
 
-    const char* redirected = redirect_path(absolute, buffer, buffer_size);
+    const char* redirected = redirect_path(
+        absolute,
+        buffer,
+        buffer_size
+    );
+
     debug_redirect("dirfd-relative", absolute, redirected);
     return redirected;
 }
@@ -1935,6 +2052,26 @@ static int path_reference_is_android_external_storage(
     return path_is_android_external_storage(directory);
 }
 
+static int path_reference_is_physical_app_storage(
+    int dirfd,
+    const char* path
+) {
+    if (path == NULL || path[0] == '\0') return 0;
+
+    if (path[0] == '/') {
+        return path_is_physical_app_path(path);
+    }
+
+    char directory[REDIR_BUF_SIZE];
+    if (dirfd == AT_FDCWD) {
+        if (getcwd(directory, sizeof(directory)) == NULL) return 0;
+    } else if (!read_dirfd_path(dirfd, directory, sizeof(directory))) {
+        return 0;
+    }
+
+    return path_is_physical_app_path(directory);
+}
+
 static int should_emulate_hardlink(
     int error,
     int source_dirfd,
@@ -1943,15 +2080,51 @@ static int should_emulate_hardlink(
     const char* destination
 ) {
     int saved_errno = errno;
-    int external =
-        path_reference_is_android_external_storage(source_dirfd, source) ||
-        path_reference_is_android_external_storage(destination_dirfd, destination);
 
-    int should_emulate = external &&
-        (error == EACCES ||
-         error == EPERM ||
-         error == EXDEV ||
-         error == EOPNOTSUPP);
+    int source_external =
+        path_reference_is_android_external_storage(source_dirfd, source);
+
+    int destination_external =
+        path_reference_is_android_external_storage(
+            destination_dirfd,
+            destination
+        );
+
+    int source_app_storage =
+        path_reference_is_physical_app_storage(source_dirfd, source);
+
+    int destination_app_storage =
+        path_reference_is_physical_app_storage(
+            destination_dirfd,
+            destination
+        );
+
+    /*
+     * Android may deny link/linkat with EACCES or EPERM even inside an app's
+     * private files directory. This is a platform restriction rather than an
+     * extraction-path failure, so emulate such hard links by copying regular
+     * files when both operands are within the app-owned storage tree.
+     *
+     * External/shared storage also commonly rejects hard links, but only use
+     * the copy fallback when both operands are on the same supported class of
+     * Android storage. Never turn arbitrary permission failures elsewhere into
+     * successful copies.
+     */
+    int unsupported_error =
+        error == EACCES ||
+        error == EPERM ||
+        error == EXDEV ||
+        error == EOPNOTSUPP;
+
+    int both_app_storage =
+        source_app_storage && destination_app_storage;
+
+    int both_external_storage =
+        source_external && destination_external;
+
+    int should_emulate =
+        unsupported_error &&
+        (both_app_storage || both_external_storage);
 
     errno = saved_errno;
     return should_emulate;
@@ -2145,6 +2318,25 @@ int link(const char* oldpath, const char* newpath) {
 
     int result = fn(old_redirected, new_redirected);
 
+    int operation_errno = result == -1 ? errno : 0;
+
+    debug_hardlink_operation(
+        "link",
+        AT_FDCWD,
+        oldpath,
+        old_redirected,
+        AT_FDCWD,
+        newpath,
+        new_redirected,
+        0,
+        result,
+        operation_errno
+    );
+
+    if (result == -1) {
+        errno = operation_errno;
+    }
+
     if (result == 0) {
         return 0;
     }
@@ -2223,6 +2415,25 @@ int linkat(
         flags
     );
 
+    int operation_errno = result == -1 ? errno : 0;
+
+    debug_hardlink_operation(
+        "linkat",
+        olddirfd,
+        oldpath,
+        old_redirected,
+        newdirfd,
+        newpath,
+        new_redirected,
+        flags,
+        result,
+        operation_errno
+    );
+
+    if (result == -1) {
+        errno = operation_errno;
+    }
+
     if (result == 0) {
         return 0;
     }
@@ -2266,6 +2477,74 @@ int linkat(
     return -1;
 }
 
+static const char* redirect_creation_path(
+    const char* path,
+    char* buffer,
+    size_t buffer_size
+) {
+    if (path == NULL || path[0] == '\0' || path[0] != '/') {
+        return path;
+    }
+
+    if (path_is_physical_app_path(path)) {
+        return path;
+    }
+
+    /*
+     * Creation below /bin must stay below the physical /bin path.
+     * Never use the /usr/bin lookup fallback here.
+     */
+    if (path_starts_with_component(path, "/bin")) {
+        const char* redirected = redirect_virtual_root(
+            path,
+            "/bin",
+            "/bin",
+            buffer,
+            buffer_size
+        );
+        debug_redirect("bin-create", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/sbin")) {
+        const char* redirected = redirect_virtual_root(
+            path,
+            "/sbin",
+            "/sbin",
+            buffer,
+            buffer_size
+        );
+        debug_redirect("sbin-create", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/lib64")) {
+        const char* redirected = redirect_virtual_root(
+            path,
+            "/lib64",
+            "/lib64",
+            buffer,
+            buffer_size
+        );
+        debug_redirect("lib64-create", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/lib")) {
+        const char* redirected = redirect_virtual_root(
+            path,
+            "/lib",
+            "/lib",
+            buffer,
+            buffer_size
+        );
+        debug_redirect("lib-create", path, redirected);
+        return redirected;
+    }
+
+    return redirect_path(path, buffer, buffer_size);
+}
+
 int symlink(const char* target, const char* linkpath) {
     int (*fn)(const char*, const char*) =
         REAL(symlink, int (*)(const char*, const char*));
@@ -2276,10 +2555,36 @@ int symlink(const char* target, const char* linkpath) {
     const char* redirected_target =
         redirect_symlink_target(target, target_buffer, sizeof(target_buffer));
     const char* redirected_link =
-        redirect_path(linkpath, link_buffer, sizeof(link_buffer));
+        redirect_creation_path(
+            linkpath,
+            link_buffer,
+            sizeof(link_buffer)
+        );
 
     if (redirected_target == NULL || redirected_link == NULL) return -1;
-    return fn(redirected_target, redirected_link);
+
+    int result = fn(redirected_target, redirected_link);
+    int operation_errno = errno;
+
+    if (path_redirect_debug_enabled()) {
+        fprintf(
+            stderr,
+            "path_redirect: symlink "
+            "target=%s redirected_target=%s "
+            "link=%s redirected_link=%s "
+            "result=%d errno=%d (%s)\n",
+            target != NULL ? target : "(null)",
+            redirected_target,
+            linkpath != NULL ? linkpath : "(null)",
+            redirected_link,
+            result,
+            operation_errno,
+            strerror(operation_errno)
+        );
+    }
+
+    errno = operation_errno;
+    return result;
 }
 
 int symlinkat(const char* target, int newdirfd, const char* linkpath) {
@@ -2291,11 +2596,71 @@ int symlinkat(const char* target, int newdirfd, const char* linkpath) {
 
     const char* redirected_target =
         redirect_symlink_target(target, target_buffer, sizeof(target_buffer));
-    const char* redirected_link =
-        redirect_at_path(newdirfd, linkpath, link_buffer, sizeof(link_buffer));
+
+    const char* redirected_link;
+
+    if (linkpath != NULL && linkpath[0] == '/') {
+        redirected_link = redirect_creation_path(
+            linkpath,
+            link_buffer,
+            sizeof(link_buffer)
+        );
+    } else {
+        redirected_link = redirect_at_path(
+            newdirfd,
+            linkpath,
+            link_buffer,
+            sizeof(link_buffer)
+        );
+    }
 
     if (redirected_target == NULL || redirected_link == NULL) return -1;
-    return fn(redirected_target, newdirfd, redirected_link);
+
+    int result = fn(
+        redirected_target,
+        newdirfd,
+        redirected_link
+    );
+
+    int operation_errno = errno;
+
+    if (path_redirect_debug_enabled()) {
+        char directory[REDIR_BUF_SIZE];
+        const char* directory_text = "(unresolved)";
+
+        if (newdirfd == AT_FDCWD) {
+            if (getcwd(directory, sizeof(directory)) != NULL) {
+                directory_text = directory;
+            }
+        } else if (read_dirfd_path(
+                       newdirfd,
+                       directory,
+                       sizeof(directory)
+                   )) {
+            directory_text = directory;
+        }
+
+        fprintf(
+            stderr,
+            "path_redirect: symlinkat "
+            "dirfd=%d directory=%s "
+            "target=%s redirected_target=%s "
+            "link=%s redirected_link=%s "
+            "result=%d errno=%d (%s)\n",
+            newdirfd,
+            directory_text,
+            target != NULL ? target : "(null)",
+            redirected_target,
+            linkpath != NULL ? linkpath : "(null)",
+            redirected_link,
+            result,
+            operation_errno,
+            strerror(operation_errno)
+        );
+    }
+
+    errno = operation_errno;
+    return result;
 }
 
 int rename(const char* oldpath, const char* newpath) {
@@ -2868,6 +3233,25 @@ long path_redirect_syscall_dispatch(
             argument6
         );
 
+        int operation_errno = result == -1 ? errno : 0;
+
+        debug_hardlink_operation(
+            "syscall(SYS_link)",
+            AT_FDCWD,
+            old_original,
+            old_path,
+            AT_FDCWD,
+            new_original,
+            new_path,
+            0,
+            (int)result,
+            operation_errno
+        );
+
+        if (result == -1) {
+            errno = operation_errno;
+        }
+
         if (result == 0) {
             return 0;
         }
@@ -2937,6 +3321,25 @@ long path_redirect_syscall_dispatch(
             argument6
         );
 
+        int operation_errno = result == -1 ? errno : 0;
+
+        debug_hardlink_operation(
+            "syscall(SYS_linkat)",
+            olddirfd,
+            old_original,
+            old_path,
+            newdirfd,
+            new_original,
+            new_path,
+            flags,
+            (int)result,
+            operation_errno
+        );
+
+        if (result == -1) {
+            errno = operation_errno;
+        }
+
         if (result == 0) {
             return 0;
         }
@@ -2982,8 +3385,11 @@ long path_redirect_syscall_dispatch(
             second_path_buffer,
             sizeof(second_path_buffer)
         );
-        const char* link_path =
-            redirect_path(link_original, path_buffer, sizeof(path_buffer));
+        const char* link_path = redirect_creation_path(
+            link_original,
+            path_buffer,
+            sizeof(path_buffer)
+        );
 
         if (target_path == NULL || link_path == NULL) return -1;
         debug_path_operation("syscall(SYS_symlink target)", target_original, target_path);
@@ -3011,12 +3417,22 @@ long path_redirect_syscall_dispatch(
             second_path_buffer,
             sizeof(second_path_buffer)
         );
-        const char* link_path = redirect_at_path(
-            newdirfd,
-            link_original,
-            path_buffer,
-            sizeof(path_buffer)
-        );
+        const char* link_path;
+
+        if (link_original != NULL && link_original[0] == '/') {
+            link_path = redirect_creation_path(
+                link_original,
+                path_buffer,
+                sizeof(path_buffer)
+            );
+        } else {
+            link_path = redirect_at_path(
+                newdirfd,
+                link_original,
+                path_buffer,
+                sizeof(path_buffer)
+            );
+        }
 
         if (target_path == NULL || link_path == NULL) return -1;
         debug_path_operation("syscall(SYS_symlinkat target)", target_original, target_path);

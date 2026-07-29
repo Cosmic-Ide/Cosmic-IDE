@@ -2,6 +2,7 @@ package org.cosmicide.model
 
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
+import org.cosmicide.project.ProjectTypeProvider
 import org.cosmicide.util.FileUtil
 import java.io.File
 
@@ -12,7 +13,8 @@ interface ProjectRepository {
 }
 
 internal class FileSystemProjectRepository(
-    projectsDirectory: File = FileUtil.projectDir
+    projectsDirectory: File = FileUtil.projectDir,
+    private val projectTypeProviders: () -> List<ProjectTypeProvider> = { emptyList() }
 ) : ProjectRepository {
     private val root = projectsDirectory.canonicalFile
 
@@ -33,11 +35,23 @@ internal class FileSystemProjectRepository(
         check(target.deleteRecursively()) { "Could not delete ${project.name}" }
     }
 
-    private fun detectLanguage(projectRoot: File): Language = when {
-        hasSourceDirectory(projectRoot, "java") -> Language.Java
-        hasSourceDirectory(projectRoot, "kotlin") -> Language.Kotlin
-        hasSourceDirectory(projectRoot, "scala") -> Language.Scala
-        else -> Language.Kotlin
+    private fun detectLanguage(projectRoot: File): Language {
+        projectTypeProviders().firstNotNullOfOrNull { provider ->
+            runCatching {
+                provider.takeIf { it.supports(projectRoot) }
+                    ?.project(projectRoot)
+                    ?.language
+            }.getOrNull()
+        }?.let { language ->
+            return language
+        }
+
+        return when {
+            hasSourceDirectory(projectRoot, "java") -> Language.Java
+            hasSourceDirectory(projectRoot, "kotlin") -> Language.Kotlin
+            hasSourceDirectory(projectRoot, "scala") -> Language.Scala
+            else -> Language.Kotlin
+        }
     }
 
     private fun hasSourceDirectory(projectRoot: File, languageDirectory: String): Boolean {

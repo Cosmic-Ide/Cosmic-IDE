@@ -235,7 +235,7 @@ refresh_repository() {
         return 1
     fi
 
-    if ! find "$extracted_dir" -type f -name desc | head -n 1 | grep -q .; then
+    if ! find "$extracted_dir" -type f -name desc | awk '{ print; exit }' | grep -q .; then
         warn "repository database contains no package descriptions: $repository"
         return 1
     fi

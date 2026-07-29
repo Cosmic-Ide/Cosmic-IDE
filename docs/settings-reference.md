@@ -106,16 +106,15 @@ Creation code runs in the new project directory. Build, run, and additional comm
 editor's Project Commands menu and open in bottom PTY tabs. These fields are trusted executable
 configuration, not escaped literal arguments.
 
-### Installed plugins
+### Plugin marketplace
 
-The screen shows plugin name, runtime state, and version for plugins discovered at startup. It does
-not currently provide install, update, enable-whole-plugin, or uninstall actions.
+The Plugins tab provides search plus Marketplace and Installed filters. Extension cards use
+user-facing Installed or Update labels instead of exposing internal runtime states. Tapping a card
+opens a full-screen details sheet with Markdown documentation and install, update, setup, or
+uninstall actions.
 
-### Plugin repository
-
-The Repository field persists a plugin-index URL. The runtime currently does not fetch or install
-from this URL; it is reserved configuration for a marketplace flow. Changing it alone has no effect
-on installed plugins.
+The settings button beside the filters edits the HTTPS plugin-index URL. Saving a repository URL
+refreshes the marketplace immediately.
 
 ## Terminal
 

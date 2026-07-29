@@ -49,7 +49,6 @@ import org.cosmicide.project.ProjectActionProvider
 import org.cosmicide.project.ProjectActionRequest
 import org.cosmicide.project.ProjectCreationProvider
 import org.cosmicide.project.ProjectCreationRequest
-import org.cosmicide.project.TerminalAction
 import java.io.File
 
 @Composable
@@ -57,17 +56,14 @@ fun ProjectCreationDialog(
     provider: ProjectCreationProvider,
     projectsDirectory: File,
     onDismiss: () -> Unit,
-    onRunInTerminal: (TerminalAction) -> Unit,
     onProjectCreated: (Project, String) -> Unit
 ) {
     PluginOperationDialog(
         title = provider.displayName,
         description = provider.description,
         fields = provider.fields,
-        setupActions = provider.setupActions,
         runLabel = provider.actionLabel,
-        onDismiss = onDismiss,
-        onRunInTerminal = onRunInTerminal
+        onDismiss = onDismiss
     ) { values, reporter ->
         val result = provider.create(
             ProjectCreationRequest(projectsDirectory, values),
@@ -84,17 +80,14 @@ fun ProjectActionDialog(
     action: ProjectAction,
     project: Project,
     onDismiss: () -> Unit,
-    onRunInTerminal: (TerminalAction) -> Unit,
     onCompleted: (String, Boolean) -> Unit
 ) {
     PluginOperationDialog(
         title = action.label,
         description = action.description,
         fields = action.fields,
-        setupActions = provider.setupActions,
         runLabel = "Run",
-        onDismiss = onDismiss,
-        onRunInTerminal = onRunInTerminal
+        onDismiss = onDismiss
     ) { values, reporter ->
         val result = provider.execute(
             ProjectActionRequest(project, action.id, values),
@@ -110,10 +103,8 @@ private fun PluginOperationDialog(
     title: String,
     description: String,
     fields: List<PluginFormField>,
-    setupActions: List<TerminalAction>,
     runLabel: String,
     onDismiss: () -> Unit,
-    onRunInTerminal: (TerminalAction) -> Unit,
     operation: suspend (Map<String, String>, OperationReporter) -> String
 ) {
     val scope = rememberCoroutineScope()
@@ -157,22 +148,6 @@ private fun PluginOperationDialog(
                         enabled = !isRunning,
                         onValueChange = { value -> values = values + (field.id to value) }
                     )
-                }
-
-                setupActions.forEach { action ->
-                    TextButton(
-                        onClick = { onRunInTerminal(action) },
-                        enabled = !isRunning
-                    ) {
-                        Text(action.label)
-                    }
-                    if (action.description.isNotBlank()) {
-                        Text(
-                            action.description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
                 }
 
                 if (isRunning) {

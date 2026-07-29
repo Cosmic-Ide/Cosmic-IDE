@@ -2,6 +2,7 @@ package org.cosmicide.model
 
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
+import org.cosmicide.project.ProjectTypeProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
@@ -40,6 +41,29 @@ class ProjectRepositoryTest {
         } finally {
             outside.deleteRecursively()
         }
+    }
+
+    @Test
+    fun `installed project type provider participates in discovery`() = withProjects { root ->
+        root.resolve("rust/Cargo.toml").apply {
+            checkNotNull(parentFile).mkdirs()
+            writeText("[package]\nname = \"rust\"")
+        }
+        val rustProvider = object : ProjectTypeProvider {
+            override val id = "test.rust"
+            override val languageName = "Rust"
+            override val fileExtension = "rs"
+
+            override fun supports(projectRoot: File): Boolean {
+                return projectRoot.resolve("Cargo.toml").isFile
+            }
+        }
+
+        val project = FileSystemProjectRepository(root) { listOf(rustProvider) }
+            .projects()
+            .single()
+
+        assertEquals(Language.Custom("Rust", "rs"), project.language)
     }
 
     private fun withProjects(block: (File) -> Unit) {

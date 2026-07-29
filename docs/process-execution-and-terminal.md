@@ -15,8 +15,9 @@ Use:
 Plugins use the `CommandExecutionService` registered under `IdeServices.COMMAND_EXECUTION`. Its
 `CommandRequest` keeps executable and arguments separate, runs in the same toolchain environment,
 merges output for finite user-facing operations, returns the exit code and a bounded output tail,
-and streams chunks as they arrive. Interactive operations must instead contribute a
-`TerminalAction`; the app opens it through `TerminalScreen` and the PTY path.
+and streams chunks as they arrive. Plugin environment installation must instead be declared through
+`CosmicPlugin.setupActions`; the marketplace opens the chosen `PluginSetupAction` through
+`TerminalScreen` and the PTY path.
 
 Editor `ProjectCommand` contributions use the same PTY bridge inside the resizable bottom tool
 window. The terminal controller can accept an explicit argument list, allowing custom project shell

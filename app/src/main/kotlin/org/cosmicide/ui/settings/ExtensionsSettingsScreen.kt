@@ -29,12 +29,14 @@ import org.cosmicide.app.LocalAppContainer
 import org.cosmicide.ui.settings.extensions.CustomLspSettingsSection
 import org.cosmicide.ui.settings.extensions.CustomProjectTypesSettingsSection
 import org.cosmicide.ui.settings.extensions.ExtensionProvidersSection
-import org.cosmicide.ui.settings.extensions.InstalledPluginsSection
-import org.cosmicide.ui.settings.extensions.PluginRepositorySection
+import org.cosmicide.ui.settings.extensions.PluginMarketplaceSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExtensionsSettingsScreen(onBack: () -> Unit) {
+fun ExtensionsSettingsScreen(
+    onBack: () -> Unit,
+    onRunSetupInTerminal: (String) -> Unit
+) {
     val repository = LocalAppContainer.current.extensionsSettingsRepository
     var refreshVersion by remember { mutableIntStateOf(0) }
     var selectedTabName by rememberSaveable {
@@ -77,7 +79,13 @@ fun ExtensionsSettingsScreen(onBack: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(scrollStates[selectedTab.ordinal])
+                .then(
+                    if (selectedTab == ExtensionsSettingsTab.PLUGINS) {
+                        Modifier
+                    } else {
+                        Modifier.verticalScroll(scrollStates[selectedTab.ordinal])
+                    }
+                )
         ) {
             when (selectedTab) {
                 ExtensionsSettingsTab.PROVIDERS -> ExtensionProvidersSection(
@@ -99,8 +107,12 @@ fun ExtensionsSettingsScreen(onBack: () -> Unit) {
                 )
 
                 ExtensionsSettingsTab.PLUGINS -> {
-                    InstalledPluginsSection(repository)
-                    PluginRepositorySection(repository)
+                    PluginMarketplaceSection(
+                        repository = repository,
+                        refreshVersion = refreshVersion,
+                        onChanged = notifyChanged,
+                        onRunSetupInTerminal = onRunSetupInTerminal
+                    )
                 }
             }
         }

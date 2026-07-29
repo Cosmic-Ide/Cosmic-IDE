@@ -43,10 +43,9 @@ object CosmicPluginHost {
 
             extensionSettings = ExtensionSettings(context)
             registerBuiltinEditorExtensions(context, extensionRegistry)
-            serviceRegistry.register(
-                IdeServices.COMMAND_EXECUTION,
-                AndroidCommandExecutionService(context)
-            )
+            val commandExecutionService = AndroidCommandExecutionService(context)
+            serviceRegistry.register(IdeServices.COMMAND_EXECUTION, commandExecutionService)
+            serviceRegistry.register(IdeServices.TOOL_PROCESS, commandExecutionService)
             pluginManager = AndroidPluginManager(
                 context = context,
                 extensionRegistry = extensionRegistry,
@@ -89,6 +88,7 @@ object CosmicPluginHost {
             addRegistrations(EditorExtensionPoints.LSP_SERVER_PROVIDER, "Language servers")
             addRegistrations(EditorExtensionPoints.FORMATTER_PROVIDER, "Formatters")
             addRegistrations(EditorExtensionPoints.PREVIEW_PROVIDER, "Editor previews")
+            addRegistrations(ProjectExtensionPoints.TYPE_PROVIDER, "Project types")
             addRegistrations(ProjectExtensionPoints.CREATION_PROVIDER, "Project creation")
             addRegistrations(ProjectExtensionPoints.ACTION_PROVIDER, "Project actions")
             addRegistrations(ProjectExtensionPoints.COMMAND_PROVIDER, "Project commands")

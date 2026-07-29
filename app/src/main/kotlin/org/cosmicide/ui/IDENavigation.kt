@@ -83,14 +83,6 @@ fun IDENavigation() {
                         backStack.add(Editor(project))
                     },
                     onNavigateToNewProject = { backStack.add(NewProject) },
-                    onNavigateToTerminal = { action, workingDirectory ->
-                        backStack.add(
-                            TerminalSession(
-                                command = action.command,
-                                workingDirectory = workingDirectory.absolutePath
-                            )
-                        )
-                    },
                     onNavigateToSettings = { backStack.add(Settings) })
             }
 
@@ -129,7 +121,17 @@ fun IDENavigation() {
                         CompilerSettingsScreen(onBack = { backStack.removeLastOrNull() })
 
                     SettingsDestination.EXTENSIONS ->
-                        ExtensionsSettingsScreen(onBack = { backStack.removeLastOrNull() })
+                        ExtensionsSettingsScreen(
+                            onBack = { backStack.removeLastOrNull() },
+                            onRunSetupInTerminal = { command ->
+                                backStack.add(
+                                    TerminalSession(
+                                        command = command,
+                                        workingDirectory = context.filesDir.absolutePath
+                                    )
+                                )
+                            }
+                        )
 
                     SettingsDestination.TERMINAL ->
                         TerminalScreen(onNavigateBack = { backStack.removeLastOrNull() })

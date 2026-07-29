@@ -56,19 +56,16 @@ import org.cosmicide.common.Analytics
 import org.cosmicide.model.ProjectViewModel
 import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCreationProvider
-import org.cosmicide.project.TerminalAction
 import org.cosmicide.ui.donation.DonationPromptTracker
 import org.cosmicide.ui.donation.DonationSheet
 import org.cosmicide.ui.plugin.ProjectActionDialog
 import org.cosmicide.ui.plugin.ProjectCreationDialog
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToNewProject: () -> Unit,
-    onNavigateToTerminal: (TerminalAction, File) -> Unit,
     onNavigateToEditor: (Project) -> Unit
 ) {
     val context = LocalContext.current
@@ -312,10 +309,6 @@ fun HomeScreen(
             provider = provider,
             projectsDirectory = archiveRepository.projectsDirectory,
             onDismiss = { selectedCreationProvider = null },
-            onRunInTerminal = { action ->
-                selectedCreationProvider = null
-                onNavigateToTerminal(action, archiveRepository.projectsDirectory)
-            },
             onProjectCreated = { project, message ->
                 selectedCreationProvider = null
                 viewModel.loadProjects()
@@ -331,10 +324,6 @@ fun HomeScreen(
             action = contribution.action,
             project = contribution.project,
             onDismiss = { selectedProjectAction = null },
-            onRunInTerminal = { action ->
-                selectedProjectAction = null
-                onNavigateToTerminal(action, contribution.project.root)
-            },
             onCompleted = { message, refreshProject ->
                 if (refreshProject) viewModel.loadProjects()
                 scope.launch { snackbarHostState.showSnackbar(message) }

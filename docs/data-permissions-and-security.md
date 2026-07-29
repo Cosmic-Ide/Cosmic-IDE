@@ -94,11 +94,12 @@ Cosmic can contact:
 - JetBrains/Kotlin, Eclipse JDT LS, Coursier/GitHub, Google SDK, and Android ARM tool sources during
   setup;
 - Gradle distributions and project-declared artifact repositories;
-- user-supplied plugin repository URLs;
+- user-supplied plugin repository indexes and checksum-pinned plugin packages;
 - user-supplied HTTP(S) TextMate grammar links;
 - community/source/donation links selected in the UI.
 
-The plugin repository value is currently stored but not fetched by an installer UI. Project Gradle
+The plugin marketplace fetches only HTTPS indexes and package URLs. Every entry must pin the
+package SHA-256; the installer verifies it before bounded, traversal-safe extraction. Project Gradle
 configuration and terminal commands may contact arbitrary hosts.
 
 Remote TextMate content is data parsed by the grammar engine, not executed as a shell command, but
@@ -140,6 +141,10 @@ Plugins are dex/classpath code loaded into the Android application process. They
 and extension registries and have no OS isolation from Cosmic itself. Plugin manifests describe
 identity and capabilities but are not a sandbox. Install only trusted plugin artifacts and verify
 their source and integrity.
+
+Repository checksums detect corrupted or substituted packages only when the index itself remains
+trusted; they are not publisher signatures. A repository-supplied setup command is displayed for
+confirmation and runs in a PTY only after the user accepts it.
 
 ### Toolchains and setup scripts
 

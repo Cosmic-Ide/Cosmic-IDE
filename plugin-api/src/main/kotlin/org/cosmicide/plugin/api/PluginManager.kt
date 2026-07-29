@@ -18,7 +18,8 @@ enum class PluginState {
 data class PluginHandle(
     val descriptor: PluginDescriptor,
     val state: PluginState,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val setupActions: List<PluginSetupAction> = emptyList()
 )
 
 sealed class PluginLoadResult {

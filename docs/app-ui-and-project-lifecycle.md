@@ -85,9 +85,9 @@ consent:
 Home also resolves enabled `ProjectCreationProvider` and `ProjectActionProvider` contributions.
 Creation providers appear under the folder action in the floating toolbar. Actions returned for a
 specific project are inserted into that project's overflow menu. The app renders their declarative
-fields, output, and progress; plugin code never receives Compose or navigation objects. A
-`TerminalAction` becomes a serializable `TerminalSession` route so setup commands retain a real PTY
-and interactive package-manager prompts.
+fields, output, and progress; plugin code never receives Compose or navigation objects. Setup
+commands are owned by `CosmicPlugin` and launched from marketplace details, so project dialogs only
+contain inputs and progress relevant to the requested project operation.
 
 `ProjectRepository` owns discovery and direct-child deletion. `HomeProjectArchiveRepository` owns
 ZIP backup/import on IO, canonical destination validation, and cleanup of a partial import after

@@ -43,10 +43,7 @@ class ProjectExtensionContractsTest {
     }
 
     @Test
-    fun `terminal actions and project commands reject incomplete commands`() {
-        assertFails<IllegalArgumentException> { TerminalAction("", "Install", "pacman -S git") }
-        assertFails<IllegalArgumentException> { TerminalAction("git", "", "pacman -S git") }
-        assertFails<IllegalArgumentException> { TerminalAction("git", "Install", " ") }
+    fun `project commands reject incomplete commands`() {
         assertFails<IllegalArgumentException> { ProjectCommand("sync", "Sync", "") }
 
         val command = ProjectCommand("sync", "Sync", "./sync", kind = ProjectCommandKind.SYNC)

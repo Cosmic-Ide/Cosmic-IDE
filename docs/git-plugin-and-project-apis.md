@@ -25,8 +25,8 @@ under the app's private runtime root. Uninstalling the Android app removes that 
 
 ```text
 ProjectCreationProvider / ProjectActionProvider
-  -> declarative fields and optional TerminalAction
-  -> Home renders generic dialog or PTY route
+  -> declarative project-specific fields
+  -> Home renders a generic operation dialog
   -> provider calls CommandExecutionService
   -> LinuxProcessRunner starts the glibc executable
   -> output chunks become OperationUpdate values
@@ -56,7 +56,7 @@ All project-facing contracts live in `:ide-api` under `org.cosmicide.project`:
 | `ProjectCommandProvider` / `ProjectCommand` | Selects commands for a project and classifies their role         |
 | `PluginFormField`                           | Text, password, boolean, or choice input without UI dependencies |
 | `OperationReporter` / `OperationUpdate`     | Streams status, output, warning/error, and optional 0–1 progress |
-| `TerminalAction`                            | Requests a trusted command in Cosmic's interactive terminal      |
+| `PluginSetupAction`                         | Declares plugin-level setup through `CosmicPlugin.setupActions`  |
 | `IdeServices.COMMAND_EXECUTION`             | Looks up the host process service from `PluginContext.services`  |
 | `CommandExecutionService`                   | Runs finite commands in Cosmic's toolchain environment           |
 
@@ -101,8 +101,8 @@ context. Project actions use the same pattern with `ProjectExtensionPoints.ACTIO
   the app presents its message in the dialog.
 - Report raw output with `OperationMessageKind.OUTPUT`; include normalized progress when available.
 - Keep `actions(project)` free of network and process work.
-- Do not launch an interactive program through `CommandExecutionService`; contribute a
-  `TerminalAction` instead.
+- Do not launch an interactive program through `CommandExecutionService`; declare environment
+  setup on the owning `CosmicPlugin` through `PluginSetupAction`.
 - Do not retain screen, activity, or Compose references. Dispose plugin-owned resources through
   `PluginContext`.
 - Treat command execution and terminal actions as trusted-code capabilities. Installed plugins run

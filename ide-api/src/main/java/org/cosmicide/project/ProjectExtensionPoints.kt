@@ -47,20 +47,6 @@ enum class PluginFormFieldType {
     CHOICE
 }
 
-/** A command that must be shown in Cosmic's interactive terminal. */
-data class TerminalAction(
-    val id: String,
-    val label: String,
-    val command: String,
-    val description: String = ""
-) {
-    init {
-        require(id.isNotBlank()) { "Terminal action id must not be blank" }
-        require(label.isNotBlank()) { "Terminal action label must not be blank" }
-        require(command.isNotBlank()) { "Terminal command must not be blank" }
-    }
-}
-
 enum class OperationMessageKind {
     STATUS,
     OUTPUT,
@@ -102,10 +88,6 @@ interface ProjectCreationProvider : ConfigurableExtension {
     val actionLabel: String
         get() = "Create"
 
-    /** Optional setup tasks, such as installing a required command-line tool. */
-    val setupActions: List<TerminalAction>
-        get() = emptyList()
-
     suspend fun create(
         request: ProjectCreationRequest,
         reporter: OperationReporter
@@ -138,9 +120,6 @@ data class ProjectActionResult(
 
 /** Contributes operations to each matching project's overflow menu. */
 interface ProjectActionProvider : ConfigurableExtension {
-    val setupActions: List<TerminalAction>
-        get() = emptyList()
-
     fun actions(project: Project): List<ProjectAction>
 
     suspend fun execute(
@@ -176,6 +155,28 @@ interface ProjectCommandProvider : ConfigurableExtension {
     fun commands(project: Project): List<ProjectCommand>
 }
 
+/**
+ * Identifies a project layout that Cosmic does not know about itself.
+ *
+ * Installed language plugins should register one of these alongside their editor and project
+ * creation contributions. The provider is consulted whenever the Projects screen scans a
+ * directory, so the project keeps its language identity after an app restart.
+ */
+interface ProjectTypeProvider : ConfigurableExtension {
+    val languageName: String
+
+    val fileExtension: String
+
+    fun supports(projectRoot: File): Boolean
+
+    fun project(projectRoot: File): Project {
+        return Project(
+            root = projectRoot,
+            language = Language.Custom(languageName, fileExtension)
+        )
+    }
+}
+
 data class CommandRequest(
     val command: String,
     val arguments: List<String> = emptyList(),
@@ -205,7 +206,18 @@ interface CommandExecutionService {
     ): CommandResult
 }
 
+/** Starts a long-lived process in Cosmic's toolchain environment. */
+fun interface ToolProcessService {
+    fun start(request: CommandRequest, redirectErrorStream: Boolean): Process
+}
+
 object ProjectExtensionPoints {
+    @JvmField
+    val TYPE_PROVIDER = ExtensionPoint(
+        "org.cosmicide.project.typeProvider",
+        ProjectTypeProvider::class.java
+    )
+
     @JvmField
     val CREATION_PROVIDER = ExtensionPoint(
         "org.cosmicide.project.creationProvider",
@@ -230,5 +242,11 @@ object IdeServices {
     val COMMAND_EXECUTION = ServiceKey(
         "org.cosmicide.ide.commandExecution",
         CommandExecutionService::class.java
+    )
+
+    @JvmField
+    val TOOL_PROCESS = ServiceKey(
+        "org.cosmicide.ide.toolProcess",
+        ToolProcessService::class.java
     )
 }

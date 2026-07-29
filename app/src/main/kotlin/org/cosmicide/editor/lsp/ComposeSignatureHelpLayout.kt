@@ -44,10 +44,14 @@ import androidx.compose.ui.platform.ComposeViewContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -57,6 +61,7 @@ import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.findViewTreeSavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.m3.markdownTypography
 import io.github.rosemoe.sora.lsp.editor.signature.SignatureHelpLayout
 import io.github.rosemoe.sora.lsp.editor.signature.SignatureHelpWindow
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
@@ -425,7 +430,32 @@ private fun DocumentationBody(
     if (documentation.isMarkdown) {
         Markdown(
             content = documentation.text,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            typography = markdownTypography(
+                h1 = MaterialTheme.typography.titleLargeEmphasized,
+                h2 = MaterialTheme.typography.titleMediumEmphasized,
+                h3 = MaterialTheme.typography.titleSmallEmphasized,
+                h4 = MaterialTheme.typography.headlineMedium,
+                h5 = MaterialTheme.typography.headlineSmall,
+                h6 = MaterialTheme.typography.titleLarge,
+                text = MaterialTheme.typography.bodyMedium,
+                code = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                inlineCode = MaterialTheme.typography.bodyMedium.copy(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = TextUnit.Unspecified
+                ),
+                quote = MaterialTheme.typography.bodyMedium.plus(SpanStyle(fontStyle = FontStyle.Italic)),
+                paragraph = MaterialTheme.typography.bodyMedium,
+                ordered = MaterialTheme.typography.bodyMedium,
+                bullet = MaterialTheme.typography.bodyMedium,
+                list = MaterialTheme.typography.bodyMedium,
+                textLink = TextLinkStyles(
+                    style = MaterialTheme.typography.bodyMediumEmphasized.copy(
+                        textDecoration = TextDecoration.Underline
+                    ).toSpanStyle()
+                ),
+                table = MaterialTheme.typography.bodyMedium
+            )
         )
     } else {
         SelectionContainer {

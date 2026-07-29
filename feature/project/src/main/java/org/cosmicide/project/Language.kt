@@ -42,6 +42,27 @@ sealed class Language(val extension: String) : Serializable {
     object Scala : Language("scala") {
         override val name = "Scala"
     }
+
+    /**
+     * A language supplied by an installed plugin.
+     *
+     * Keeping this carrier in the stable project model lets plugins add project types without
+     * requiring every language to be compiled into Cosmic itself.
+     */
+    @kotlinx.serialization.Serializable
+    data class Custom(
+        private val displayName: String,
+        private val sourceExtension: String
+    ) : Language(sourceExtension) {
+        init {
+            require(displayName.isNotBlank()) { "Language name must not be blank" }
+            require(sourceExtension.matches(Regex("[A-Za-z0-9][A-Za-z0-9_+-]*"))) {
+                "Language extension must be a file extension without a leading dot"
+            }
+        }
+
+        override val name: String = displayName
+    }
 }
 
 /**

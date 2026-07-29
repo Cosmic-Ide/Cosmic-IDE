@@ -45,7 +45,9 @@ internal fun testFrameworksFor(language: Language): List<TestFramework> = when (
     Language.Java -> listOf(TestFramework.JUNIT, TestFramework.TESTNG)
     Language.Kotlin -> listOf(TestFramework.JUNIT, TestFramework.KotlinTest)
     Language.Scala -> listOf(TestFramework.SCALATEST)
+    is Language.Custom -> emptyList()
 }
 
 private fun defaultTestFramework(language: Language): TestFramework =
-    testFrameworksFor(language).first()
+    testFrameworksFor(language).firstOrNull()
+        ?: error("${language.name} projects are created by their installed plugin")

@@ -20,11 +20,14 @@ import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.project.CommandExecutionService
 import org.cosmicide.project.CommandRequest
 import org.cosmicide.project.CommandResult
+import org.cosmicide.project.ToolProcessService
 import org.cosmicide.util.jdksDir
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class AndroidCommandExecutionService(context: Context) : CommandExecutionService {
+internal class AndroidCommandExecutionService(context: Context) :
+    CommandExecutionService,
+    ToolProcessService {
     private val appContext = context.applicationContext
 
     override fun isCommandAvailable(command: String, workingDirectory: File): Boolean {
@@ -46,14 +49,7 @@ internal class AndroidCommandExecutionService(context: Context) : CommandExecuti
             "Working directory does not exist: ${request.workingDirectory.absolutePath}"
         }
 
-        val process = ProcessExecutor.startCommand(
-            context = appContext,
-            command = request.command,
-            args = request.arguments,
-            workingDir = request.workingDirectory,
-            redirectErrorStream = true,
-            environmentOverrides = request.environment
-        )
+        val process = start(request, redirectErrorStream = true)
         val captured = StringBuilder()
         val callerJob = currentCoroutineContext()[Job]
         val cancellationWatcher = CoroutineScope(Dispatchers.IO).launch {
@@ -88,6 +84,20 @@ internal class AndroidCommandExecutionService(context: Context) : CommandExecuti
                 process.destroy()
             }
         }
+    }
+
+    override fun start(request: CommandRequest, redirectErrorStream: Boolean): Process {
+        require(request.workingDirectory.isDirectory) {
+            "Working directory does not exist: ${request.workingDirectory.absolutePath}"
+        }
+        return ProcessExecutor.startCommand(
+            context = appContext,
+            command = request.command,
+            args = request.arguments,
+            workingDir = request.workingDirectory,
+            redirectErrorStream = redirectErrorStream,
+            environmentOverrides = request.environment
+        )
     }
 
     private companion object {

@@ -290,9 +290,21 @@ Extensions lists configurable editor-language, language-server, formatter, proje
 project-action contributions and
 shows installed plugin state/version information.
 
-The repository URL field is currently stored as configuration, but this screen does not yet
-implement marketplace browsing or installation. Plugin packages must already exist in the plugin
-directory. Plugin code runs in the application process and should be treated as trusted code.
+The **Plugins** tab is a searchable marketplace with separate marketplace and installed views.
+Tap an extension to open its full-screen details, including its Markdown documentation and
+install, update, setup, or uninstall actions. Cosmic verifies each published SHA-256 checksum,
+safely stages the ZIP, validates its manifest, and activates it without adding the plugin to the
+app APK. If an update cannot activate, Cosmic restores the previous plugin.
+
+Some plugins need command-line tools. On a first install, Cosmic shows the exact setup command and
+asks before opening it in the interactive terminal. You can defer this step and later choose
+**Run setup** in the plugin details. Plugin code still runs in the application process and should be
+treated as trusted code.
+
+The Rust Support plugin installs Rust and rust-analyzer through
+`pacman -S --needed rust rust-analyzer`, provides `.rs` LSP editing, recognizes `Cargo.toml`
+projects, creates Cargo binary/library projects, and contributes Cargo fetch/check/build/run/test
+commands.
 
 See [Plugin architecture](plugin-architecture.md) for the developer contract and manifest format.
 See [Git plugin and project APIs](git-plugin-and-project-apis.md) for the project UI contracts.

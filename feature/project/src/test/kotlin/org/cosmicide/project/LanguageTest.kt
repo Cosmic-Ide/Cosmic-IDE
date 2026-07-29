@@ -22,13 +22,24 @@ class LanguageTest {
 
     @Test
     fun `language serializes and restores its subtype`() {
-        listOf(Language.Java, Language.Kotlin, Language.Scala).forEach { value ->
+        listOf(
+            Language.Java,
+            Language.Kotlin,
+            Language.Scala,
+            Language.Custom("Rust", "rs")
+        ).forEach { value ->
             val encoded = Json.encodeToString(Language.serializer(), value)
             val decoded = Json.decodeFromString(Language.serializer(), encoded)
-            assertEquals(value::class, decoded::class)
+            assertEquals(value, decoded)
             assertEquals(value.extension, decoded.extension)
             assertEquals(value.name, decoded.name)
         }
+    }
+
+    @Test
+    fun `custom language validates plugin supplied metadata`() {
+        assertFails<IllegalArgumentException> { Language.Custom("", "rs") }
+        assertFails<IllegalArgumentException> { Language.Custom("Rust", ".rs") }
     }
 }
 

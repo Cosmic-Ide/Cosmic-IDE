@@ -8,6 +8,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import org.cosmicide.model.FileSystemProjectRepository
 import org.cosmicide.model.ProjectRepository
 import org.cosmicide.model.ProjectViewModel
+import org.cosmicide.plugin.CosmicPluginHost
+import org.cosmicide.project.ProjectExtensionPoints
 import org.cosmicide.ui.home.AndroidHomeProjectArchiveRepository
 import org.cosmicide.ui.home.HomeExtensionRepository
 import org.cosmicide.ui.home.HomeProjectArchiveRepository
@@ -29,7 +31,9 @@ internal class AppContainer(context: Context) {
     private val appContext = context.applicationContext
 
     val projectsDirectory: File = FileUtil.projectDir
-    val projectRepository: ProjectRepository = FileSystemProjectRepository(projectsDirectory)
+    val projectRepository: ProjectRepository = FileSystemProjectRepository(projectsDirectory) {
+        CosmicPluginHost.enabledExtensions(ProjectExtensionPoints.TYPE_PROVIDER)
+    }
     val projectViewModelFactory: ViewModelProvider.Factory = viewModelFactory {
         initializer { ProjectViewModel(projectRepository) }
     }

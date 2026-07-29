@@ -404,9 +404,14 @@ do not concatenate user values into a shell command. Output callbacks may arrive
 thread. Check `CommandResult.exitCode` and treat non-zero exit as failure. Commands use Cosmic's
 selected JDK, glibc runtime, and app-private Arch tool paths.
 
-Package installation, authentication prompts, pagers, and other interactive tasks must use a
-`TerminalAction`. Cosmic turns it into a PTY-backed terminal route. Terminal command strings are a
-trusted-code surface, so plugins must not interpolate untrusted form values into them.
+Long-lived tools such as language servers use `IdeServices.TOOL_PROCESS`. Its
+`ToolProcessService.start` method returns a live `Process` with the same environment. LSP plugins
+must request separate stderr, drain it away from the protocol stream, and close all three streams
+when the connection stops.
+
+Plugin environment installation must use `CosmicPlugin.setupActions`. Cosmic turns each
+`PluginSetupAction` into a PTY-backed terminal handoff from the marketplace. Setup command strings
+are a trusted-code surface, so plugins must not interpolate untrusted form values into them.
 
 The bundled `GitPlugin` is the reference implementation. It contributes clone plus project-scoped
 Git operations, reports progress parsed from `git --progress`, requests installation through
@@ -429,6 +434,11 @@ The bundled `CustomProjectTypePlugin` is a user-configurable implementation. It 
 dynamic project creator plus a command provider backed by application preferences. Configuration
 can associate existing projects through relative marker paths, while created projects persist the
 type id in `.cosmic/project-type`.
+
+Installed language plugins should also register `ProjectExtensionPoints.TYPE_PROVIDER`.
+`ProjectTypeProvider.supports` recognizes a project root, while `languageName` and `fileExtension`
+create a serializable `Language.Custom` value. Cosmic consults enabled type providers before its
+built-in Java/Kotlin/Scala directory heuristics whenever it scans the Projects screen.
 
 ## Plugin manifest
 
@@ -454,9 +464,44 @@ Plugin activation is atomic with respect to owned registrations. If activation f
 disposes collected resources and unregisters the owner. Unload calls `deactivate`, disposes plugin
 resources, and unregisters all contributions owned by the plugin id.
 
+## Plugin repository and installation
+
+Settings > Extensions > Plugins downloads the configured HTTPS JSON index. The index is either an
+array or an object containing a `plugins` array. Every installable entry must declare:
+
+```json
+{
+  "id": "com.example.cosmic.rust",
+  "name": "Rust Support",
+  "version": "1.0.0",
+  "description": "Rust language support powered by rust-analyzer.",
+  "detailedDescription": "## Rust support\n\nDetailed **Markdown** content.",
+  "downloadUrl": "https://example.com/rust-support-1.0.0.zip",
+  "sha256": "64 lowercase hexadecimal characters"
+}
+```
+
+`description` is plain text for marketplace cards, while `detailedDescription` supports Markdown
+in the full-screen details sheet. Older indexes using `shortDescription`, or only `description`,
+remain compatible. `author` and the HTTPS `source` link are optional display metadata. The
+downloaded ZIP is capped at 25 MB and its SHA-256 must match before extraction. Extraction rejects
+traversal paths, more than 256 entries, and more than 50 MB of expanded data. The package is staged
+under the plugin root, its manifest id/version and loadable artifact are verified, and its APK, DEX,
+or JAR artifacts are made read-only before Android's dynamic class loader sees them. Only then is it
+swapped into place. An update preserves the previous directory and restores/reactivates it if the
+new plugin fails.
+
+Plugins declare environment setup commands on their main `CosmicPlugin` implementation through
+`setupActions`. These actions belong to the plugin lifecycle, not to project creation or project
+actions. Cosmic never runs them in the background: after a fresh install it shows the exact
+commands and requires a choice before opening an interactive terminal. The marketplace retains a
+manual **Run setup** action in the plugin details sheet.
+
 ## Failure behavior
 
 - A failing plugin activation leaves no active registrations from that owner.
+- A checksum, extraction, manifest, or activation failure does not replace a working installed
+  plugin.
 - A provider throwing from `supports`, `configure`, or `format` is logged; routing continues where
   the
   caller can safely try another provider.
@@ -520,8 +565,8 @@ enablement, failure handling, and connection lifecycle one implementation path.
 
 ## Remaining work
 
-- Define plugin signing, repository trust, and install/update/delete transactions before remote
-  installation is enabled.
+- Add plugin signing and publisher trust on top of the current HTTPS plus SHA-256 repository model.
+- Add explicit rollback controls to the marketplace UI.
 - Add explicit plugin-level persisted enable/disable and reload controls in addition to contribution
   switches.
 - Add dependency and host API compatibility checks before plugin activation.

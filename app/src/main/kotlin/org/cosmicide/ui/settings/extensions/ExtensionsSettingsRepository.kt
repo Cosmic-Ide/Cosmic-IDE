@@ -7,6 +7,9 @@ import org.cosmicide.editor.lsp.CustomLspConfiguration
 import org.cosmicide.editor.lsp.CustomLspConfigurationStore
 import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.plugin.ExtensionSettingsItem
+import org.cosmicide.plugin.PluginInstallResult
+import org.cosmicide.plugin.PluginMarketplace
+import org.cosmicide.plugin.PluginRepositoryEntry
 import org.cosmicide.plugin.api.PluginHandle
 import org.cosmicide.plugin.customproject.CustomProjectTypeConfiguration
 import org.cosmicide.plugin.customproject.CustomProjectTypeStore
@@ -33,6 +36,12 @@ internal interface ExtensionsSettingsRepository {
 
     fun installedPlugins(): List<PluginHandle>
 
+    suspend fun availablePlugins(): List<PluginRepositoryEntry>
+
+    suspend fun installPlugin(plugin: PluginRepositoryEntry): PluginInstallResult
+
+    suspend fun uninstallPlugin(pluginId: String)
+
     fun pluginRepository(): String
 
     fun setPluginRepository(repository: String)
@@ -47,6 +56,9 @@ internal class AndroidExtensionsSettingsRepository(context: Context) :
     )
     private val customLspStore = CustomLspConfigurationStore(appContext)
     private val customProjectTypeStore = CustomProjectTypeStore(appContext)
+    private val pluginMarketplace = PluginMarketplace(appContext) {
+        CosmicPluginHost.pluginManager
+    }
 
     override fun extensionItems(): List<ExtensionSettingsItem> =
         CosmicPluginHost.configurableExtensions()
@@ -82,6 +94,16 @@ internal class AndroidExtensionsSettingsRepository(context: Context) :
 
     override fun installedPlugins(): List<PluginHandle> =
         CosmicPluginHost.pluginManager?.plugins.orEmpty()
+
+    override suspend fun availablePlugins(): List<PluginRepositoryEntry> =
+        pluginMarketplace.fetch(pluginRepository())
+
+    override suspend fun installPlugin(plugin: PluginRepositoryEntry): PluginInstallResult =
+        pluginMarketplace.install(plugin)
+
+    override suspend fun uninstallPlugin(pluginId: String) {
+        pluginMarketplace.uninstall(pluginId)
+    }
 
     override fun pluginRepository(): String = preferences.getString(
         PreferenceKeys.PLUGIN_REPOSITORY,

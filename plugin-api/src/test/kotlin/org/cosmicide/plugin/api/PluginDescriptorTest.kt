@@ -32,6 +32,19 @@ class PluginDescriptorTest {
         assertFails<IllegalArgumentException> { descriptor(entryClass = " ") }
     }
 
+    @Test
+    fun `plugin setup actions require identity label and command`() {
+        assertFails<IllegalArgumentException> {
+            PluginSetupAction("", "Install", "pacman -S git")
+        }
+        assertFails<IllegalArgumentException> {
+            PluginSetupAction("git", "", "pacman -S git")
+        }
+        assertFails<IllegalArgumentException> {
+            PluginSetupAction("git", "Install", " ")
+        }
+    }
+
     private fun descriptor(
         id: String = "org.example.plugin",
         name: String = "Plugin",

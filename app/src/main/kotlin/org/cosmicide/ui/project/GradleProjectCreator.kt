@@ -100,6 +100,7 @@ internal val Language.gradleInitType: String
         Language.Java -> "java-application"
         Language.Kotlin -> "kotlin-application"
         Language.Scala -> "scala-application"
+        is Language.Custom -> error("$name projects are created by their installed plugin")
     }
 
 private class ProjectCreationOutputStream(

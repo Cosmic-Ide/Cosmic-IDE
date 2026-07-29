@@ -8,7 +8,24 @@
 package org.cosmicide.plugin.api
 
 interface CosmicPlugin {
+    /** Interactive environment setup commands owned by this plugin as a whole. */
+    val setupActions: List<PluginSetupAction>
+        get() = emptyList()
+
     fun activate(context: PluginContext)
 
     fun deactivate() = Unit
+}
+
+data class PluginSetupAction(
+    val id: String,
+    val label: String,
+    val command: String,
+    val description: String = ""
+) {
+    init {
+        require(id.isNotBlank()) { "Plugin setup action id must not be blank" }
+        require(label.isNotBlank()) { "Plugin setup action label must not be blank" }
+        require(command.isNotBlank()) { "Plugin setup command must not be blank" }
+    }
 }

@@ -44,7 +44,7 @@ class AndroidPluginManager(
 
     fun loadInstalledPlugins(): List<PluginLoadResult> {
         return pluginRoot
-            .listFiles { file -> file.isDirectory }
+            .listFiles { file -> file.isDirectory && !file.name.startsWith(".") }
             ?.sortedBy { it.name }
             .orEmpty()
             .mapNotNull { pluginDir ->
@@ -73,7 +73,11 @@ class AndroidPluginManager(
         }
 
         activePlugins[descriptor.id]?.let {
-            updateHandle(descriptor, PluginState.ACTIVE)
+            updateHandle(
+                descriptor,
+                PluginState.ACTIVE,
+                setupActions = it.plugin.setupActions
+            )
             return PluginLoadResult.Loaded(descriptor, it.plugin)
         }
 
@@ -95,7 +99,11 @@ class AndroidPluginManager(
                 context = pluginContext,
                 classLoader = plugin.javaClass.classLoader ?: javaClass.classLoader
             )
-            updateHandle(descriptor, PluginState.ACTIVE)
+            updateHandle(
+                descriptor,
+                PluginState.ACTIVE,
+                setupActions = plugin.setupActions
+            )
             PluginLoadResult.Loaded(descriptor, plugin)
         } catch (throwable: Throwable) {
             pluginContext?.disposeAll()
@@ -116,7 +124,11 @@ class AndroidPluginManager(
         }
 
         activePlugins[descriptor.id]?.let {
-            updateHandle(descriptor, PluginState.ACTIVE)
+            updateHandle(
+                descriptor,
+                PluginState.ACTIVE,
+                setupActions = it.plugin.setupActions
+            )
             return PluginLoadResult.Loaded(descriptor, it.plugin)
         }
 
@@ -144,7 +156,11 @@ class AndroidPluginManager(
                 context = pluginContext,
                 classLoader = classLoader
             )
-            updateHandle(descriptor, PluginState.ACTIVE)
+            updateHandle(
+                descriptor,
+                PluginState.ACTIVE,
+                setupActions = plugin.setupActions
+            )
             PluginLoadResult.Loaded(descriptor, plugin)
         } catch (throwable: Throwable) {
             pluginContext?.disposeAll()
@@ -167,16 +183,37 @@ class AndroidPluginManager(
         }
         active.context.disposeAll()
         extensionRegistry.unregisterOwner(pluginId)
-        updateHandle(active.descriptor, PluginState.DISABLED)
+        updateHandle(
+            active.descriptor,
+            PluginState.DISABLED,
+            setupActions = active.plugin.setupActions
+        )
+    }
+
+    /**
+     * Removes a fully unloaded plugin from the runtime's discovered plugin list.
+     * Package deletion remains the responsibility of the marketplace installer.
+     */
+    fun forget(pluginId: String) {
+        check(pluginId !in activePlugins) { "Plugin $pluginId must be unloaded before removal" }
+        synchronized(handles) {
+            handles.remove(pluginId)
+        }
     }
 
     private fun updateHandle(
         descriptor: PluginDescriptor,
         state: PluginState,
-        errorMessage: String? = null
+        errorMessage: String? = null,
+        setupActions: List<org.cosmicide.plugin.api.PluginSetupAction> = emptyList()
     ) {
         synchronized(handles) {
-            handles[descriptor.id] = PluginHandle(descriptor, state, errorMessage)
+            handles[descriptor.id] = PluginHandle(
+                descriptor = descriptor,
+                state = state,
+                errorMessage = errorMessage,
+                setupActions = setupActions
+            )
         }
     }
 

@@ -51,6 +51,28 @@ class ProjectExtensionContractsTest {
     }
 
     @Test
+    fun `project command groups contain child commands instead of shell text`() {
+        val build = ProjectCommand("build.debug", "Debug", "./gradlew assembleDebug")
+        val group = ProjectCommand("build", "Build", children = listOf(build))
+
+        assertEquals(build, group.children.single())
+        assertFails<IllegalArgumentException> {
+            ProjectCommand("empty", "Empty", children = emptyList())
+        }
+        assertFails<IllegalArgumentException> {
+            ProjectCommand("ambiguous", "Ambiguous", "make", children = listOf(build))
+        }
+        assertFails<IllegalArgumentException> {
+            ProjectCommand(
+                "sync",
+                "Sync",
+                kind = ProjectCommandKind.SYNC,
+                children = listOf(build)
+            )
+        }
+    }
+
+    @Test
     fun `command result success follows exit code only`() {
         assertTrue(CommandResult(0, "warnings").successful)
         assertFalse(CommandResult(1, "").successful)

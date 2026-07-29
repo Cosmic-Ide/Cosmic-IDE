@@ -135,22 +135,36 @@ enum class ProjectCommandKind {
     OTHER
 }
 
-/** A trusted shell command rendered as an interactive project terminal tab. */
+/**
+ * A node in the project command tree shown by the editor.
+ *
+ * Leaf nodes provide trusted shell [command] text and open an interactive project terminal tab.
+ * Branch nodes leave [command] blank and use [children] to create a submenu.
+ */
 data class ProjectCommand(
     val id: String,
     val label: String,
-    val command: String,
+    val command: String = "",
     val description: String = "",
-    val kind: ProjectCommandKind = ProjectCommandKind.OTHER
+    val kind: ProjectCommandKind = ProjectCommandKind.OTHER,
+    val children: List<ProjectCommand> = emptyList()
 ) {
     init {
         require(id.isNotBlank()) { "Project command id must not be blank" }
         require(label.isNotBlank()) { "Project command label must not be blank" }
-        require(command.isNotBlank()) { "Project command must not be blank" }
+        require(command.isNotBlank() || children.isNotEmpty()) {
+            "Project command must provide shell text or child commands"
+        }
+        require(command.isBlank() || children.isEmpty()) {
+            "Project command cannot provide both shell text and child commands"
+        }
+        require(children.isEmpty() || kind == ProjectCommandKind.OTHER) {
+            "Project command groups cannot have an executable command kind"
+        }
     }
 }
 
-/** Contributes commands which the editor opens in its bottom PTY tool window. */
+/** Contributes command trees which the editor renders as submenus and opens in its bottom PTY. */
 interface ProjectCommandProvider : ConfigurableExtension {
     fun commands(project: Project): List<ProjectCommand>
 }
@@ -196,7 +210,7 @@ data class CommandResult(
         get() = exitCode == 0
 }
 
-/** App-owned process execution exposed to plugins with the Cosmic glibc environment. */
+/** App-owned process execution exposed to plugins with the Cosmic environment. */
 interface CommandExecutionService {
     fun isCommandAvailable(command: String, workingDirectory: File): Boolean
 

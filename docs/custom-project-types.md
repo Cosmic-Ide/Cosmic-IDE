@@ -56,9 +56,10 @@ command is used by the toolbar Run button.
 
 ## Editor terminals
 
-Project commands appear in the editor's **Project Commands** submenu. Each launch creates a
-resizable bottom PTY tab with status, rerun, close, normal terminal colors, interactive input, and
-Ctrl+C support. **Execution > Terminal** creates an interactive `bash -i` tab in the same panel.
+Project commands appear in the editor's **Project Commands** submenu. Providers can group them into
+further nested submenus with `ProjectCommand.children`. Each leaf launch creates a resizable bottom
+PTY tab with status, rerun, close, normal terminal colors, interactive input, and Ctrl+C support.
+**Execution > Terminal** creates an interactive `bash -i` tab in the same panel.
 
 When `gradlew` exists, the fixed **Sync** tab remains owned by Gradle model synchronization. When it
 does not exist and a matching project type supplies Sync code, the fixed tab instead runs that code

@@ -19,7 +19,19 @@ internal fun resolveProjectSyncStrategy(
     if (hasGradleWrapper) return ProjectSyncStrategy.GradleWrapper
 
     return projectCommands
+        .executableCommands()
         .firstOrNull { it.kind == ProjectCommandKind.SYNC }
         ?.let(ProjectSyncStrategy::PluginCommand)
         ?: ProjectSyncStrategy.Unavailable
+}
+
+/** Walks command leaves depth-first, preserving the order supplied by providers. */
+internal fun Iterable<ProjectCommand>.executableCommands(): Sequence<ProjectCommand> = sequence {
+    for (command in this@executableCommands) {
+        if (command.children.isEmpty()) {
+            yield(command)
+        } else {
+            yieldAll(command.children.executableCommands())
+        }
+    }
 }

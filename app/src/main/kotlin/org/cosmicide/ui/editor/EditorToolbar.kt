@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.subscribeAlways
+import me.saket.cascade.CascadeColumnScope
 import me.saket.cascade.CascadeDropdownMenu
 import org.cosmicide.project.ProjectCommand
 import org.cosmicide.project.ProjectCommandKind
@@ -115,10 +116,10 @@ internal fun EditorToolbar(
         }
     }
 
-    val contributedRunCommand = projectCommands.firstOrNull {
+    val contributedRunCommand = projectCommands.executableCommands().firstOrNull {
         it.kind == ProjectCommandKind.RUN
     }
-    val contributedSyncCommand = projectCommands.firstOrNull {
+    val contributedSyncCommand = projectCommands.executableCommands().firstOrNull {
         it.kind == ProjectCommandKind.SYNC
     }
 
@@ -190,15 +191,11 @@ internal fun EditorToolbar(
                 })
                 if (projectCommands.isNotEmpty()) {
                     DropdownMenuItem(text = { Text("Project Commands") }, children = {
-                        projectCommands.forEach { command ->
-                            DropdownMenuItem(
-                                text = { Text(command.label) },
-                                onClick = {
-                                    onRunProjectCommand(command)
-                                    showMenu = false
-                                }
-                            )
-                        }
+                        ProjectCommandMenuItems(
+                            commands = projectCommands,
+                            onRunProjectCommand = onRunProjectCommand,
+                            onDismissMenu = { showMenu = false }
+                        )
                     })
                 }
                 DropdownMenuItem(text = { Text("Editor") }, children = {
@@ -262,5 +259,32 @@ internal fun EditorToolbar(
             content = editor.text,
             onDismiss = { showStatsDialog = false }
         )
+    }
+}
+
+@Composable
+private fun CascadeColumnScope.ProjectCommandMenuItems(
+    commands: List<ProjectCommand>,
+    onRunProjectCommand: (ProjectCommand) -> Unit,
+    onDismissMenu: () -> Unit
+) {
+    commands.forEach { command ->
+        if (command.children.isNotEmpty()) {
+            DropdownMenuItem(text = { Text(command.label) }, children = {
+                ProjectCommandMenuItems(
+                    commands = command.children,
+                    onRunProjectCommand = onRunProjectCommand,
+                    onDismissMenu = onDismissMenu
+                )
+            })
+        } else {
+            DropdownMenuItem(
+                text = { Text(command.label) },
+                onClick = {
+                    onRunProjectCommand(command)
+                    onDismissMenu()
+                }
+            )
+        }
     }
 }

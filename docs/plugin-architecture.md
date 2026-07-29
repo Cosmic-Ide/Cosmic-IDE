@@ -419,8 +419,9 @@ Git operations, reports progress parsed from `git --progress`, requests installa
 only a newly created partial clone when clone fails.
 
 `ProjectCommandProvider` is the editor-facing command surface. Its `commands(project)` method is
-side-effect free and returns sync, build, run, or other `ProjectCommand` values for matching
-projects.
+side-effect free and returns a tree of `ProjectCommand` values for matching projects. A leaf
+provides shell command text and can be classified as sync, build, run, or other. A branch leaves
+the command text blank and provides `children`, which the editor renders as a nested submenu.
 The editor gives a contributed run command precedence over the Gradle `run` fallback and opens all
 contributed commands in bottom PTY tabs. Command text is intentionally shell code and is passed as
 an exact argument to `bash -lc`; providers must never place untrusted values into it.

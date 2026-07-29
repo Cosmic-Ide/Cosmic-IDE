@@ -44,6 +44,24 @@ class ProjectSyncStrategyTest {
         assertEquals(ProjectSyncStrategy.Unavailable, strategy)
     }
 
+    @Test
+    fun `nested sync command is selected from command tree`() {
+        val sync = syncCommand("nested-sync")
+        val group = ProjectCommand(
+            id = "maintenance",
+            label = "Maintenance",
+            children = listOf(sync)
+        )
+
+        assertEquals(
+            ProjectSyncStrategy.PluginCommand(sync),
+            resolveProjectSyncStrategy(
+                hasGradleWrapper = false,
+                projectCommands = listOf(group)
+            )
+        )
+    }
+
     private fun syncCommand(id: String) = ProjectCommand(
         id = id,
         label = id,

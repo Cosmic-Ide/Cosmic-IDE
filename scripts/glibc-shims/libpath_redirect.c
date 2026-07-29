@@ -112,10 +112,22 @@ DECLARE_REAL_SYMBOL(mkfifo)
 DECLARE_REAL_SYMBOL(mkfifoat)
 DECLARE_REAL_SYMBOL(mknod)
 DECLARE_REAL_SYMBOL(mknodat)
+DECLARE_REAL_SYMBOL(mkstemp)
+DECLARE_REAL_SYMBOL(mkostemp)
+DECLARE_REAL_SYMBOL(mkstemps)
+DECLARE_REAL_SYMBOL(mkostemps)
+DECLARE_REAL_SYMBOL(mkstemp64)
+DECLARE_REAL_SYMBOL(mkostemp64)
+DECLARE_REAL_SYMBOL(mkstemps64)
+DECLARE_REAL_SYMBOL(mkostemps64)
 DECLARE_REAL_SYMBOL(open)
 DECLARE_REAL_SYMBOL(open64)
 DECLARE_REAL_SYMBOL(openat)
 DECLARE_REAL_SYMBOL(openat64)
+DECLARE_REAL_SYMBOL(__open_2)
+DECLARE_REAL_SYMBOL(__open64_2)
+DECLARE_REAL_SYMBOL(__openat_2)
+DECLARE_REAL_SYMBOL(__openat64_2)
 DECLARE_REAL_SYMBOL(opendir)
 DECLARE_REAL_SYMBOL(readlink)
 DECLARE_REAL_SYMBOL(readlinkat)
@@ -1221,6 +1233,345 @@ static void spoof_statx_if_perf_data(struct statx* st) {
 }
 
 /* ------------------------------------------------------------------------- */
+/* Temporary-file template wrappers                                           */
+/* ------------------------------------------------------------------------- */
+
+/*
+ * Lua built with LUA_USE_POSIX implements os.tmpname() with
+ * mkstemp("/tmp/lua_XXXXXX"). glibc's mkstemp implementation performs its
+ * file creation internally, so interposing open/openat alone does not reliably
+ * expose the template path to this library.
+ *
+ * Redirect the template before calling libc, then copy only the generated six
+ * characters back into the caller's original virtual template. The caller
+ * continues to observe a virtual name such as /tmp/lua_ab12CD, while the real
+ * file is created below the redirected TMPDIR.
+ */
+static int validate_temp_template(
+    const char* template_path,
+    int suffix_length,
+    size_t* marker_offset_out
+) {
+    if (template_path == NULL || marker_offset_out == NULL || suffix_length < 0) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    size_t length = strlen(template_path);
+    size_t suffix = (size_t)suffix_length;
+    if (length < suffix + 6) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    size_t marker = length - suffix - 6;
+    if (memcmp(template_path + marker, "XXXXXX", 6) != 0) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    *marker_offset_out = marker;
+    return 0;
+}
+
+static int prepare_redirected_temp_template(
+    char* logical_template,
+    int suffix_length,
+    char* physical_buffer,
+    size_t physical_buffer_size,
+    const char** physical_template_out,
+    size_t* logical_marker_out
+) {
+    if (validate_temp_template(
+            logical_template,
+            suffix_length,
+            logical_marker_out
+        ) != 0) {
+        return -1;
+    }
+
+    const char* physical = redirect_path(
+        logical_template,
+        physical_buffer,
+        physical_buffer_size
+    );
+    if (physical == NULL) return -1;
+
+    if (physical != logical_template) {
+        size_t ignored_marker = 0;
+        if (validate_temp_template(
+                physical,
+                suffix_length,
+                &ignored_marker
+            ) != 0) {
+            return -1;
+        }
+    }
+
+    *physical_template_out = physical;
+    return 0;
+}
+
+static void copy_generated_temp_marker_back(
+    char* logical_template,
+    size_t logical_marker,
+    const char* physical_template,
+    int suffix_length
+) {
+    if (logical_template == physical_template) return;
+
+    size_t physical_length = strlen(physical_template);
+    size_t suffix = (size_t)suffix_length;
+    if (physical_length < suffix + 6) return;
+
+    size_t physical_marker = physical_length - suffix - 6;
+    memcpy(logical_template + logical_marker, physical_template + physical_marker, 6);
+}
+
+static void debug_temp_template(
+    const char* function_name,
+    const char* logical_template,
+    const char* physical_template,
+    int result,
+    int operation_errno
+) {
+    if (!path_redirect_debug_enabled()) return;
+
+    fprintf(
+        stderr,
+        "path_redirect: %s logical=%s physical=%s result=%d errno=%d (%s)\n",
+        function_name,
+        logical_template != NULL ? logical_template : "(null)",
+        physical_template != NULL ? physical_template : "(null)",
+        result,
+        operation_errno,
+        operation_errno != 0 ? strerror(operation_errno) : "success"
+    );
+}
+
+int mkstemp(char* template_path) {
+    int (*fn)(char*) = REAL(mkstemp, int (*)(char*));
+    char physical_buffer[REDIR_BUF_SIZE];
+    const char* physical = NULL;
+    size_t logical_marker = 0;
+
+    if (prepare_redirected_temp_template(
+            template_path,
+            0,
+            physical_buffer,
+            sizeof(physical_buffer),
+            &physical,
+            &logical_marker
+        ) != 0) {
+        return -1;
+    }
+
+    int result = fn((char*)physical);
+    int operation_errno = result == -1 ? errno : 0;
+    if (result != -1) {
+        copy_generated_temp_marker_back(
+            template_path,
+            logical_marker,
+            physical,
+            0
+        );
+    }
+    debug_temp_template("mkstemp", template_path, physical, result, operation_errno);
+    if (result == -1) errno = operation_errno;
+    return result;
+}
+
+int mkostemp(char* template_path, int flags) {
+    int (*fn)(char*, int) = REAL(mkostemp, int (*)(char*, int));
+    char physical_buffer[REDIR_BUF_SIZE];
+    const char* physical = NULL;
+    size_t logical_marker = 0;
+
+    if (prepare_redirected_temp_template(
+            template_path,
+            0,
+            physical_buffer,
+            sizeof(physical_buffer),
+            &physical,
+            &logical_marker
+        ) != 0) {
+        return -1;
+    }
+
+    int result = fn((char*)physical, flags);
+    int operation_errno = result == -1 ? errno : 0;
+    if (result != -1) {
+        copy_generated_temp_marker_back(
+            template_path,
+            logical_marker,
+            physical,
+            0
+        );
+    }
+    debug_temp_template("mkostemp", template_path, physical, result, operation_errno);
+    if (result == -1) errno = operation_errno;
+    return result;
+}
+
+int mkstemps(char* template_path, int suffix_length) {
+    int (*fn)(char*, int) = REAL(mkstemps, int (*)(char*, int));
+    char physical_buffer[REDIR_BUF_SIZE];
+    const char* physical = NULL;
+    size_t logical_marker = 0;
+
+    if (prepare_redirected_temp_template(
+            template_path,
+            suffix_length,
+            physical_buffer,
+            sizeof(physical_buffer),
+            &physical,
+            &logical_marker
+        ) != 0) {
+        return -1;
+    }
+
+    int result = fn((char*)physical, suffix_length);
+    int operation_errno = result == -1 ? errno : 0;
+    if (result != -1) {
+        copy_generated_temp_marker_back(
+            template_path,
+            logical_marker,
+            physical,
+            suffix_length
+        );
+    }
+    debug_temp_template("mkstemps", template_path, physical, result, operation_errno);
+    if (result == -1) errno = operation_errno;
+    return result;
+}
+
+int mkostemps(char* template_path, int suffix_length, int flags) {
+    int (*fn)(char*, int, int) =
+        REAL(mkostemps, int (*)(char*, int, int));
+    char physical_buffer[REDIR_BUF_SIZE];
+    const char* physical = NULL;
+    size_t logical_marker = 0;
+
+    if (prepare_redirected_temp_template(
+            template_path,
+            suffix_length,
+            physical_buffer,
+            sizeof(physical_buffer),
+            &physical,
+            &logical_marker
+        ) != 0) {
+        return -1;
+    }
+
+    int result = fn((char*)physical, suffix_length, flags);
+    int operation_errno = result == -1 ? errno : 0;
+    if (result != -1) {
+        copy_generated_temp_marker_back(
+            template_path,
+            logical_marker,
+            physical,
+            suffix_length
+        );
+    }
+    debug_temp_template("mkostemps", template_path, physical, result, operation_errno);
+    if (result == -1) errno = operation_errno;
+    return result;
+}
+
+int mkstemp64(char* template_path) {
+    int (*fn)(char*) = OPT_REAL(mkstemp64, int (*)(char*));
+    if (fn == NULL) return mkstemp(template_path);
+
+    char physical_buffer[REDIR_BUF_SIZE];
+    const char* physical = NULL;
+    size_t logical_marker = 0;
+    if (prepare_redirected_temp_template(
+            template_path, 0, physical_buffer, sizeof(physical_buffer),
+            &physical, &logical_marker
+        ) != 0) return -1;
+
+    int result = fn((char*)physical);
+    int operation_errno = result == -1 ? errno : 0;
+    if (result != -1) {
+        copy_generated_temp_marker_back(template_path, logical_marker, physical, 0);
+    }
+    debug_temp_template("mkstemp64", template_path, physical, result, operation_errno);
+    if (result == -1) errno = operation_errno;
+    return result;
+}
+
+int mkostemp64(char* template_path, int flags) {
+    int (*fn)(char*, int) = OPT_REAL(mkostemp64, int (*)(char*, int));
+    if (fn == NULL) return mkostemp(template_path, flags);
+
+    char physical_buffer[REDIR_BUF_SIZE];
+    const char* physical = NULL;
+    size_t logical_marker = 0;
+    if (prepare_redirected_temp_template(
+            template_path, 0, physical_buffer, sizeof(physical_buffer),
+            &physical, &logical_marker
+        ) != 0) return -1;
+
+    int result = fn((char*)physical, flags);
+    int operation_errno = result == -1 ? errno : 0;
+    if (result != -1) {
+        copy_generated_temp_marker_back(template_path, logical_marker, physical, 0);
+    }
+    debug_temp_template("mkostemp64", template_path, physical, result, operation_errno);
+    if (result == -1) errno = operation_errno;
+    return result;
+}
+
+int mkstemps64(char* template_path, int suffix_length) {
+    int (*fn)(char*, int) = OPT_REAL(mkstemps64, int (*)(char*, int));
+    if (fn == NULL) return mkstemps(template_path, suffix_length);
+
+    char physical_buffer[REDIR_BUF_SIZE];
+    const char* physical = NULL;
+    size_t logical_marker = 0;
+    if (prepare_redirected_temp_template(
+            template_path, suffix_length, physical_buffer, sizeof(physical_buffer),
+            &physical, &logical_marker
+        ) != 0) return -1;
+
+    int result = fn((char*)physical, suffix_length);
+    int operation_errno = result == -1 ? errno : 0;
+    if (result != -1) {
+        copy_generated_temp_marker_back(
+            template_path, logical_marker, physical, suffix_length
+        );
+    }
+    debug_temp_template("mkstemps64", template_path, physical, result, operation_errno);
+    if (result == -1) errno = operation_errno;
+    return result;
+}
+
+int mkostemps64(char* template_path, int suffix_length, int flags) {
+    int (*fn)(char*, int, int) =
+        OPT_REAL(mkostemps64, int (*)(char*, int, int));
+    if (fn == NULL) return mkostemps(template_path, suffix_length, flags);
+
+    char physical_buffer[REDIR_BUF_SIZE];
+    const char* physical = NULL;
+    size_t logical_marker = 0;
+    if (prepare_redirected_temp_template(
+            template_path, suffix_length, physical_buffer, sizeof(physical_buffer),
+            &physical, &logical_marker
+        ) != 0) return -1;
+
+    int result = fn((char*)physical, suffix_length, flags);
+    int operation_errno = result == -1 ? errno : 0;
+    if (result != -1) {
+        copy_generated_temp_marker_back(
+            template_path, logical_marker, physical, suffix_length
+        );
+    }
+    debug_temp_template("mkostemps64", template_path, physical, result, operation_errno);
+    if (result == -1) errno = operation_errno;
+    return result;
+}
+
+/* ------------------------------------------------------------------------- */
 /* General wrappers                                                           */
 /* ------------------------------------------------------------------------- */
 
@@ -1562,6 +1913,108 @@ int openat64(int dirfd, const char* pathname, int flags, ...) {
         return fn(dirfd, path, flags, mode);
     }
     return fn(dirfd, path, flags);
+}
+
+
+/*
+ * glibc fortify redirects open/openat calls with no mode argument to these
+ * entry points. libstdc++'s std::filesystem directory iterator can therefore
+ * reach __openat_2 directly and bypass the public openat() interposer.
+ */
+int __open_2(const char* pathname, int flags) {
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(
+        pathname,
+        path_buffer,
+        sizeof(path_buffer)
+    );
+    if (path == NULL) return -1;
+
+    debug_redirect("__open_2", pathname, path);
+
+    int (*fn)(const char*, int) =
+        OPT_REAL(__open_2, int (*)(const char*, int));
+    if (fn != NULL) {
+        return fn(path, flags);
+    }
+
+    int (*fallback)(const char*, int, ...) =
+        REAL(open, int (*)(const char*, int, ...));
+    return fallback(path, flags);
+}
+
+int __open64_2(const char* pathname, int flags) {
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_path(
+        pathname,
+        path_buffer,
+        sizeof(path_buffer)
+    );
+    if (path == NULL) return -1;
+
+    debug_redirect("__open64_2", pathname, path);
+
+    int (*fn)(const char*, int) =
+        OPT_REAL(__open64_2, int (*)(const char*, int));
+    if (fn != NULL) {
+        return fn(path, flags);
+    }
+
+    int (*fallback)(const char*, int, ...) =
+        OPT_REAL(open64, int (*)(const char*, int, ...));
+    if (fallback == NULL) {
+        fallback = REAL(open, int (*)(const char*, int, ...));
+    }
+    return fallback(path, flags);
+}
+
+int __openat_2(int dirfd, const char* pathname, int flags) {
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(
+        dirfd,
+        pathname,
+        path_buffer,
+        sizeof(path_buffer)
+    );
+    if (path == NULL) return -1;
+
+    debug_redirect("__openat_2", pathname, path);
+
+    int (*fn)(int, const char*, int) =
+        OPT_REAL(__openat_2, int (*)(int, const char*, int));
+    if (fn != NULL) {
+        return fn(dirfd, path, flags);
+    }
+
+    int (*fallback)(int, const char*, int, ...) =
+        REAL(openat, int (*)(int, const char*, int, ...));
+    return fallback(dirfd, path, flags);
+}
+
+int __openat64_2(int dirfd, const char* pathname, int flags) {
+    char path_buffer[REDIR_BUF_SIZE];
+    const char* path = redirect_at_path(
+        dirfd,
+        pathname,
+        path_buffer,
+        sizeof(path_buffer)
+    );
+    if (path == NULL) return -1;
+
+    debug_redirect("__openat64_2", pathname, path);
+
+    int (*fn)(int, const char*, int) =
+        OPT_REAL(__openat64_2, int (*)(int, const char*, int));
+    if (fn != NULL) {
+        return fn(dirfd, path, flags);
+    }
+
+    int (*fallback)(int, const char*, int, ...) =
+        OPT_REAL(openat64, int (*)(int, const char*, int, ...));
+    if (fallback == NULL) {
+        fallback = REAL(openat, int (*)(int, const char*, int, ...));
+    }
+    return fallback(dirfd, path, flags);
 }
 
 int creat(const char* pathname, mode_t mode) {

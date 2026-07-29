@@ -272,6 +272,7 @@ Cosmic IDE's toolchain environment and these additional variables:
 | `COSMIC_PROJECT_ROOT` | Absolute path of the open project root           |
 | `COSMIC_FILE`         | Absolute path of the file that triggered startup |
 | `BASH_ENV`            | Cosmic's non-interactive Bash environment file   |
+| `APP_FILES_DIR`       | Cosmic's app-private Arch runtime root           |
 
 The server must speak LSP over stdin/stdout and must remain attached to the shell process. For a
 multi-step script, use `exec` for the final server command so closing the editor connection also
@@ -405,9 +406,9 @@ thread. Check `CommandResult.exitCode` and treat non-zero exit as failure. Comma
 selected JDK, glibc runtime, and app-private Arch tool paths.
 
 Long-lived tools such as language servers use `IdeServices.TOOL_PROCESS`. Its
-`ToolProcessService.start` method returns a live `Process` with the same environment. LSP plugins
-must request separate stderr, drain it away from the protocol stream, and close all three streams
-when the connection stops.
+`ToolProcessService.start` method returns a live `Process` with the same environment and forces
+`APP_FILES_DIR` to Cosmic's app-private Arch runtime root. LSP plugins must request separate stderr,
+drain it away from the protocol stream, and close all three streams when the connection stops.
 
 Plugin environment installation must use `CosmicPlugin.setupActions`. Cosmic turns each
 `PluginSetupAction` into a PTY-backed terminal handoff from the marketplace. Setup command strings

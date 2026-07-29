@@ -163,7 +163,8 @@ class CustomLspServerProvider(
                         environmentOverrides = mapOf(
                             "COSMIC_PROJECT_ROOT" to request.project.root.absolutePath,
                             "COSMIC_FILE" to request.file.absolutePath,
-                            "BASH_ENV" to context.filesDir.resolve("arch/home.bashrc").absolutePath
+                            "BASH_ENV" to context.filesDir.resolve("arch/home.bashrc").absolutePath,
+                            "APP_FILES_DIR" to context.filesDir.resolve("arch").absolutePath
                         )
                     ).also { streamStderr(configuration.name, it.errorStream) }
                 }

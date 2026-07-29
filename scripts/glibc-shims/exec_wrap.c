@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <pthread.h>
 #include <spawn.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -16,6 +17,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #ifndef PATH_MAX
@@ -73,6 +75,13 @@ typedef enum {
     KIND_SCRIPT = 2
 } exec_target_kind_t;
 
+typedef struct {
+    char line[4096];
+    char interpreter[PATH_MAX];
+    char argument[PATH_MAX];
+    int has_argument;
+} shebang_info_t;
+
 static void* lookup_next_symbol(const char* name) {
     dlerror();
     return dlsym(RTLD_NEXT, name);
@@ -105,6 +114,7 @@ DECLARE_REAL_SYMBOL(execvp)
 DECLARE_REAL_SYMBOL(execvpe)
 DECLARE_REAL_SYMBOL(posix_spawn)
 DECLARE_REAL_SYMBOL(posix_spawnp)
+DECLARE_REAL_SYMBOL(pclose)
 
 static __thread int wrapping_now = 0;
 
@@ -387,14 +397,91 @@ static int shebang_uses_shell(const char* line) {
     return 0;
 }
 
-static int is_shell_script_file(const char* path) {
-    unsigned char buffer[512];
+/*
+ * Parse the kernel-style shebang prefix.
+ *
+ * Linux passes at most one optional shebang argument to the interpreter. Keep
+ * the complete remainder of the first line as that single argument so forms
+ * such as `#!/usr/bin/env -S lua -E` retain their intended semantics.
+ *
+ * Returns:
+ *   1  valid shebang
+ *   0  not a script
+ *  -1  malformed or too long
+ */
+static int read_script_shebang(const char* path, shebang_info_t* out) {
+    if (!path || !*path || !out) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    memset(out, 0, sizeof(*out));
+
+    unsigned char buffer[sizeof(out->line)];
     ssize_t n = 0;
-    if (read_file_prefix(path, buffer, sizeof(buffer) - 1, &n) != 0) return 0;
-    if (n < 2 || buffer[0] != '#' || buffer[1] != '!') return 0;
+    if (read_file_prefix(path, buffer, sizeof(buffer) - 1, &n) != 0) {
+        return -1;
+    }
+
+    if (n < 2 || buffer[0] != '#' || buffer[1] != '!') {
+        return 0;
+    }
 
     buffer[n] = '\0';
-    return shebang_uses_shell((const char*) buffer);
+
+    char* line_end = strpbrk((char*)buffer, "\r\n");
+    if (line_end) *line_end = '\0';
+
+    size_t line_length = strlen((const char*)buffer);
+    if (line_length >= sizeof(out->line)) {
+        errno = ENAMETOOLONG;
+        return -1;
+    }
+    memcpy(out->line, buffer, line_length + 1);
+
+    const char* cursor = out->line + 2;
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+
+    if (*cursor == '\0') {
+        errno = ENOEXEC;
+        return -1;
+    }
+
+    const char* interpreter_start = cursor;
+    while (*cursor && *cursor != ' ' && *cursor != '\t') cursor++;
+
+    size_t interpreter_length = (size_t)(cursor - interpreter_start);
+    if (interpreter_length == 0 ||
+        interpreter_length >= sizeof(out->interpreter)) {
+        errno = interpreter_length == 0 ? ENOEXEC : ENAMETOOLONG;
+        return -1;
+    }
+
+    memcpy(out->interpreter, interpreter_start, interpreter_length);
+    out->interpreter[interpreter_length] = '\0';
+
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+
+    const char* argument_start = cursor;
+    const char* argument_end = argument_start + strlen(argument_start);
+    while (argument_end > argument_start &&
+           (argument_end[-1] == ' ' || argument_end[-1] == '\t')) {
+        argument_end--;
+    }
+
+    size_t argument_length = (size_t)(argument_end - argument_start);
+    if (argument_length > 0) {
+        if (argument_length >= sizeof(out->argument)) {
+            errno = ENAMETOOLONG;
+            return -1;
+        }
+
+        memcpy(out->argument, argument_start, argument_length);
+        out->argument[argument_length] = '\0';
+        out->has_argument = 1;
+    }
+
+    return 1;
 }
 
 static char* duplicate_string(const char* value) {
@@ -991,6 +1078,58 @@ static char* resolve_script_shell(char* const envp[]) {
     return NULL;
 }
 
+
+static char* resolve_script_interpreter(
+    const shebang_info_t* shebang,
+    char* const envp[]
+) {
+    if (!shebang || !shebang->interpreter[0]) {
+        errno = ENOEXEC;
+        return NULL;
+    }
+
+    char* resolved = NULL;
+
+    if (shebang->interpreter[0] == '/') {
+        resolved = redirect_virtual_exec_path(shebang->interpreter, envp);
+    } else if (path_has_slash(shebang->interpreter)) {
+        resolved = absolute_canonical_path(shebang->interpreter);
+    } else {
+        resolved = resolve_from_path(shebang->interpreter, envp);
+        if (resolved) {
+            char* redirected = redirect_virtual_exec_path(resolved, envp);
+            free(resolved);
+            resolved = redirected;
+        }
+    }
+
+    if (!resolved) {
+        tracef(
+            "script interpreter cannot be resolved: %s",
+            shebang->interpreter
+        );
+        return NULL;
+    }
+
+    if (!is_readable_dynamic_elf_file(resolved)) {
+        tracef(
+            "script interpreter is not a readable dynamic ELF: %s -> %s",
+            shebang->interpreter,
+            resolved
+        );
+        free(resolved);
+        errno = ENOEXEC;
+        return NULL;
+    }
+
+    tracef(
+        "script interpreter %s -> %s",
+        shebang->interpreter,
+        resolved
+    );
+    return resolved;
+}
+
 static int should_skip_common(const char* target_path, const char* ld_linux) {
     if (!target_path || !*target_path) return 1;
     if (same_path_string(target_path, ld_linux)) return 1;
@@ -1053,6 +1192,7 @@ static int build_wrapped_argv(
     const char* library_path,
     const char* preload,
     const char* program_path,
+    const char* script_argument,
     const char* script_path,
     char* const original_argv[],
     const char* java_tmpdir,
@@ -1080,7 +1220,8 @@ static int build_wrapped_argv(
     total += 2;                    /* --library-path <path> */
     if (has_preload) total += 2;    /* --preload <libs> */
     total += 1;                    /* program path */
-    if (script_path) total += 1;    /* script path passed to shell */
+    if (script_argument) total += 1; /* optional shebang argument */
+    if (script_path) total += 1;    /* script path passed to interpreter */
     if (inject_java_tmpdir) total += 1;
     total += original_count > 0 ? original_count - 1 : 0;
 
@@ -1107,6 +1248,10 @@ static int build_wrapped_argv(
     }
 
     argv[index++] = duplicate_string(program_path);
+
+    if (script_argument) {
+        argv[index++] = duplicate_string(script_argument);
+    }
 
     if (script_path) {
         argv[index++] = duplicate_string(script_path);
@@ -1304,7 +1449,10 @@ static int prepare_wrap(
 
     exec_target_kind_t kind = KIND_NONE;
     char* program_path = NULL;
+    const char* script_argument = NULL;
     const char* script_path = NULL;
+    shebang_info_t shebang;
+    memset(&shebang, 0, sizeof(shebang));
 
     if (is_probably_elf_file(resolved)) {
         int has_interpreter = elf_has_program_interpreter(resolved);
@@ -1331,11 +1479,36 @@ static int prepare_wrap(
     }
 
 #if EXEC_WRAP_ENABLE_SCRIPT_WRAP
-    if (kind == KIND_NONE && is_shell_script_file(resolved)) {
-        program_path = resolve_script_shell(envp);
-        if (program_path) {
-            kind = KIND_SCRIPT;
-            script_path = resolved;
+    if (kind == KIND_NONE) {
+        int shebang_result = read_script_shebang(resolved, &shebang);
+
+        if (shebang_result == 1) {
+            /*
+             * Preserve the old shell-specialization behavior. It deliberately
+             * replaces /system/bin/sh and similar Android interpreters with a
+             * compatible glibc shell.
+             */
+            if (shebang_uses_shell(shebang.line)) {
+                program_path = resolve_script_shell(envp);
+            } else {
+                program_path = resolve_script_interpreter(&shebang, envp);
+                if (program_path && shebang.has_argument) {
+                    script_argument = shebang.argument;
+                }
+            }
+
+            if (program_path) {
+                kind = KIND_SCRIPT;
+                script_path = resolved;
+            }
+        } else if (shebang_result < 0) {
+            tracef(
+                "skip malformed script %s -> %s: errno=%d (%s)",
+                requested_path,
+                resolved,
+                errno,
+                strerror(errno)
+            );
         }
     }
 #endif
@@ -1373,6 +1546,7 @@ static int prepare_wrap(
             library_path,
             preload,
             executable_identity,
+            script_argument,
             script_path,
             argv,
             java_tmpdir,
@@ -1406,10 +1580,12 @@ static int prepare_wrap(
 
     if (kind == KIND_SCRIPT) {
         tracef(
-            "wrap script %s -> %s via shell %s and linker %s; identity=%s",
+            "wrap script %s -> %s via interpreter %s%s%s and linker %s; identity=%s",
             requested_path,
             resolved,
             program_path,
+            script_argument ? " with argument " : "",
+            script_argument ? script_argument : "",
             ld_linux,
             executable_identity
         );
@@ -1744,4 +1920,305 @@ int posix_spawnp(
 
     cleanup_prepare(resolved, &wrapped_argv, &wrapped_env);
     return rc;
+}
+
+
+/*
+ * glibc's popen() and system() call the hidden libc symbol __posix_spawn
+ * directly with /bin/sh. Hidden intra-libc calls cannot be interposed through
+ * LD_PRELOAD, so virtual /bin paths never reach the exec/spawn wrappers above.
+ *
+ * Implement these public entry points here and deliberately call this file's
+ * posix_spawn() wrapper. That gives /bin/sh the same virtual-root and custom
+ * ld-linux treatment as every other executable.
+ */
+typedef struct popen_child_entry {
+    FILE* stream;
+    pid_t pid;
+    int fd;
+    struct popen_child_entry* next;
+} popen_child_entry_t;
+
+static pthread_mutex_t popen_children_lock = PTHREAD_MUTEX_INITIALIZER;
+static popen_child_entry_t* popen_children = NULL;
+
+static int parse_popen_mode(
+    const char* mode,
+    int* reading_out,
+    int* cloexec_out
+) {
+    if (!mode || !*mode || !reading_out || !cloexec_out) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    int reading = 0;
+    int writing = 0;
+    int cloexec = 0;
+
+    for (const char* p = mode; *p; p++) {
+        switch (*p) {
+            case 'r':
+                if (reading) {
+                    errno = EINVAL;
+                    return -1;
+                }
+                reading = 1;
+                break;
+            case 'w':
+                if (writing) {
+                    errno = EINVAL;
+                    return -1;
+                }
+                writing = 1;
+                break;
+            case 'e':
+                cloexec = 1;
+                break;
+            default:
+                errno = EINVAL;
+                return -1;
+        }
+    }
+
+    if (reading == writing) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    *reading_out = reading;
+    *cloexec_out = cloexec;
+    return 0;
+}
+
+static int add_existing_popen_closes(
+    posix_spawn_file_actions_t* actions,
+    int preserved_fd
+) {
+    for (popen_child_entry_t* entry = popen_children;
+         entry;
+         entry = entry->next) {
+        if (entry->fd == preserved_fd) continue;
+
+        int rc = posix_spawn_file_actions_addclose(actions, entry->fd);
+        if (rc != 0 && rc != EBADF) return rc;
+    }
+
+    return 0;
+}
+
+static int register_popen_child(FILE* stream, pid_t pid, int fd) {
+    popen_child_entry_t* entry = calloc(1, sizeof(*entry));
+    if (!entry) {
+        errno = ENOMEM;
+        return -1;
+    }
+
+    entry->stream = stream;
+    entry->pid = pid;
+    entry->fd = fd;
+
+    pthread_mutex_lock(&popen_children_lock);
+    entry->next = popen_children;
+    popen_children = entry;
+    pthread_mutex_unlock(&popen_children_lock);
+    return 0;
+}
+
+static popen_child_entry_t* take_popen_child(FILE* stream) {
+    pthread_mutex_lock(&popen_children_lock);
+
+    popen_child_entry_t** cursor = &popen_children;
+    while (*cursor) {
+        if ((*cursor)->stream == stream) {
+            popen_child_entry_t* found = *cursor;
+            *cursor = found->next;
+            found->next = NULL;
+            pthread_mutex_unlock(&popen_children_lock);
+            return found;
+        }
+        cursor = &(*cursor)->next;
+    }
+
+    pthread_mutex_unlock(&popen_children_lock);
+    return NULL;
+}
+
+FILE* popen(const char* command, const char* mode) {
+    if (!command) {
+        errno = EINVAL;
+        return NULL;
+    }
+
+    int reading = 0;
+    int keep_cloexec = 0;
+    if (parse_popen_mode(mode, &reading, &keep_cloexec) != 0) {
+        return NULL;
+    }
+
+    int pipe_fds[2];
+    if (pipe2(pipe_fds, O_CLOEXEC) != 0) {
+        return NULL;
+    }
+
+    const int parent_end = reading ? pipe_fds[0] : pipe_fds[1];
+    const int child_end = reading ? pipe_fds[1] : pipe_fds[0];
+    const int child_target = reading ? STDOUT_FILENO : STDIN_FILENO;
+
+    posix_spawn_file_actions_t actions;
+    int rc = posix_spawn_file_actions_init(&actions);
+    if (rc != 0) {
+        close(pipe_fds[0]);
+        close(pipe_fds[1]);
+        errno = rc;
+        return NULL;
+    }
+
+    rc = posix_spawn_file_actions_adddup2(&actions, child_end, child_target);
+    if (rc == 0) {
+        rc = posix_spawn_file_actions_addclose(&actions, parent_end);
+    }
+    if (rc == 0 && child_end != child_target) {
+        rc = posix_spawn_file_actions_addclose(&actions, child_end);
+    }
+
+    pid_t pid = -1;
+    if (rc == 0) {
+        /*
+         * Keep the registry stable while the close actions are copied and the
+         * child is spawned, matching the no-leaked-popen-stream requirement.
+         */
+        pthread_mutex_lock(&popen_children_lock);
+        rc = add_existing_popen_closes(&actions, child_target);
+        if (rc == 0) {
+            char* const shell_argv[] = {
+                (char*)"sh",
+                (char*)"-c",
+                (char*)"--",
+                (char*)command,
+                NULL
+            };
+
+            rc = posix_spawn(
+                &pid,
+                "/bin/sh",
+                &actions,
+                NULL,
+                shell_argv,
+                environ
+            );
+        }
+        pthread_mutex_unlock(&popen_children_lock);
+    }
+
+    posix_spawn_file_actions_destroy(&actions);
+    close(child_end);
+
+    if (rc != 0) {
+        close(parent_end);
+        errno = rc;
+        tracef("popen failed command=%s errno=%d (%s)", command, rc, strerror(rc));
+        return NULL;
+    }
+
+    if (!keep_cloexec) {
+        int flags = fcntl(parent_end, F_GETFD);
+        if (flags == -1 || fcntl(parent_end, F_SETFD, flags & ~FD_CLOEXEC) == -1) {
+            int saved_errno = errno;
+            close(parent_end);
+            (void)waitpid(pid, NULL, 0);
+            errno = saved_errno;
+            return NULL;
+        }
+    }
+
+    FILE* stream = fdopen(parent_end, reading ? "r" : "w");
+    if (!stream) {
+        int saved_errno = errno;
+        close(parent_end);
+        (void)waitpid(pid, NULL, 0);
+        errno = saved_errno;
+        return NULL;
+    }
+
+    if (register_popen_child(stream, pid, parent_end) != 0) {
+        int saved_errno = errno;
+        fclose(stream);
+        (void)waitpid(pid, NULL, 0);
+        errno = saved_errno;
+        return NULL;
+    }
+
+    tracef("popen command via wrapped /bin/sh: pid=%ld command=%s", (long)pid, command);
+    return stream;
+}
+
+int pclose(FILE* stream) {
+    popen_child_entry_t* entry = take_popen_child(stream);
+    if (!entry) {
+        int (*real_pclose)(FILE*) = REAL(pclose, int (*)(FILE*));
+        return real_pclose(stream);
+    }
+
+    pid_t pid = entry->pid;
+    free(entry);
+
+    int close_rc = fclose(stream);
+    int close_errno = errno;
+
+    int status = 0;
+    pid_t waited;
+    do {
+        waited = waitpid(pid, &status, 0);
+    } while (waited == -1 && errno == EINTR);
+
+    if (waited == -1) return -1;
+    if (close_rc != 0) {
+        errno = close_errno;
+        return -1;
+    }
+
+    return status;
+}
+
+int system(const char* command) {
+    if (!command) {
+        char* shell = redirect_virtual_exec_path("/bin/sh", environ);
+        if (!shell) return 0;
+        int available = is_readable_dynamic_elf_file(shell);
+        free(shell);
+        return available ? 1 : 0;
+    }
+
+    char* const shell_argv[] = {
+        (char*)"sh",
+        (char*)"-c",
+        (char*)"--",
+        (char*)command,
+        NULL
+    };
+
+    pid_t pid = -1;
+    int rc = posix_spawn(
+        &pid,
+        "/bin/sh",
+        NULL,
+        NULL,
+        shell_argv,
+        environ
+    );
+    if (rc != 0) {
+        errno = rc;
+        tracef("system failed command=%s errno=%d (%s)", command, rc, strerror(rc));
+        return -1;
+    }
+
+    int status = 0;
+    pid_t waited;
+    do {
+        waited = waitpid(pid, &status, 0);
+    } while (waited == -1 && errno == EINTR);
+
+    if (waited == -1) return -1;
+    return status;
 }

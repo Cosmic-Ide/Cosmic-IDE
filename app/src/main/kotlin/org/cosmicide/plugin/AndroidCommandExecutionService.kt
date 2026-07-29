@@ -96,11 +96,14 @@ internal class AndroidCommandExecutionService(context: Context) :
             args = request.arguments,
             workingDir = request.workingDirectory,
             redirectErrorStream = redirectErrorStream,
-            environmentOverrides = request.environment
+            environmentOverrides = request.environment + mapOf(
+                APP_FILES_DIR_ENV to appContext.filesDir.resolve("arch").absolutePath
+            )
         )
     }
 
     private companion object {
+        const val APP_FILES_DIR_ENV = "APP_FILES_DIR"
         const val MAX_CAPTURED_OUTPUT_CHARS = 64_000
         const val CANCELLATION_POLL_MILLIS = 50L
     }

@@ -312,7 +312,6 @@ internal fun gitProgress(chunk: String): Float? {
 
 private fun detectLanguage(root: File): Language = when {
     hasSourceDirectory(root, "java") -> Language.Java
-    hasSourceDirectory(root, "scala") -> Language.Scala
     else -> Language.Kotlin
 }
 

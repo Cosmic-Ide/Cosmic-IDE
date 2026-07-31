@@ -30,15 +30,6 @@ internal data class NewProjectFormState(
         testFramework = defaultTestFramework(language)
     )
 
-    fun toCreationRequest(validation: NewProjectFormValidation) =
-        GradleProjectCreationRequest(
-            language = language,
-            name = validation.normalizedName,
-            packageName = validation.normalizedPackageName,
-            dslType = dslType,
-            splitProject = splitProject,
-            testFramework = testFramework
-        )
 }
 
 internal fun testFrameworksFor(language: Language): List<TestFramework> = when (language) {

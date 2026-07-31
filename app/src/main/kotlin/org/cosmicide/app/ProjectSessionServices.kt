@@ -4,12 +4,12 @@ import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
 import org.cosmicide.project.ProjectExtensionPoints
-import org.cosmicide.tooling.ToolingServerManager
+import org.cosmicide.project.ProjectTaskProvider
 
 internal interface ProjectSessionServices {
     fun commands(project: Project): List<ProjectCommand>
 
-    fun stopTooling()
+    fun taskProviders(project: Project): List<ProjectTaskProvider>
 }
 
 internal object DefaultProjectSessionServices : ProjectSessionServices {
@@ -17,7 +17,10 @@ internal object DefaultProjectSessionServices : ProjectSessionServices {
         .enabledExtensions(ProjectExtensionPoints.COMMAND_PROVIDER)
         .flatMap { provider -> provider.commands(project) }
 
-    override fun stopTooling() {
-        ToolingServerManager.stopCurrent()
-    }
+    override fun taskProviders(project: Project): List<ProjectTaskProvider> = CosmicPluginHost
+        .enabledExtensions(ProjectExtensionPoints.TASK_PROVIDER)
+        .filter { provider ->
+            runCatching { provider.supports(project) }.getOrDefault(false)
+        }
+
 }

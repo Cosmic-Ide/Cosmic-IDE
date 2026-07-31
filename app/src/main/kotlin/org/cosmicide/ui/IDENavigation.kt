@@ -12,7 +12,6 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import org.cosmicide.app.LocalAppContainer
-import org.cosmicide.ui.compile.GradleTaskScreen
 import org.cosmicide.ui.editor.EditorScreen
 import org.cosmicide.ui.home.HomeScreen
 import org.cosmicide.ui.project.NewProjectScreen
@@ -26,6 +25,20 @@ import org.cosmicide.ui.settings.SettingsScreen
 import org.cosmicide.ui.terminal.TerminalScreen
 import org.cosmicide.util.ResourceUtil
 import java.io.File
+
+/**
+ * Prepares a command to run in an interactive bash shell and then exit.
+ * Uses double quotes to wrap the command, allowing bash features like process substitution to work.
+ */
+private fun commandWithExit(command: String): String {
+    // Escape characters that need escaping in double quotes: backslash, double quote, dollar, backtick
+    val escaped = command
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("$", "\\$")
+        .replace("`", "\\`")
+    return "bash -i -c \"$escaped && exit\""
+}
 
 @Composable
 fun IDENavigation() {
@@ -47,13 +60,11 @@ fun IDENavigation() {
 
     LaunchedEffect(hasProjectSession) {
         if (!hasProjectSession) {
-            projectSessionServices.stopTooling()
         }
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            projectSessionServices.stopTooling()
         }
     }
 
@@ -82,7 +93,6 @@ fun IDENavigation() {
                     onNavigateToEditor = { project ->
                         backStack.add(Editor(project))
                     },
-                    onNavigateToNewProject = { backStack.add(NewProject) },
                     onNavigateToSettings = { backStack.add(Settings) })
             }
 
@@ -96,12 +106,6 @@ fun IDENavigation() {
                 }, onBack = {
                     if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
                 })
-            }
-
-            is GradleTask -> NavEntry(key) {
-                GradleTaskScreen(project = key.project, task = key.task, onNavigateBack = {
-                    if (backStack.size > 1) backStack.removeLastOrNull()
-                }, onTaskSuccess = {})
             }
 
             is Settings -> NavEntry(key) {
@@ -126,7 +130,7 @@ fun IDENavigation() {
                             onRunSetupInTerminal = { command ->
                                 backStack.add(
                                     TerminalSession(
-                                        command = command,
+                                        command = commandWithExit(command),
                                         workingDirectory = context.filesDir.absolutePath
                                     )
                                 )

@@ -38,11 +38,6 @@ object ResourceUtil {
         }
     }
 
-    fun isMetalsMissing(): Boolean {
-        val context = App.instance.get() ?: return true
-        return !context.filesDir.resolve("scala/bin/metals").isFile
-    }
-
     fun isGradleGroovyLspMissing(): Boolean {
         val context = App.instance.get() ?: return true
         return !context.filesDir
@@ -59,8 +54,7 @@ object ResourceUtil {
 
     fun isLanguageServerSetupIncomplete(): Boolean {
         return isKotlinLspMissing() ||
-                isJdtlsMissing() ||
-                isMetalsMissing()
+                isJdtlsMissing()
 //                isGradleGroovyLspMissing()
     }
 

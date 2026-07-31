@@ -9,7 +9,6 @@ package org.cosmicide
 
 import android.app.Application
 import android.os.Build
-import android.util.Log
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
@@ -32,7 +31,6 @@ import org.cosmicide.editor.lsp.handleLspShowDocument
 import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.plugin.runtime.hook.Hook
 import org.cosmicide.plugin.runtime.hook.HookManager
-import org.cosmicide.tooling.ToolingServerManager
 import org.cosmicide.util.FileUtil
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams
 import org.eclipse.lsp4j.ClientCapabilities
@@ -130,17 +128,9 @@ class App : Application() {
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
         applyLSP4JHooks()
 
-        try {
-            Runtime.getRuntime().addShutdownHook(Thread({
-                ToolingServerManager.stopCurrent()
-            }, "cosmic-tooling-shutdown"))
-        } catch (e: Exception) {
-            Log.w("App", "Failed to register tooling shutdown hook", e)
-        }
     }
 
     override fun onTerminate() {
-        ToolingServerManager.stopCurrent()
         super.onTerminate()
     }
 

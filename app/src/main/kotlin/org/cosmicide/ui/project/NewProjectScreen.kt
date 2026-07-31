@@ -48,7 +48,6 @@ fun NewProjectScreen(
     val formScrollState = rememberScrollState()
     val creationLogScrollState = rememberScrollState()
     val projectsDirectory = container.projectsDirectory
-    val projectCreator = container.gradleProjectCreator
 
     var formState by remember { mutableStateOf(NewProjectFormState()) }
     var isCreating by remember { mutableStateOf(false) }
@@ -65,23 +64,9 @@ fun NewProjectScreen(
     fun createProject() {
         if (!validation.isValid || isCreating) return
 
-        val request = formState.toCreationRequest(validation)
         isCreating = true
-        creationLog = "Preparing ${request.language.name} project...\n"
         scope.launch {
-            projectCreator.create(request, ::appendCreationLog).fold(
-                onSuccess = { project ->
-                    isCreating = false
-                    viewModel.loadProjects()
-                    onNavigateToEditor(project)
-                },
-                onFailure = { error ->
-                    isCreating = false
-                    snackbarHostState.showSnackbar(
-                        error.message ?: "Gradle could not create the project"
-                    )
-                }
-            )
+
         }
     }
 

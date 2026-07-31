@@ -19,12 +19,6 @@
       "languageConfiguration": "textmate/smali/language-configuration.json"
     },
     {
-      "grammar": "textmate/scala/scala.tmLanguage.json",
-      "name": "scala",
-      "scopeName": "source.scala",
-      "languageConfiguration": "textmate/scala/language-configuration.json"
-    },
-    {
       "grammar": "textmate/groovy/groovy.tmLanguage.json",
       "name": "groovy",
       "scopeName": "source.groovy",

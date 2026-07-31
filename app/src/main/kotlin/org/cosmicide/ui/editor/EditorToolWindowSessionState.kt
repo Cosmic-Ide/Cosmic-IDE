@@ -7,30 +7,8 @@ internal data class EditorToolWindowSessionState(
     val projectSyncRunId: Int = 0,
     val projectSyncStatus: String = "Running"
 ) {
-    fun openGradleTask(task: String): EditorToolWindowSessionState {
-        val existing = buildSessions.firstOrNull { session ->
-            session.command == null && session.task == task
-        }
-        if (existing != null) {
-            return copy(
-                selectedTabId = existing.tabId,
-                buildSessions = buildSessions.map { session ->
-                    if (session.id == existing.id) {
-                        session.copy(runId = session.runId + 1, status = "Running")
-                    } else {
-                        session
-                    }
-                }
-            )
-        }
-
-        val session = EditorBuildSession(id = nextBuildSessionId + 1, task = task)
-        return copy(
-            selectedTabId = session.tabId,
-            buildSessions = buildSessions + session,
-            nextBuildSessionId = session.id
-        )
-    }
+    val isProjectSyncInProgress: Boolean
+        get() = projectSyncStatus == "Running" || projectSyncStatus == "Stopping"
 
     fun openTerminal(
         title: String,

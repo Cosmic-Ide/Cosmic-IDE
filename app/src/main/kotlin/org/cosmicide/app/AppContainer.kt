@@ -14,8 +14,6 @@ import org.cosmicide.ui.home.AndroidHomeProjectArchiveRepository
 import org.cosmicide.ui.home.HomeExtensionRepository
 import org.cosmicide.ui.home.HomeProjectArchiveRepository
 import org.cosmicide.ui.home.PluginHomeExtensionRepository
-import org.cosmicide.ui.project.AndroidGradleProjectCreator
-import org.cosmicide.ui.project.GradleProjectCreator
 import org.cosmicide.ui.settings.extensions.AndroidExtensionsSettingsRepository
 import org.cosmicide.ui.settings.extensions.ExtensionsSettingsRepository
 import org.cosmicide.util.FileUtil
@@ -43,8 +41,6 @@ internal class AppContainer(context: Context) {
     val homeExtensionRepository: HomeExtensionRepository = PluginHomeExtensionRepository
     val extensionsSettingsRepository: ExtensionsSettingsRepository =
         AndroidExtensionsSettingsRepository(appContext)
-    val gradleProjectCreator: GradleProjectCreator =
-        AndroidGradleProjectCreator(appContext, projectsDirectory)
 }
 
 internal val LocalAppContainer = staticCompositionLocalOf<AppContainer> {

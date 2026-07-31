@@ -60,6 +60,8 @@ Project commands appear in the editor's **Project Commands** submenu. Providers 
 further nested submenus with `ProjectCommand.children`. Each leaf launch creates a resizable bottom
 PTY tab with status, rerun, close, normal terminal colors, interactive input, and Ctrl+C support.
 **Execution > Terminal** creates an interactive `bash -i` tab in the same panel.
+The PTY runner supplies login startup as well, so `.bash_profile` bridges to `.profile` and
+`.bashrc`.
 
 When `gradlew` exists, the fixed **Sync** tab remains owned by Gradle model synchronization. When it
 does not exist and a matching project type supplies Sync code, the fixed tab instead runs that code

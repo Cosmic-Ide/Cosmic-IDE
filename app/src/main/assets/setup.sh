@@ -12,7 +12,6 @@ COURSIER_URL="https://github.com/coursier/coursier/releases/download/v2.1.25-M26
 CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip"
 VSCODE_GRADLE_URL="https://github.com/microsoft/vscode-gradle.git"
 
-SCALA_BIN="$FILES_DIR/scala/bin"
 VSCODE_GRADLE_DIR="$FILES_DIR/vscode-gradle"
 ARCH_DIR="$FILES_DIR/arch"
 
@@ -129,37 +128,6 @@ install_jdtls() {
     fi
 
     echo "Java language support installed."
-}
-
-install_scala_tools() {
-    mkdir -p "$SCALA_BIN"
-
-    local cs="$ARCH_DIR/usr/bin/cs"
-
-    if [[ ! -x "$cs" ]]; then
-        echo "Downloading Coursier..."
-
-        if ! command -v unpigz >/dev/null 2>&1; then
-            echo "Error: unpigz is unavailable. Update the Arch runtime to install pigz." >&2
-            return 1
-        fi
-        if ! curl -fL "$COURSIER_URL" | unpigz -c > "$cs.tmp"; then
-            rm -f "$cs.tmp"
-            echo "Error: failed to download or extract Coursier." >&2
-            return 1
-        fi
-        chmod +x "$cs.tmp"
-        mv "$cs.tmp" "$cs"
-    fi
-
-    echo "Installing the Scala toolchain with Coursier..."
-    cs setup --yes --install-dir "$SCALA_BIN"
-
-    echo "Installing Metals..."
-    cs install --install-dir "$SCALA_BIN" metals
-
-    [[ -x "$SCALA_BIN/metals" ]]
-    echo "Scala language support installed."
 }
 
 install_gradle_language_server() {
@@ -601,15 +569,6 @@ if ask_to_install "Kotlin language support"; then
     installed_any=true
 else
     echo "Skipping Kotlin language support."
-fi
-
-echo
-
-if ask_to_install "Scala language support"; then
-    install_scala_tools
-    installed_any=true
-else
-    echo "Skipping Scala language support."
 fi
 
 echo

@@ -91,3 +91,4 @@ lint/tmp/
 # gpkg
 gpkg-cache/
 glibc/
+/AGENTS.md

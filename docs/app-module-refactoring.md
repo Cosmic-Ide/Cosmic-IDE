@@ -36,7 +36,8 @@ application composition root. Each stage must remain buildable and preserve user
   global `ProjectHandler` has been removed.
 - The editor workspace coordinator has been separated from project-tree UI, toolbar/actions,
   dialogs, and editor-content/status rendering. Those implementations remain package-internal
-  while their state and filesystem responsibilities are extracted in subsequent stages.
+  while their state and filesystem responsibilities are extracted in subsequent stages. Each open
+  text tab now retains its own `CodeEditor` and LSP document session.
 - Project-tree create, rename, and delete operations now run through a root-confined filesystem
   service on the IO dispatcher. Tool-window build, terminal, and sync tab transitions are owned by
   a pure state reducer rather than being implemented inline in Compose.
@@ -49,9 +50,9 @@ application composition root. Each stage must remain buildable and preserve user
   `GradleProjectCreator`, while form validation and Gradle init argument construction are pure and
   tested.
 - `MainActivity` now creates one activity-scoped `AppContainer` and publishes it through Compose.
-  Home, New Project, Extensions settings, editor command discovery, and project-session cleanup
-  consume contracts from that container instead of constructing Android stores or reaching into
-  `FileUtil`, `CosmicPluginHost`, or `ToolingServerManager` from their Composables.
+  Home, New Project, Extensions settings, editor command/task discovery, and project-session
+  cleanup consume contracts from that container instead of constructing Android stores or reaching
+  into `FileUtil`, `CosmicPluginHost`, or `ToolingServerManager` from their Composables.
 - New Project is split into a route coordinator, immutable `NewProjectFormState`, form validation,
   form rendering, and the Gradle creator. Language changes choose a compatible test-framework
   default, and request conversion is pure and covered by unit tests.

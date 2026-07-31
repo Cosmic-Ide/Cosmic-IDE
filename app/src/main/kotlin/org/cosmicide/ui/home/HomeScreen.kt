@@ -4,35 +4,42 @@ import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FileUpload
-import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,9 +71,7 @@ import org.cosmicide.ui.plugin.ProjectCreationDialog
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
-    onNavigateToSettings: () -> Unit,
-    onNavigateToNewProject: () -> Unit,
-    onNavigateToEditor: (Project) -> Unit
+    onNavigateToSettings: () -> Unit, onNavigateToEditor: (Project) -> Unit
 ) {
     val context = LocalContext.current
     val container = LocalAppContainer.current
@@ -78,15 +83,35 @@ fun HomeScreen(
 
     var projectToDelete by remember { mutableStateOf<Project?>(null) }
     var projectToBackup by remember { mutableStateOf<Project?>(null) }
-    var showCreationMenu by remember { mutableStateOf(false) }
+    var showCreationProviders by remember { mutableStateOf(false) }
     var selectedCreationProvider by remember { mutableStateOf<ProjectCreationProvider?>(null) }
     var selectedProjectAction by remember { mutableStateOf<ProjectActionContribution?>(null) }
-    val creationProviders = remember { extensionRepository.creationProviders() }
-    val actionProviders = remember { extensionRepository.actionProviders() }
+    val creationProviders = remember(extensionRepository) {
+        extensionRepository.creationProviders()
+    }
+    val actionProviders = remember(extensionRepository) {
+        extensionRepository.actionProviders()
+    }
 
+    val creationProviderSheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.PartiallyExpanded, SheetValue.Expanded)
+    )
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    val openProjectCreation: () -> Unit = {
+        if (creationProviders.isEmpty()) {
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    "No installed plugin provides project creation"
+                )
+            }
+        } else {
+            showCreationProviders = true
+        }
+    }
 
     val backupLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/zip")
@@ -94,11 +119,9 @@ fun HomeScreen(
         val project = projectToBackup
         if (uri != null && project != null) {
             scope.launch {
-                runCatching { archiveRepository.backup(project, uri) }
-                    .onSuccess {
+                runCatching { archiveRepository.backup(project, uri) }.onSuccess {
                         snackbarHostState.showSnackbar("Project backed up successfully")
-                    }
-                    .onFailure { error ->
+                }.onFailure { error ->
                         snackbarHostState.showSnackbar(
                             error.message ?: "Project backup failed"
                         )
@@ -113,12 +136,10 @@ fun HomeScreen(
     ) { uri ->
         if (uri != null) {
             scope.launch {
-                runCatching { archiveRepository.importArchive(uri) }
-                    .onSuccess {
+                runCatching { archiveRepository.importArchive(uri) }.onSuccess {
                         viewModel.loadProjects()
                         snackbarHostState.showSnackbar("Project imported successfully")
-                    }
-                    .onFailure { error ->
+                }.onFailure { error ->
                         snackbarHostState.showSnackbar(
                             error.message ?: "Project import failed"
                         )
@@ -151,22 +172,17 @@ fun HomeScreen(
             .background(MaterialTheme.colorScheme.surfaceContainer),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Text(
-                        stringResource(R.string.projects),
-                        style = MaterialTheme.typography.headlineMediumEmphasized
-                    )
-                },
-                scrollBehavior = scrollBehavior,
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
-                    }
+            LargeTopAppBar(title = {
+                Text(
+                    stringResource(R.string.projects),
+                    style = MaterialTheme.typography.headlineMediumEmphasized
+                )
+            }, scrollBehavior = scrollBehavior, actions = {
+                IconButton(onClick = onNavigateToSettings) {
+                    Icon(Icons.Default.Settings, contentDescription = "Settings")
                 }
-            )
-        }
-    ) { contentPadding ->
+            })
+        }) { contentPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -174,7 +190,7 @@ fun HomeScreen(
                 .padding(contentPadding)
         ) {
             if (projects.isEmpty() && !isLoading) {
-                EmptyProjectsState(onCreateClick = onNavigateToNewProject)
+                EmptyProjectsState(onCreateClick = openProjectCreation)
             } else {
                 PullToRefreshBox(
                     isRefreshing = isLoading,
@@ -186,10 +202,7 @@ fun HomeScreen(
                             .fillMaxSize()
                             .nestedScroll(scrollBehavior.nestedScrollConnection),
                         contentPadding = PaddingValues(
-                            start = 24.dp,
-                            end = 24.dp,
-                            top = 16.dp,
-                            bottom = 112.dp
+                            start = 24.dp, end = 24.dp, top = 16.dp, bottom = 112.dp
                         ),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
@@ -207,8 +220,7 @@ fun HomeScreen(
                                     projectToBackup = project
                                     backupLauncher.launch("${project.name}.zip")
                                 },
-                                onDelete = { projectToDelete = project }
-                            )
+                                onDelete = { projectToDelete = project })
                         }
                     }
                 }
@@ -222,41 +234,13 @@ fun HomeScreen(
                     .padding(bottom = 24.dp),
                 floatingActionButton = {
                     FloatingToolbarDefaults.StandardFloatingActionButton(
-                        onClick = onNavigateToNewProject,
-                        shape = MaterialTheme.shapes.large
+                        onClick = openProjectCreation, shape = MaterialTheme.shapes.large
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "New Project"
+                            imageVector = Icons.Default.Add, contentDescription = "New Project"
                         )
                     }
-                }
-            ) {
-                if (creationProviders.isNotEmpty()) {
-                    Box {
-                        IconButton(onClick = { showCreationMenu = true }) {
-                            Icon(
-                                imageVector = Icons.Default.FolderOpen,
-                                contentDescription = "Create or import with plugin",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = showCreationMenu,
-                            onDismissRequest = { showCreationMenu = false }
-                        ) {
-                            creationProviders.forEach { provider ->
-                                DropdownMenuItem(
-                                    text = { Text(provider.displayName) },
-                                    onClick = {
-                                        showCreationMenu = false
-                                        selectedCreationProvider = provider
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
+                }) {
                 IconButton(onClick = { importLauncher.launch(arrayOf("application/zip")) }) {
                     Icon(
                         imageVector = Icons.Default.FileUpload,
@@ -268,25 +252,74 @@ fun HomeScreen(
         }
     }
 
-    if (showAnalyticsDialog) {
-        AnalyticsDialog(
-            onDismiss = { showAnalyticsDialog = false },
-            onAccept = {
-                prefs.edit {
-                    putBoolean("analytics_preference", true)
-                    putBoolean("analytics_preference_asked", true)
+    if (showCreationProviders) {
+        ModalBottomSheet(
+            onDismissRequest = { showCreationProviders = false },
+            sheetState = creationProviderSheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(bottom = 24.dp)
+            ) {
+                Text(
+                    text = "Create project",
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Text(
+                    text = "Choose an installed plugin",
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    itemsIndexed(creationProviders) { index, provider ->
+                        ListItem(
+                            modifier = Modifier.clickable {
+                                showCreationProviders = false
+                                selectedCreationProvider = provider
+                            },
+                            supportingContent = {
+                                if (provider.description.isNotBlank()) {
+                                    Text(provider.description)
+                                }
+                            },
+                            elevation = ListItemDefaults.elevation(),
+                            content = { Text(provider.displayName) },
+                            shapes = ListItemDefaults.segmentedShapes(index, creationProviders.size)
+                        )
+                        if (index != creationProviders.lastIndex) {
+                            HorizontalDivider()
+                        }
+                    }
                 }
-                showAnalyticsDialog = false
-            },
-            onDecline = {
-                prefs.edit {
-                    putBoolean("analytics_preference", false)
-                    putBoolean("analytics_preference_asked", true)
-                }
-                Analytics.setAnalyticsCollectionEnabled(false)
-                showAnalyticsDialog = false
             }
-        )
+        }
+    }
+
+    if (showAnalyticsDialog) {
+        AnalyticsDialog(onDismiss = { showAnalyticsDialog = false }, onAccept = {
+            prefs.edit {
+                putBoolean("analytics_preference", true)
+                putBoolean("analytics_preference_asked", true)
+            }
+            showAnalyticsDialog = false
+        }, onDecline = {
+            prefs.edit {
+                putBoolean("analytics_preference", false)
+                putBoolean("analytics_preference_asked", true)
+            }
+            Analytics.setAnalyticsCollectionEnabled(false)
+            showAnalyticsDialog = false
+        })
     }
 
     if (showDonationSheet) {
@@ -300,8 +333,7 @@ fun HomeScreen(
             onConfirm = {
                 viewModel.deleteProject(projectToDelete!!)
                 projectToDelete = null
-            }
-        )
+            })
     }
 
     selectedCreationProvider?.let { provider ->
@@ -314,8 +346,7 @@ fun HomeScreen(
                 viewModel.loadProjects()
                 scope.launch { snackbarHostState.showSnackbar(message) }
                 onNavigateToEditor(project)
-            }
-        )
+            })
     }
 
     selectedProjectAction?.let { contribution ->
@@ -327,7 +358,7 @@ fun HomeScreen(
             onCompleted = { message, refreshProject ->
                 if (refreshProject) viewModel.loadProjects()
                 scope.launch { snackbarHostState.showSnackbar(message) }
-            }
-        )
+            })
     }
 }
+

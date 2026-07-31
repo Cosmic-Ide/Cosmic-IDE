@@ -49,7 +49,6 @@ internal class FileSystemProjectRepository(
         return when {
             hasSourceDirectory(projectRoot, "java") -> Language.Java
             hasSourceDirectory(projectRoot, "kotlin") -> Language.Kotlin
-            hasSourceDirectory(projectRoot, "scala") -> Language.Scala
             else -> Language.Kotlin
         }
     }

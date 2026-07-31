@@ -33,6 +33,7 @@ internal class TerminalController(
     private val workingDir: File,
     private val setup: Boolean = false,
     private val jdkDir: File,
+    private val environmentOverrides: Map<String, String> = emptyMap(),
     private val terminalView: TerminalView,
     private val modifierLatch: TerminalModifierLatch,
     private val scope: CoroutineScope,
@@ -250,6 +251,7 @@ internal class TerminalController(
                     workingDir = workingDir,
                     setup = setup,
                     jdkDir = jdkDir,
+                    environmentOverrides = environmentOverrides,
                     rows = initialGeometry.rows,
                     columns = initialGeometry.columns
                 )
@@ -494,6 +496,7 @@ private fun createTerminalConfig(
     workingDir: File,
     setup: Boolean,
     jdkDir: File,
+    environmentOverrides: Map<String, String> = emptyMap(),
     rows: Int,
     columns: Int
 ): LinuxProcessRunner.Configuration {
@@ -531,7 +534,7 @@ private fun createTerminalConfig(
             "TMPDIR" to tempDir.absolutePath,
             "TMP" to tempDir.absolutePath,
             "TEMP" to tempDir.absolutePath
-        ),
+        ) + environmentOverrides,
         pathEntries = pathEntries,
         usePty = true,
         terminalRows = rows,

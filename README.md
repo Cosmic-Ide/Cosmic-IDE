@@ -23,7 +23,7 @@ Android app.
         <img src="docs/images/scala-code-completion.jpeg" width="220" alt="Scala code completion in Cosmic IDE">
       </a>
       <br>
-      <sub><strong>Metals-powered Scala completion</strong></sub>
+      <sub><strong>Metals-powered Scala completion through the Scala Support plugin</strong></sub>
     </td>
     <td align="center" width="50%">
       <a href="docs/images/scala-gradle-build.jpeg">
@@ -82,38 +82,41 @@ Cosmic IDE lets you create, edit, build, run, and manage projects without relyin
 computer. It is designed for learning, experimenting, fixing code on the go, and working on serious
 projects from a phone, tablet, or Android desktop setup.
 
-| Write comfortably                                                                                     | Build and run                                                  | Stay in control                                                                |
-|-------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|--------------------------------------------------------------------------------|
-| Syntax highlighting, completion, diagnostics, navigation, customizable fonts, and Material You themes | Integrated Gradle tasks, project commands, and a full terminal | Local project files, Git workflows, ZIP import and backup, and selectable JDKs |
+| Write comfortably                                                                                     | Build and run                                                             | Stay in control                                                                |
+|-------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| Syntax highlighting, completion, diagnostics, navigation, customizable fonts, and Material You themes | Integrated Gradle and plugin tasks, project commands, and a full terminal | Local project files, Git workflows, ZIP import and backup, and selectable JDKs |
 
 ## What you can do
 
-- Create ready-to-use Java, Kotlin, or Scala Gradle projects.
+- Create ready-to-use Java or Kotlin Gradle projects, with more project types supplied by plugins.
 - Open and edit projects with tabs, a file explorer, autosave, and rich code intelligence.
+- Preview Markdown and HTML beside their source, and open common image formats directly.
 - See errors, completions, hover information, signatures, references, and navigation from supported
   language servers.
-- Install packages directly from the Arch Linux ARM repositories through pacman, giving you access to a broad ecosystem of development tools and utilities inside Cosmic IDE.
+- Install packages from the Arch Linux ARM repositories through `pacman`.
 - Build, test, run, and inspect Gradle output without leaving the editor.
+- Discover tasks supplied by Gradle or plugin-provided build systems.
 - Clone repositories and use common Git actions such as pull, push, commit, branch, and checkout.
 - Work in an interactive Linux terminal with familiar command-line tools.
 - Import a project from ZIP and export backups through Android's document picker.
 - Personalize font, font size, indentation, word wrap, ligatures, line numbers, whitespace markers,
   sticky scroll, and other editor behavior.
-- Add custom language servers, TextMate grammars, project types, commands, and plugins.
+- Add custom language servers, TextMate grammars, project types, commands, tasks, previews, and
+  plugins.
 
 ## Language support
 
-Cosmic IDE provides a guided first-party setup for:
+The current support matrix is:
 
-| Language          | Code intelligence           |
-|-------------------|-----------------------------|
-| Java              | Eclipse JDT Language Server |
-| Kotlin            | Official Kotlin LSP         |
-| Scala             | Metals                      |
-| Gradle and Groovy | Gradle Language Server      |
+| Language | Availability       | Code intelligence                       |
+|----------|--------------------|-----------------------------------------|
+| Java     | Built in           | Eclipse JDT Language Server             |
+| Kotlin   | Built in           | Official Kotlin Language Server         |
+| Scala    | Installable plugin | Metals through the Scala Support plugin |
 
-Other languages can be added with a compatible language server and TextMate grammar. Rust, C++,
-XML, and similar workflows can be configured when their Linux/arm64 tools support Android's app
+Groovy syntax highlighting is packaged, but there is no active built-in Gradle/Groovy language
+server. Other languages can be added with a compatible stdio language server and optional TextMate
+grammar. Compatibility depends on whether the required Linux/arm64 tools can run in Android's app
 environment.
 
 ## Download
@@ -122,7 +125,7 @@ Download the latest successful `main` build from
 [nightly.link](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/app-arm64-v8a.zip).
 
 > [!NOTE]
-> The current development version targets Android 8 or newer and is intended for arm64 devices.
+> The current development version targets Android 9 or newer and produces an arm64-v8a APK.
 
 ## Getting started
 
@@ -131,9 +134,10 @@ Download the latest successful `main` build from
 3. Complete the guided development-tool setup.
 4. Create a project, import a ZIP, or clone a Git repository.
 
-The first setup downloads a Linux runtime, JDK, and selected development tools. Use a stable
-connection, keep the app open, and make sure the device has enough free storage. After setup, the
-Projects screen becomes the starting point for your work.
+The first setup extracts the packaged bootstrap runtime, installs an app-private Arch Linux ARM
+userspace, and downloads a JDK plus the selected development tools. Use a stable connection, keep
+the app open, and make sure the device has enough free storage. After setup, the Projects screen
+becomes the starting point for your work.
 
 For a walkthrough of projects, the editor, builds, Git, terminal sessions, and settings, see the
 [user guide](docs/user-guide.md).
@@ -185,8 +189,8 @@ network operations, and some builds still require an internet connection.
 
 ### Is it only for JVM projects?
 
-No. Java, Kotlin, and Scala have the most guided experience, but custom language servers, commands,
-and project types can support other toolchains.
+No. Java and Kotlin are built in, while installable plugins provide guided Scala and other
+toolchain experiences.
 
 ### Can it replace a desktop IDE?
 

@@ -170,6 +170,38 @@ interface ProjectCommandProvider : ConfigurableExtension {
 }
 
 /**
+ * A discoverable build-system task shown in the editor's task picker.
+ *
+ * [command] is trusted shell text executed in an interactive project terminal. [group] is a
+ * user-facing category such as "Lifecycle" or "Verification".
+ */
+data class ProjectTask(
+    val id: String,
+    val label: String,
+    val command: String,
+    val description: String = "",
+    val group: String = ""
+) {
+    init {
+        require(id.isNotBlank()) { "Project task id must not be blank" }
+        require(label.isNotBlank()) { "Project task label must not be blank" }
+        require(command.isNotBlank()) { "Project task command must not be blank" }
+    }
+}
+
+/**
+ * Discovers build-system tasks for a matching project.
+ *
+ * Discovery is suspendable so providers may query a build model or process without blocking the
+ * editor. Implementations should return stable task ids and preserve their preferred display order.
+ */
+interface ProjectTaskProvider : ConfigurableExtension {
+    fun supports(project: Project): Boolean
+
+    suspend fun tasks(project: Project): List<ProjectTask>
+}
+
+/**
  * Identifies a project layout that Cosmic does not know about itself.
  *
  * Installed language plugins should register one of these alongside their editor and project
@@ -248,6 +280,12 @@ object ProjectExtensionPoints {
     val COMMAND_PROVIDER = ExtensionPoint(
         "org.cosmicide.project.commandProvider",
         ProjectCommandProvider::class.java
+    )
+
+    @JvmField
+    val TASK_PROVIDER = ExtensionPoint(
+        "org.cosmicide.project.taskProvider",
+        ProjectTaskProvider::class.java
     )
 }
 

@@ -12,16 +12,15 @@ import java.nio.file.Files
 
 class ProjectRepositoryTest {
     @Test
-    fun `discovers project language from root and app source layouts`() = withProjects { root ->
+    fun `discovers built-in project languages from root and app source layouts`() =
+        withProjects { root ->
         root.resolve("java/src/main/java").mkdirs()
         root.resolve("kotlin/app/src/main/kotlin").mkdirs()
-        root.resolve("scala/src/main/scala").mkdirs()
 
         val projects = FileSystemProjectRepository(root).projects().associateBy(Project::name)
 
         assertEquals(Language.Java, projects.getValue("java").language)
         assertEquals(Language.Kotlin, projects.getValue("kotlin").language)
-        assertEquals(Language.Scala, projects.getValue("scala").language)
     }
 
     @Test

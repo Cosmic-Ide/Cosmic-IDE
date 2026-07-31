@@ -213,7 +213,8 @@ private fun TerminalTopBar(
             title = {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2
                 )
             },
             navigationIcon = {

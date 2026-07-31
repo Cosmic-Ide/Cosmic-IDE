@@ -38,8 +38,11 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.subscribeAlways
 import me.saket.cascade.CascadeColumnScope
 import me.saket.cascade.CascadeDropdownMenu
+import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
 import org.cosmicide.project.ProjectCommandKind
+import org.cosmicide.project.ProjectTask
+import org.cosmicide.project.ProjectTaskProvider
 import java.io.File
 
 @Composable
@@ -68,23 +71,22 @@ internal fun EmptyWorkspaceState(onOpenDrawer: () -> Unit) {
 
 @Composable
 internal fun EditorToolbar(
+    project: Project,
     file: File?,
     editor: CodeEditor,
-    tasks: List<String>,
-    isGradleSyncing: Boolean,
-    gradleSyncError: String?,
-    onResyncGradle: () -> Unit,
-    hasGradleWrapper: Boolean,
     onOpenDrawer: () -> Unit,
-    onRunGradleTask: (String) -> Unit,
     projectCommands: List<ProjectCommand>,
     onRunProjectCommand: (ProjectCommand) -> Unit,
+    taskProviders: List<ProjectTaskProvider>,
+    onRunProjectTask: (ProjectTask) -> Unit,
     onOpenTerminal: () -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showGoToLineDialog by remember { mutableStateOf(false) }
     var showStatsDialog by remember { mutableStateOf(false) }
-    var showTasksDialog by remember { mutableStateOf(false) }
+    var selectedTaskProvider by remember(project.root.absolutePath) {
+        mutableStateOf<ProjectTaskProvider?>(null)
+    }
 
     fun editorCanUndo(): Boolean {
         return editor.text.undoManager.canUndo()
@@ -136,16 +138,14 @@ internal fun EditorToolbar(
         }
     }, actions = {
         IconButton(
-            enabled = contributedRunCommand != null || hasGradleWrapper,
+            enabled = contributedRunCommand != null,
             onClick = {
                 if (contributedRunCommand != null) onRunProjectCommand(contributedRunCommand)
-                else onRunGradleTask("run")
             }
         ) {
             Icon(
                 Icons.Filled.PlayArrow,
-                contentDescription = contributedRunCommand?.label
-                    ?: if (hasGradleWrapper) "Run" else "No run command configured",
+                contentDescription = contributedRunCommand?.label,
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -198,6 +198,19 @@ internal fun EditorToolbar(
                         )
                     })
                 }
+                if (taskProviders.isNotEmpty()) {
+                    DropdownMenuItem(text = { Text("Tasks") }, children = {
+                        taskProviders.forEach { provider ->
+                            DropdownMenuItem(
+                                text = { Text(provider.displayName) },
+                                onClick = {
+                                    selectedTaskProvider = provider
+                                    showMenu = false
+                                }
+                            )
+                        }
+                    })
+                }
                 DropdownMenuItem(text = { Text("Editor") }, children = {
                     DropdownMenuItem(text = { Text("Format") }, onClick = {
                         editor.formatCodeAsync()
@@ -208,39 +221,16 @@ internal fun EditorToolbar(
                         showMenu = false
                     })
                 })
-                DropdownMenuItem(text = { Text("File Options") }, children = {
-                    DropdownMenuItem(text = { Text("View Statistics") }, onClick = {
-                        showStatsDialog = true
-                        showMenu = false
-                    })
-                })
-                if (hasGradleWrapper) DropdownMenuItem(text = { Text("Gradle") }, children = {
-                    DropdownMenuItem(text = { Text("Tasks") }, onClick = {
-                        showTasksDialog = true
-                        showMenu = false
-                    })
-                    DropdownMenuItem(
-                        text = { Text("Resync Gradle") },
-                        enabled = !isGradleSyncing,
-                        onClick = {
-                            onResyncGradle()
-                            showMenu = false
-                        }
-                    )
-                })
             }
         }
     })
 
-    if (showTasksDialog) {
-        TasksDialog(
-            tasks = tasks,
-            isLoading = isGradleSyncing,
-            loadError = gradleSyncError,
-            onDismiss = { showTasksDialog = false },
-            onTaskSelected = { task ->
-                onRunGradleTask(task)
-            }
+    selectedTaskProvider?.let { provider ->
+        ProjectTasksDialog(
+            provider = provider,
+            project = project,
+            onDismiss = { selectedTaskProvider = null },
+            onTaskSelected = onRunProjectTask
         )
     }
 

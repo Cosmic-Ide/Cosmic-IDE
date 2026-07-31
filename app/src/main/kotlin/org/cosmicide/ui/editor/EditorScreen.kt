@@ -52,10 +52,10 @@ import org.cosmicide.editor.EditorPreviewPresentation
 import org.cosmicide.editor.lsp.LspLogStore
 import org.cosmicide.editor.lsp.disposeLspLanguage
 import org.cosmicide.editor.preview.EditorPreviews
-import org.cosmicide.model.EditorToolingViewModel
 import org.cosmicide.model.EditorViewModel
 import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
+import org.cosmicide.project.ProjectTask
 import java.io.File
 
 private class EditorTabSession(
@@ -97,10 +97,6 @@ fun EditorScreen(
     val projectSessionServices = LocalAppContainer.current.projectSessionServices
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val toolingViewModel: EditorToolingViewModel = viewModel(
-        key = "editor-tooling:${project.root.absolutePath}"
-    )
-    val toolingState = toolingViewModel.state
     var toolWindowHeightDp by rememberSaveable(project.root.absolutePath) {
         mutableFloatStateOf(CollapsedEditorToolWindowHeightDp)
     }
@@ -110,15 +106,16 @@ fun EditorScreen(
     val projectCommands = remember(project.root.absolutePath) {
         projectSessionServices.commands(project)
     }
-    val hasGradleWrapper = remember(project.root.absolutePath) {
-        project.root.resolve("gradlew").isFile
+    val projectTaskProviders = remember(project.root.absolutePath) {
+        projectSessionServices.taskProviders(project)
     }
-    val projectSyncStrategy = remember(hasGradleWrapper, projectCommands) {
-        resolveProjectSyncStrategy(hasGradleWrapper, projectCommands)
+    val projectSyncStrategy = remember(projectCommands) {
+        resolveProjectSyncStrategy(projectCommands)
     }
-    val useGradleSync = projectSyncStrategy is ProjectSyncStrategy.GradleWrapper
     val projectSyncCommand =
         (projectSyncStrategy as? ProjectSyncStrategy.PluginCommand)?.command
+    val isProjectSyncing =
+        (projectSyncCommand != null && toolWindowSessionState.isProjectSyncInProgress)
     val openFiles = viewModel.openFiles
     val activeFile = viewModel.activeFile
     val lspLogs by LspLogStore.entries.collectAsStateWithLifecycle()
@@ -141,14 +138,6 @@ fun EditorScreen(
     val editor = activeEditorSession?.editor ?: fallbackEditor
     val currentEditorContent = {
         if (isPreviewOnly) null else editor.text.toString()
-    }
-
-    val runGradleTask: (String) -> Unit = { task ->
-        viewModel.saveActiveDocument(currentEditorContent())
-        toolWindowSessionState = toolWindowSessionState.openGradleTask(task)
-        if (toolWindowHeightDp <= CollapsedEditorToolWindowHeightDp) {
-            toolWindowHeightDp = DefaultEditorToolWindowHeightDp
-        }
     }
 
     val openTerminalSession: (String, String, List<String>?) -> Unit =
@@ -175,16 +164,15 @@ fun EditorScreen(
         if (projectSyncCommand?.id == command.id) {
             rerunProjectSync()
         } else {
-            openTerminalSession(command.label, "bash", listOf("-lc", command.command))
+            openTerminalSession(
+                command.label,
+                "bash",
+                projectCommandShellArguments(command.command)
+            )
         }
     }
-
-    LaunchedEffect(project.root.absolutePath, useGradleSync) {
-        if (useGradleSync) {
-            toolingViewModel.initialize(context, project.root)
-        } else {
-            projectSessionServices.stopTooling()
-        }
+    val runProjectTask: (ProjectTask) -> Unit = { task ->
+        openTerminalSession(task.label, "bash", projectCommandShellArguments(task.command))
     }
 
     val openFile = { newFile: File ->
@@ -234,7 +222,6 @@ fun EditorScreen(
                     openFile(file)
                     scope.launch { drawerState.close() }
                 }, onExecuteFile = {
-                    runGradleTask("build")
                     scope.launch { drawerState.close() }
                 })
             }
@@ -244,23 +231,20 @@ fun EditorScreen(
             topBar = {
                 Column {
                     EditorToolbar(
+                        project = project,
                         file = activeFile,
                         editor = editor,
                         onOpenDrawer = { scope.launch { drawerState.open() } },
-                        tasks = toolingState.tasks,
-                        isGradleSyncing = useGradleSync && toolingState.isSyncing,
-                        gradleSyncError = toolingState.error,
-                        onResyncGradle = { toolingViewModel.resyncGradle(context) },
-                        hasGradleWrapper = hasGradleWrapper,
-                        onRunGradleTask = runGradleTask,
                         projectCommands = projectCommands,
                         onRunProjectCommand = runProjectCommand,
+                        taskProviders = projectTaskProviders,
+                        onRunProjectTask = runProjectTask,
                         onOpenTerminal = {
                             openTerminalSession("Terminal", "bash", listOf("-i"))
                         }
                     )
 
-                    if (useGradleSync && toolingState.isSyncing) {
+                    if (isProjectSyncing) {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     }
 
@@ -312,10 +296,6 @@ fun EditorScreen(
             ) {
                 EditorToolWindowLayout(
                     project = project,
-                    syncOutput = toolingViewModel.output.takeIf { useGradleSync },
-                    isToolingSyncRunning = useGradleSync && toolingState.isSyncing,
-                    onRerunToolingSync = { toolingViewModel.resyncGradle(context) },
-                    onStopToolingSync = toolingViewModel::stopGradleSync,
                     lspLogs = lspLogs.joinToString("\n", transform = { it.displayText() }),
                     projectSyncCommand = projectSyncCommand,
                     state = toolWindowSessionState,

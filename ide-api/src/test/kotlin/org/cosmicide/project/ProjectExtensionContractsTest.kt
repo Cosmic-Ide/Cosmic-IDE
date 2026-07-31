@@ -73,6 +73,20 @@ class ProjectExtensionContractsTest {
     }
 
     @Test
+    fun `project tasks validate identity label and command`() {
+        val task = ProjectTask(
+            id = "maven.test",
+            label = "Test",
+            command = "mvn test",
+            group = "Lifecycle"
+        )
+        assertEquals("Lifecycle", task.group)
+        assertFails<IllegalArgumentException> { ProjectTask("", "Test", "mvn test") }
+        assertFails<IllegalArgumentException> { ProjectTask("test", " ", "mvn test") }
+        assertFails<IllegalArgumentException> { ProjectTask("test", "Test", " ") }
+    }
+
+    @Test
     fun `command result success follows exit code only`() {
         assertTrue(CommandResult(0, "warnings").successful)
         assertFalse(CommandResult(1, "").successful)

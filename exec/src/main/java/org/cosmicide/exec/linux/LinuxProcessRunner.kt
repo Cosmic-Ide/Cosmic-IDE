@@ -1,7 +1,6 @@
 package org.cosmicide.exec.linux
 
 import android.content.Context
-import org.cosmicide.util.FileUtil
 import org.cosmicide.util.repairJdkExecutablePermissions
 import java.io.File
 import java.lang.reflect.Field
@@ -118,11 +117,7 @@ object LinuxProcessRunner {
     ): List<File> {
         return buildList {
             add(jdkDir.resolve("bin"))
-            if (FileUtil.isInitialized) {
-                add(FileUtil.dataDir.resolve("kotlinc/bin"))
-            }
             add(context.filesDir.resolve("jdtls/bin"))
-            add(context.filesDir.resolve("scala/bin"))
             add(runtimeDir(context, setup).resolve("usr/bin"))
         }
     }

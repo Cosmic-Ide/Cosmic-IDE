@@ -13,11 +13,8 @@ internal sealed interface ProjectSyncStrategy {
 }
 
 internal fun resolveProjectSyncStrategy(
-    hasGradleWrapper: Boolean,
     projectCommands: List<ProjectCommand>
 ): ProjectSyncStrategy {
-    if (hasGradleWrapper) return ProjectSyncStrategy.GradleWrapper
-
     return projectCommands
         .executableCommands()
         .firstOrNull { it.kind == ProjectCommandKind.SYNC }

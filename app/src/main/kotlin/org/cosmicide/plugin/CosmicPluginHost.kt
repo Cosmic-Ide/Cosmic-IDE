@@ -92,6 +92,7 @@ object CosmicPluginHost {
             addRegistrations(ProjectExtensionPoints.CREATION_PROVIDER, "Project creation")
             addRegistrations(ProjectExtensionPoints.ACTION_PROVIDER, "Project actions")
             addRegistrations(ProjectExtensionPoints.COMMAND_PROVIDER, "Project commands")
+            addRegistrations(ProjectExtensionPoints.TASK_PROVIDER, "Project tasks")
         }.distinctBy { it.extension.id }
     }
 

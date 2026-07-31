@@ -208,7 +208,7 @@ internal fun NewProjectFormContent(
                 ) {
                     SelectionContainer {
                         Text(
-                            text = creationLog.ifEmpty { "Waiting for Gradle..." },
+                            text = creationLog.ifEmpty { "Waiting ..." },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 160.dp, max = 240.dp)

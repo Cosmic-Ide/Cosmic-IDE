@@ -3,16 +3,14 @@
 ## Supported development shape
 
 Cosmic IDE is a Gradle multi-project Android application written primarily in Kotlin and Jetpack
-Compose, with Java for the standalone Gradle provider and C/C++ for PTY and glibc compatibility
-pieces. Application bytecode targets Java 17; some lower-level modules deliberately retain Java 11
-compatibility.
+Compose, with C/C++ for PTY and glibc compatibility pieces. Application bytecode targets Java 17;
+some lower-level modules deliberately retain Java 11 compatibility.
 
-The runtime product has three build layers:
+The runtime product has two build layers:
 
 ```text
 Android APK
   +-- packaged glibc runtime and native loader/shims
-  +-- packaged standalone Gradle tooling JAR
   +-- Kotlin/Compose application and library modules
 ```
 
@@ -24,8 +22,7 @@ its explicit producer command before the APK represents the new source.
 For a standard application build, install:
 
 - a JDK 17 Gradle runtime;
-- Android SDK components matching the repository's compile SDK (currently API 37 with the configured
-  minor SDK level);
+- Android SDK components matching the repository's compile SDK (currently API 37.1);
 - the Android build tools accepted by AGP;
 - Git and a network connection for Gradle dependencies.
 
@@ -66,19 +63,18 @@ matching dependency/configuration. The prod flavor builds without that Firebase 
 
 ## Module map
 
-| Module                     | Type            | Responsibility                                                            |
-|----------------------------|-----------------|---------------------------------------------------------------------------|
-| `:app`                     | Android app     | Compose UI, navigation, editor, built-in providers, setup, tooling client |
-| `:common`                  | Android library | Shared preferences, analytics flavor boundary, editor data types          |
-| `:util`                    | Android library | Persistent data roots and archive/filesystem helpers                      |
-| `:exec`                    | Android/native  | glibc command runner, plain process facade, PTY JNI transport             |
-| `:feature:project`         | JVM library     | Serializable project and language model                                   |
-| `:feature:sdk-manager`     | JVM library     | Foojay JDK metadata/download client                                       |
-| `:feature:tooling`         | JVM application | Real Gradle Tooling API provider packaged as a standalone JAR             |
-| `:feature:code-navigation` | Android library | Compiler-backed code-navigation support                                   |
-| `:plugin-api`              | JVM library     | Plugin descriptors, lifecycle, registries, services                       |
-| `:plugin-runtime`          | Android library | Plugin discovery, dex loading, activation, and cleanup                    |
-| `:ide-api`                 | Android library | Editor-language, LSP, and formatter extension contracts                   |
+| Module                     | Type            | Responsibility                                                   |
+|----------------------------|-----------------|------------------------------------------------------------------|
+| `:app`                     | Android app     | Compose UI, navigation, editor, built-in providers, setup        |
+| `:common`                  | Android library | Shared preferences, analytics flavor boundary, editor data types |
+| `:util`                    | Android library | Persistent data roots and archive/filesystem helpers             |
+| `:exec`                    | Android/native  | glibc command runner, plain process facade, PTY JNI transport    |
+| `:feature:project`         | JVM library     | Serializable project and language model                          |
+| `:feature:sdk-manager`     | JVM library     | Foojay JDK metadata/download client                              |
+| `:feature:code-navigation` | Android library | Compiler-backed code-navigation support                          |
+| `:plugin-api`              | JVM library     | Plugin descriptors, lifecycle, registries, services              |
+| `:plugin-runtime`          | Android library | Plugin discovery, dex loading, activation, and cleanup           |
+| `:ide-api`                 | Android library | Editor-language, LSP, and formatter extension contracts          |
 
 Dependencies exposed to plugin authors belong in `:plugin-api` or `:ide-api`. Application and Sora
 implementation types should remain in `:app`. External Linux tools must be launched through
@@ -98,13 +94,10 @@ implementation types should remain in `:app`. External Linux tools must be launc
   :exec:testProdDebugUnitTest :ide-api:testProdDebugUnitTest \
   :plugin-runtime:testDebugUnitTest :util:testDebugUnitTest \
   :plugin-api:test :feature:project:test :feature:sdk-manager:test \
-  :feature:tooling:test :feature:code-navigation:testDebugUnitTest
+  :feature:code-navigation:testDebugUnitTest
 
 # Run app production unit tests only
 ./gradlew :app:testProdDebugUnitTest
-
-# Build and copy the standalone tooling provider into app assets
-./gradlew :feature:tooling:copyToolingJarToAssets
 
 # Inspect available tasks
 ./gradlew tasks
@@ -115,19 +108,6 @@ uploads ABI-specific plus universal APKs. Keep workflow flavor assumptions synch
 analytics dependencies.
 
 ## Generated and packaged artifacts
-
-### Gradle tooling provider
-
-`feature/tooling` creates a dependency-inclusive JAR whose main class is
-`org.cosmicide.gradle.Main`:
-
-```sh
-./gradlew :feature:tooling:copyToolingJarToAssets
-```
-
-The resulting `app/src/main/assets/gradle-tooling.jar` is copied to private app storage at runtime.
-Changes to provider source, JSON protocol, or its dependencies are incomplete until this asset is
-regenerated. App-side protocol and provider-side protocol changes must land together.
 
 ### glibc runtime
 
@@ -178,7 +158,6 @@ Important application entry points are:
 | `ui/home`, `ui/project`, `ui/editor`                | project lifecycle and editing workspace        |
 | `ui/compile`, `ui/terminal`                         | build surfaces and PTY terminal                |
 | `editor/language`, `editor/lsp`, `editor/formatter` | built-in extension implementations             |
-| `tooling/`                                          | app side of the Gradle JSON bridge             |
 | `plugin/` and `plugin-runtime/`                     | extension host and installed-plugin runtime    |
 
 When working in a dirty checkout, preserve unrelated modifications. Many runtime artifacts are
@@ -196,7 +175,7 @@ Run verification in proportion to the changed boundary:
 | Linked TextMate grammar    | JSON/XML/YAML, fresh cache, seven-day stale path, invalid refresh, offline fallback |
 | Process facade             | captured stdout/stderr, exit status, environment, child exec                        |
 | PTY/terminal               | input, Unicode, resize, Ctrl+C, termination, FD/process leak                        |
-| Gradle protocol            | ping, models, build, streamed output, input, cancel, shutdown                       |
+| Gradle support             | sync and tasks contributed by plugin providers                                      |
 | Plugin runtime/API         | load, dependency failure, activation rollback, unload cleanup                       |
 | Runtime/shims              | packaged APK on arm64 hardware, subprocess descendants, DNS                         |
 
@@ -216,9 +195,6 @@ Tests live with the module that owns the behavior:
 | `:exec`                | Shell-like command tokenization, empty arguments, executable resolution, and missing-command failures                                                                                                                                                                       |
 | `:feature:project`     | Language lookup/serialization, project paths, source-set precedence, argument persistence, and project serialization                                                                                                                                                        |
 | `:feature:sdk-manager` | Foojay platform aliases, request parameters, response filtering/mapping, failures, downloads, and progress contract using a mock HTTP engine                                                                                                                                |
-| `:feature:tooling`     | Provider subprocess framing, invalid requests, ping/shutdown, strict JSON, startup arguments, and reflection model serialization without connecting to Gradle                                                                                                               |
-| `:plugin-api`          | Descriptor validation, extension ordering/ownership/disposal, service typing/replacement, and required lookup                                                                                                                                                               |
-| `:plugin-runtime`      | Manifest defaults/full parsing, artifact resolution, and reverse/idempotent plugin cleanup                                                                                                                                                                                  |
 | `:ide-api`             | Validation and semantics of plugin forms, commands, progress, actions, and LSP definitions                                                                                                                                                                                  |
 
 `:feature:code-navigation` remains an integration boundary around Kotlin/Java compiler PSI. Its

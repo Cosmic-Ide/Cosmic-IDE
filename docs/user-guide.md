@@ -52,8 +52,8 @@ be changed under Settings > About.
 
 ## Creating a project
 
-New projects are produced through Gradle's `init` task, executed by the out-of-process Gradle
-tooling bridge. The form supports:
+New projects are produced through Gradle's `init` task, executed in a temporary project terminal.
+The form supports:
 
 | Choice           | Current options                                                                |
 |------------------|--------------------------------------------------------------------------------|
@@ -113,7 +113,8 @@ history for important work.
 
 ### Tabs and saving
 
-One editor view is reused while tabs change. Open document content is retained by the editor view
+Each open text tab retains its own `CodeEditor` instance and LSP document session. Open document
+content is retained by the editor view
 model, and active edits are written to disk as content changes. This behaves as autosave rather
 than a separate dirty-buffer and explicit-save workflow.
 
@@ -144,20 +145,18 @@ Editor appearance and behavior are described in [Settings reference](settings-re
 
 ## Gradle sync and builds
 
-Gradle integration runs in the selected JDK, outside ART, and is bound to one project at a time.
-Opening a workspace starts or reuses that project's tooling provider. Leaving all project screens
-stops it.
+Gradle support is plugin-provided. Opening a workspace triggers a project sync command.
 
 The resizable bottom tool window contains:
 
-- a **Sync** tab with model-discovery output;
+- a **Sync** tab with command output;
 - one tab per launched Gradle task, plugin command, or interactive project terminal, including
   status, output, close, and rerun controls.
 
 Without a matching plugin run command, the Run button starts the Gradle `run` task. The task chooser
-can start any task advertised by the current Gradle model. Builds support streamed output, progress,
-cancellation, and interactive input through
-the tooling bridge. Gradle wrapper configuration and project build scripts still determine the
+can start any task advertised by the current project's task providers. Sync, build, and run commands
+execute in a PTY terminal within the editor tool window. Gradle wrapper configuration and project
+build scripts still determine the
 actual distribution, repositories, dependencies, and tasks.
 
 Projects using Cargo, CMake, or another build system can register their workflow as a custom project
@@ -204,20 +203,28 @@ bypass Android or SELinux permissions.
 Use the terminal for package/tool installation, compilers, REPLs, build systems, and diagnostics.
 Use the close action to terminate its process group before leaving a long-running command.
 
-## Built-in language support
+## Language and Intelligence
 
-| File extensions                  | Language server        | Packaged grammar scope |
-|----------------------------------|------------------------|------------------------|
-| `.java`                          | Eclipse JDT LS         | `source.java`          |
-| `.kt`                            | Kotlin Language Server | `source.kotlin`        |
-| `.scala`, `.sc`, `.sbt`, `.mill` | Metals                 | `source.scala`         |
+Cosmic IDE provides deep code intelligence through the Language Server Protocol (LSP). Features like
+completion, diagnostics, hover information, navigation, and signature help are powered by
+language-specific servers running in the background.
 
-The LSP adapter exposes completion, diagnostics, hover, navigation, signature help, inlay hints,
-and other capabilities advertised by the selected server. A server can connect without a grammar;
-in that case semantic features may work while syntax highlighting remains plain.
+| Category            | Example Tools                                                 |
+|---------------------|---------------------------------------------------------------|
+| **JVM**             | Eclipse JDT LS (Java), Kotlin Language Server, Metals (Scala) |
+| **Native**          | rust-analyzer (Rust), clangd (C/C++), Go, Gleam               |
+| **Web & Scripting** | Python, LuaLS (Lua)                                           |
 
-Language and formatter providers can be enabled or disabled under Settings > Extensions. Routing
-uses the highest-priority enabled provider that supports the current file.
+### Syntax Highlighting
+
+Syntax highlighting is managed by TextMate grammars. Most languages come with high-quality packaged
+grammars. For unsupported languages, you can link a custom TextMate grammar from a URL or local file
+in **Settings > Extensions**.
+
+### Routing and Priority
+
+Language support is modular. When you open a file, Cosmic IDE routes the request to the
+highest-priority enabled provider. You can toggle specific providers in **Settings > Extensions**.
 
 ## Custom language servers
 
@@ -301,7 +308,9 @@ asks before opening it in the interactive terminal. You can defer this step and 
 **Run setup** in the plugin details. Plugin code still runs in the application process and should be
 treated as trusted code.
 
-The Rust Support plugin installs Rust and rust-analyzer through
+Cosmic provides a growing ecosystem of plugins, including support for **Rust, Gleam, Go, Gradle,
+Maven, Python, Lua, C/C++ (Clangd & CMake)**, and more. For example, the Rust Support plugin
+installs Rust and rust-analyzer through
 `pacman -S --needed rust rust-analyzer`, provides `.rs` LSP editing, recognizes `Cargo.toml`
 projects, creates Cargo binary/library projects, and contributes Cargo fetch/check/build/run/test
 commands.

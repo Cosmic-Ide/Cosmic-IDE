@@ -43,7 +43,8 @@ The connection exposes server stdin, server stdout, startup, close, and liveness
 part of the LSP stream and must be drained separately by the provider. Anything written to stdout
 other than `Content-Length`-framed LSP messages corrupts the session.
 
-The app adapter owns the `LspProject`/`LspEditor`, attaches the shared `CodeEditor`, connects on an
+The app adapter owns the `LspProject`/`LspEditor`, attaches the `CodeEditor` for the current
+session, connects on an
 IO coroutine, and sends post-initialization configuration. Incoming-frame tracing can include
 source text and should be enabled only for diagnostics.
 
@@ -65,8 +66,9 @@ attached, and closes it after the final editor disconnects. Providers must retur
 from their factory rather than caching processes themselves.
 
 Each open text tab retains its own `CodeEditor` and LSP document session. Tab switches only exchange
-the visible editor; they do not replace its text or disconnect it. This preserves cursor, selection,
-scroll, folding, and undo history while keeping all documents attached to the shared server.
+the visible session; they do not replace its text or disconnect it. This preserves cursor,
+selection, scroll, folding, and undo history while keeping all documents attached to the shared
+server.
 
 ## Custom servers
 
@@ -100,13 +102,11 @@ highest-priority matching provider across built-in and plugin providers.
 
 ## Editor session behavior
 
-`EditorScreen` reuses one `CodeEditor` as tabs change. `EditorViewModel` caches each open document
-and writes active edits to disk immediately; this is an autosave model, not a long-lived dirty
-buffer model.
+`EditorViewModel` caches each open document and writes active edits to disk immediately; this is an
+autosave model, not a long-lived dirty buffer model.
 
-Because the editor instance outlives individual files, every switch must replace language,
-grammar, formatter, and LSP state. A provider must not retain the editor as though it belonged to
-one document permanently.
+Each open tab owns its `EditorTabSession`, which manages its own `CodeEditor` instance and LSP
+document session. This ensures that diagnostics and state are confined to the relevant file.
 
 Bundled TextMate language metadata comes from `assets/textmate/languages.json`. A server may request
 a packaged grammar scope or provide a linked grammar. If neither is present, or a linked grammar
@@ -118,9 +118,8 @@ allowed to connect.
 The formatter router tries enabled providers by priority and applies the first successful result.
 Provider results are text values; providers should not mutate or retain the editor.
 
-The built-in Java and Kotlin formatter registrations currently return the input unchanged because
-their formatter calls are disabled. Their presence in the registry does not mean formatting is
-implemented.
+Built-in Java and Kotlin formatters have been removed from the registry. Formatting support must be
+contributed by plugins.
 
 ## Adding language support
 
@@ -147,4 +146,4 @@ Use `EditorLanguageProvider` directly only when the standard LSP adapter is insu
 | Custom server survives close      | starter did not `exec` its final command                                                           |
 | Linked grammar is not highlighted | URL is not a raw file, document permission expired, file exceeds 5 MB, or grammar is malformed     |
 | HTTPS grammar does not update yet | valid cache is younger than seven days; change the URL or clear app cache for an immediate refetch |
-| Format command changes nothing    | the selected provider may be one of the current pass-through built-ins                             |
+| Format command changes nothing    | the selected provider may not be configured for the current file extension                         |

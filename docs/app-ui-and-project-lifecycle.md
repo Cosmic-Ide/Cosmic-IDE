@@ -39,25 +39,25 @@ InstallResourceScreen
 The initial key is chosen from runtime readiness checks, not a stored onboarding flag. If a required
 directory or launcher disappears, a later launch returns to the corresponding setup screen.
 
-Project session ownership is inferred from whether the back stack contains `Editor` or
-`GradleTask`. When none remain, `ProjectSessionServices` tears down the fixed-project Gradle
-provider. A `DisposableEffect` repeats shutdown when navigation leaves composition.
+Project session ownership is inferred from whether the back stack contains `Editor`. When none
+remain, `ProjectSessionServices` cleans up project-scoped resources. A `DisposableEffect` repeats
+cleanup when navigation leaves composition.
 
 ### Current route status
 
-| Route                | Status                                                                                 |
-|----------------------|----------------------------------------------------------------------------------------|
-| Home                 | active                                                                                 |
-| NewProject           | active                                                                                 |
-| Editor               | active                                                                                 |
-| GradleTask           | supported, while most workspace builds now use embedded tabs                           |
-| Settings             | active                                                                                 |
-| Code editor settings | active                                                                                 |
-| Compiler settings    | active                                                                                 |
-| Extensions settings  | active                                                                                 |
-| Terminal category    | opens terminal directly                                                                |
-| Toolchains           | active                                                                                 |
-| About                | active                                                                                 |
+| Route                | Status                  |
+|----------------------|-------------------------|
+| Home                 | active                  |
+| NewProject           | active                  |
+| Editor               | active                  |
+| GradleTask           | legacy/unhandled        |
+| Settings             | active                  |
+| Code editor settings | active                  |
+| Compiler settings    | active                  |
+| Extensions settings  | active                  |
+| Terminal category    | opens terminal directly |
+| Toolchains           | active                  |
+| About                | active                  |
 
 Do not document a route as user-reachable merely because its `Screen` type and composable exist.
 
@@ -115,13 +115,12 @@ Java/Scala source layouts, falling back to Kotlin metadata consistently with pro
 
 ## Workspace state
 
-`EditorScreen` coordinates three state owners while delegating rendering to focused package-internal
+`EditorScreen` coordinates state owners while delegating rendering to focused package-internal
 components:
 
 | Owner                    | State                                                         |
 |--------------------------|---------------------------------------------------------------|
 | `EditorViewModel`        | open file order, active file, cached document content, saving |
-| `EditorToolingViewModel` | Gradle connection, task list, sync state/error/output         |
 | Compose screen state     | drawer/dialogs, tool-window size/tab, build-session tabs      |
 
 `ProjectTree`, `EditorToolbar`, `EditorDialogs`, `EditorContent`, and `EditorToolWindow` own their
@@ -139,18 +138,14 @@ separate global current-project holder.
 
 ### Files and tabs
 
-One Sora `CodeEditor` instance is reused. Opening another file first saves the active content,
-creates or focuses a tab, loads cached or disk text, and routes language configuration for the new
+Each open text tab retains its own `CodeEditor` and LSP document session. Opening a file focuses its
+tab, loads cached or disk text, and routes language configuration for the new
 request. Content change events update the active `EditorDocument` and immediately call
 `File.writeText`.
 
 `EditorDocument.savedContentHash` records whether the current cache matches the last write, but the
 normal editing path autosaves each update. Closing a tab saves it once more, removes its cached
-document, and activates the last remaining tab when necessary.
-
-Because a single editor changes document identity, integrations must detach old language analysis,
-LSP connections, subscriptions, and file-specific UI before attaching replacements. Retaining the
-editor as if it permanently belongs to one file causes cross-tab diagnostics and leaked processes.
+document, and releases its owned editor session.
 
 ### Project explorer
 
@@ -178,22 +173,21 @@ argument instead of reparsing it as a command line.
 
 ## Gradle workspace UI
 
-`EditorToolingViewModel.initialize` starts sync once for a project root. It obtains
-`BuildInvocations`,
-combines task paths and selectors, and caps accumulated Sync output at 100,000 characters.
+Gradle support is plugin-provided and uses `ProjectCommandProvider` and `ProjectTaskProvider`. Sync,
+build, and run commands execute in PTY terminals within the editor tool window.
 
-`EditorToolWindow` is a vertically resizable bottom surface. Its fixed Sync tab shows model output;
-each task or project-command launch creates an `EditorBuildSession` with its own embedded terminal,
+`EditorToolWindow` is a vertically resizable bottom surface. Its fixed Sync tab shows the output of
+the project sync command; each task or project-command launch creates an `EditorBuildSession` with
+its own embedded terminal,
 status, rerun counter, and close action. Closing a tab releases its composed terminal/controller.
 
-Sync ownership is selected from project structure. A root `gradlew` keeps Gradle model sync and
-initializes `EditorToolingViewModel`. Without that wrapper, the first enabled plugin `SYNC` command
-replaces the fixed tab with a PTY session and Gradle tooling is not initialized. A wrapperless
+Sync ownership is selected from project structure. A root `gradlew` takes precedence. Without that
+wrapper, the first enabled plugin `SYNC` command replaces the fixed tab with a PTY session. A
 project with no sync contribution receives an explanatory empty state.
 
-The older full-screen `GradleTaskScreen` remains a valid route and shares the same terminal bridge.
-The former post-build `ProjectOutputScreen` was removed because no active workflow navigated to it;
-run and build output now stays in editor tool-window terminal sessions.
+The older full-screen `GradleTaskScreen` remains a valid route but is legacy. The former post-build
+`ProjectOutputScreen` was removed; run and build output now stays in editor tool-window terminal
+sessions.
 
 ## Settings state
 

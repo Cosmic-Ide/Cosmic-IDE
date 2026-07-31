@@ -193,12 +193,12 @@ EditorLanguageRequest
   -> enabled LspServerProvider registrations
   -> first provider supporting the file
   -> LspServerDefinition
-  -> app-owned Sora LSP adapter
+  -> session-owned Sora LSP adapter
   -> LspServerConnection
   -> server process stdin/stdout
 ```
 
-The app-owned adapter is responsible for editor mutability during connection, initialization
+The session-owned adapter is responsible for editor mutability during connection, initialization
 timeouts, TextMate wrapper selection, capability overrides, configuration dispatch, inlay hints,
 signature help, and optional protocol tracing. Plugins do not depend on Sora's `LspEditor` classes.
 
@@ -237,9 +237,9 @@ class RustLspProvider : LspServerProvider {
 - stop and release resources from `close()`.
 
 The app shares one connection for each definition id and project. All open files whose extensions
-belong to that definition attach to the same server process. Providers must not cache processes;
-the adapter keeps the connection alive until its final editor disconnects and creates a new
-connection when the shared wrapper needs to restart.
+belong to that definition attach to the same server process. Each tab maintains its own
+`EditorTabSession` and `CodeEditor` instance, which connects to the shared server connection. The
+adapter keeps the connection alive until its final editor disconnects.
 
 Server diagnostics must go to stderr. Writing logs to stdout corrupts LSP framing.
 
@@ -427,10 +427,9 @@ The editor gives a contributed run command precedence over the Gradle `run` fall
 contributed commands in bottom PTY tabs. Command text is intentionally shell code and is passed as
 an exact argument to `bash -lc`; providers must never place untrusted values into it.
 
-The fixed Sync tab has an additional ownership rule: `gradlew` takes precedence and retains Gradle
-sync. If the wrapper is absent, the first enabled `SYNC` command replaces Gradle in that tab and
-Gradle tooling startup is skipped. Providers should therefore return sync commands only for project
-layouts they positively recognize.
+The fixed Sync tab has an additional ownership rule: `gradlew` takes precedence for Gradle sync. If
+the wrapper is absent, the first enabled `SYNC` command replaces Gradle in that tab. In both cases,
+sync is executed as a command in a PTY terminal.
 
 The bundled `CustomProjectTypePlugin` is a user-configurable implementation. It contributes one
 dynamic project creator plus a command provider backed by application preferences. Configuration

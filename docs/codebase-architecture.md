@@ -9,13 +9,10 @@ Android app
   +-- editor, UI, project state, and plugins
   +-- glibc process runner
        +-- JDKs, compilers, shells, and language servers
-       +-- Gradle tooling provider
-            +-- Gradle connection and daemon
 ```
 
 The editor and plugin host run in ART. Desktop-oriented tools run as glibc Linux/aarch64
-subprocesses. Gradle gets an additional boundary because its real Tooling API implementation runs
-in a JDK subprocess and communicates with the app over JSON.
+subprocesses.
 
 ## Module boundaries
 
@@ -23,7 +20,6 @@ in a JDK subprocess and communicates with the app over JSON.
 |----------------------------|----------------------------------------------------------------------------------------------|
 | `:app`                     | Compose UI, editor composition, built-in extensions, toolchain setup, and the Gradle client. |
 | `:exec`                    | The only supported way to launch GNU/Linux tools, with plain-process and PTY transports.     |
-| `:feature:tooling`         | Standalone JAR containing the real Gradle Tooling API provider.                              |
 | `:plugin-api`              | Stable plugin lifecycle, registry, service, and descriptor contracts.                        |
 | `:ide-api`                 | Editor, formatter, and LSP extension contracts.                                              |
 | `:plugin-runtime`          | Android plugin discovery, dex loading, activation, and cleanup.                              |
@@ -56,8 +52,7 @@ Navigation chooses the first missing capability:
 glibc runtime -> selected JDK -> bundled language servers -> home
 ```
 
-The navigation back stack owns the active Gradle tooling session. Leaving all project-related
-screens stops the provider; application shutdown repeats the cleanup defensively.
+Leaving all project-related screens cleans up project-scoped resources.
 
 ## Storage ownership
 
@@ -67,7 +62,6 @@ screens stops the provider; application shutdown repeats the cleanup defensively
 | `files/jdks`                                     | Installed JDK distributions.                                                                                         |
 | `files/kotlin-lsp`, `files/jdtls`, `files/scala` | Language-server installations.                                                                                       |
 | `files/Android/sdk`                              | Optional Android SDK.                                                                                                |
-| `files/gradle-tooling.jar`                       | Runtime copy of the bundled Gradle provider.                                                                         |
 | `cacheDir`                                       | Resolver files, language-server workspaces, downloads, Java temp files, and validated HTTPS TextMate grammar copies. |
 | app-specific external files                      | User projects, plugins, and persistent IDE data managed by `FileUtil`.                                               |
 
@@ -77,11 +71,7 @@ screens stops the provider; application shutdown repeats the cleanup defensively
   LSP providers own server creation.
 - `CosmicPluginHost` owns the extension registry; registrations are owned and removed by plugin id.
 - `LinuxProcessRunner` owns the glibc environment and command wrapping for every external tool.
-- `ToolingServerManager` owns at most one fixed-project Gradle provider process.
-- Project screens request command contributions and tooling cleanup through
-  `ProjectSessionServices`; the default adapter is the only Compose-facing bridge to the plugin and
-  tooling globals.
-- The app-side and provider-side Gradle protocol must change together.
+- Project screens request command contributions and cleanup through `ProjectSessionServices`.
 - HTTPS TextMate grammar cache entries are URL-keyed, parser-validated before replacement, and
   refreshed after seven days. Cache storage is disposable; user configuration remains in
   preferences.
@@ -95,13 +85,11 @@ artifact:
 |-----------------------------------------|-------------------------------------------|
 | `assets/glibc.tar.zst`                  | `scripts/build-glibc.sh`                  |
 | `jniLibs/arm64-v8a/libpath_redirect.so` | `scripts/build-shims.sh`                  |
-| `assets/gradle-tooling.jar`             | `:feature:tooling:copyToolingJarToAssets` |
 
 ## Detailed references
 
 - [glibc runtime and shims](glibc-runtime-and-shims.md)
 - [Application UI and project lifecycle](app-ui-and-project-lifecycle.md)
 - [Process execution and terminal](process-execution-and-terminal.md)
-- [Gradle tooling bridge](gradle-tooling-bridge.md)
 - [Editor and language services](editor-and-language-services.md)
 - [Plugin architecture](plugin-architecture.md)

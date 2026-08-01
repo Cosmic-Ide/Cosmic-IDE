@@ -14,6 +14,7 @@ import com.termux.view.TerminalView
 import com.termux.view.textselection.TextSelectionCursorController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.exec.linux.LinuxProcessRunner
@@ -24,6 +25,8 @@ import top.canyie.pine.Pine
 import java.io.File
 import java.io.OutputStream
 import java.nio.charset.StandardCharsets
+import java.util.Collections
+import java.util.IdentityHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class TerminalController(
@@ -48,13 +51,12 @@ internal class TerminalController(
 
     private var process: PtyProcess? = null
     private var processOutput: OutputStream? = null
-    private var processJob: kotlinx.coroutines.Job? = null
+    private var processJob: Job? = null
     private var geometry: TerminalGeometry? = null
     private var emulator: TerminalEmulator? = null
 
     init {
-        installSelectionMenuHook()
-        installTerminalInputHook()
+        registerController(this)
     }
 
     fun startOrResize(textSizeDp: Int, typeface: Typeface) {
@@ -62,12 +64,9 @@ internal class TerminalController(
 
         terminalView.applyTerminalAppearance(textSizeDp, typeface)
 
-        val nextGeometry = terminalView.calculateGeometry(textSizeDp, typeface)
-        if (nextGeometry == null) {
-            return
-        }
-
+        val nextGeometry = terminalView.calculateGeometry(textSizeDp, typeface) ?: return
         val currentEmulator = emulator
+
         if (currentEmulator == null) {
             val createdEmulator = TerminalEmulator(
                 terminalOutput,
@@ -222,13 +221,17 @@ internal class TerminalController(
     fun close() {
         if (!closed.compareAndSet(false, true)) return
 
+        unregisterController(this)
+
         processJob?.cancel()
         processJob = null
 
-        process?.terminate()
-        process?.close()
-        process = null
-        processOutput = null
+        synchronized(lock) {
+            process?.terminate()
+            process?.close()
+            process = null
+            processOutput = null
+        }
     }
 
     private fun clearModifierLatch(ctrlDown: Boolean, altDown: Boolean) {
@@ -266,9 +269,21 @@ internal class TerminalController(
                     return@launch
                 }
 
-                synchronized(lock) {
-                    process = newProcess
-                    processOutput = newProcess.getOutputStream()
+                val rejected = synchronized(lock) {
+                    if (closed.get()) {
+                        true
+                    } else {
+                        process = newProcess
+                        processOutput = newProcess.getOutputStream()
+                        false
+                    }
+                }
+
+                if (rejected) {
+                    newProcess.terminate()
+                    newProcess.waitFor()
+                    newProcess.close()
+                    return@launch
                 }
 
                 if (terminationRequested.get()) newProcess.terminate()
@@ -317,138 +332,6 @@ internal class TerminalController(
         }
     }
 
-    private fun installTerminalInputHook() {
-        HookManager.registerHook(object : Hook(
-            method = "inputCodePoint",
-            argTypes = arrayOf(
-                Int::class.javaPrimitiveType!!,
-                Int::class.javaPrimitiveType!!,
-                Boolean::class.javaPrimitiveType!!,
-                Boolean::class.javaPrimitiveType!!
-            ),
-            type = TerminalView::class.java
-        ) {
-            override fun before(param: Pine.CallFrame) {
-                val view = param.thisObject as? TerminalView ?: return
-                if (view !== terminalView) return
-
-                // If Termux session exists, let Termux handle it normally.
-                if (view.mTermSession != null) return
-
-                val codePoint = param.args[1] as Int
-                val ctrlDown = (param.args[2] as Boolean) || view.mClient.readControlKey()
-                val altDown = (param.args[3] as Boolean) || view.mClient.readAltKey()
-
-                writeTerminalCodePoint(
-                    prependEscape = altDown,
-                    codePoint = codePoint.toTerminalCodePoint(ctrlDown)
-                )
-
-                // Void method: setting result skips original in Pine-style hooks.
-                // Even if your wrapper still calls original, original just returns because mTermSession == null.
-                param.result = null
-            }
-        })
-
-        HookManager.registerHook(object : Hook(
-            method = "handleKeyCode",
-            argTypes = arrayOf(
-                Int::class.javaPrimitiveType!!,
-                Int::class.javaPrimitiveType!!
-            ),
-            type = TerminalView::class.java
-        ) {
-            override fun before(param: Pine.CallFrame) {
-                val view = param.thisObject as? TerminalView ?: return
-                if (view !== terminalView) return
-
-                // If Termux has a real session, let original TerminalView handle it.
-                if (view.mTermSession != null) return
-
-                val keyCode = param.args[0] as Int
-                val keyMod = param.args[1] as Int
-                val term = view.mEmulator
-
-                if (term == null) {
-                    param.result = false
-                    return
-                }
-
-                term.setCursorBlinkState(true)
-
-                // Preserve Termux's built-in non-session actions, like Shift+PageUp/PageDown scrollback.
-                if (view.handleKeyCodeAction(keyCode, keyMod)) {
-                    param.result = true
-                    return
-                }
-
-                val code = KeyHandler.getCode(
-                    keyCode,
-                    keyMod,
-                    term.isCursorKeysApplicationMode,
-                    term.isKeypadApplicationMode
-                )
-
-                if (code == null) {
-                    param.result = false
-                    return
-                }
-
-                write(code)
-                param.result = true
-            }
-        })
-    }
-
-    private fun installSelectionMenuHook() {
-        val controllerClass = TextSelectionCursorController::class.java
-
-        val getSelectedTextMethod = controllerClass.getDeclaredMethod("getSelectedText").apply {
-            isAccessible = true
-        }
-        val terminalViewField = controllerClass.getDeclaredField("terminalView").apply {
-            isAccessible = true
-        }
-
-        fun outerController(callbackObject: Any): Any {
-            val field = callbackObject.javaClass.getDeclaredField("this$0").apply {
-                isAccessible = true
-            }
-            return field.get(callbackObject)!!
-        }
-
-        fun selectedText(selectionController: Any): String {
-            return getSelectedTextMethod.invoke(selectionController) as? String ?: ""
-        }
-
-        HookManager.registerHook(object : Hook(
-            method = "onActionItemClicked",
-            argTypes = arrayOf(ActionMode::class.java, MenuItem::class.java),
-            type = Class.forName("com.termux.view.textselection.TextSelectionCursorController$2")
-        ) {
-            override fun before(param: Pine.CallFrame) {
-                val selectionController = outerController(param.thisObject)
-                if (terminalViewField.get(selectionController) !== terminalView) return
-
-                val item = param.args[1] as MenuItem
-
-                when (item.itemId) {
-                    1 -> {
-                        terminalOutput.onCopyTextToClipboard(selectedText(selectionController))
-                        terminalView.stopTextSelectionMode()
-                        param.result = true
-                    }
-
-                    2 -> {
-                        terminalView.stopTextSelectionMode()
-                        terminalOutput.onPasteTextFromClipboard()
-                        param.result = true
-                    }
-                }
-            }
-        })
-    }
-
     private inner class PtyTerminalOutput : TerminalOutput() {
         override fun write(data: ByteArray, offset: Int, count: Int) {
             this@TerminalController.write(data, offset, count)
@@ -485,6 +368,170 @@ internal class TerminalController(
 
         override fun onColorsChanged() {
             terminalView.onScreenUpdated()
+        }
+    }
+
+    companion object {
+        private val hooksInstalled = AtomicBoolean(false)
+        private val controllers = Collections.synchronizedMap(
+            IdentityHashMap<TerminalView, TerminalController>()
+        )
+
+        private fun registerController(controller: TerminalController) {
+            controllers[controller.terminalView] = controller
+            installHooksOnce()
+        }
+
+        private fun unregisterController(controller: TerminalController) {
+            synchronized(controllers) {
+                if (controllers[controller.terminalView] === controller) {
+                    controllers.remove(controller.terminalView)
+                }
+            }
+        }
+
+        private fun controllerFor(view: TerminalView): TerminalController? {
+            return controllers[view]
+        }
+
+        private fun installHooksOnce() {
+            if (!hooksInstalled.compareAndSet(false, true)) return
+
+            try {
+                installTerminalInputHooks()
+                installSelectionMenuHook()
+            } catch (error: Throwable) {
+                hooksInstalled.set(false)
+                throw error
+            }
+        }
+
+        private fun installTerminalInputHooks() {
+            HookManager.registerHook(object : Hook(
+                method = "inputCodePoint",
+                argTypes = arrayOf(
+                    Int::class.javaPrimitiveType!!,
+                    Int::class.javaPrimitiveType!!,
+                    Boolean::class.javaPrimitiveType!!,
+                    Boolean::class.javaPrimitiveType!!
+                ),
+                type = TerminalView::class.java
+            ) {
+                override fun before(param: Pine.CallFrame) {
+                    val view = param.thisObject as? TerminalView ?: return
+                    if (view.mTermSession != null) return
+
+                    val controller = controllerFor(view) ?: return
+                    val codePoint = param.args[1] as Int
+                    val ctrlDown = (param.args[2] as Boolean) || view.mClient.readControlKey()
+                    val altDown = (param.args[3] as Boolean) || view.mClient.readAltKey()
+
+                    controller.writeTerminalCodePoint(
+                        prependEscape = altDown,
+                        codePoint = codePoint.toTerminalCodePoint(ctrlDown)
+                    )
+
+                    param.result = null
+                }
+            })
+
+            HookManager.registerHook(object : Hook(
+                method = "handleKeyCode",
+                argTypes = arrayOf(
+                    Int::class.javaPrimitiveType!!,
+                    Int::class.javaPrimitiveType!!
+                ),
+                type = TerminalView::class.java
+            ) {
+                override fun before(param: Pine.CallFrame) {
+                    val view = param.thisObject as? TerminalView ?: return
+                    if (view.mTermSession != null) return
+
+                    val controller = controllerFor(view) ?: return
+                    val keyCode = param.args[0] as Int
+                    val keyMod = param.args[1] as Int
+                    val term = view.mEmulator
+
+                    if (term == null) {
+                        param.result = false
+                        return
+                    }
+
+                    term.setCursorBlinkState(true)
+
+                    if (view.handleKeyCodeAction(keyCode, keyMod)) {
+                        param.result = true
+                        return
+                    }
+
+                    val code = KeyHandler.getCode(
+                        keyCode,
+                        keyMod,
+                        term.isCursorKeysApplicationMode,
+                        term.isKeypadApplicationMode
+                    )
+
+                    if (code == null) {
+                        param.result = false
+                        return
+                    }
+
+                    controller.write(code)
+                    param.result = true
+                }
+            })
+        }
+
+        private fun installSelectionMenuHook() {
+            val controllerClass = TextSelectionCursorController::class.java
+            val getSelectedTextMethod = controllerClass
+                .getDeclaredMethod("getSelectedText")
+                .apply { isAccessible = true }
+            val terminalViewField = controllerClass
+                .getDeclaredField("terminalView")
+                .apply { isAccessible = true }
+
+            fun outerController(callbackObject: Any): Any {
+                val field = callbackObject.javaClass.getDeclaredField("this$0").apply {
+                    isAccessible = true
+                }
+                return field.get(callbackObject)!!
+            }
+
+            fun selectedText(selectionController: Any): String {
+                return getSelectedTextMethod.invoke(selectionController) as? String ?: ""
+            }
+
+            HookManager.registerHook(object : Hook(
+                method = "onActionItemClicked",
+                argTypes = arrayOf(ActionMode::class.java, MenuItem::class.java),
+                type = Class.forName(
+                    "com.termux.view.textselection.TextSelectionCursorController$2"
+                )
+            ) {
+                override fun before(param: Pine.CallFrame) {
+                    val selectionController = outerController(param.thisObject)
+                    val view = terminalViewField.get(selectionController) as? TerminalView ?: return
+                    val controller = controllerFor(view) ?: return
+                    val item = param.args[1] as MenuItem
+
+                    when (item.itemId) {
+                        1 -> {
+                            controller.terminalOutput.onCopyTextToClipboard(
+                                selectedText(selectionController)
+                            )
+                            view.stopTextSelectionMode()
+                            param.result = true
+                        }
+
+                        2 -> {
+                            view.stopTextSelectionMode()
+                            controller.terminalOutput.onPasteTextFromClipboard()
+                            param.result = true
+                        }
+                    }
+                }
+            })
         }
     }
 }

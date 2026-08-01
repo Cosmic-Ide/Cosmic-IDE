@@ -625,6 +625,8 @@ object LinuxProcessRunner {
         put("HOME", runtime.appDir.resolve("home").absolutePath)
         put("SHELL", runtime.defaultShell().absolutePath)
 
+        put("SSL_CERT_FILE", "${runtime.appDir}/etc/ssl/certs/ca-certificates.crt")
+
         // TMPDIR is required by libpath_redirect for /tmp redirection. TMP/TEMP
         // are kept for cross-platform Java/native tooling that probes them.
         put("TMPDIR", runtime.tempDir.absolutePath)

@@ -2,6 +2,7 @@ package org.cosmicide.ui.terminal
 
 import android.content.Context
 import android.graphics.Typeface
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -11,16 +12,19 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ColorScheme
@@ -38,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,10 +57,12 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import com.termux.view.TerminalView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,6 +70,7 @@ import org.cosmicide.R
 import org.cosmicide.common.Prefs
 import org.cosmicide.util.jdksDir
 import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,33 +94,101 @@ fun TerminalScreen(
         ResourcesCompat.getFont(context, terminalFontResId) ?: Typeface.MONOSPACE
     }
 
-    var title by remember { mutableStateOf(initialCommand) }
-    var startupError by remember { mutableStateOf<String?>(null) }
-    var terminalController by remember { mutableStateOf<TerminalController?>(null) }
-
-    val modifierLatch = remember { TerminalModifierLatch() }
     var currentTextSizeDp by rememberSaveable(terminalTextSizeDp) {
         mutableIntStateOf(terminalTextSizeDp.coerceIn(MinTerminalTextSizeDp, MaxTerminalTextSizeDp))
+    }
+    var nextSessionId by remember { mutableIntStateOf(2) }
+
+    fun createSession(id: Int): TerminalUiSession {
+        return createTerminalUiSession(
+            id = id,
+            viewContext = context,
+            controllerContext = appContext,
+            commandLine = initialCommand,
+            workingDir = terminalWorkingDir,
+            setup = setup,
+            jdkDir = jdkDir,
+            typeface = terminalTypeface,
+            textSizeDp = { currentTextSizeDp },
+            onTextSizeChanged = { currentTextSizeDp = it },
+            scope = scope,
+            colorScheme = colorScheme,
+            onProcessExit = onProcessExit
+        )
+    }
+
+    val sessions = remember {
+        mutableStateListOf(createSession(id = 1))
+    }
+    var activeSessionId by remember { mutableIntStateOf(1) }
+    val fallbackModifierLatch = remember { TerminalModifierLatch() }
+
+    val activeSession = sessions.firstOrNull { it.id == activeSessionId }
+        ?: sessions.firstOrNull()
+
+    fun addSession() {
+        val session = createSession(nextSessionId++)
+        sessions.add(session)
+        activeSessionId = session.id
+    }
+
+    fun closeSession(session: TerminalUiSession) {
+        val removedIndex = sessions.indexOf(session)
+        val wasActive = session.id == activeSessionId
+
+        session.controller.close()
+        sessions.remove(session)
+
+        if (sessions.isEmpty()) {
+            onNavigateBack()
+            return
+        }
+
+        if (wasActive) {
+            activeSessionId = sessions[
+                removedIndex.coerceIn(0, sessions.lastIndex)
+            ].id
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            sessions.forEach { it.controller.close() }
+        }
     }
 
     DisposableEffect(colorScheme) {
         applyTerminalColors(colorScheme)
+        sessions.forEach { session ->
+            session.terminalView.setBackgroundColor(colorScheme.surfaceContainer.toArgb())
+            session.terminalView.onScreenUpdated()
+        }
         onDispose {}
     }
 
     Scaffold(
         topBar = {
-            TerminalTopBar(
-                title = startupError ?: title,
-                colorScheme = colorScheme,
-                onNavigateBack = onNavigateBack,
-                onClose = { terminalController?.terminate() }
-            )
+            Column {
+                TerminalTopBar(
+                    title = activeSession?.displayTitle ?: initialCommand,
+                    sessionCount = sessions.size,
+                    colorScheme = colorScheme,
+                    onNavigateBack = onNavigateBack,
+                    onAddSession = ::addSession,
+                )
+
+                TerminalSessionSwitcher(
+                    sessions = sessions,
+                    activeSessionId = activeSession?.id,
+                    onSelect = { activeSessionId = it.id },
+                    onClose = ::closeSession
+                )
+            }
         },
         bottomBar = {
             ExtraKeysBar(
-                controller = terminalController,
-                modifierLatch = modifierLatch,
+                controller = activeSession?.controller,
+                modifierLatch = activeSession?.modifierLatch ?: fallbackModifierLatch,
                 modifier = Modifier
                     .imePadding()
                     .navigationBarsPadding()
@@ -121,82 +197,36 @@ fun TerminalScreen(
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { padding ->
-        AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(8.dp, 8.dp, 8.dp, 2.dp),
-            factory = { viewContext ->
-                val terminalView = TerminalView(viewContext, null).apply {
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
-                    )
-                    setBackgroundColor(colorScheme.surfaceContainer.toArgb())
-                    applyTerminalAppearance(currentTextSizeDp, terminalTypeface)
-                    isFocusable = true
-                    isFocusableInTouchMode = true
-                }
-
-
-                val controller = TerminalController(
-                    context = appContext,
-                    commandLine = initialCommand,
-                    workingDir = terminalWorkingDir,
-                    setup = setup,
-                    jdkDir = jdkDir,
-                    terminalView = terminalView,
-                    modifierLatch = modifierLatch,
-                    scope = scope,
-                    onTitleChanged = { title = it.ifBlank { initialCommand } },
-                    onFailure = { startupError = "Terminal fault: ${it.message.orEmpty()}" },
-                    onProcessExit = onProcessExit
-                )
-
-                terminalView.addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
-                    view.post {
-                        controller.startOrResize(currentTextSizeDp, terminalTypeface)
+        if (activeSession != null) {
+            AndroidView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(8.dp, 8.dp, 8.dp, 2.dp),
+                factory = { viewContext ->
+                    FrameLayout(viewContext).also { host ->
+                        host.attachSession(
+                            session = activeSession,
+                            colorScheme = colorScheme,
+                            textSizeDp = currentTextSizeDp,
+                            typeface = terminalTypeface
+                        )
                     }
-                }
-
-                terminalView.setTerminalViewClient(
-                    BasicTerminalViewClient(
-                        controller = controller,
-                        showKeyboard = terminalView::showKeyboard,
-                        onZoom = { increase ->
-                            currentTextSizeDp = (currentTextSizeDp + if (increase) 1 else -1)
-                                .coerceIn(MinTerminalTextSizeDp, MaxTerminalTextSizeDp)
-                        }
+                },
+                update = { host ->
+                    host.attachSession(
+                        session = activeSession,
+                        colorScheme = colorScheme,
+                        textSizeDp = currentTextSizeDp,
+                        typeface = terminalTypeface
                     )
-                )
-
-                terminalView.setOnClickListener {
-                    terminalView.showKeyboard()
+                },
+                onRelease = { host ->
+                    host.removeAllViews()
+                    host.tag = null
                 }
-
-                val host = FrameLayout(viewContext).apply {
-                    setBackgroundColor(colorScheme.surfaceContainer.toArgb())
-                    addView(terminalView)
-                }
-
-                terminalController = controller
-
-                terminalView.post {
-                    controller.startOrResize(currentTextSizeDp, terminalTypeface)
-                    terminalView.showKeyboard()
-                }
-
-                host
-            },
-            update = { host ->
-                host.setBackgroundColor(colorScheme.surfaceContainer.toArgb())
-                terminalController?.startOrResize(currentTextSizeDp, terminalTypeface)
-            },
-            onRelease = {
-                terminalController?.close()
-                terminalController = null
-            }
-        )
+            )
+        }
     }
 }
 
@@ -204,39 +234,122 @@ fun TerminalScreen(
 @Composable
 private fun TerminalTopBar(
     title: String,
+    sessionCount: Int,
     colorScheme: ColorScheme,
     onNavigateBack: () -> Unit,
-    onClose: () -> Unit
+    onAddSession: () -> Unit,
 ) {
-    Column {
-        TopAppBar(
-            title = {
+    TopAppBar(
+        title = {
+            Column {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-            },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            },
-            actions = {
-                IconButton(onClick = onClose) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close terminal session"
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = colorScheme.surfaceContainer
-            )
+                Text(
+                    text = "$sessionCount terminal ${if (sessionCount == 1) "session" else "sessions"}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onAddSession) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "New terminal session"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorScheme.surfaceContainer
         )
+    )
+}
+
+@Composable
+private fun TerminalSessionSwitcher(
+    sessions: List<TerminalUiSession>,
+    activeSessionId: Int?,
+    onSelect: (TerminalUiSession) -> Unit,
+    onClose: (TerminalUiSession) -> Unit
+) {
+    val scrollState = rememberScrollState()
+
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = 1.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .horizontalScroll(scrollState)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            sessions.forEachIndexed { index, session ->
+                val selected = session.id == activeSessionId
+
+                Surface(
+                    color = if (selected) {
+                        MaterialTheme.colorScheme.secondaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.surfaceContainerHigh
+                    },
+                    contentColor = if (selected) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(
+                            onClick = { onSelect(session) },
+                            modifier = Modifier
+                                .height(36.dp)
+                                .widthIn(min = 76.dp, max = 180.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = if (selected) {
+                                    MaterialTheme.colorScheme.onSecondaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
+                            )
+                        ) {
+                            Text(
+                                text = "${index + 1}  ${session.displayTitle}",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+
+                        IconButton(
+                            onClick = { onClose(session) },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close session ${index + 1}",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -423,11 +536,11 @@ private fun RepeatableExtraKeyButton(
                         awaitFirstDown(requireUnconsumed = false)
                         var repeated = false
                         val repeatJob = this@repeatScope.launch {
-                            delay(400)
+                            delay(400.milliseconds)
                             repeated = true
                             while (true) {
                                 currentOnClick()
-                                delay(70)
+                                delay(70.milliseconds)
                             }
                         }
 
@@ -444,8 +557,127 @@ private fun RepeatableExtraKeyButton(
     }
 }
 
+private class TerminalUiSession(
+    val id: Int,
+    val initialCommand: String
+) {
+    var title by mutableStateOf(initialCommand)
+    var startupError by mutableStateOf<String?>(null)
+
+    val modifierLatch = TerminalModifierLatch()
+    lateinit var terminalView: TerminalView
+    lateinit var controller: TerminalController
+
+    val displayTitle: String
+        get() = startupError ?: title.ifBlank { initialCommand }
+}
+
+private fun createTerminalUiSession(
+    id: Int,
+    viewContext: Context,
+    controllerContext: Context,
+    commandLine: String,
+    workingDir: File,
+    setup: Boolean,
+    jdkDir: File,
+    typeface: Typeface,
+    textSizeDp: () -> Int,
+    onTextSizeChanged: (Int) -> Unit,
+    scope: CoroutineScope,
+    colorScheme: ColorScheme,
+    onProcessExit: (Int) -> Unit
+): TerminalUiSession {
+    val session = TerminalUiSession(id, commandLine)
+
+    val terminalView = TerminalView(viewContext, null).apply {
+        layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+        setBackgroundColor(colorScheme.surfaceContainer.toArgb())
+        applyTerminalAppearance(textSizeDp(), typeface)
+        isFocusable = true
+        isFocusableInTouchMode = true
+    }
+
+    val controller = TerminalController(
+        context = controllerContext,
+        commandLine = commandLine,
+        workingDir = workingDir,
+        setup = setup,
+        jdkDir = jdkDir,
+        terminalView = terminalView,
+        modifierLatch = session.modifierLatch,
+        scope = scope,
+        onTitleChanged = { newTitle ->
+            session.startupError = null
+            session.title = newTitle.ifBlank { commandLine }
+        },
+        onFailure = { error ->
+            session.startupError = "Terminal fault: ${error.message.orEmpty()}"
+        },
+        onProcessExit = onProcessExit
+    )
+
+    session.terminalView = terminalView
+    session.controller = controller
+
+    terminalView.addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
+        view.post {
+            controller.startOrResize(textSizeDp(), typeface)
+        }
+    }
+
+    terminalView.setTerminalViewClient(
+        BasicTerminalViewClient(
+            controller = controller,
+            showKeyboard = terminalView::showKeyboard,
+            onZoom = { increase ->
+                val next = (textSizeDp() + if (increase) 1 else -1)
+                    .coerceIn(MinTerminalTextSizeDp, MaxTerminalTextSizeDp)
+                onTextSizeChanged(next)
+            }
+        )
+    )
+
+    terminalView.setOnClickListener {
+        terminalView.showKeyboard()
+    }
+
+    return session
+}
+
+private fun FrameLayout.attachSession(
+    session: TerminalUiSession,
+    colorScheme: ColorScheme,
+    textSizeDp: Int,
+    typeface: Typeface
+) {
+    val view = session.terminalView
+    val changedSession = tag != session.id || getChildAt(0) !== view
+
+    setBackgroundColor(colorScheme.surfaceContainer.toArgb())
+    view.setBackgroundColor(colorScheme.surfaceContainer.toArgb())
+
+    if (changedSession) {
+        (view.parent as? ViewGroup)?.removeView(view)
+        removeAllViews()
+        addView(view)
+        tag = session.id
+    }
+
+    session.controller.startOrResize(textSizeDp, typeface)
+
+    if (changedSession) {
+        view.post {
+            view.showKeyboard()
+        }
+    }
+}
+
 private fun TerminalView.showKeyboard() {
     requestFocus()
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.showSoftInput(this, 0)
 }
+

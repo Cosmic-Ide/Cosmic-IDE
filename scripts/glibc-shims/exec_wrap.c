@@ -24,6 +24,9 @@
 #define PATH_MAX 4096
 #endif
 
+#define TERMUX_FILES_PREFIX "/data/data/com.termux/files"
+#define TERMUX_GLIBC_RUNTIME_PREFIX TERMUX_FILES_PREFIX "/usr/glibc"
+
 /*
  * Compile-time policy switches. Flip these here if a build needs different
  * behavior. Runtime env toggles are intentionally avoided. The wrapper derives
@@ -680,6 +683,42 @@ static char* resolve_ld_linux_path(void) {
     return ld_linux;
 }
 
+/*
+ * glibc's ldd script contains a build-time RTLDLIST. Termux-glibc packages
+ * commonly embed paths such as:
+ *
+ *   /data/data/com.termux/files/usr/glibc/lib/ld-linux-aarch64.so.1
+ *
+ * That loader is not present at the literal Android path. More importantly,
+ * the runtime linker is an ELF interpreter with no PT_INTERP of its own, so it
+ * must not be wrapped as an ordinary dynamically linked program. Execute the
+ * packaged compatibility linker directly instead.
+ */
+static int is_compat_loader_alias(const char* path) {
+    if (!path || path[0] != '/') return 0;
+
+    const char* base = base_name_const(path);
+    if (strcmp(base, "ld-linux-aarch64.so.1") != 0 &&
+        strcmp(base, "ld-linux.so.1") != 0) {
+        return 0;
+    }
+
+    return string_starts_with(path, TERMUX_GLIBC_RUNTIME_PREFIX "/") ||
+           string_starts_with(path, "/usr/lib/") ||
+           string_starts_with(path, "/lib/") ||
+           string_starts_with(path, "/lib64/");
+}
+
+static char* resolve_compat_loader_alias(const char* requested_path) {
+    if (!is_compat_loader_alias(requested_path)) return NULL;
+
+    char* loader = resolve_ld_linux_path();
+    if (loader) {
+        tracef("compat loader alias %s -> %s", requested_path, loader);
+    }
+    return loader;
+}
+
 static size_t argv_count(char* const argv[]) {
     size_t count = 0;
     if (!argv) return 0;
@@ -1325,6 +1364,25 @@ static char* redirect_virtual_exec_path(
         return duplicate_string(path);
     }
 
+    /* Match path_redirect.c for absolute paths embedded by Termux packages. */
+    if (strcmp(path, TERMUX_GLIBC_RUNTIME_PREFIX) == 0 ||
+        string_starts_with(path, TERMUX_GLIBC_RUNTIME_PREFIX "/")) {
+        return prepend_root(
+            root,
+            "/usr",
+            path + strlen(TERMUX_GLIBC_RUNTIME_PREFIX)
+        );
+    }
+
+    if (strcmp(path, TERMUX_FILES_PREFIX) == 0 ||
+        string_starts_with(path, TERMUX_FILES_PREFIX "/")) {
+        return prepend_root(
+            root,
+            "",
+            path + strlen(TERMUX_FILES_PREFIX)
+        );
+    }
+
     if (strcmp(path, "/usr") == 0 ||
         string_starts_with(path, "/usr/")) {
         return prepend_root(root, "", path);
@@ -1618,6 +1676,17 @@ static void cleanup_prepare(char* resolved_target, owned_vec_t* wrapped_argv, ow
 int execve(const char* pathname, char* const argv[], char* const envp[]) {
     execve_fn_t real_execve = REAL(execve, execve_fn_t);
 
+    char* compat_loader = resolve_compat_loader_alias(pathname);
+    if (compat_loader) {
+        wrapping_now = 1;
+        int rc = real_execve(compat_loader, argv, envp);
+        int saved_errno = errno;
+        wrapping_now = 0;
+        free(compat_loader);
+        errno = saved_errno;
+        return rc;
+    }
+
     char* resolved = NULL;
     owned_vec_t wrapped_argv;
     owned_vec_t wrapped_env;
@@ -1648,6 +1717,17 @@ int execv(const char* pathname, char* const argv[]) {
 
 int execvp(const char* file, char* const argv[]) {
     execve_fn_t real_execve = REAL(execve, execve_fn_t);
+
+    char* compat_loader = resolve_compat_loader_alias(file);
+    if (compat_loader) {
+        wrapping_now = 1;
+        int rc = real_execve(compat_loader, argv, environ);
+        int saved_errno = errno;
+        wrapping_now = 0;
+        free(compat_loader);
+        errno = saved_errno;
+        return rc;
+    }
     execvp_fn_t real_execvp = REAL(execvp, execvp_fn_t);
 
     char* resolved = NULL;
@@ -1676,6 +1756,17 @@ int execvp(const char* file, char* const argv[]) {
 
 int execvpe(const char* file, char* const argv[], char* const envp[]) {
     execve_fn_t real_execve = REAL(execve, execve_fn_t);
+
+    char* compat_loader = resolve_compat_loader_alias(file);
+    if (compat_loader) {
+        wrapping_now = 1;
+        int rc = real_execve(compat_loader, argv, envp);
+        int saved_errno = errno;
+        wrapping_now = 0;
+        free(compat_loader);
+        errno = saved_errno;
+        return rc;
+    }
     execvpe_fn_t real_execvpe = OPT_REAL(execvpe, execvpe_fn_t);
 
     char* resolved = NULL;
@@ -1867,6 +1958,22 @@ int posix_spawn(
 ) {
     posix_spawn_fn_t real_posix_spawn = REAL(posix_spawn, posix_spawn_fn_t);
 
+    char* compat_loader = resolve_compat_loader_alias(path);
+    if (compat_loader) {
+        wrapping_now = 1;
+        int rc = real_posix_spawn(
+            pid,
+            compat_loader,
+            file_actions,
+            attrp,
+            argv,
+            envp
+        );
+        wrapping_now = 0;
+        free(compat_loader);
+        return rc;
+    }
+
     char* resolved = NULL;
     owned_vec_t wrapped_argv;
     owned_vec_t wrapped_env;
@@ -1898,6 +2005,22 @@ int posix_spawnp(
     char* const envp[]
 ) {
     posix_spawn_fn_t real_posix_spawn = REAL(posix_spawn, posix_spawn_fn_t);
+
+    char* compat_loader = resolve_compat_loader_alias(file);
+    if (compat_loader) {
+        wrapping_now = 1;
+        int rc = real_posix_spawn(
+            pid,
+            compat_loader,
+            file_actions,
+            attrp,
+            argv,
+            envp
+        );
+        wrapping_now = 0;
+        free(compat_loader);
+        return rc;
+    }
     posix_spawn_fn_t real_posix_spawnp = REAL(posix_spawnp, posix_spawn_fn_t);
 
     char* resolved = NULL;

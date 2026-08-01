@@ -29,14 +29,6 @@ object ResourceUtil {
             .isFile
     }
 
-    fun isJdtlsMissing(): Boolean {
-        val context = App.instance.get() ?: return true
-        val pluginsDir = context.filesDir.resolve("jdtls/plugins")
-        return pluginsDir.listFiles().orEmpty().none { file ->
-            file.name.startsWith("org.eclipse.equinox.launcher_") &&
-                    file.name.endsWith(".jar")
-        }
-    }
 
     fun isGradleGroovyLspMissing(): Boolean {
         val context = App.instance.get() ?: return true
@@ -53,8 +45,7 @@ object ResourceUtil {
     }
 
     fun isLanguageServerSetupIncomplete(): Boolean {
-        return isKotlinLspMissing() ||
-                isJdtlsMissing()
+        return isKotlinLspMissing()
 //                isGradleGroovyLspMissing()
     }
 

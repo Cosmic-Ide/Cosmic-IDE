@@ -40,7 +40,6 @@ class AndroidPluginManager(
     init {
         pluginRoot.mkdirs()
         serviceRegistry.register(AndroidPluginServices.APPLICATION_CONTEXT, appContext)
-        serviceRegistry.register(AndroidPluginServices.PLUGIN_DIRECTORY, pluginRoot)
     }
 
     fun loadInstalledPlugins(): List<PluginLoadResult> {
@@ -110,6 +109,9 @@ class AndroidPluginManager(
             pluginContext?.disposeAll()
             extensionRegistry.unregisterOwner(descriptor.id)
             updateHandle(descriptor, PluginState.FAILED, throwable.message)
+
+            throwable.printStackTrace()
+
             PluginLoadResult.Failed(
                 descriptor = descriptor,
                 reason = throwable.message ?: "Plugin activation failed",
@@ -146,7 +148,8 @@ class AndroidPluginManager(
             pluginContext = DefaultPluginContext(
                 descriptor = descriptor,
                 extensions = extensionRegistry,
-                services = serviceRegistry,
+                services = serviceRegistry.copy()
+                    .apply { register(AndroidPluginServices.PLUGIN_DIRECTORY, pluginDir) },
                 logger = AndroidPluginLogger(descriptor.id)
             )
             plugin.activate(pluginContext)
@@ -167,6 +170,9 @@ class AndroidPluginManager(
             pluginContext?.disposeAll()
             extensionRegistry.unregisterOwner(descriptor.id)
             updateHandle(descriptor, PluginState.FAILED, throwable.message)
+
+            throwable.printStackTrace()
+
             PluginLoadResult.Failed(
                 descriptor = descriptor,
                 reason = throwable.message ?: "Plugin activation failed",

@@ -31,11 +31,13 @@ interface MutableServiceRegistry : ServiceRegistry {
     fun <T : Any> register(key: ServiceKey<T>, instance: T): Disposable
 
     fun unregister(key: ServiceKey<*>)
+
+    fun copy(): MutableServiceRegistry
 }
 
 class DefaultServiceRegistry : MutableServiceRegistry {
 
-    private val services = ConcurrentHashMap<ServiceKey<*>, Any>()
+    val services = ConcurrentHashMap<ServiceKey<*>, Any>()
 
     override fun <T : Any> register(key: ServiceKey<T>, instance: T): Disposable {
         require(key.type.isInstance(instance)) {
@@ -54,5 +56,11 @@ class DefaultServiceRegistry : MutableServiceRegistry {
     override fun <T : Any> get(key: ServiceKey<T>): T? {
         val service = services[key] ?: return null
         return key.type.cast(service)
+    }
+
+    override fun copy(): MutableServiceRegistry {
+        return DefaultServiceRegistry().also {
+            it.services.putAll(services)
+        }
     }
 }

@@ -20,7 +20,7 @@ class DefaultPluginContext(
     override val descriptor: PluginDescriptor,
     override val extensions: MutableExtensionRegistry,
     override val services: ServiceRegistry,
-    override val logger: PluginLogger = AndroidPluginLogger(descriptor.id)
+    override val logger: PluginLogger = AndroidPluginLogger(descriptor.id),
 ) : PluginContext {
 
     private val disposables = CopyOnWriteArrayList<Disposable>()

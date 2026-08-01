@@ -19,6 +19,7 @@ import org.cosmicide.plugin.api.PluginLoadResult
 import org.cosmicide.plugin.api.PluginManager
 import org.cosmicide.plugin.api.PluginState
 import org.cosmicide.plugin.runtime.loading.PluginClassLoaderFactory
+import org.cosmicide.plugins.AndroidPluginServices
 import java.io.File
 
 class AndroidPluginManager(

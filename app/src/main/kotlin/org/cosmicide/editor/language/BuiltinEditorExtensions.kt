@@ -25,22 +25,10 @@ fun registerBuiltinEditorExtensions(context: Context, registry: MutableExtension
     )
     registry.register(
         point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
-        extension = JavaEditorLanguageProvider,
-        ownerPluginId = PluginIds.CORE,
-        priority = JavaEditorLanguageProvider.priority
-    )
-    registry.register(
-        point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
         extension = KotlinEditorLanguageProvider,
         ownerPluginId = PluginIds.CORE,
         priority = KotlinEditorLanguageProvider.priority
     )
-//    registry.register(
-//        point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
-//        extension = GradleGroovyEditorLanguageProvider,
-//        ownerPluginId = PluginIds.CORE,
-//        priority = GradleGroovyEditorLanguageProvider.priority
-//    )
     val customLspProvider = CustomLspServerProvider(
         context.applicationContext,
         CustomLspConfigurationStore(context)

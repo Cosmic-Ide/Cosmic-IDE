@@ -27,6 +27,18 @@ android {
         }
     }
 
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            isDefault = true
+        }
+        create("prod") {
+            dimension = "environment"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -35,7 +47,8 @@ android {
 
 dependencies {
     api(projects.pluginApi)
+    compileOnly(projects.ideApi)
     implementation("top.canyie.pine:core:0.3.0")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.json:json:20250517")
+    testImplementation("org.json:json:20260719")
 }

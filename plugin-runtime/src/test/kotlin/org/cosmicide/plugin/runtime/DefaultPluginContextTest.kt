@@ -2,7 +2,6 @@ package org.cosmicide.plugin.runtime
 
 import org.cosmicide.plugin.api.DefaultExtensionRegistry
 import org.cosmicide.plugin.api.DefaultServiceRegistry
-import org.cosmicide.plugin.api.Disposable
 import org.cosmicide.plugin.api.PluginDescriptor
 import org.cosmicide.plugin.api.PluginLogger
 import org.junit.Assert.assertEquals
@@ -14,12 +13,12 @@ class DefaultPluginContextTest {
         val events = mutableListOf<String>()
         val logger = RecordingLogger()
         val context = context(logger)
-        context.registerDisposable(Disposable { events += "first" })
-        context.registerDisposable(Disposable {
+        context.registerDisposable { events += "first" }
+        context.registerDisposable {
             events += "second"
             error("broken cleanup")
-        })
-        context.registerDisposable(Disposable { events += "third" })
+        }
+        context.registerDisposable { events += "third" }
 
         context.disposeAll()
         context.disposeAll()
@@ -32,7 +31,7 @@ class DefaultPluginContextTest {
     fun `individual disposable is idempotent and removed from context cleanup`() {
         var calls = 0
         val context = context(RecordingLogger())
-        val registration = context.registerDisposable(Disposable { calls++ })
+        val registration = context.registerDisposable { calls++ }
 
         registration.dispose()
         registration.dispose()
@@ -45,7 +44,7 @@ class DefaultPluginContextTest {
     fun `registration remains idempotent after context cleanup`() {
         var calls = 0
         val context = context(RecordingLogger())
-        val registration = context.registerDisposable(Disposable { calls++ })
+        val registration = context.registerDisposable { calls++ }
 
         context.disposeAll()
         registration.dispose()

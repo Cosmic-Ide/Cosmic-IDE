@@ -13,7 +13,7 @@ import com.google.gson.reflect.TypeToken
 import org.cosmicide.plugin.api.CosmicPlugin
 import org.cosmicide.plugin.api.PluginContext
 import org.cosmicide.plugin.api.PluginDescriptor
-import org.cosmicide.plugin.runtime.AndroidPluginServices
+import org.cosmicide.plugins.AndroidPluginServices
 import org.cosmicide.project.CommandExecutionService
 import org.cosmicide.project.CommandRequest
 import org.cosmicide.project.IdeServices

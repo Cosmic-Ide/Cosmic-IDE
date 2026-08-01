@@ -94,42 +94,6 @@ install_kotlin_lsp() {
     echo "Kotlin language support installed."
 }
 
-install_jdtls() {
-    local install_dir="$FILES_DIR/jdtls"
-    local archive="$CACHE_DIR/jdtls.tar.gz"
-
-    if compgen -G "$install_dir/plugins/org.eclipse.equinox.launcher_*.jar" >/dev/null; then
-        echo "Eclipse JDT language server is already installed."
-        return
-    fi
-
-    echo "Downloading Eclipse JDT language server..."
-
-    rm -rf "$install_dir"
-    mkdir -p "$install_dir"
-
-    if [[ ! -s "$archive" ]]; then
-        curl -fL "$JDTLS_URL" -o "$archive"
-    fi
-
-    if ! extract_tar_gz "$archive" "$install_dir"; then
-        rm -rf "$install_dir"
-        rm -f "$archive"
-        echo "Error: failed to extract Eclipse JDT language server." >&2
-        return 1
-    fi
-
-    rm -f "$archive"
-
-    if ! compgen -G "$install_dir/plugins/org.eclipse.equinox.launcher_*.jar" >/dev/null; then
-        rm -rf "$install_dir"
-        echo "Error: Eclipse launcher JAR was not found after extraction." >&2
-        return 1
-    fi
-
-    echo "Java language support installed."
-}
-
 install_gradle_language_server() {
     local server_source="$VSCODE_GRADLE_DIR/gradle-language-server/src/main/java/com/microsoft/gradle/GradleLanguageServer.java"
     local server_executable="$VSCODE_GRADLE_DIR/gradle-language-server/build/install/gradle-language-server/bin/gradle-language-server"
@@ -552,15 +516,6 @@ echo
 installed_any=false
 
 setup_pacman
-
-echo
-
-if ask_to_install "Java language support"; then
-    install_jdtls
-    installed_any=true
-else
-    echo "Skipping Java language support."
-fi
 
 echo
 

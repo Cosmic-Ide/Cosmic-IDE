@@ -65,6 +65,9 @@
       <module name="CosmicIDE.feature.formatter.google-java-format.test" target="21" />
       <module name="CosmicIDE.feature.formatter.ktfmt" target="26" />
       <module name="CosmicIDE.feature.java-completion" target="26" />
+      <module name="CosmicIDE.feature.tooling" target="17" />
+      <module name="CosmicIDE.feature.tooling.main" target="17" />
+      <module name="CosmicIDE.feature.tooling.test" target="17" />
       <module name="CosmicIDE.feature.TreeView" target="21" />
       <module name="CosmicIDE.gradle-tooling-api" target="21" />
       <module name="CosmicIDE.jgit" target="17" />

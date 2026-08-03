@@ -4,8 +4,7 @@
 
 ### Desktop-class development on Android
 
-A modular development environment for Android. Edit, build, and run projects using genuine Linux
-toolchains, an integrated terminal, and a plugin-based architecture.
+A modular development environment for Android. Edit, build, and run projects, an integrated terminal, and a plugin-based architecture.
 
 [![Android CI](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml/badge.svg)](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml)
 [![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-IDE)](LICENSE)

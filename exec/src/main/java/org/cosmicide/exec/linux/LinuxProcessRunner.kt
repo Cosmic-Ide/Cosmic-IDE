@@ -1,9 +1,13 @@
 package org.cosmicide.exec.linux
 
+import android.annotation.SuppressLint
 import android.content.Context
 import org.cosmicide.util.repairJdkExecutablePermissions
 import java.io.File
+import java.io.RandomAccessFile
 import java.lang.reflect.Field
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 object LinuxProcessRunner {
 
@@ -30,7 +34,6 @@ object LinuxProcessRunner {
     )
 
     private data class GlibcRuntime(
-        val tempDir: File,
         val appDir: File,
         val glibcPath: String,
         val customLinker: String,
@@ -64,25 +67,36 @@ object LinuxProcessRunner {
             interactive = true,
             enabled = config.loadShellStartupFiles
         )
-        val wrappedCommand = runtime.wrapCommand(config.binary, shellArguments)
         val environment = buildMap {
             putCommonGlibcEnvironment(runtime)
             put("PATH", buildPath(runtime, config.binary, config.pathEntries))
             put("TERM", "xterm-256color")
             putAll(config.environmentOverrides)
 
+            // ld-linux resolves the initial executable before libpath_redirect is
+            // loaded, so virtual /usr and /lib entries are useless here. Normalize
+            // them to the physical app-private root while retaining mandatory
+            // runtime directories.
+            put("LD_LIBRARY_PATH", runtime.normalizeLibraryPath(get("LD_LIBRARY_PATH")))
+        }
+        val wrappedCommand = runtime.wrapCommand(
+            binary = config.binary,
+            arguments = shellArguments,
+            inheritedLibraryPath = environment.getValue("LD_LIBRARY_PATH")
+        )
+        val launchEnvironment = environment + mapOf(
             // The initial process is launched through ld-linux directly, before
             // exec_wrap can intercept anything. Preserve the real executable
             // identity for /proc/self/exe and AT_EXECFN virtualization.
-            put(EXECUTABLE_IDENTITY_ENV, wrappedCommand.executableIdentity)
-        }
+            EXECUTABLE_IDENTITY_ENV to wrappedCommand.executableIdentity
+        )
 
         // IMPORTANT: config.workingDir is passed to the native layer for chdir().
         val pty = PtyTerminal.allocateAndSpawn(
             workingDir = config.workingDir,
             executable = File(wrappedCommand.command[0]),
             arguments = wrappedCommand.command.drop(1),
-            environment = environment
+            environment = launchEnvironment
         )
 
         pty.setWindowSize(config.terminalRows, config.terminalColumns)
@@ -246,7 +260,20 @@ object LinuxProcessRunner {
             interactive = false,
             enabled = config.loadShellStartupFiles
         )
-        val wrappedCommand = runtime.wrapCommand(config.binary, shellArguments)
+        val launchEnvironment = buildMap {
+            putCommonGlibcEnvironment(runtime)
+            put("PATH", buildPath(runtime, config.binary, config.pathEntries))
+
+            // Keep caller overrides late so special tool invocations can replace
+            // JAVA_HOME, LD_LIBRARY_PATH, PATH, DNS_TRACE, etc.
+            putAll(config.environmentOverrides)
+            put("LD_LIBRARY_PATH", runtime.normalizeLibraryPath(get("LD_LIBRARY_PATH")))
+        }
+        val wrappedCommand = runtime.wrapCommand(
+            binary = config.binary,
+            arguments = shellArguments,
+            inheritedLibraryPath = launchEnvironment.getValue("LD_LIBRARY_PATH")
+        )
 
         return ProcessBuilder(wrappedCommand.command).apply {
             directory(config.workingDir)
@@ -254,12 +281,7 @@ object LinuxProcessRunner {
 
             environment().apply {
                 clear()
-                putCommonGlibcEnvironment(runtime)
-                put("PATH", buildPath(runtime, config.binary, config.pathEntries))
-
-                // Keep caller overrides late so special tool invocations can replace
-                // JAVA_HOME, TMPDIR, LD_LIBRARY_PATH, PATH, DNS_TRACE, etc.
-                putAll(config.environmentOverrides)
+                putAll(launchEnvironment)
 
                 // This is internal launch metadata, not a caller-facing switch.
                 put(EXECUTABLE_IDENTITY_ENV, wrappedCommand.executableIdentity)
@@ -301,16 +323,21 @@ object LinuxProcessRunner {
 
     private fun GlibcRuntime.wrapCommand(
         binary: File,
-        arguments: List<String>
+        arguments: List<String>,
+        inheritedLibraryPath: String
     ): WrappedCommand {
         val target = resolveInitialGlibcTarget(binary.absoluteFile)
 
         return when (target.executableKind()) {
-            ExecutableKind.ELF -> linkerCommand(target, arguments)
+            ExecutableKind.ELF -> linkerCommand(target, arguments, inheritedLibraryPath)
 
             ExecutableKind.SHELL_SCRIPT -> {
                 val shell = resolveShellForScript(target)
-                linkerCommand(shell, listOf(target.absolutePath) + arguments)
+                linkerCommand(
+                    shell,
+                    listOf(target.absolutePath) + arguments,
+                    inheritedLibraryPath
+                )
             }
 
             ExecutableKind.UNSUPPORTED -> {
@@ -324,9 +351,11 @@ object LinuxProcessRunner {
 
     private fun GlibcRuntime.linkerCommand(
         program: File,
-        arguments: List<String>
+        arguments: List<String>,
+        inheritedLibraryPath: String
     ): WrappedCommand {
         val programPath = program.canonicalOrAbsolutePath()
+        val loaderLibraryPath = loaderLibraryPath(program, inheritedLibraryPath)
 
         return WrappedCommand(
             command = buildList {
@@ -334,7 +363,7 @@ object LinuxProcessRunner {
                 add("--argv0")
                 add(programPath)
                 add("--library-path")
-                add(linkLibraryDirs().joinToString(":") { it.absolutePath })
+                add(loaderLibraryPath)
                 add("--preload")
                 add(combinedPreload)
                 add(programPath)
@@ -535,7 +564,6 @@ object LinuxProcessRunner {
     }
 
     private fun prepareGlibcRuntime(context: Context, setup: Boolean): GlibcRuntime {
-        val tempDir = context.cacheDir.apply { mkdirs() }
         val appDir = runtimeDir(context, setup)
         val homeDir = appDir.resolve("home").apply { mkdirs() }
         ensureBashStartupBridge(homeDir)
@@ -547,7 +575,6 @@ object LinuxProcessRunner {
         val nssWrapper = glibcRoot.resolve("lib/libnss_wrapper.so").absolutePath
 
         return GlibcRuntime(
-            tempDir = tempDir,
             appDir = appDir,
             glibcPath = glibcPath,
             customLinker = "$nativeLibDir/libld_linux.so",
@@ -600,6 +627,182 @@ object LinuxProcessRunner {
         }
     }
 
+
+    /**
+     * Converts virtual Linux library paths to their physical app-private paths.
+     * Mandatory runtime directories are appended so a caller-provided
+     * LD_LIBRARY_PATH cannot accidentally hide libc, libstdc++, or GCC helpers.
+     */
+    private fun GlibcRuntime.normalizeLibraryPath(value: String?): String {
+        return buildList {
+            value.orEmpty().split(':').filter { it.isNotBlank() }.forEach { entry ->
+                add(relocateVirtualPath(entry))
+            }
+            addAll(linkLibraryDirs().map { it.absolutePath })
+        }.distinct().joinToString(":")
+    }
+
+    /**
+     * The preload layer cannot participate in dependency lookup for the initial
+     * ELF. Translate its DT_RUNPATH/DT_RPATH entries and feed them directly to
+     * ld-linux through --library-path.
+     */
+    private fun GlibcRuntime.loaderLibraryPath(
+        program: File,
+        inheritedLibraryPath: String
+    ): String {
+        val origin = program.parentFile?.canonicalOrAbsolutePath().orEmpty()
+        val embedded = program.readElfDynamicSearchPath().flatMap { pathList ->
+            pathList.split(':').filter { it.isNotBlank() }
+        }.map { entry ->
+            relocateVirtualPath(
+                entry.replace($$"${ORIGIN}", origin).replace($$"$ORIGIN", origin)
+            )
+        }
+
+        return (inheritedLibraryPath.split(':').filter { it.isNotBlank() } + embedded)
+            .distinct()
+            .joinToString(":")
+    }
+
+    @SuppressLint("SdCardPath")
+    private fun GlibcRuntime.relocateVirtualPath(path: String): String {
+        if (!path.startsWith('/')) return path
+
+        val appRoot = appDir.canonicalOrAbsolutePath()
+        if (path == appRoot || path.startsWith("$appRoot/")) return path
+
+        val termuxFiles = "/data/data/com.termux/files"
+        val termuxGlibc = "$termuxFiles/usr/glibc"
+        return when {
+            path == termuxGlibc || path.startsWith("$termuxGlibc/") -> {
+                appDir.resolve("usr" + path.removePrefix(termuxGlibc)).absolutePath
+            }
+
+            path == termuxFiles || path.startsWith("$termuxFiles/") -> {
+                appDir.resolve(path.removePrefix(termuxFiles).removePrefix("/")).absolutePath
+            }
+
+            VIRTUAL_ROOTS.any { path == it || path.startsWith("$it/") } -> {
+                appDir.resolve(path.removePrefix("/")).absolutePath
+            }
+
+            else -> path
+        }
+    }
+
+    /**
+     * Reads DT_RUNPATH (preferred) or DT_RPATH from a little-endian ELF64 file.
+     * Cosmic currently supports aarch64 only, so rejecting other ELF layouts is
+     * deliberate rather than silently mis-parsing them.
+     */
+    private fun File.readElfDynamicSearchPath(): List<String> {
+        data class LoadSegment(
+            val fileOffset: Long,
+            val virtualAddress: Long,
+            val fileSize: Long
+        )
+
+        return try {
+            RandomAccessFile(this, "r").use { file ->
+                fun read(offset: Long, size: Int): ByteBuffer {
+                    require(offset >= 0 && size >= 0 && offset + size <= file.length())
+                    val bytes = ByteArray(size)
+                    file.seek(offset)
+                    file.readFully(bytes)
+                    return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+                }
+
+                val ident = read(0, 16)
+                if (ident.get(0) != 0x7F.toByte() ||
+                    ident.get(1) != 'E'.code.toByte() ||
+                    ident.get(2) != 'L'.code.toByte() ||
+                    ident.get(3) != 'F'.code.toByte() ||
+                    ident.get(4) != ELF_CLASS_64 ||
+                    ident.get(5) != ELF_DATA_LSB
+                ) return emptyList()
+
+                val header = read(0, ELF64_HEADER_SIZE)
+                val programHeaderOffset = header.getLong(32)
+                val programHeaderEntrySize = header.getShort(54).toInt() and 0xFFFF
+                val programHeaderCount = header.getShort(56).toInt() and 0xFFFF
+                if (programHeaderEntrySize < ELF64_PROGRAM_HEADER_SIZE || programHeaderCount == 0) {
+                    return emptyList()
+                }
+
+                val loadSegments = mutableListOf<LoadSegment>()
+                var dynamicOffset = -1L
+                var dynamicSize = 0L
+                repeat(programHeaderCount) { index ->
+                    val offset = programHeaderOffset + index.toLong() * programHeaderEntrySize
+                    val headerEntry = read(offset, ELF64_PROGRAM_HEADER_SIZE)
+                    val type = headerEntry.getInt(0)
+                    val fileOffset = headerEntry.getLong(8)
+                    val virtualAddress = headerEntry.getLong(16)
+                    val fileSize = headerEntry.getLong(32)
+                    when (type) {
+                        ELF_PT_LOAD -> loadSegments += LoadSegment(
+                            fileOffset = fileOffset,
+                            virtualAddress = virtualAddress,
+                            fileSize = fileSize
+                        )
+
+                        ELF_PT_DYNAMIC -> {
+                            dynamicOffset = fileOffset
+                            dynamicSize = fileSize
+                        }
+                    }
+                }
+                if (dynamicOffset < 0 || dynamicSize < ELF64_DYNAMIC_ENTRY_SIZE) return emptyList()
+
+                var stringTableAddress = -1L
+                var stringTableSize = 0L
+                var runPathOffset = -1L
+                var rPathOffset = -1L
+                val entryCount = (dynamicSize / ELF64_DYNAMIC_ENTRY_SIZE)
+                    .coerceAtMost(MAX_DYNAMIC_ENTRIES.toLong())
+                    .toInt()
+                for (index in 0 until entryCount) {
+                    val entry = read(
+                        dynamicOffset + index.toLong() * ELF64_DYNAMIC_ENTRY_SIZE,
+                        ELF64_DYNAMIC_ENTRY_SIZE
+                    )
+                    val tag = entry.getLong(0)
+                    val value = entry.getLong(8)
+                    when (tag) {
+                        ELF_DT_NULL -> break
+                        ELF_DT_STRTAB -> stringTableAddress = value
+                        ELF_DT_STRSZ -> stringTableSize = value
+                        ELF_DT_RPATH -> rPathOffset = value
+                        ELF_DT_RUNPATH -> runPathOffset = value
+                    }
+                }
+
+                val selectedOffset = if (runPathOffset >= 0) runPathOffset else rPathOffset
+                if (stringTableAddress < 0 || stringTableSize <= 0 || selectedOffset < 0) {
+                    return emptyList()
+                }
+
+                val segment = loadSegments.firstOrNull { segment ->
+                    stringTableAddress >= segment.virtualAddress &&
+                            stringTableAddress < segment.virtualAddress + segment.fileSize
+                } ?: return emptyList()
+                val tableFileOffset = segment.fileOffset +
+                        (stringTableAddress - segment.virtualAddress)
+                if (selectedOffset >= stringTableSize) return emptyList()
+
+                val maxLength = (stringTableSize - selectedOffset)
+                    .coerceAtMost(MAX_DYNAMIC_STRING_BYTES.toLong())
+                    .toInt()
+                val bytes = read(tableFileOffset + selectedOffset, maxLength).array()
+                val length = bytes.indexOf(0).let { if (it >= 0) it else bytes.size }
+                listOf(bytes.copyOf(length).toString(Charsets.UTF_8))
+            }
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
     private fun GlibcRuntime.linkLibraryDirs(): List<File> {
         val glibcRoot = File(glibcPath)
 
@@ -628,12 +831,6 @@ object LinuxProcessRunner {
         if (runtime.appDir.absolutePath.endsWith("arch")) {
             put("SSL_CERT_FILE", "${runtime.appDir}/etc/ssl/certs/ca-certificates.crt")
         }
-
-        // TMPDIR is required by libpath_redirect for /tmp redirection. TMP/TEMP
-        // are kept for cross-platform Java/native tooling that probes them.
-        put("TMPDIR", runtime.tempDir.absolutePath)
-        put("TMP", runtime.tempDir.absolutePath)
-        put("TEMP", runtime.tempDir.absolutePath)
 
         put("RES_OPTIONS", "attempts:1 timeout:1")
 
@@ -794,6 +991,23 @@ object LinuxProcessRunner {
             false
         }
     }
+
+    private val VIRTUAL_ROOTS = listOf("/usr", "/lib", "/lib64", "/home")
+
+    private const val ELF_CLASS_64: Byte = 2
+    private const val ELF_DATA_LSB: Byte = 1
+    private const val ELF64_HEADER_SIZE = 64
+    private const val ELF64_PROGRAM_HEADER_SIZE = 56
+    private const val ELF64_DYNAMIC_ENTRY_SIZE = 16
+    private const val ELF_PT_LOAD = 1
+    private const val ELF_PT_DYNAMIC = 2
+    private const val ELF_DT_NULL = 0L
+    private const val ELF_DT_STRTAB = 5L
+    private const val ELF_DT_STRSZ = 10L
+    private const val ELF_DT_RPATH = 15L
+    private const val ELF_DT_RUNPATH = 29L
+    private const val MAX_DYNAMIC_ENTRIES = 16_384
+    private const val MAX_DYNAMIC_STRING_BYTES = 1 shl 20
 
     private const val PAGE_SIZE_BYTES = 4096L
     private const val BYTES_PER_KB = 1024L

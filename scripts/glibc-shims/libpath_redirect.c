@@ -329,7 +329,16 @@ static int is_virtual_root_component(const char* path) {
            strcmp(path, "/var") == 0 ||
            strcmp(path, "/run") == 0 ||
            strcmp(path, "/home") == 0 ||
-           strcmp(path, "/tmp") == 0;
+           strcmp(path, "/tmp") == 0 ||
+           strcmp(path, "/boot") == 0 ||
+           strcmp(path, "/include32") == 0 ||
+           strcmp(path, "/include") == 0 ||
+           strcmp(path, "/local") == 0 ||
+           strcmp(path, "/mnt") == 0 ||
+           strcmp(path, "/opt") == 0 ||
+           strcmp(path, "/root") == 0 ||
+           strcmp(path, "/share") == 0 ||
+           strcmp(path, "/srv") == 0;
 }
 
 static int should_synthesize_physical_root_symlink(
@@ -824,10 +833,63 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
         return redirected;
     }
 
-    const char* tmpdir = getenv("TMPDIR");
-    if (tmpdir != NULL && tmpdir[0] != '\0' && path_starts_with_component(path, "/tmp")) {
-        const char* redirected = redirect_prefix_path(path, "/tmp", tmpdir, buffer, buffer_size);
+    if (path_starts_with_component(path, "/tmp")) {
+        const char* redirected = redirect_virtual_root(path, "/tmp", "/tmp", buffer, buffer_size);
         debug_redirect("tmp", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/boot")) {
+        const char* redirected = redirect_virtual_root(path, "/boot", "/boot", buffer, buffer_size);
+        debug_redirect("boot", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/include32")) {
+        const char* redirected = redirect_virtual_root(path, "/include32", "/include32", buffer, buffer_size);
+        debug_redirect("include32", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/include")) {
+        const char* redirected = redirect_virtual_root(path, "/include", "/include", buffer, buffer_size);
+        debug_redirect("include", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/local")) {
+        const char* redirected = redirect_virtual_root(path, "/local", "/local", buffer, buffer_size);
+        debug_redirect("local", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/mnt")) {
+        const char* redirected = redirect_virtual_root(path, "/mnt", "/mnt", buffer, buffer_size);
+        debug_redirect("mnt", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/opt")) {
+        const char* redirected = redirect_virtual_root(path, "/opt", "/opt", buffer, buffer_size);
+        debug_redirect("opt", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/root")) {
+        const char* redirected = redirect_virtual_root(path, "/root", "/root", buffer, buffer_size);
+        debug_redirect("root", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/share")) {
+        const char* redirected = redirect_virtual_root(path, "/share", "/share", buffer, buffer_size);
+        debug_redirect("share", path, redirected);
+        return redirected;
+    }
+
+    if (path_starts_with_component(path, "/srv")) {
+        const char* redirected = redirect_virtual_root(path, "/srv", "/srv", buffer, buffer_size);
+        debug_redirect("srv", path, redirected);
         return redirected;
     }
 
@@ -870,6 +932,16 @@ static int dirfd_path_can_contain_virtual_root(const char* path) {
     if (path_starts_with_component(path, "/lib")) return 1;
     if (path_starts_with_component(path, "/lib64")) return 1;
     if (path_starts_with_component(path, "/tmp")) return 1;
+    if (path_starts_with_component(path, "/boot")) return 1;
+    if (path_starts_with_component(path, "/include32")) return 1;
+    if (path_starts_with_component(path, "/include")) return 1;
+    if (path_starts_with_component(path, "/local")) return 1;
+    if (path_starts_with_component(path, "/mnt")) return 1;
+    if (path_starts_with_component(path, "/opt")) return 1;
+    if (path_starts_with_component(path, "/root")) return 1;
+    if (path_starts_with_component(path, "/share")) return 1;
+    if (path_starts_with_component(path, "/srv")) return 1;
+
     char termux_runtime_buffer[REDIR_BUF_SIZE];
     const char* active_termux_runtime = termux_runtime_prefix(
         termux_runtime_buffer,

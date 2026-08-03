@@ -568,8 +568,6 @@ private fun createTerminalConfig(
         pathEntries = pathEntries
     )
 
-    val tempDir = context.cacheDir
-
     return LinuxProcessRunner.Configuration(
         binary = binary,
         arguments = commandParts.drop(1),
@@ -577,10 +575,6 @@ private fun createTerminalConfig(
         setup = setup,
         environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
             jdkDir
-        ) + mapOf(
-            "TMPDIR" to tempDir.absolutePath,
-            "TMP" to tempDir.absolutePath,
-            "TEMP" to tempDir.absolutePath
         ) + environmentOverrides,
         pathEntries = pathEntries,
         usePty = true,

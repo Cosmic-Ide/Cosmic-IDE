@@ -137,10 +137,6 @@ object ProcessExecutor {
     private fun toolchainEnvironment(context: Context, jdkDir: File): Map<String, String> {
         return LinuxProcessRunner.toolchainEnvironment(
             jdkDir
-        ) + mapOf(
-            "TMPDIR" to context.cacheDir.absolutePath,
-            "TMP" to context.cacheDir.absolutePath,
-            "TEMP" to context.cacheDir.absolutePath
         )
     }
 }

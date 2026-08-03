@@ -21,15 +21,6 @@ object ResourceUtil {
         val context = App.instance.get()
         return context!!.jdks().isEmpty()
     }
-
-    fun isKotlinLspMissing(): Boolean {
-        val context = App.instance.get() ?: return true
-        return !context.filesDir
-            .resolve("kotlin-lsp/bin/intellij-server")
-            .isFile
-    }
-
-
     fun isGradleGroovyLspMissing(): Boolean {
         val context = App.instance.get() ?: return true
         return !context.filesDir

@@ -31,7 +31,7 @@
  * Compile-time policy switches. Flip these here if a build needs different
  * behavior. Runtime env toggles are intentionally avoided. The wrapper derives
  * the custom linker path from this preload library location, and reads
- * normal Unix variables only: LD_LIBRARY_PATH, LD_PRELOAD, TMPDIR, SHELL, PATH.
+ * normal Unix variables only: LD_LIBRARY_PATH, LD_PRELOAD, SHELL, PATH.
  * Internal executable-identity variables are defined in exec_wrap.h and are
  * written only into wrapped child environments.
  */
@@ -43,10 +43,6 @@
 #define EXEC_WRAP_ENABLE_SCRIPT_WRAP 1
 #endif
 
-#ifndef EXEC_WRAP_ENABLE_JAVA_TMPDIR_INJECTION
-#define EXEC_WRAP_ENABLE_JAVA_TMPDIR_INJECTION 1
-#endif
-
 #ifndef EXEC_WRAP_ALLOW_ANDROID_SYSTEM_EXEC
 #define EXEC_WRAP_ALLOW_ANDROID_SYSTEM_EXEC 0
 #endif
@@ -55,6 +51,7 @@
 
 extern char** environ;
 
+typedef void* (*dlopen_fn_t)(const char*, int);
 typedef int (*execve_fn_t)(const char*, char* const[], char* const[]);
 typedef int (*execvp_fn_t)(const char*, char* const[]);
 typedef int (*execvpe_fn_t)(const char*, char* const[], char* const[]);
@@ -112,6 +109,7 @@ static void require_symbol_or_abort(const char* name, void* symbol) {
 #define REAL(sym, type) ((type) get_##sym(1))
 #define OPT_REAL(sym, type) ((type) get_##sym(0))
 
+DECLARE_REAL_SYMBOL(dlopen)
 DECLARE_REAL_SYMBOL(execve)
 DECLARE_REAL_SYMBOL(execvp)
 DECLARE_REAL_SYMBOL(execvpe)
@@ -513,7 +511,6 @@ static const char* const persistent_runtime_env_keys[] = {
     "HOSTS_PATH",
     "NSSWITCH_CONF_PATH",
     "GAI_CONF_PATH",
-    "TMPDIR",
     "HOMEBREW_SPAWN_SYSTEM",
 };
 
@@ -591,23 +588,6 @@ static char* join_path2(const char* dir, const char* name) {
     if (needs_slash) out[index++] = '/';
     memcpy(out + index, name, name_len);
     out[index + name_len] = '\0';
-    return out;
-}
-
-static char* first_path_component(const char* path_list) {
-    if (!path_list || !*path_list) return NULL;
-
-    const char* end = strchr(path_list, ':');
-    size_t len = end ? (size_t) (end - path_list) : strlen(path_list);
-    if (len == 0) return duplicate_string(".");
-
-    char* out = (char*) malloc(len + 1);
-    if (!out) {
-        errno = ENOMEM;
-        return NULL;
-    }
-    memcpy(out, path_list, len);
-    out[len] = '\0';
     return out;
 }
 
@@ -831,7 +811,6 @@ static int build_child_env(
         "HOSTS_PATH",
         "NSSWITCH_CONF_PATH",
         "GAI_CONF_PATH",
-        "TMPDIR",
         "HOMEBREW_SPAWN_SYSTEM",
     };
     for (size_t i = 0; i < sizeof(restore_keys) / sizeof(restore_keys[0]); i++) {
@@ -926,25 +905,27 @@ static char* resolve_for_exec_lookup(const char* file, char* const envp[], int s
     return search_path ? resolve_from_path(file, envp) : duplicate_string(file);
 }
 
-static char* resolve_glibc_bin_replacement(const char* resolved_path, const char* library_path) {
-    if (!resolved_path || !*resolved_path || !library_path || !*library_path) return NULL;
+static char* resolve_glibc_bin_replacement(
+    const char* resolved_path,
+    char* const envp[]
+) {
+    if (!resolved_path || !*resolved_path) return NULL;
 
     /*
      * If a script asks for /system/bin/uname, /system/bin/sh, etc. but an
-     * equivalent glibc-side binary exists, prefer the glibc one. This prevents
-     * shell scripts from escaping to Android/bionic tools just because they used
-     * an absolute /system path or PATH resolved there first.
+     * equivalent glibc-side binary exists, prefer the glibc one. Derive the
+     * root from APP_FILES_DIR rather than the first LD_LIBRARY_PATH component;
+     * callers are allowed to prepend private library directories.
      */
     if (!is_android_system_path(resolved_path)) return NULL;
 
     const char* base = base_name_const(resolved_path);
     if (!base || !*base || strchr(base, '/') != NULL) return NULL;
 
-    char* glibc_root = first_path_component(library_path);
-    if (!glibc_root) return NULL;
+    const char* app_root = runtime_env_get_from(envp, "APP_FILES_DIR");
+    if (!app_root || !*app_root) return NULL;
 
-    char* bin_dir = join_path2(glibc_root, "bin");
-    free(glibc_root);
+    char* bin_dir = join_path2(app_root, "usr/bin");
     if (!bin_dir) return NULL;
 
     char* candidate = join_path2(bin_dir, base);
@@ -1186,45 +1167,6 @@ static int is_java_target(const char* target_path) {
     return strcmp(base, "java") == 0 || string_ends_with(base, "java.exe");
 }
 
-static int argv_contains_java_tmpdir(char* const original_argv[]) {
-    if (!original_argv) return 0;
-
-    for (size_t i = 1; original_argv[i]; i++) {
-        if (string_starts_with(original_argv[i], "-Djava.io.tmpdir=")) return 1;
-    }
-
-    return 0;
-}
-
-static char* make_java_tmpdir_arg(const char* tmpdir) {
-    if (!tmpdir || !*tmpdir) return NULL;
-
-    const char* prefix = "-Djava.io.tmpdir=";
-    size_t prefix_len = strlen(prefix);
-    size_t tmp_len = strlen(tmpdir);
-
-    char* out = (char*) malloc(prefix_len + tmp_len + 1);
-    if (!out) {
-        errno = ENOMEM;
-        return NULL;
-    }
-
-    memcpy(out, prefix, prefix_len);
-    memcpy(out + prefix_len, tmpdir, tmp_len);
-    out[prefix_len + tmp_len] = '\0';
-    return out;
-}
-
-static const char* choose_java_tmpdir(char* const envp[]) {
-    const char* tmp = env_get_from(envp, "TMPDIR");
-    if (tmp && *tmp) return tmp;
-    tmp = env_get_from(envp, "TMP");
-    if (tmp && *tmp) return tmp;
-    tmp = env_get_from(envp, "TEMP");
-    if (tmp && *tmp) return tmp;
-    return NULL;
-}
-
 static int build_wrapped_argv(
     const char* ld_linux,
     const char* loader_argv0,
@@ -1234,7 +1176,6 @@ static int build_wrapped_argv(
     const char* script_argument,
     const char* script_path,
     char* const original_argv[],
-    const char* java_tmpdir,
     owned_vec_t* out
 ) {
     memset(out, 0, sizeof(*out));
@@ -1242,16 +1183,6 @@ static int build_wrapped_argv(
     size_t original_count = argv_count(original_argv);
     int has_preload = preload && *preload;
     int has_loader_argv0 = loader_argv0 && *loader_argv0;
-    int inject_java_tmpdir = 0;
-
-#if EXEC_WRAP_ENABLE_JAVA_TMPDIR_INJECTION
-    inject_java_tmpdir = script_path == NULL &&
-                         java_tmpdir && *java_tmpdir &&
-                         is_java_target(program_path) &&
-                         !argv_contains_java_tmpdir(original_argv);
-#else
-    (void) java_tmpdir;
-#endif
 
     size_t total = 0;
     total += 1;                    /* ld-linux argv[0] */
@@ -1261,7 +1192,6 @@ static int build_wrapped_argv(
     total += 1;                    /* program path */
     if (script_argument) total += 1; /* optional shebang argument */
     if (script_path) total += 1;    /* script path passed to interpreter */
-    if (inject_java_tmpdir) total += 1;
     total += original_count > 0 ? original_count - 1 : 0;
 
     char** argv = (char**) calloc(total + 1, sizeof(char*));
@@ -1294,11 +1224,6 @@ static int build_wrapped_argv(
 
     if (script_path) {
         argv[index++] = duplicate_string(script_path);
-    }
-
-    if (inject_java_tmpdir) {
-        argv[index++] = make_java_tmpdir_arg(java_tmpdir);
-        tracef("inject java.io.tmpdir for %s -> %s", program_path, java_tmpdir);
     }
 
     for (size_t i = 1; i < original_count; i++) {
@@ -1436,6 +1361,351 @@ static char* redirect_virtual_exec_path(
     return duplicate_string(path);
 }
 
+
+typedef struct {
+    char** items;
+    size_t count;
+    size_t capacity;
+} path_vec_t;
+
+static void path_vec_free(path_vec_t* vec) {
+    if (!vec) return;
+    for (size_t i = 0; i < vec->count; i++) free(vec->items[i]);
+    free(vec->items);
+    memset(vec, 0, sizeof(*vec));
+}
+
+static int path_vec_add_unique(path_vec_t* vec, const char* path) {
+    if (!vec || !path || !*path) return 0;
+
+    for (size_t i = 0; i < vec->count; i++) {
+        if (strcmp(vec->items[i], path) == 0) return 0;
+    }
+
+    if (vec->count == vec->capacity) {
+        size_t next_capacity = vec->capacity ? vec->capacity * 2 : 8;
+        char** grown = realloc(vec->items, next_capacity * sizeof(char*));
+        if (!grown) {
+            errno = ENOMEM;
+            return -1;
+        }
+        vec->items = grown;
+        vec->capacity = next_capacity;
+    }
+
+    vec->items[vec->count] = duplicate_string(path);
+    if (!vec->items[vec->count]) return -1;
+    vec->count++;
+    return 0;
+}
+
+static char* path_vec_join(const path_vec_t* vec) {
+    if (!vec || vec->count == 0) return duplicate_string("");
+
+    size_t total = 1;
+    for (size_t i = 0; i < vec->count; i++) {
+        total += strlen(vec->items[i]);
+        if (i + 1 < vec->count) total++;
+    }
+
+    char* out = malloc(total);
+    if (!out) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    size_t offset = 0;
+    for (size_t i = 0; i < vec->count; i++) {
+        size_t len = strlen(vec->items[i]);
+        memcpy(out + offset, vec->items[i], len);
+        offset += len;
+        if (i + 1 < vec->count) out[offset++] = ':';
+    }
+    out[offset] = '\0';
+    return out;
+}
+
+static char* expand_origin_tokens(const char* value, const char* origin) {
+    if (!value) return NULL;
+    if (!origin) origin = "";
+
+    size_t result_size = 1;
+    for (const char* p = value; *p;) {
+        if (strncmp(p, "${ORIGIN}", 9) == 0) {
+            result_size += strlen(origin);
+            p += 9;
+        } else if (strncmp(p, "$ORIGIN", 7) == 0) {
+            result_size += strlen(origin);
+            p += 7;
+        } else {
+            result_size++;
+            p++;
+        }
+    }
+
+    char* out = malloc(result_size);
+    if (!out) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    size_t offset = 0;
+    for (const char* p = value; *p;) {
+        if (strncmp(p, "${ORIGIN}", 9) == 0) {
+            size_t len = strlen(origin);
+            memcpy(out + offset, origin, len);
+            offset += len;
+            p += 9;
+        } else if (strncmp(p, "$ORIGIN", 7) == 0) {
+            size_t len = strlen(origin);
+            memcpy(out + offset, origin, len);
+            offset += len;
+            p += 7;
+        } else {
+            out[offset++] = *p++;
+        }
+    }
+    out[offset] = '\0';
+    return out;
+}
+
+static char* normalize_library_entry(
+    const char* entry,
+    const char* origin,
+    char* const envp[]
+) {
+    char* expanded = expand_origin_tokens(entry, origin);
+    if (!expanded) return NULL;
+
+    if (expanded[0] != '/') return expanded;
+
+    char* redirected = redirect_virtual_exec_path(expanded, envp);
+    free(expanded);
+    return redirected;
+}
+
+static int append_library_path_list(
+    path_vec_t* vec,
+    const char* path_list,
+    const char* origin,
+    char* const envp[]
+) {
+    if (!path_list) return 0;
+
+    const char* cursor = path_list;
+    while (1) {
+        const char* end = strchr(cursor, ':');
+        size_t len = end ? (size_t)(end - cursor) : strlen(cursor);
+
+        char* entry = NULL;
+        if (len == 0) {
+            entry = duplicate_string(".");
+        } else {
+            entry = malloc(len + 1);
+            if (entry) {
+                memcpy(entry, cursor, len);
+                entry[len] = '\0';
+            }
+        }
+        if (!entry) return -1;
+
+        char* normalized = normalize_library_entry(entry, origin, envp);
+        free(entry);
+        if (!normalized) return -1;
+
+        int rc = path_vec_add_unique(vec, normalized);
+        free(normalized);
+        if (rc != 0) return -1;
+
+        if (!end) break;
+        cursor = end + 1;
+    }
+
+    return 0;
+}
+
+/*
+ * Read DT_RUNPATH (preferred) or DT_RPATH from an ELF64/LSB executable.
+ * The dynamic loader evaluates these paths before any preload interposer can
+ * redirect virtual /usr paths, so exec_wrap must translate them itself.
+ */
+static char* read_elf_dynamic_search_path(const char* path) {
+    if (!path || !*path) return NULL;
+
+    int fd = open(path, O_RDONLY | O_CLOEXEC);
+    if (fd < 0) return NULL;
+
+    Elf64_Ehdr ehdr;
+    ssize_t n = pread(fd, &ehdr, sizeof(ehdr), 0);
+    if (n != (ssize_t)sizeof(ehdr) ||
+        memcmp(ehdr.e_ident, ELFMAG, SELFMAG) != 0 ||
+        ehdr.e_ident[EI_CLASS] != ELFCLASS64 ||
+        ehdr.e_ident[EI_DATA] != ELFDATA2LSB ||
+        ehdr.e_phentsize < sizeof(Elf64_Phdr) ||
+        ehdr.e_phnum == 0 ||
+        ehdr.e_phnum == PN_XNUM) {
+        close(fd);
+        return NULL;
+    }
+
+    Elf64_Phdr* loads = calloc(ehdr.e_phnum, sizeof(Elf64_Phdr));
+    if (!loads) {
+        close(fd);
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    size_t load_count = 0;
+    Elf64_Phdr dynamic = {0};
+    int has_dynamic = 0;
+    for (Elf64_Half i = 0; i < ehdr.e_phnum; i++) {
+        uint64_t offset = (uint64_t)ehdr.e_phoff +
+                          (uint64_t)i * (uint64_t)ehdr.e_phentsize;
+        if ((uint64_t)(off_t)offset != offset) goto fail;
+
+        Elf64_Phdr phdr;
+        n = pread(fd, &phdr, sizeof(phdr), (off_t)offset);
+        if (n != (ssize_t)sizeof(phdr)) goto fail;
+
+        if (phdr.p_type == PT_LOAD) loads[load_count++] = phdr;
+        if (phdr.p_type == PT_DYNAMIC) {
+            dynamic = phdr;
+            has_dynamic = 1;
+        }
+    }
+    if (!has_dynamic || dynamic.p_filesz < sizeof(Elf64_Dyn)) goto fail;
+
+    Elf64_Addr string_table_address = 0;
+    Elf64_Xword string_table_size = 0;
+    Elf64_Xword runpath_offset = (Elf64_Xword)-1;
+    Elf64_Xword rpath_offset = (Elf64_Xword)-1;
+    uint64_t dynamic_count = dynamic.p_filesz / sizeof(Elf64_Dyn);
+    if (dynamic_count > 16384) dynamic_count = 16384;
+
+    for (uint64_t i = 0; i < dynamic_count; i++) {
+        uint64_t offset = (uint64_t)dynamic.p_offset + i * sizeof(Elf64_Dyn);
+        if ((uint64_t)(off_t)offset != offset) goto fail;
+
+        Elf64_Dyn entry;
+        n = pread(fd, &entry, sizeof(entry), (off_t)offset);
+        if (n != (ssize_t)sizeof(entry)) goto fail;
+        if (entry.d_tag == DT_NULL) break;
+
+        switch (entry.d_tag) {
+            case DT_STRTAB: string_table_address = entry.d_un.d_ptr; break;
+            case DT_STRSZ: string_table_size = entry.d_un.d_val; break;
+            case DT_RUNPATH: runpath_offset = entry.d_un.d_val; break;
+            case DT_RPATH: rpath_offset = entry.d_un.d_val; break;
+            default: break;
+        }
+    }
+
+    Elf64_Xword selected = runpath_offset != (Elf64_Xword)-1
+        ? runpath_offset
+        : rpath_offset;
+    if (!string_table_address || !string_table_size ||
+        selected == (Elf64_Xword)-1 || selected >= string_table_size) {
+        goto fail;
+    }
+
+    uint64_t string_table_file_offset = 0;
+    int found_string_table = 0;
+    for (size_t i = 0; i < load_count; i++) {
+        uint64_t start = loads[i].p_vaddr;
+        uint64_t end = start + loads[i].p_filesz;
+        if (end < start) continue;
+        if (string_table_address >= start && string_table_address < end) {
+            string_table_file_offset = loads[i].p_offset +
+                (string_table_address - start);
+            found_string_table = 1;
+            break;
+        }
+    }
+    if (!found_string_table) goto fail;
+
+    uint64_t remaining = string_table_size - selected;
+    if (remaining > (1u << 20)) remaining = 1u << 20;
+    if (remaining == 0 || remaining > SIZE_MAX - 1) goto fail;
+
+    char* result = malloc((size_t)remaining + 1);
+    if (!result) {
+        errno = ENOMEM;
+        goto fail;
+    }
+
+    uint64_t result_offset = string_table_file_offset + selected;
+    if ((uint64_t)(off_t)result_offset != result_offset) {
+        free(result);
+        goto fail;
+    }
+
+    n = pread(fd, result, (size_t)remaining, (off_t)result_offset);
+    if (n <= 0) {
+        free(result);
+        goto fail;
+    }
+    result[n] = '\0';
+    char* terminator = memchr(result, '\0', (size_t)n);
+    if (!terminator) result[n] = '\0';
+
+    free(loads);
+    close(fd);
+    return result;
+
+fail:
+    free(loads);
+    close(fd);
+    return NULL;
+}
+
+static int build_library_paths(
+    const char* program_path,
+    const char* inherited_library_path,
+    char* const envp[],
+    char** normalized_environment_path_out,
+    char** loader_path_out
+) {
+    *normalized_environment_path_out = NULL;
+    *loader_path_out = NULL;
+
+    path_vec_t paths = {0};
+    if (append_library_path_list(&paths, inherited_library_path, NULL, envp) != 0) {
+        path_vec_free(&paths);
+        return -1;
+    }
+
+    char* normalized = path_vec_join(&paths);
+    if (!normalized) {
+        path_vec_free(&paths);
+        return -1;
+    }
+
+    char* embedded = read_elf_dynamic_search_path(program_path);
+    if (embedded && *embedded) {
+        char* origin = directory_of_path(program_path);
+        if (!origin || append_library_path_list(&paths, embedded, origin, envp) != 0) {
+            free(origin);
+            free(embedded);
+            free(normalized);
+            path_vec_free(&paths);
+            return -1;
+        }
+        free(origin);
+    }
+    free(embedded);
+
+    char* loader = path_vec_join(&paths);
+    path_vec_free(&paths);
+    if (!loader) {
+        free(normalized);
+        return -1;
+    }
+
+    *normalized_environment_path_out = normalized;
+    *loader_path_out = loader;
+    return 0;
+}
+
 static int prepare_wrap(
     const char* requested_path,
     char* const argv[],
@@ -1459,11 +1729,10 @@ static int prepare_wrap(
     if (wrapping_now) return 0;
 
     char* ld_linux = resolve_ld_linux_path();
-    const char* library_path = runtime_env_get_from(envp, "LD_LIBRARY_PATH");
+    const char* inherited_library_path = runtime_env_get_from(envp, "LD_LIBRARY_PATH");
     const char* preload = runtime_env_get_from(envp, "LD_PRELOAD");
-    const char* java_tmpdir = choose_java_tmpdir(envp);
 
-    if (!ld_linux || !*ld_linux || !library_path || !*library_path) {
+    if (!ld_linux || !*ld_linux || !inherited_library_path || !*inherited_library_path) {
         tracef("skip %s: derived linker/LD_LIBRARY_PATH missing", requested_path ? requested_path : "(null)");
         free(ld_linux);
         return 0;
@@ -1489,7 +1758,7 @@ static int prepare_wrap(
         resolved = redirected;
     }
 
-    char* replacement = resolve_glibc_bin_replacement(resolved, library_path);
+    char* replacement = resolve_glibc_bin_replacement(resolved, envp);
     if (replacement) {
         free(resolved);
         resolved = replacement;
@@ -1598,18 +1867,36 @@ static int prepare_wrap(
         return -1;
     }
 
+    char* normalized_library_path = NULL;
+    char* loader_library_path = NULL;
+    if (build_library_paths(
+            executable_identity,
+            inherited_library_path,
+            envp,
+            &normalized_library_path,
+            &loader_library_path
+        ) != 0) {
+        free(executable_identity);
+        free(loader_identity);
+        free(program_path);
+        free(resolved);
+        free(ld_linux);
+        return -1;
+    }
+
     if (build_wrapped_argv(
             ld_linux,
             loader_argv0,
-            library_path,
+            loader_library_path,
             preload,
             executable_identity,
             script_argument,
             script_path,
             argv,
-            java_tmpdir,
             wrapped_argv_out
         ) != 0) {
+        free(normalized_library_path);
+        free(loader_library_path);
         free(executable_identity);
         free(loader_identity);
         free(program_path);
@@ -1620,7 +1907,7 @@ static int prepare_wrap(
 
     if (build_child_env(
             envp,
-            library_path,
+            normalized_library_path,
             preload,
             executable_identity,
             loader_identity,
@@ -1628,6 +1915,8 @@ static int prepare_wrap(
             wrapped_env_out
         ) != 0) {
         owned_vec_free(wrapped_argv_out);
+        free(normalized_library_path);
+        free(loader_library_path);
         free(executable_identity);
         free(loader_identity);
         free(program_path);
@@ -1658,6 +1947,8 @@ static int prepare_wrap(
         );
     }
 
+    free(normalized_library_path);
+    free(loader_library_path);
     free(executable_identity);
     free(loader_identity);
     free(program_path);
@@ -2344,4 +2635,33 @@ int system(const char* command) {
 
     if (waited == -1) return -1;
     return status;
+}
+
+
+/*
+ * dlopen() receives absolute paths from language runtimes after the process has
+ * already started (Perl XSLoader is a common example). The ELF loader does not
+ * route those paths through open()/stat() interposers, so translate them before
+ * delegating to the real loader.
+ */
+void* dlopen(const char* filename, int flags) {
+    dlopen_fn_t real_dlopen = REAL(dlopen, dlopen_fn_t);
+    if (!filename || filename[0] != '/') return real_dlopen(filename, flags);
+
+    static __thread int redirecting_dlopen = 0;
+    if (redirecting_dlopen) return real_dlopen(filename, flags);
+
+    redirecting_dlopen = 1;
+    char* redirected = redirect_virtual_exec_path(filename, environ);
+    void* handle = redirected ? real_dlopen(redirected, flags) : NULL;
+    int saved_errno = errno;
+
+    if (redirected && strcmp(filename, redirected) != 0) {
+        tracef("dlopen path %s -> %s", filename, redirected);
+    }
+
+    free(redirected);
+    redirecting_dlopen = 0;
+    errno = saved_errno;
+    return handle;
 }

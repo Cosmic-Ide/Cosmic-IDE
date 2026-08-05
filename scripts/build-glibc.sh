@@ -49,11 +49,6 @@ if ! command -v python3 >/dev/null 2>&1; then
     exit 1
 fi
 
-if ! command -v patchelf >/dev/null 2>&1; then
-    echo "error: missing patchelf" >&2
-    exit 1
-fi
-
 if [ "$REUSE_GLIBC" = "0" ] && ! command -v jq >/dev/null 2>&1; then
     echo "error: missing jq" >&2
     exit 1
@@ -378,10 +373,13 @@ new_bytes = new_text.encode("utf-8")
 
 terminfo_root = root / "usr" / "share" / "terminfo"
 
-patched_elfs = 0
 patched_texts = 0
 patched_terminfo_entries = 0
 patched_occurrences = 0
+skipped_elfs = 0
+skipped_elf_occurrences = 0
+skipped_archives = 0
+skipped_archive_occurrences = 0
 unresolved = []
 
 
@@ -440,118 +438,6 @@ def command_output(command):
     return result.stdout
 
 
-def patchelf_output(path: Path, option: str):
-    result = subprocess.run(
-        [
-            "patchelf",
-            option,
-            os.fspath(path),
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
-
-    if result.returncode != 0:
-        return None
-
-    return result.stdout.decode(
-        "utf-8",
-        errors="surrogateescape",
-    ).rstrip("\n")
-
-
-def run_patchelf(path: Path, *arguments: str):
-    result = subprocess.run(
-        [
-            "patchelf",
-            *arguments,
-            os.fspath(path),
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-        check=False,
-    )
-
-    if result.returncode == 0:
-        return
-
-    error = result.stderr.decode(
-        "utf-8",
-        errors="replace",
-    ).strip()
-
-    if not error:
-        error = f"exit code {result.returncode}"
-
-    raise RuntimeError(
-        f"patchelf {' '.join(arguments)} failed: {error}"
-    )
-
-
-def patch_elf(path: Path) -> int:
-    changed_fields = 0
-
-    interpreter = patchelf_output(
-        path,
-        "--print-interpreter",
-    )
-
-    if interpreter is not None and old_text in interpreter:
-        run_patchelf(
-            path,
-            "--set-interpreter",
-            interpreter.replace(old_text, new_text),
-        )
-        changed_fields += interpreter.count(old_text)
-
-    rpath = patchelf_output(
-        path,
-        "--print-rpath",
-    )
-
-    if rpath is not None and old_text in rpath:
-        run_patchelf(
-            path,
-            "--set-rpath",
-            rpath.replace(old_text, new_text),
-        )
-        changed_fields += rpath.count(old_text)
-
-    soname = patchelf_output(
-        path,
-        "--print-soname",
-    )
-
-    if soname is not None and old_text in soname:
-        run_patchelf(
-            path,
-            "--set-soname",
-            soname.replace(old_text, new_text),
-        )
-        changed_fields += soname.count(old_text)
-
-    needed = patchelf_output(
-        path,
-        "--print-needed",
-    )
-
-    if needed:
-        for dependency in needed.splitlines():
-            if old_text not in dependency:
-                continue
-
-            run_patchelf(
-                path,
-                "--replace-needed",
-                dependency,
-                dependency.replace(old_text, new_text),
-            )
-            changed_fields += dependency.count(old_text)
-
-    return changed_fields
-
-
 def is_terminfo_entry(path: Path) -> bool:
     try:
         relative = path.relative_to(terminfo_root)
@@ -559,6 +445,10 @@ def is_terminfo_entry(path: Path) -> bool:
         return False
 
     return len(relative.parts) == 2
+
+
+def is_ar_archive(content: bytes) -> bool:
+    return content.startswith(b"!<arch>\n")
 
 
 terminfo_lookup_temporary = tempfile.TemporaryDirectory(
@@ -850,46 +740,8 @@ for path in regular_files(root):
     is_elf = original.startswith(b"\x7fELF")
 
     if is_elf:
-        try:
-            changed_fields = patch_elf(path)
-        except Exception as error:
-            unresolved.append(
-                f"{shown_path}: {error}"
-            )
-            continue
-
-        try:
-            updated = path.read_bytes()
-        except OSError as error:
-            unresolved.append(
-                f"{shown_path}: could not verify patched ELF: {error}"
-            )
-            continue
-
-        remaining = updated.count(old_bytes)
-
-        if remaining:
-            unresolved.append(
-                f"{shown_path}: {remaining} old-prefix occurrence(s) "
-                "remain outside ELF interpreter/RPATH/RUNPATH/"
-                "SONAME/DT_NEEDED metadata"
-            )
-            continue
-
-        if changed_fields == 0:
-            unresolved.append(
-                f"{shown_path}: contains the old prefix, but patchelf "
-                "found no supported field containing it"
-            )
-            continue
-
-        patched_elfs += 1
-        patched_occurrences += original_count
-
-        print(
-            f"patched ELF:     {shown_path} "
-            f"({original_count} occurrence(s))"
-        )
+        skipped_elfs += 1
+        skipped_elf_occurrences += original_count
         continue
 
     if is_terminfo_entry(path):
@@ -911,6 +763,11 @@ for path in regular_files(root):
         continue
 
     if b"\0" in original:
+        if is_ar_archive(original):
+            skipped_archives += 1
+            skipped_archive_occurrences += original_count
+            continue
+
         unresolved.append(
             f"{shown_path}: non-ELF binary contains "
             f"{original_count} old-prefix occurrence(s)"
@@ -971,7 +828,6 @@ if unresolved:
         file=sys.stderr,
     )
     print(
-        "ELF occurrences must be in fields supported by patchelf. "
         "Terminfo entries are rebuilt using infocmp and tic. "
         "Other binary occurrences must be fixed at build time.",
         file=sys.stderr,
@@ -980,10 +836,25 @@ if unresolved:
     raise SystemExit(1)
 
 
+if skipped_elfs:
+    print(
+        "skipped ELF relocation: "
+        f"{skipped_elf_occurrences} occurrence(s) in "
+        f"{skipped_elfs} ELF file(s)"
+    )
+
+
+if skipped_archives:
+    print(
+        "skipped archive relocation: "
+        f"{skipped_archive_occurrences} occurrence(s) in "
+        f"{skipped_archives} archive file(s)"
+    )
+
+
 print(
     "embedded path relocation complete: "
     f"{patched_occurrences} occurrence(s) in "
-    f"{patched_elfs} ELF file(s), "
     f"{patched_terminfo_entries} terminfo entry/entries and "
     f"{patched_texts} text file(s)"
 )

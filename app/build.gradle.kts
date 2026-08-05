@@ -23,7 +23,7 @@ android {
         val commit = getGitCommit()
 
         applicationId = "org.cosmicide"
-        minSdk = 28
+        minSdk = 26
         targetSdk = 37
         versionCode = 25
         versionName = "3.0.0"
@@ -168,10 +168,10 @@ dependencies {
 
     implementation("me.saket.cascade:cascade-compose:2.3.0")
 
-    implementation("io.ktor:ktor-client-core:3.5.1")
-    implementation("io.ktor:ktor-client-content-negotiation:3.5.1")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.1")
-    implementation("io.ktor:ktor-client-cio:3.5.1")
+    implementation("io.ktor:ktor-client-core:3.5.2")
+    implementation("io.ktor:ktor-client-content-negotiation:3.5.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.2")
+    implementation("io.ktor:ktor-client-cio:3.5.2")
 
     testImplementation("junit:junit:4.13.2")
 }

@@ -10,67 +10,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.charset.StandardCharsets
-import java.util.zip.GZIPInputStream
-import java.util.zip.ZipInputStream
-
-fun extractZip(
-    zipFile: File,
-    targetDir: File
-): Boolean {
-    return runCatching {
-        ZipInputStream(zipFile.inputStream().buffered()).use { zis ->
-            val canonicalTargetDir = targetDir.canonicalFile
-            val canonicalTargetPath = canonicalTargetDir.path
-            val canonicalTargetPrefix = canonicalTargetPath + File.separator
-
-            generateSequence { zis.nextEntry }.forEach { entry ->
-                val outputFile = File(canonicalTargetDir, entry.name).canonicalFile
-
-                if (
-                    outputFile.path != canonicalTargetPath &&
-                    !outputFile.path.startsWith(canonicalTargetPrefix)
-                ) {
-                    throw IOException("Zip Slip blocked: ${entry.name}")
-                }
-
-                if (entry.isDirectory) {
-                    outputFile.mkdirs()
-                } else {
-                    outputFile.parentFile?.mkdirs()
-                    outputFile.outputStream().use { out ->
-                        zis.copyTo(out)
-                    }
-                }
-
-                zis.closeEntry()
-            }
-        }
-
-        true
-    }.onFailure {
-        it.printStackTrace()
-    }.getOrDefault(false)
-}
-
-fun extractTarGzFolder(
-    tarGzFile: File,
-    targetDir: File,
-    filterPrefix: String?
-): Boolean {
-    return runCatching {
-        GZIPInputStream(tarGzFile.inputStream().buffered()).use { gzipIn ->
-            extractTarStream(
-                inputStream = gzipIn,
-                targetDir = targetDir,
-                filterPrefix = filterPrefix
-            )
-        }
-
-        true
-    }.onFailure {
-        it.printStackTrace()
-    }.getOrDefault(false)
-}
 
 fun extractTarZstStream(
     inputStream: InputStream,

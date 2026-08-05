@@ -42,7 +42,7 @@ enum class SettingsDestination {
 data object JDKSettingsScreen : Screen
 
 @Serializable
-data object LanguageServerSetupScreen : Screen
+data object TerminalSetupScreen : Screen
 
 @Serializable
 data class TerminalSession(

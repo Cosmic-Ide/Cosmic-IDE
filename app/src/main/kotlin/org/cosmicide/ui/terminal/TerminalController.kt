@@ -574,7 +574,8 @@ private fun createTerminalConfig(
         workingDir = workingDir,
         setup = setup,
         environmentOverrides = LinuxProcessRunner.toolchainEnvironment(
-            jdkDir
+            jdkDir,
+            context.filesDir.resolve("arch")
         ) + environmentOverrides,
         pathEntries = pathEntries,
         usePty = true,

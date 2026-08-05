@@ -275,20 +275,6 @@ fun JdkSettingsPanel(
         val installedJdk = context.jdkNames().firstOrNull()
         updateCurrentJdkIfSystem(installedJdk)
 
-        if (installedJdk == null) {
-            taskQueue.clear()
-            taskQueue.add(
-                TaskState(JdkAction.Install(AUTOMATIC_JDK_VERSION, AUTOMATIC_JDK_VENDOR))
-            )
-            isProcessingScreenActive = true
-            isAllTasksComplete = false
-
-            if (processTaskQueue()) {
-                onDismissRequested()
-                return@LaunchedEffect
-            }
-        }
-
         foojayClient.fetchMaintainedDistributions().onSuccess { list ->
             distributions = list
             selectedDistro =
@@ -434,7 +420,6 @@ fun JdkSettingsPanel(
 }
 
 private const val AUTOMATIC_JDK_VENDOR = "zulu"
-private const val AUTOMATIC_JDK_VERSION = "21"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

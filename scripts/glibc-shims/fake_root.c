@@ -28,6 +28,7 @@ static bool is_fake_root_name(const char *path) {
            strcmp(name, "sudoedit") == 0 ||
            strcmp(name, "visudo") == 0 ||
            strcmp(name, "pacman") == 0 ||
+           strcmp(name, "archlinux-java") == 0 ||
            strcmp(name, "pacman-key") == 0;
 }
 
@@ -69,43 +70,43 @@ static bool cmdline_contains_fake_root(void) {
     return false;
 }
 
+static bool fake_root_env(void) {
+    const char *value = getenv("FAKE_ROOT");
+
+    return value != NULL &&
+           strcmp(value, "1") == 0;
+}
+
 bool fake_root_is_fake(void) {
     if (process != -1) {
         return process == 1;
     }
 
-    /*
-     * For a script launched through a shebang, /proc/self/exe points to
-     * the interpreter, while AT_EXECFN normally retains the path that
-     * was originally executed.
-     */
+    if (fake_root_env()) {
+        process = 1;
+        return true;
+    }
+
     errno = 0;
 
     const char *execfn =
         (const char *)(uintptr_t)getauxval(AT_EXECFN);
 
     if (execfn != NULL && is_fake_root_name(execfn)) {
+        /* Make every child inherit fake-root. */
+        setenv("FAKE_ROOT", "1", 1);
+
         process = 1;
         return true;
     }
 
-    /*
-     * This handles:
-     *
-     *   bash /usr/bin/pacman-key ...
-     *   sh /usr/bin/pacman-key ...
-     *
-     * where AT_EXECFN identifies bash/sh but the script path remains in
-     * the process command line.
-     */
     if (cmdline_contains_fake_root()) {
+        setenv("FAKE_ROOT", "1", 1);
+
         process = 1;
         return true;
     }
 
-    /*
-     * Normal ELF executable fallback for pacman itself.
-     */
     char path[PATH_MAX];
     ssize_t length =
         readlink("/proc/self/exe", path, sizeof(path) - 1);
@@ -114,6 +115,8 @@ bool fake_root_is_fake(void) {
         path[length] = '\0';
 
         if (is_fake_root_name(path)) {
+            setenv("FAKE_ROOT", "1", 1);
+
             process = 1;
             return true;
         }

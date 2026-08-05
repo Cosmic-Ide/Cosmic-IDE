@@ -45,7 +45,7 @@ fun IDENavigation() {
     val projectSessionServices = LocalAppContainer.current.projectSessionServices
     val initialScreen: Screen = when {
         ResourceUtil.isBootstrapIncomplete() -> InstallResourceScreen
-        ResourceUtil.isJdkMissing() -> JDKSettingsScreen
+        ResourceUtil.isEnvironmentIncomplete() -> TerminalSetupScreen
         else -> Home
     }
     val backStack = rememberNavBackStack(
@@ -68,11 +68,7 @@ fun IDENavigation() {
                 InstallResourcesScreen {
                     backStack.removeLastOrNull()
                     backStack.add(
-                        if (ResourceUtil.isJdkMissing()) {
-                            JDKSettingsScreen
-                        } else {
-                            LanguageServerSetupScreen
-                        }
+                        TerminalSetupScreen
                     )
                 }
             }
@@ -134,7 +130,7 @@ fun IDENavigation() {
 
                     SettingsDestination.ABOUT -> AboutSettingsScreen(gotoResourceScreen = {
                         backStack.add(
-                            LanguageServerSetupScreen
+                            TerminalSetupScreen
                         )
                     }, onBack = { backStack.removeLastOrNull() })
                 }
@@ -142,27 +138,19 @@ fun IDENavigation() {
 
             is JDKSettingsScreen -> NavEntry(key) {
                 JdkSettingsPanel(onDismissRequested = {
-                    if (!ResourceUtil.isJdkMissing()) {
                         backStack.removeLastOrNull()
                         backStack.add(
                             Home
                         )
-                    }
                 })
             }
 
-            is LanguageServerSetupScreen -> NavEntry(key) {
+            is TerminalSetupScreen -> NavEntry(key) {
                 val setupScript = remember { ResourceUtil.prepareLanguageServerSetupScript() }
                 TerminalScreen(
                     onNavigateBack = {
                         backStack.removeLastOrNull()
-                        backStack.add(
-                            if (ResourceUtil.isEnvironmentIncomplete()) {
-                                JDKSettingsScreen
-                            } else {
-                                Home
-                            }
-                        )
+                        backStack.add(Home)
                     },
                     initialCommand = "bash ${setupScript.absolutePath} ${context.filesDir.absolutePath} ${context.cacheDir.absolutePath}",
                     workingDir = context.filesDir,

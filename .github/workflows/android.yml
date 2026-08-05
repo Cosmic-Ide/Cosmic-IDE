@@ -26,7 +26,7 @@ jobs:
           java-version: '17'
 
       - name: Install patch tools
-        run: brew install binutils patchelf python
+        run: brew install binutils jq ncurses zstd gnu-tar python
 
       - name: Generate glibc.tar.zst
         run: bash ./scripts/build-glibc.sh

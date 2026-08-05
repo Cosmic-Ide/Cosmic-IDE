@@ -29,8 +29,7 @@ object LinuxProcessRunner {
     )
 
     private data class WrappedCommand(
-        val command: List<String>,
-        val executableIdentity: String
+        val command: List<String>, val executableIdentity: String
     )
 
     private data class GlibcRuntime(
@@ -103,31 +102,8 @@ object LinuxProcessRunner {
         return PtyProcess.create(pty)
     }
 
-    fun execute(
-        context: Context,
-        config: Configuration,
-        onOutputReceived: (String) -> Unit,
-        onProcessStarted: (Process) -> Unit
-    ) {
-        val process = start(context, config)
-        onProcessStarted(process)
-
-        process.inputStream.bufferedReader().use { reader ->
-            val buffer = CharArray(1024)
-            var readCount: Int
-            while (reader.read(buffer).also { readCount = it } != -1) {
-                onOutputReceived(String(buffer, 0, readCount))
-            }
-        }
-
-        val exitCode = process.waitFor()
-        onOutputReceived("\n--- Process finished with exit code $exitCode ---")
-    }
-
     fun toolchainPathEntries(
-        context: Context,
-        jdkDir: File,
-        setup: Boolean = false
+        context: Context, jdkDir: File, setup: Boolean = false
     ): List<File> {
         return buildList {
             add(jdkDir.resolve("bin"))
@@ -136,10 +112,18 @@ object LinuxProcessRunner {
         }
     }
 
-    fun toolchainEnvironment(jdkDir: File): Map<String, String> {
+    fun toolchainEnvironment(jdkDir: File, runtimeDir: File): Map<String, String> {
         repairJdkExecutablePermissions(jdkDir)
         return buildMap {
-            put("JAVA_HOME", jdkDir.absolutePath)
+            if (!jdkDir.absolutePath.endsWith("system")) {
+                put("JAVA_HOME", jdkDir.absolutePath)
+            } else {
+                val javaHome = runtimeDir.resolve("usr/lib/jvm").listFiles()
+                    ?.firstOrNull { it.name.startsWith("java-") }?.absolutePath
+
+                if (javaHome != null)
+                    put("JAVA_HOME", javaHome)
+            }
         }
     }
 
@@ -247,7 +231,7 @@ object LinuxProcessRunner {
                     JSTAT_SAMPLE_INTERVAL_MS.toString()
                 ),
                 workingDir = workingDir,
-                environmentOverrides = mapOf("JAVA_HOME" to jdkDir.absolutePath)
+                environmentOverrides = if (jdkDir.name.equals("system")) emptyMap() else mapOf("JAVA_HOME" to jdkDir.absolutePath)
             )
         )
     }
@@ -290,10 +274,7 @@ object LinuxProcessRunner {
     }
 
     private fun GlibcRuntime.applyShellStartupArguments(
-        binary: File,
-        arguments: List<String>,
-        interactive: Boolean,
-        enabled: Boolean
+        binary: File, arguments: List<String>, interactive: Boolean, enabled: Boolean
     ): List<String> {
         if (!enabled) return arguments
 
@@ -301,17 +282,14 @@ object LinuxProcessRunner {
         if (target.name != "bash") return arguments
 
         val alreadyLogin = arguments.any { argument ->
-            argument == "--login" ||
-                    argument == "-l" ||
-                    (argument.startsWith("-") &&
-                            !argument.startsWith("--") &&
-                            argument.drop(1).contains('l'))
+            argument == "--login" || argument == "-l" || (argument.startsWith("-") && !argument.startsWith(
+                "--"
+            ) && argument.drop(1).contains('l'))
         }
         val alreadyInteractive = arguments.any { argument ->
-            argument == "-i" ||
-                    (argument.startsWith("-") &&
-                            !argument.startsWith("--") &&
-                            argument.drop(1).contains('i'))
+            argument == "-i" || (argument.startsWith("-") && !argument.startsWith("--") && argument.drop(
+                1
+            ).contains('i'))
         }
 
         return buildList {
@@ -322,9 +300,7 @@ object LinuxProcessRunner {
     }
 
     private fun GlibcRuntime.wrapCommand(
-        binary: File,
-        arguments: List<String>,
-        inheritedLibraryPath: String
+        binary: File, arguments: List<String>, inheritedLibraryPath: String
     ): WrappedCommand {
         val target = resolveInitialGlibcTarget(binary.absoluteFile)
 
@@ -334,25 +310,20 @@ object LinuxProcessRunner {
             ExecutableKind.SCRIPT -> {
                 val interpreter = resolveInterpreterForScript(target)
                 linkerCommand(
-                    interpreter,
-                    listOf(target.absolutePath) + arguments,
-                    inheritedLibraryPath
+                    interpreter, listOf(target.absolutePath) + arguments, inheritedLibraryPath
                 )
             }
 
             ExecutableKind.UNSUPPORTED -> {
                 throw IllegalArgumentException(
-                    "Unsupported executable: ${target.absolutePath}. " +
-                            "Expected a readable ELF binary or a readable script with a valid shebang (e.g. sh, bash, node)."
+                    "Unsupported executable: ${target.absolutePath}. " + "Expected a readable ELF binary or a readable script with a valid shebang (e.g. sh, bash, node)."
                 )
             }
         }
     }
 
     private fun GlibcRuntime.linkerCommand(
-        program: File,
-        arguments: List<String>,
-        inheritedLibraryPath: String
+        program: File, arguments: List<String>, inheritedLibraryPath: String
     ): WrappedCommand {
         val programPath = program.canonicalOrAbsolutePath()
         val loaderLibraryPath = loaderLibraryPath(program, inheritedLibraryPath)
@@ -368,8 +339,7 @@ object LinuxProcessRunner {
                 add(combinedPreload)
                 add(programPath)
                 addAll(arguments)
-            },
-            executableIdentity = programPath
+            }, executableIdentity = programPath
         )
     }
 
@@ -448,8 +418,7 @@ object LinuxProcessRunner {
         }
 
         return firstUsableShell(candidates) ?: throw IllegalArgumentException(
-            "Script ${script.absolutePath} requires interpreter '${requestedInterpreter ?: "sh"}', " +
-                    "but no valid ELF binary was found in ${binDir.absolutePath}."
+            "Script ${script.absolutePath} requires interpreter '${requestedInterpreter ?: "sh"}', " + "but no valid ELF binary was found in ${binDir.absolutePath}."
         )
     }
 
@@ -562,8 +531,7 @@ object LinuxProcessRunner {
             glibcPath = glibcPath,
             customLinker = "$nativeLibDir/libld_linux.so",
             combinedPreload = listOfNotNull(
-                pathRedirect,
-                if (setup) nssWrapper else null
+                pathRedirect, if (setup) nssWrapper else null
             ).joinToString(":")
         )
     }
@@ -631,8 +599,7 @@ object LinuxProcessRunner {
      * ld-linux through --library-path.
      */
     private fun GlibcRuntime.loaderLibraryPath(
-        program: File,
-        inheritedLibraryPath: String
+        program: File, inheritedLibraryPath: String
     ): String {
         val origin = program.parentFile?.canonicalOrAbsolutePath().orEmpty()
         val embedded = program.readElfDynamicSearchPath().flatMap { pathList ->
@@ -643,8 +610,7 @@ object LinuxProcessRunner {
             )
         }
 
-        return (inheritedLibraryPath.split(':').filter { it.isNotBlank() } + embedded)
-            .distinct()
+        return (inheritedLibraryPath.split(':').filter { it.isNotBlank() } + embedded).distinct()
             .joinToString(":")
     }
 
@@ -681,9 +647,7 @@ object LinuxProcessRunner {
      */
     private fun File.readElfDynamicSearchPath(): List<String> {
         data class LoadSegment(
-            val fileOffset: Long,
-            val virtualAddress: Long,
-            val fileSize: Long
+            val fileOffset: Long, val virtualAddress: Long, val fileSize: Long
         )
 
         return try {
@@ -697,12 +661,11 @@ object LinuxProcessRunner {
                 }
 
                 val ident = read(0, 16)
-                if (ident.get(0) != 0x7F.toByte() ||
-                    ident.get(1) != 'E'.code.toByte() ||
-                    ident.get(2) != 'L'.code.toByte() ||
-                    ident.get(3) != 'F'.code.toByte() ||
-                    ident.get(4) != ELF_CLASS_64 ||
-                    ident.get(5) != ELF_DATA_LSB
+                if (ident.get(0) != 0x7F.toByte() || ident.get(1) != 'E'.code.toByte() || ident.get(
+                        2
+                    ) != 'L'.code.toByte() || ident.get(3) != 'F'.code.toByte() || ident.get(4) != ELF_CLASS_64 || ident.get(
+                        5
+                    ) != ELF_DATA_LSB
                 ) return emptyList()
 
                 val header = read(0, ELF64_HEADER_SIZE)
@@ -742,9 +705,9 @@ object LinuxProcessRunner {
                 var stringTableSize = 0L
                 var runPathOffset = -1L
                 var rPathOffset = -1L
-                val entryCount = (dynamicSize / ELF64_DYNAMIC_ENTRY_SIZE)
-                    .coerceAtMost(MAX_DYNAMIC_ENTRIES.toLong())
-                    .toInt()
+                val entryCount =
+                    (dynamicSize / ELF64_DYNAMIC_ENTRY_SIZE).coerceAtMost(MAX_DYNAMIC_ENTRIES.toLong())
+                        .toInt()
                 for (index in 0 until entryCount) {
                     val entry = read(
                         dynamicOffset + index.toLong() * ELF64_DYNAMIC_ENTRY_SIZE,
@@ -767,16 +730,15 @@ object LinuxProcessRunner {
                 }
 
                 val segment = loadSegments.firstOrNull { segment ->
-                    stringTableAddress >= segment.virtualAddress &&
-                            stringTableAddress < segment.virtualAddress + segment.fileSize
+                    stringTableAddress >= segment.virtualAddress && stringTableAddress < segment.virtualAddress + segment.fileSize
                 } ?: return emptyList()
-                val tableFileOffset = segment.fileOffset +
-                        (stringTableAddress - segment.virtualAddress)
+                val tableFileOffset =
+                    segment.fileOffset + (stringTableAddress - segment.virtualAddress)
                 if (selectedOffset >= stringTableSize) return emptyList()
 
-                val maxLength = (stringTableSize - selectedOffset)
-                    .coerceAtMost(MAX_DYNAMIC_STRING_BYTES.toLong())
-                    .toInt()
+                val maxLength =
+                    (stringTableSize - selectedOffset).coerceAtMost(MAX_DYNAMIC_STRING_BYTES.toLong())
+                        .toInt()
                 val bytes = read(tableFileOffset + selectedOffset, maxLength).array()
                 val length = bytes.indexOf(0).let { if (it >= 0) it else bytes.size }
                 listOf(bytes.copyOf(length).toString(Charsets.UTF_8))
@@ -793,15 +755,12 @@ object LinuxProcessRunner {
             add(glibcRoot.resolve("lib"))
             add(glibcRoot)
             addAll(gccFrontendDirs())
-        }.filter { it.exists() }
-            .distinctBy { it.absolutePath }
+        }.filter { it.exists() }.distinctBy { it.absolutePath }
     }
 
     private fun MutableMap<String, String>.putCommonGlibcEnvironment(runtime: GlibcRuntime) {
         put(
-            "LD_LIBRARY_PATH",
-            runtime.linkLibraryDirs().joinToString(":") { it.absolutePath }
-        )
+            "LD_LIBRARY_PATH", runtime.linkLibraryDirs().joinToString(":") { it.absolutePath })
         // --preload handles the initial custom-linker exec. LD_PRELOAD makes
         // Java/Gradle child processes inherit the same compatibility layer.
         put("LD_PRELOAD", runtime.combinedPreload)
@@ -828,17 +787,14 @@ object LinuxProcessRunner {
         put("APP_FILES_DIR", runtime.appDir.absolutePath)
         put("TERMUX_PREFIX", File(runtime.glibcPath).absolutePath)
 
-        val gccFrontendPath = runtime.gccFrontendDirs()
-            .joinToString(":") { it.absolutePath }
+        val gccFrontendPath = runtime.gccFrontendDirs().joinToString(":") { it.absolutePath }
 
         if (gccFrontendPath.isNotEmpty()) {
             put("COMPILER_PATH", gccFrontendPath)
         }
 
         put(
-            "LIBRARY_PATH",
-            runtime.linkLibraryDirs().joinToString(":") { it.absolutePath }
-        )
+            "LIBRARY_PATH", runtime.linkLibraryDirs().joinToString(":") { it.absolutePath })
 
         put("TMPDIR", runtime.appDir.resolve("tmp").absolutePath)
         put("TEMP", runtime.appDir.resolve("tmp").absolutePath)

@@ -142,7 +142,7 @@ class FilesDocumentsProvider : DocumentsProvider() {
             } else {
                 if (file.createNewFile()) getDocumentIdForFile(file) else null
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
@@ -252,7 +252,7 @@ class FilesDocumentsProvider : DocumentsProvider() {
         try {
             file.setReadable(true, false)
             if (file.extension != "dex") file.setWritable(true, false)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Ignore permission errors
         }
 

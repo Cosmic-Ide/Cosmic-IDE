@@ -17,20 +17,6 @@ object ResourceUtil {
         return !context!!.filesDir.resolve("glibc").exists()
     }
 
-    fun isJdkMissing(): Boolean {
-        val context = App.instance.get()
-        return context!!.jdks().isEmpty()
-    }
-    fun isGradleGroovyLspMissing(): Boolean {
-        val context = App.instance.get() ?: return true
-        return !context.filesDir
-            .resolve(
-                "vscode-gradle/gradle-language-server/build/install/" +
-                        "gradle-language-server/bin/gradle-language-server"
-            )
-            .isFile
-    }
-
     fun isBootstrapIncomplete(): Boolean {
         return isRuntimeMissing()
     }
@@ -53,7 +39,6 @@ object ResourceUtil {
      * is missing, signifying that setup is required.
      */
     fun isEnvironmentIncomplete(): Boolean {
-        return isBootstrapIncomplete() ||
-                isJdkMissing()
+        return isBootstrapIncomplete()
     }
 }

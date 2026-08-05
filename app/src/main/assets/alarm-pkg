@@ -723,8 +723,8 @@ DB_CACHE="$CACHE/databases"
 
 mkdir -p "$USR_PREFIX" "$CACHE" "$DB_CACHE"
 
-mkdir -p /tmp
-WORK_DIR="$(mktemp -d /tmp/alarm-pkg.XXXXXX)"
+mkdir -p $PREFIX/tmp
+WORK_DIR="$(mktemp -d $PREFIX/tmp/alarm-pkg.XXXXXX)"
 trap 'rm -rf "$WORK_DIR"' EXIT HUP INT TERM
 
 PACKAGES_RAW="$WORK_DIR/packages.raw"

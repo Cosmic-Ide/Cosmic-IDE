@@ -7,8 +7,6 @@ CACHE_DIR="${2:?Cosmic IDE cache directory is required}"
 
 KOTLIN_VERSION="262.9593.0"
 KOTLIN_URL="https://download-cdn.jetbrains.com/language-server/kotlin-server/${KOTLIN_VERSION}/kotlin-server-${KOTLIN_VERSION}-aarch64.tar.gz"
-JDTLS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.60.0/jdt-language-server-1.60.0-202606262232.tar.gz"
-COURSIER_URL="https://github.com/coursier/coursier/releases/download/v2.1.25-M26/cs-aarch64-pc-linux.gz"
 CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip"
 VSCODE_GRADLE_URL="https://github.com/microsoft/vscode-gradle.git"
 
@@ -16,6 +14,7 @@ VSCODE_GRADLE_DIR="$FILES_DIR/vscode-gradle"
 ARCH_DIR="$FILES_DIR/arch"
 
 mkdir -p "$CACHE_DIR"
+mkdir -p "$FILES_DIR/glibc/tmp"
 
 ask_to_install() {
     local name="$1"
@@ -462,7 +461,8 @@ setup_pacman() {
         git \
         pigz \
         tar \
-        unzip
+        unzip \
+        jdk-openjdk
 
     echo "Configuring SSL root certificates bundle..."
     mkdir -p "$arch_root/etc/ssl/certs"
@@ -509,6 +509,8 @@ setup_pacman() {
 
     echo "Pacman-managed Arch root is ready at $arch_root."
 }
+
+update-ca-trust
 
 echo "Configure Cosmic IDE development tools:"
 echo

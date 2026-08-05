@@ -25,6 +25,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Install readelf (binutils)
+        run: brew install binutils
+
       - name: Generate glibc.tar.zst
         run: bash ./scripts/build-glibc.sh
 

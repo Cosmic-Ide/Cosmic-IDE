@@ -22,11 +22,11 @@ and filesystem permissions.
 |-----------------------|------------------------------------------------------------------------------|
 | `glibc.tar.zst`       | Relocated glibc, shells, compilers, and GNU tools deployed to `files/glibc`. |
 | `libld_linux.so`      | Loads a glibc ELF without involving Android's linker.                        |
-| `libpath_redirect.so` | One preload library containing all four shim components below.               |
+| `libpath_redirect.so` | One preload library containing all five shim components below.               |
 | `libnss_wrapper.so`   | Makes glibc user/group lookup use app-generated passwd and group files.      |
 
 `scripts/build-glibc.sh` assembles and archives the runtime. `scripts/build-shims.sh` compiles the
-four C sources into `app/src/main/jniLibs/arm64-v8a/libpath_redirect.so`. Neither script builds
+five C sources into `app/src/main/jniLibs/arm64-v8a/libpath_redirect.so`. Neither script builds
 `libld_linux.so`; the loader is a separately packaged binary.
 
 ## What each shim is for
@@ -99,29 +99,39 @@ truncated UDP replies.
 It is deliberately not a complete resolver: there is no DNSSEC, mDNS, LLMNR, arbitrary NSS module,
 full `gai.conf` policy, or textual `/etc/services` fallback.
 
-### `pacman_fake_root.c`: pass pacman's identity check, not gain root
+### `fake_root.c`: satisfy package-manager and sudo identity checks, not gain root
 
-Pacman refuses some operations when UID/GID queries do not report root. This shim returns zero only
-when the current executable is identified as `pacman` or `pacman-key`; every other process sees the
-real app identity.
+Pacman and sudo refuse some operations when UID/GID queries do not report root. This shim returns
+zero only when the current executable is identified as `sudo`, `pacman`, or `pacman-key`; every
+other process sees the real app identity. The path shim likewise reports root ownership only for
+sudo's `/etc/sudo.conf`, `/etc/sudoers`, and `/etc/sudoers.d` metadata checks in those processes.
 
 It does not grant capabilities, ownership changes, mount access, or any other kernel permission.
 Pacman can still fail when an operation genuinely requires privilege. Pacman remains packaged by
 the runtime builder, although the current application setup script does not invoke it.
 
+### `syscall.c`: make seccomp-trapped feature probes fall back
+
+Android's app seccomp policy traps some newer Linux syscalls. The syscall shim converts those traps
+to `ENOSYS`, allowing callers to use their existing fallback instead of terminating. For example,
+Go retries `faccessat2` with legacy `faccessat`, which avoids Android's blocked `faccessat2` call.
+It emulates `statx` with legacy `fstatat` metadata because systemd uses `statx` to compare
+`/proc/1/root` with `/` when detecting a chroot.
+
 ## Environment owned by `LinuxProcessRunner`
 
 `LinuxProcessRunner` is the single source of the runtime environment. Important values are:
 
-| Variable                                                                | Purpose                                                            |
-|-------------------------------------------------------------------------|--------------------------------------------------------------------|
-| `LD_LIBRARY_PATH`                                                       | Relocated glibc libraries and discovered GCC frontend directories. |
-| `LD_PRELOAD`                                                            | Combined shim plus `libnss_wrapper.so`, inherited by descendants.  |
-| `APP_FILES_DIR`                                                         | Physical root used by path redirection.                            |
-| `TMPDIR`, `TMP`, `TEMP`                                                 | Writable app cache and virtual `/tmp`.                             |
-| `RESOLV_CONF_PATH`, `HOSTS_PATH`, `NSSWITCH_CONF_PATH`, `GAI_CONF_PATH` | Generated resolver configuration.                                  |
-| `NSS_WRAPPER_PASSWD`, `NSS_WRAPPER_GROUP`                               | Generated records for the real app UID/GID.                        |
-| `COSMIC_EXECUTABLE`                                                     | Logical target hidden behind the explicit loader launch.           |
+| Variable                                                                | Purpose                                                                |
+|-------------------------------------------------------------------------|------------------------------------------------------------------------|
+| `LD_LIBRARY_PATH`                                                       | Relocated glibc libraries and discovered GCC frontend directories.     |
+| `LD_PRELOAD`                                                            | Combined shim plus `libnss_wrapper.so`, inherited by descendants.      |
+| `APP_FILES_DIR`                                                         | Physical root used by path redirection.                                |
+| `SYSTEMD_OFFLINE`, `SYSTEMD_IGNORE_CHROOT`                              | Keep systemd package hooks offline; this runtime has no systemd PID 1. |
+| `TMPDIR`, `TMP`, `TEMP`                                                 | Writable app cache and virtual `/tmp`.                                 |
+| `RESOLV_CONF_PATH`, `HOSTS_PATH`, `NSSWITCH_CONF_PATH`, `GAI_CONF_PATH` | Generated resolver configuration.                                      |
+| `NSS_WRAPPER_PASSWD`, `NSS_WRAPPER_GROUP`                               | Generated records for the real app UID/GID.                            |
+| `COSMIC_EXECUTABLE`                                                     | Logical target hidden behind the explicit loader launch.               |
 
 The runner also sets `HOME`, `SHELL`, compiler tool paths, and the selected `JAVA_HOME`. Caller
 overrides are applied last, so they can intentionally replace defaults—and can also break the
@@ -162,6 +172,5 @@ Start diagnosis at the boundary matching the symptom:
 2. Android executables never receive glibc preload state.
 3. Physical paths below `APP_FILES_DIR` are never redirected twice.
 4. Real `getaddrinfo` success always wins over the fallback.
-5. Fake root identity is restricted to pacman and does not imply privilege.
+5. Fake root identity is restricted to sudo and package-manager checks and does not imply privilege.
 6. Packaged native/runtime artifacts are rebuilt when their sources change.
-

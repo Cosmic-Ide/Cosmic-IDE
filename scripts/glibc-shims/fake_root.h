@@ -1,10 +1,10 @@
-#ifndef PACMAN_FAKE_ROOT_H
-#define PACMAN_FAKE_ROOT_H
+#ifndef FAKE_ROOT_H
+#define FAKE_ROOT_H
 
 #include <stdbool.h>
 #include <sys/types.h>
 
-bool pacman_fake_root_is_pacman(void);
+bool fake_root_is_fake(void);
 
 uid_t getuid(void);
 uid_t geteuid(void);

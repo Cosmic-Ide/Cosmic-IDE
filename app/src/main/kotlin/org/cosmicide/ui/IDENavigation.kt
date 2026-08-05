@@ -3,7 +3,6 @@ package org.cosmicide.ui
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -47,21 +46,11 @@ fun IDENavigation() {
     val initialScreen: Screen = when {
         ResourceUtil.isBootstrapIncomplete() -> InstallResourceScreen
         ResourceUtil.isJdkMissing() -> JDKSettingsScreen
-        ResourceUtil.isLanguageServerSetupIncomplete() -> LanguageServerSetupScreen
         else -> Home
     }
     val backStack = rememberNavBackStack(
         initialScreen
     )
-
-    val hasProjectSession = backStack.any { screen ->
-        screen is Editor || screen is GradleTask
-    }
-
-    LaunchedEffect(hasProjectSession) {
-        if (!hasProjectSession) {
-        }
-    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -156,11 +145,7 @@ fun IDENavigation() {
                     if (!ResourceUtil.isJdkMissing()) {
                         backStack.removeLastOrNull()
                         backStack.add(
-                            if (ResourceUtil.isLanguageServerSetupIncomplete()) {
-                                LanguageServerSetupScreen
-                            } else {
-                                Home
-                            }
+                            Home
                         )
                     }
                 })

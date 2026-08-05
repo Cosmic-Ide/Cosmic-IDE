@@ -41,7 +41,7 @@ object LinuxProcessRunner {
     )
 
     private enum class ExecutableKind {
-        ELF, SHELL_SCRIPT, UNSUPPORTED
+        ELF, SCRIPT, UNSUPPORTED
     }
 
     /**
@@ -331,10 +331,10 @@ object LinuxProcessRunner {
         return when (target.executableKind()) {
             ExecutableKind.ELF -> linkerCommand(target, arguments, inheritedLibraryPath)
 
-            ExecutableKind.SHELL_SCRIPT -> {
-                val shell = resolveShellForScript(target)
+            ExecutableKind.SCRIPT -> {
+                val interpreter = resolveInterpreterForScript(target)
                 linkerCommand(
-                    shell,
+                    interpreter,
                     listOf(target.absolutePath) + arguments,
                     inheritedLibraryPath
                 )
@@ -343,7 +343,7 @@ object LinuxProcessRunner {
             ExecutableKind.UNSUPPORTED -> {
                 throw IllegalArgumentException(
                     "Unsupported executable: ${target.absolutePath}. " +
-                            "Expected a readable ELF binary or a readable shell script with a sh/bash shebang."
+                            "Expected a readable ELF binary or a readable script with a valid shebang (e.g. sh, bash, node)."
                 )
             }
         }
@@ -431,35 +431,25 @@ object LinuxProcessRunner {
         ) ?: File(glibcPath).resolve("bin/bash")
     }
 
-    private fun GlibcRuntime.resolveShellForScript(script: File): File {
-        val requestedShell = script.readShebangLine()?.shellNameFromShebang()
+    private fun GlibcRuntime.resolveInterpreterForScript(script: File): File {
+        val requestedInterpreter = script.readShebangLine()?.interpreterFromShebang()
         val binDir = File(glibcPath).resolve("bin")
 
         val candidates = buildList {
-            when (requestedShell) {
-                "bash" -> {
-                    add(binDir.resolve("bash"))
-                    add(binDir.resolve("sh"))
-                }
-
-                "sh", "dash", "ash", "ksh", "zsh" -> {
-                    add(binDir.resolve(requestedShell))
-                    add(binDir.resolve("sh"))
-                    add(binDir.resolve("bash"))
-                }
-
-                else -> {
+            if (requestedInterpreter != null) {
+                add(binDir.resolve(requestedInterpreter))
+                if (requestedInterpreter.isKnownShellName()) {
                     add(binDir.resolve("sh"))
                     add(binDir.resolve("bash"))
                 }
             }
+            add(binDir.resolve("sh"))
+            add(binDir.resolve("bash"))
         }
 
-        val shPath = binDir.resolve("sh").absolutePath
-        val bashPath = binDir.resolve("bash").absolutePath
-
         return firstUsableShell(candidates) ?: throw IllegalArgumentException(
-            "Shell script ${script.absolutePath} needs a glibc shell, " + "but neither $shPath nor $bashPath is usable."
+            "Script ${script.absolutePath} requires interpreter '${requestedInterpreter ?: "sh"}', " +
+                    "but no valid ELF binary was found in ${binDir.absolutePath}."
         )
     }
 
@@ -471,7 +461,7 @@ object LinuxProcessRunner {
     private fun File.executableKind(): ExecutableKind {
         return when {
             isElfFile() -> ExecutableKind.ELF
-            isSupportedShellScriptFile() -> ExecutableKind.SHELL_SCRIPT
+            isSupportedScriptFile() -> ExecutableKind.SCRIPT
             else -> ExecutableKind.UNSUPPORTED
         }
     }
@@ -489,10 +479,10 @@ object LinuxProcessRunner {
         }
     }
 
-    private fun File.isSupportedShellScriptFile(): Boolean {
-        // Do not check executable permission here either. We run scripts as:
-        // ld-linux ... glibc/bin/sh <script>, so the script only needs to be readable.
-        return readShebangLine()?.shellNameFromShebang() != null
+    private fun File.isSupportedScriptFile(): Boolean {
+        // Do not check executable permission here either. We run scripts through
+        // customLinker + glibc interpreter + <script>, so the script only needs to be readable.
+        return readShebangLine()?.interpreterFromShebang() != null
     }
 
     private fun File.readShebangLine(maxBytes: Int = 512): String? {
@@ -511,7 +501,7 @@ object LinuxProcessRunner {
         }
     }
 
-    private fun String.shellNameFromShebang(): String? {
+    private fun String.interpreterFromShebang(): String? {
         if (!startsWith("#!")) return null
 
         val parts = removePrefix("#!").trim().split(Regex("\\s+")).filter { it.isNotBlank() }
@@ -519,26 +509,19 @@ object LinuxProcessRunner {
         if (parts.isEmpty()) return null
 
         val interpreter = File(parts[0]).name
-        if (interpreter.isKnownShellName()) return interpreter
 
-        if (interpreter != "env") return null
+        if (interpreter != "env") return interpreter
 
         var index = 1
         while (index < parts.size) {
             val part = parts[index]
 
-            if (part == "-S") {
+            if (part == "-S" || part.startsWith("-")) {
                 index++
                 continue
             }
 
-            if (part.startsWith("-")) {
-                index++
-                continue
-            }
-
-            val command = File(part).name
-            return command.takeIf { it.isKnownShellName() }
+            return File(part).name
         }
 
         return null
@@ -834,6 +817,12 @@ object LinuxProcessRunner {
 
         put("RES_OPTIONS", "attempts:1 timeout:1")
 
+        // The app-private glibc runtime never has a booted systemd as PID 1.
+        // Avoid systemd package hooks probing Android's restricted /proc and
+        // attempting to contact a non-existent system manager.
+        put("SYSTEMD_OFFLINE", "1")
+        put("SYSTEMD_IGNORE_CHROOT", "1")
+
         // Make paths baked into Termux/gpkg binaries resolve against the app-private
         // files directory. runtime.appDir is the fake Termux files root: <app>/files/glibc.
         put("APP_FILES_DIR", runtime.appDir.absolutePath)
@@ -850,6 +839,10 @@ object LinuxProcessRunner {
             "LIBRARY_PATH",
             runtime.linkLibraryDirs().joinToString(":") { it.absolutePath }
         )
+
+        put("TMPDIR", runtime.appDir.resolve("tmp").absolutePath)
+        put("TEMP", runtime.appDir.resolve("tmp").absolutePath)
+        put("TMP", runtime.appDir.resolve("tmp").absolutePath)
     }
 
     fun getResidentMemoryKb(pid: Int): Long {

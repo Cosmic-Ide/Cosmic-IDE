@@ -136,7 +136,7 @@ With Zig installed:
 ./scripts/build-shims.sh
 ```
 
-This compiles the redirect, DNS, exec, and fake-root sources into
+This compiles the redirect, DNS, exec, fake-root, and syscall-compatibility sources into
 `app/src/main/jniLibs/arm64-v8a/libpath_redirect.so`. Rebuilding only the `.so` does not update the
 copy inside an existing glibc archive if that archive also carries it; verify both packaging paths.
 

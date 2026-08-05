@@ -2,6 +2,7 @@
 #define _LARGEFILE64_SOURCE
 
 #include "exec_wrap.h"
+#include "fake_root.h"
 
 #include <dlfcn.h>
 #include <dirent.h>
@@ -659,11 +660,57 @@ static const char* redirect_virtual_root(
     return redirect_prefix_path(path, virtual_prefix, physical_prefix, buffer, buffer_size);
 }
 
+static int is_virtual_root_path(const char* path) {
+    if (path == NULL || path[0] != '/') return 0;
+
+    /* Match exact "/", "//", "///", etc. */
+    const char* p = path;
+    while (*p == '/') {
+        p++;
+    }
+    if (*p == '\0') return 1;
+
+    /* Match "/." or "/.." which also point to root in a top-level context */
+    if (strcmp(path, "/.") == 0 || strcmp(path, "/..") == 0) return 1;
+
+    return 0;
+}
+
 static const char* redirect_path(const char* path, char* buffer, size_t buffer_size) {
     if (path == NULL || path[0] == '\0' || path[0] != '/') return path;
 
+    /*
+     * Normalize /data/user/0/ to /data/data/ to prevent string mismatch
+     * issues with physical path checks and prefix evaluations.
+     */
+    char canon_path_buf[1024];
+    const char* check_path = path;
+
+    if (strncmp(path, "/data/user/0/", 13) == 0) {
+        int len = snprintf(canon_path_buf, sizeof(canon_path_buf), "/data/data/%s", path + 13);
+        if (len > 0 && (size_t)len < sizeof(canon_path_buf)) {
+            check_path = canon_path_buf;
+        }
+    } else if (strncmp(path, "/data/data/", 11) == 0 && strncmp(app_files_dir(), "/data/user/0/", 13) == 0) {
+        // Handle reverse mapping if app_files_dir uses user/0 but input uses data
+        int len = snprintf(canon_path_buf, sizeof(canon_path_buf), "/data/user/0/%s", path + 11);
+        if (len > 0 && (size_t)len < sizeof(canon_path_buf)) {
+            check_path = canon_path_buf;
+        }
+    }
+
     /* Never redirect an already-physical app path a second time. */
     if (path_is_physical_app_path(path)) return path;
+
+    if (is_virtual_root_path(path)) {
+        int result = snprintf(buffer, buffer_size, "%s", app_files_dir());
+        if (result < 0 || (size_t)result >= buffer_size) {
+            errno = ENAMETOOLONG;
+            return NULL;
+        }
+        debug_redirect("root-dir", path, buffer);
+        return buffer;
+    }
 
     /*
      * Special config overrides apply only to exact virtual aliases. Never use
@@ -1279,6 +1326,95 @@ static int fd_points_to_perf_data(int fd) {
     if (length <= 0 || (size_t)length >= sizeof(target)) return 0;
     target[length] = '\0';
     return is_perf_path(target);
+}
+
+static int is_sudo_configuration_path(const char* path) {
+    if (path == NULL) return 0;
+
+    if (strcmp(path, "/etc/sudo.conf") == 0 ||
+        strcmp(path, "/etc/sudoers") == 0 ||
+        strcmp(path, "/etc") == 0 ||
+        path_starts_with_component(path, "/etc/sudoers.d")) {
+        return 1;
+    }
+
+    char physical_etc[REDIR_BUF_SIZE];
+    int length = snprintf(
+        physical_etc,
+        sizeof(physical_etc),
+        "%s/etc",
+        app_files_dir()
+    );
+    if (length < 0 || (size_t)length >= sizeof(physical_etc)) return 0;
+
+    char physical_sudo_conf[REDIR_BUF_SIZE];
+    char physical_sudoers[REDIR_BUF_SIZE];
+    char physical_sudoers_d[REDIR_BUF_SIZE];
+    int sudo_conf_length = snprintf(
+        physical_sudo_conf,
+        sizeof(physical_sudo_conf),
+        "%s/sudo.conf",
+        physical_etc
+    );
+    int sudoers_length = snprintf(
+        physical_sudoers,
+        sizeof(physical_sudoers),
+        "%s/sudoers",
+        physical_etc
+    );
+    int sudoers_d_length = snprintf(
+        physical_sudoers_d,
+        sizeof(physical_sudoers_d),
+        "%s/sudoers.d",
+        physical_etc
+    );
+    if (sudo_conf_length < 0 || sudoers_length < 0 || sudoers_d_length < 0 ||
+        (size_t)sudo_conf_length >= sizeof(physical_sudo_conf) ||
+        (size_t)sudoers_length >= sizeof(physical_sudoers) ||
+        (size_t)sudoers_d_length >= sizeof(physical_sudoers_d)) {
+        return 0;
+    }
+
+    return strcmp(path, physical_sudo_conf) == 0 ||
+           strcmp(path, physical_sudoers) == 0 ||
+           path_starts_with_component(path, physical_sudoers_d);
+}
+
+static int is_sudo_configuration_path_either(const char* original, const char* redirected) {
+    return is_sudo_configuration_path(original) || is_sudo_configuration_path(redirected);
+}
+
+static int fd_points_to_sudo_configuration(int fd) {
+    char proc_path[64];
+    char target[REDIR_BUF_SIZE];
+    snprintf(proc_path, sizeof(proc_path), "/proc/self/fd/%d", fd);
+
+    ssize_t (*real_readlink_fn)(const char*, char*, size_t) =
+        REAL(readlink, ssize_t (*)(const char*, char*, size_t));
+    ssize_t length = real_readlink_fn(proc_path, target, sizeof(target) - 1);
+    if (length <= 0 || (size_t)length >= sizeof(target)) return 0;
+    target[length] = '\0';
+    return is_sudo_configuration_path(target);
+}
+
+static void spoof_stat_if_sudo_configuration(struct stat* st) {
+    if (st == NULL || !fake_root_is_fake()) return;
+    st->st_uid = 0;
+    st->st_gid = 0;
+}
+
+#if defined(__USE_LARGEFILE64) || defined(_LARGEFILE64_SOURCE)
+static void spoof_stat64_if_sudo_configuration(struct stat64* st) {
+    if (st == NULL || !fake_root_is_fake()) return;
+    st->st_uid = 0;
+    st->st_gid = 0;
+}
+#endif
+
+static void spoof_statx_if_sudo_configuration(struct statx* st) {
+    if (st == NULL || !fake_root_is_fake()) return;
+    st->stx_uid = 0;
+    st->stx_gid = 0;
 }
 
 static void spoof_stat_if_perf_data(struct stat* st) {
@@ -2138,6 +2274,9 @@ int statx(int dirfd, const char* pathname, int flags, unsigned int mask, struct 
     }
 
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_statx_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_statx_if_sudo_configuration(st);
+    }
     if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
         should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-lstatx", pathname, path);
@@ -2153,6 +2292,9 @@ int stat(const char* pathname, struct stat* st) {
     if (path == NULL) return -1;
     int result = fn(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat_if_sudo_configuration(st);
+    }
     return result;
 }
 
@@ -2163,6 +2305,9 @@ int lstat(const char* pathname, struct stat* st) {
     if (path == NULL) return -1;
     int result = fn(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat_if_sudo_configuration(st);
+    }
     if (result == 0 && should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-lstat", pathname, path);
         spoof_stat_as_symlink(st, path);
@@ -2174,6 +2319,9 @@ int fstat(int fd, struct stat* st) {
     int (*fn)(int, struct stat*) = REAL(fstat, int (*)(int, struct stat*));
     int result = fn(fd, st);
     if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat_if_perf_data(st);
+    if (result == 0 && fd_points_to_sudo_configuration(fd)) {
+        spoof_stat_if_sudo_configuration(st);
+    }
     return result;
 }
 
@@ -2185,6 +2333,9 @@ int fstatat(int dirfd, const char* pathname, struct stat* st, int flags) {
     if (path == NULL) return -1;
     int result = fn(dirfd, path, st, flags);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat_if_sudo_configuration(st);
+    }
     if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
         should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-fstatat", pathname, path);
@@ -2214,6 +2365,9 @@ int stat64(const char* pathname, struct stat64* st) {
     if (path == NULL) return -1;
     int result = fn(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat64_if_sudo_configuration(st);
+    }
     return result;
 }
 
@@ -2229,6 +2383,9 @@ int lstat64(const char* pathname, struct stat64* st) {
     if (path == NULL) return -1;
     int result = fn(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat64_if_sudo_configuration(st);
+    }
     if (result == 0 && should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-lstat64", pathname, path);
         spoof_stat64_as_symlink(st, path);
@@ -2244,6 +2401,9 @@ int fstat64(int fd, struct stat64* st) {
     }
     int result = fn(fd, st);
     if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && fd_points_to_sudo_configuration(fd)) {
+        spoof_stat64_if_sudo_configuration(st);
+    }
     return result;
 }
 
@@ -2259,6 +2419,9 @@ int fstatat64(int dirfd, const char* pathname, struct stat64* st, int flags) {
     if (path == NULL) return -1;
     int result = fn(dirfd, path, st, flags);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat64_if_sudo_configuration(st);
+    }
     if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
         should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-fstatat64", pathname, path);
@@ -2277,6 +2440,9 @@ int __xstat(int version, const char* pathname, struct stat* st) {
     int result = fn != NULL ? fn(version, path, st)
                             : REAL(stat, int (*)(const char*, struct stat*))(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat_if_sudo_configuration(st);
+    }
     return result;
 }
 
@@ -2289,6 +2455,9 @@ int __lxstat(int version, const char* pathname, struct stat* st) {
     int result = fn != NULL ? fn(version, path, st)
                             : REAL(lstat, int (*)(const char*, struct stat*))(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat_if_sudo_configuration(st);
+    }
     if (result == 0 && should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-__lxstat", pathname, path);
         spoof_stat_as_symlink(st, path);
@@ -2302,6 +2471,9 @@ int __fxstat(int version, int fd, struct stat* st) {
     int result = fn != NULL ? fn(version, fd, st)
                             : REAL(fstat, int (*)(int, struct stat*))(fd, st);
     if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat_if_perf_data(st);
+    if (result == 0 && fd_points_to_sudo_configuration(fd)) {
+        spoof_stat_if_sudo_configuration(st);
+    }
     return result;
 }
 
@@ -2316,6 +2488,9 @@ int __fxstatat(int version, int dirfd, const char* pathname, struct stat* st, in
                                   dirfd, path, st, flags
                               );
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat_if_sudo_configuration(st);
+    }
     if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
         should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-__fxstatat", pathname, path);
@@ -2333,6 +2508,9 @@ int __xstat64(int version, const char* pathname, struct stat64* st) {
     if (path == NULL) return -1;
     int result = fn != NULL ? fn(version, path, st) : stat64(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat64_if_sudo_configuration(st);
+    }
     return result;
 }
 
@@ -2344,6 +2522,9 @@ int __lxstat64(int version, const char* pathname, struct stat64* st) {
     if (path == NULL) return -1;
     int result = fn != NULL ? fn(version, path, st) : lstat64(path, st);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat64_if_sudo_configuration(st);
+    }
     if (result == 0 && should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-__lxstat64", pathname, path);
         spoof_stat64_as_symlink(st, path);
@@ -2356,6 +2537,9 @@ int __fxstat64(int version, int fd, struct stat64* st) {
         OPT_REAL(__fxstat64, int (*)(int, int, struct stat64*));
     int result = fn != NULL ? fn(version, fd, st) : fstat64(fd, st);
     if (result == 0 && fd_points_to_perf_data(fd)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && fd_points_to_sudo_configuration(fd)) {
+        spoof_stat64_if_sudo_configuration(st);
+    }
     return result;
 }
 
@@ -2374,6 +2558,9 @@ int __fxstatat64(
     int result = fn != NULL ? fn(version, dirfd, path, st, flags)
                             : fstatat64(dirfd, path, st, flags);
     if (result == 0 && is_perf_path_either(pathname, path)) spoof_stat64_if_perf_data(st);
+    if (result == 0 && is_sudo_configuration_path_either(pathname, path)) {
+        spoof_stat64_if_sudo_configuration(st);
+    }
     if (result == 0 && (flags & AT_SYMLINK_NOFOLLOW) != 0 &&
         should_synthesize_physical_root_symlink(pathname, path)) {
         debug_path_operation("canonical-__fxstatat64", pathname, path);
@@ -3098,9 +3285,9 @@ int symlink(const char* target, const char* linkpath) {
             "target=%s redirected_target=%s "
             "link=%s redirected_link=%s "
             "result=%d errno=%d (%s)\n",
-            target != NULL ? target : "(null)",
+            target,
             redirected_target,
-            linkpath != NULL ? linkpath : "(null)",
+            linkpath,
             redirected_link,
             result,
             operation_errno,
@@ -3124,7 +3311,7 @@ int symlinkat(const char* target, int newdirfd, const char* linkpath) {
 
     const char* redirected_link;
 
-    if (linkpath != NULL && linkpath[0] == '/') {
+    if (linkpath[0] == '/') {
         redirected_link = redirect_creation_path(
             linkpath,
             link_buffer,
@@ -3174,9 +3361,9 @@ int symlinkat(const char* target, int newdirfd, const char* linkpath) {
             "result=%d errno=%d (%s)\n",
             newdirfd,
             directory_text,
-            target != NULL ? target : "(null)",
+            target,
             redirected_target,
-            linkpath != NULL ? linkpath : "(null)",
+            linkpath,
             redirected_link,
             result,
             operation_errno,
@@ -4636,8 +4823,13 @@ char* canonicalize_file_name(const char* pathname) {
     char* (*fn)(const char*) =
         OPT_REAL(canonicalize_file_name, char* (*)(const char*));
     if (fn == NULL) {
-        errno = ENOSYS;
-        return NULL;
+        char *(*rp)(const char *, char *) = REAL(realpath, char *(*)(const char *, char *));
+        if (!rp) {
+            errno = ENOSYS;
+            return NULL;
+        }
+
+        return rp(pathname, NULL);   // GNU extension: allocates the buffer
     }
     char path_buffer[REDIR_BUF_SIZE];
     const char* path = redirect_path(pathname, path_buffer, sizeof(path_buffer));

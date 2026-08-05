@@ -1,6 +1,6 @@
 #define _GNU_SOURCE
 
-#include "pacman_fake_root.h"
+#include "fake_root.h"
 
 #include <dlfcn.h>
 #include <elf.h>
@@ -14,9 +14,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-static int pacman_process = -1;
+static int process = -1;
 
-static bool is_pacman_name(const char *path) {
+static bool is_fake_root_name(const char *path) {
     if (path == NULL || path[0] == '\0') {
         return false;
     }
@@ -24,11 +24,14 @@ static bool is_pacman_name(const char *path) {
     const char *name = strrchr(path, '/');
     name = name != NULL ? name + 1 : path;
 
-    return strcmp(name, "pacman") == 0 ||
+    return strcmp(name, "sudo") == 0 ||
+           strcmp(name, "sudoedit") == 0 ||
+           strcmp(name, "visudo") == 0 ||
+           strcmp(name, "pacman") == 0 ||
            strcmp(name, "pacman-key") == 0;
 }
 
-static bool cmdline_contains_pacman(void) {
+static bool cmdline_contains_fake_root(void) {
     int fd = open("/proc/self/cmdline", O_RDONLY | O_CLOEXEC);
 
     if (fd < 0) {
@@ -56,7 +59,7 @@ static bool cmdline_contains_pacman(void) {
             break;
         }
 
-        if (is_pacman_name(argument)) {
+        if (is_fake_root_name(argument)) {
             return true;
         }
 
@@ -66,9 +69,9 @@ static bool cmdline_contains_pacman(void) {
     return false;
 }
 
-bool pacman_fake_root_is_pacman(void) {
-    if (pacman_process != -1) {
-        return pacman_process == 1;
+bool fake_root_is_fake(void) {
+    if (process != -1) {
+        return process == 1;
     }
 
     /*
@@ -81,8 +84,8 @@ bool pacman_fake_root_is_pacman(void) {
     const char *execfn =
         (const char *)(uintptr_t)getauxval(AT_EXECFN);
 
-    if (execfn != NULL && is_pacman_name(execfn)) {
-        pacman_process = 1;
+    if (execfn != NULL && is_fake_root_name(execfn)) {
+        process = 1;
         return true;
     }
 
@@ -95,8 +98,8 @@ bool pacman_fake_root_is_pacman(void) {
      * where AT_EXECFN identifies bash/sh but the script path remains in
      * the process command line.
      */
-    if (cmdline_contains_pacman()) {
-        pacman_process = 1;
+    if (cmdline_contains_fake_root()) {
+        process = 1;
         return true;
     }
 
@@ -110,18 +113,18 @@ bool pacman_fake_root_is_pacman(void) {
     if (length >= 0) {
         path[length] = '\0';
 
-        if (is_pacman_name(path)) {
-            pacman_process = 1;
+        if (is_fake_root_name(path)) {
+            process = 1;
             return true;
         }
     }
 
-    pacman_process = 0;
+    process = 0;
     return false;
 }
 
 uid_t getuid(void) {
-    if (pacman_fake_root_is_pacman()) {
+    if (fake_root_is_fake()) {
         return 0;
     }
 
@@ -140,7 +143,7 @@ uid_t getuid(void) {
 }
 
 uid_t geteuid(void) {
-    if (pacman_fake_root_is_pacman()) {
+    if (fake_root_is_fake()) {
         return 0;
     }
 
@@ -159,7 +162,7 @@ uid_t geteuid(void) {
 }
 
 gid_t getgid(void) {
-    if (pacman_fake_root_is_pacman()) {
+    if (fake_root_is_fake()) {
         return 0;
     }
 
@@ -178,7 +181,7 @@ gid_t getgid(void) {
 }
 
 gid_t getegid(void) {
-    if (pacman_fake_root_is_pacman()) {
+    if (fake_root_is_fake()) {
         return 0;
     }
 
@@ -197,7 +200,7 @@ gid_t getegid(void) {
 }
 
 int getresuid(uid_t *ruid, uid_t *euid, uid_t *suid) {
-    if (pacman_fake_root_is_pacman()) {
+    if (fake_root_is_fake()) {
         if (ruid != NULL) {
             *ruid = 0;
         }
@@ -228,7 +231,7 @@ int getresuid(uid_t *ruid, uid_t *euid, uid_t *suid) {
 }
 
 int getresgid(gid_t *rgid, gid_t *egid, gid_t *sgid) {
-    if (pacman_fake_root_is_pacman()) {
+    if (fake_root_is_fake()) {
         if (rgid != NULL) {
             *rgid = 0;
         }

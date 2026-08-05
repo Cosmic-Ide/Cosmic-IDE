@@ -35,11 +35,6 @@ object ResourceUtil {
         return isRuntimeMissing()
     }
 
-    fun isLanguageServerSetupIncomplete(): Boolean {
-        return isKotlinLspMissing()
-//                isGradleGroovyLspMissing()
-    }
-
     fun prepareLanguageServerSetupScript(): File {
         val context = checkNotNull(App.instance.get()) { "Application context is unavailable" }
         val script = context.filesDir.resolve("setup.sh")
@@ -59,7 +54,6 @@ object ResourceUtil {
      */
     fun isEnvironmentIncomplete(): Boolean {
         return isBootstrapIncomplete() ||
-                isJdkMissing() ||
-                isLanguageServerSetupIncomplete()
+                isJdkMissing()
     }
 }

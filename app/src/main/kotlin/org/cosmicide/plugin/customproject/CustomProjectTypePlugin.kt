@@ -243,7 +243,7 @@ private class CustomProjectCreationProvider(
             metadata.parentFile?.mkdirs()
             metadata.writeText(configuration.id)
             return ProjectCreationResult(
-                Project(root, Language.Kotlin),
+                Project(root, Language.Empty),
                 "Created $projectName as ${configuration.name}"
             )
         } catch (error: Throwable) {

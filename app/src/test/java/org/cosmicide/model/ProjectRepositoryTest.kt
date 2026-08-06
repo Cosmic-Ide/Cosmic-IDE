@@ -11,31 +11,20 @@ import java.io.File
 import java.nio.file.Files
 
 class ProjectRepositoryTest {
-    @Test
-    fun `discovers built-in project languages from root and app source layouts`() =
-        withProjects { root ->
-        root.resolve("java/src/main/java").mkdirs()
-        root.resolve("kotlin/app/src/main/kotlin").mkdirs()
-
-        val projects = FileSystemProjectRepository(root).projects().associateBy(Project::name)
-
-        assertEquals(Language.Java, projects.getValue("java").language)
-        assertEquals(Language.Kotlin, projects.getValue("kotlin").language)
-    }
 
     @Test
     fun `deletes only direct child projects`() = withProjects { root ->
         val projectRoot = root.resolve("sample").apply { mkdirs() }
         val repository = FileSystemProjectRepository(root)
 
-        repository.delete(Project(projectRoot, Language.Kotlin))
+        repository.delete(Project(projectRoot, Language.Empty))
 
         assertFalse(projectRoot.exists())
 
         val outside = Files.createTempDirectory("outside-project").toFile()
         try {
             assertThrows(IllegalArgumentException::class.java) {
-                repository.delete(Project(outside, Language.Kotlin))
+                repository.delete(Project(outside, Language.Empty))
             }
         } finally {
             outside.deleteRecursively()

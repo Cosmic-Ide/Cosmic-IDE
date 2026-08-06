@@ -13,7 +13,6 @@ import androidx.navigation3.ui.NavDisplay
 import org.cosmicide.app.LocalAppContainer
 import org.cosmicide.ui.editor.EditorScreen
 import org.cosmicide.ui.home.HomeScreen
-import org.cosmicide.ui.project.NewProjectScreen
 import org.cosmicide.ui.resource.InstallResourcesScreen
 import org.cosmicide.ui.resource.JdkSettingsPanel
 import org.cosmicide.ui.settings.AboutSettingsScreen
@@ -83,14 +82,6 @@ fun IDENavigation() {
 
             is Editor -> NavEntry(key) {
                 EditorScreen(key.project)
-            }
-
-            is NewProject -> NavEntry(key) {
-                NewProjectScreen(onNavigateToEditor = {
-                    backStack.add(Editor(it))
-                }, onBack = {
-                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
-                })
             }
 
             is Settings -> NavEntry(key) {

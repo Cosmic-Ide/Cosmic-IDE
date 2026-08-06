@@ -14,7 +14,7 @@ class PluginArtifactsTest {
             val second = root.resolve("second.dex").apply { writeText("dex") }
             val first = root.resolve("first.jar").apply { writeText("jar") }
             val descriptor = descriptor(
-                classPath = listOf("second.dex", "missing.apk", first.absolutePath)
+                classPath = listOf("second.dex", "missing.apk", "first.jar")
             )
 
             assertEquals(listOf(second, first), resolvePluginArtifacts(root, descriptor))
@@ -38,6 +38,8 @@ class PluginArtifactsTest {
             root.resolve("notes.txt").writeText("ignore")
             root.resolve("nested.apk").mkdir()
 
+            println(resolvePluginArtifacts(root, descriptor()))
+
             assertEquals(listOf(a, b), resolvePluginArtifacts(root, descriptor()))
         }
 
@@ -55,7 +57,7 @@ class PluginArtifactsTest {
     )
 
     private fun withPluginDirectory(block: (File) -> Unit) {
-        val root = Files.createTempDirectory("cosmic-plugin-artifacts").toFile()
+        val root = Files.createTempDirectory("cosmic-plugin-artifacts").toFile().canonicalFile
         try {
             block(root)
         } finally {

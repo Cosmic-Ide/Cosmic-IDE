@@ -47,14 +47,7 @@ internal class FileSystemProjectRepository(
         }
 
         return when {
-            hasSourceDirectory(projectRoot, "java") -> Language.Java
-            hasSourceDirectory(projectRoot, "kotlin") -> Language.Kotlin
-            else -> Language.Kotlin
+            else -> Language.Empty
         }
-    }
-
-    private fun hasSourceDirectory(projectRoot: File, languageDirectory: String): Boolean {
-        return projectRoot.resolve("src/main/$languageDirectory").isDirectory ||
-                projectRoot.resolve("app/src/main/$languageDirectory").isDirectory
     }
 }

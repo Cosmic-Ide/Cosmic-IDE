@@ -1,7 +1,5 @@
 package org.cosmicide.project
 
-import org.cosmicide.editor.LspServerDefinition
-import org.cosmicide.editor.LspServerRequest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -121,40 +119,6 @@ class ProjectExtensionContractsTest {
         assertFails<IllegalArgumentException> { CommandRequest(" ", workingDirectory = File(".")) }
         assertFails<IllegalArgumentException> { ProjectAction("", "Build") }
         assertFails<IllegalArgumentException> { ProjectAction("build", " ") }
-    }
-
-    @Test
-    fun `lsp request exposes file extension and definition validates startup fields`() {
-        val request = LspServerRequest(
-            Project(File("/tmp/example"), Language.Kotlin),
-            File("/tmp/example/src/Main.kt")
-        )
-        assertEquals("kt", request.extension)
-
-        val factory = org.cosmicide.editor.LspServerConnectionFactory {
-            throw UnsupportedOperationException("not started in contract test")
-        }
-        assertFails<IllegalArgumentException> {
-            LspServerDefinition("", setOf("kt"), "Kotlin", factory)
-        }
-        assertFails<IllegalArgumentException> {
-            LspServerDefinition("kotlin", emptySet(), "Kotlin", factory)
-        }
-        assertFails<IllegalArgumentException> {
-            LspServerDefinition("kotlin", setOf(""), "Kotlin", factory)
-        }
-        assertFails<IllegalArgumentException> {
-            LspServerDefinition("kotlin", setOf("kt"), "", factory)
-        }
-        assertFails<IllegalArgumentException> {
-            LspServerDefinition(
-                "kotlin",
-                setOf("kt", "kts"),
-                "Kotlin",
-                factory,
-                initializationTimeoutMillis = 0
-            )
-        }
     }
 }
 

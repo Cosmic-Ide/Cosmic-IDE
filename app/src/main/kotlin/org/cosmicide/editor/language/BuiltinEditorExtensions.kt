@@ -23,12 +23,6 @@ fun registerBuiltinEditorExtensions(context: Context, registry: MutableExtension
         ownerPluginId = PluginIds.CORE,
         priority = LspEditorLanguageProvider.priority
     )
-    registry.register(
-        point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
-        extension = KotlinEditorLanguageProvider,
-        ownerPluginId = PluginIds.CORE,
-        priority = KotlinEditorLanguageProvider.priority
-    )
     val customLspProvider = CustomLspServerProvider(
         context.applicationContext,
         CustomLspConfigurationStore(context)

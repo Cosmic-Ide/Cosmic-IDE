@@ -19,28 +19,9 @@ sealed class Language(val extension: String) : Serializable {
 
     abstract val name: String
 
-    /**
-     * An object representing the Java programming language.
-     */
     @kotlinx.serialization.Serializable
-    object Java : Language("java") {
-        override val name = "Java"
-    }
-
-    /**
-     * An object representing the Kotlin programming language.
-     */
-    @kotlinx.serialization.Serializable
-    object Kotlin : Language("kt") {
-        override val name = "Kotlin"
-    }
-
-    /**
-     * An object representing the Scala programming language.
-     */
-    @kotlinx.serialization.Serializable
-    object Scala : Language("scala") {
-        override val name = "Scala"
+    object Empty : Language("txt") {
+        override val name = "Empty"
     }
 
     /**
@@ -62,21 +43,5 @@ sealed class Language(val extension: String) : Serializable {
         }
 
         override val name: String = displayName
-    }
-}
-
-/**
- * Returns an instance of [Language] with the specified file extension.
- *
- * @param extension the file extension of the language to create
- * @return an instance of [Language]
- * @throws IllegalArgumentException if the specified extension is not supported
- */
-fun language(extension: String): Language {
-    return when (extension) {
-        "java" -> Language.Java
-        "kt" -> Language.Kotlin
-        "scala" -> Language.Scala
-        else -> throw IllegalArgumentException("Unsupported extension: $extension")
     }
 }

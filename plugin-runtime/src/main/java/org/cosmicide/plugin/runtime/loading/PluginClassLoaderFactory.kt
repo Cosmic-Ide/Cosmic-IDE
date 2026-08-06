@@ -129,7 +129,7 @@ internal fun resolvePluginArtifacts(
     val canonicalPluginDir = pluginDir.canonicalFile
 
     if (descriptor.classPath.isNotEmpty()) {
-        return descriptor.classPath.map { declaredPath ->
+        return descriptor.classPath.mapNotNull { declaredPath ->
             require(declaredPath.isNotBlank()) {
                 "Plugin ${descriptor.id} contains an empty classPath entry"
             }
@@ -140,14 +140,20 @@ internal fun resolvePluginArtifacts(
                 "Plugin ${descriptor.id} classPath entries must be relative: " + declaredPath
             }
 
-            val artifact = canonicalPluginDir.resolve(declaredPath).canonicalFile
+            val artifact = canonicalPluginDir.resolve(declaredPath).let {
+                if (it.exists()) it.canonicalFile else it
+            }
+
+            if (!artifact.exists()) {
+                return@mapNotNull null
+            }
 
             require(artifact.isInside(canonicalPluginDir)) {
                 "Plugin ${descriptor.id} classPath escapes its installation " + "directory: $declaredPath"
             }
 
             require(artifact.isFile) {
-                "Declared plugin artifact does not exist: " + artifact.absolutePath
+                "Declared plugin artifact does not exist or is not a file: " + artifact.absolutePath
             }
 
             require(artifact.hasSupportedExtension()) {

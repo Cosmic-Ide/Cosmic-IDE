@@ -144,7 +144,7 @@ private class GitCloneProjectProvider(
             throw error
         }
 
-        val project = Project(destination, detectLanguage(destination))
+        val project = Project(destination, Language.Empty)
         return ProjectCreationResult(project, "Cloned ${project.name}")
     }
 
@@ -308,16 +308,6 @@ internal fun gitProgress(chunk: String): Float? {
         ?.get(1)
         ?.toFloatOrNull()
         ?.div(100f)
-}
-
-private fun detectLanguage(root: File): Language = when {
-    hasSourceDirectory(root, "java") -> Language.Java
-    else -> Language.Kotlin
-}
-
-private fun hasSourceDirectory(root: File, language: String): Boolean {
-    return root.resolve("src/main/$language").isDirectory ||
-            root.resolve("app/src/main/$language").isDirectory
 }
 
 private val PROJECT_DIRECTORY = Regex("[A-Za-z0-9][A-Za-z0-9._-]*")

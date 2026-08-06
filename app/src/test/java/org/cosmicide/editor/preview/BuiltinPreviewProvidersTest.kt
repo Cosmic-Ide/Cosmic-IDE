@@ -13,7 +13,7 @@ import org.junit.Test
 import java.io.File
 
 class BuiltinPreviewProvidersTest {
-    private val project = Project(File("/project"), Language.Kotlin)
+    private val project = Project(File("/project"), Language.Empty)
 
     @Test
     fun `built in preview providers register through the extension point`() {

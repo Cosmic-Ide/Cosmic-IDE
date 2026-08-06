@@ -91,9 +91,10 @@ internal class AndroidCommandExecutionService(context: Context) :
             "Working directory does not exist: ${request.workingDirectory.absolutePath}"
         }
 
-        // Wrap all commands in bash with -i (interactive) and -l (login) flags
-        // This ensures both .bash_profile (login) and .bashrc (interactive) are loaded
-        // Append " && exit" to ensure the shell terminates properly
+        // Wrap all commands in bash with -l (login) flag to load startup files.
+        // The .bash_profile created by LinuxProcessRunner includes a bridge that sources .bashrc,
+        // so a login shell will load both .bash_profile and .bashrc.
+        // Append " && exit" to ensure the shell terminates properly.
         val escapedCommand = escapeForBashDoubleQuotes(request.command)
         val escapedArgs = if (request.arguments.isNotEmpty()) {
             " " + request.arguments.joinToString(" ") { escapeForBashDoubleQuotes(it) }
@@ -102,7 +103,7 @@ internal class AndroidCommandExecutionService(context: Context) :
         }
         val commandLine = "$escapedCommand$escapedArgs && exit"
         val finalCommand = "bash"
-        val finalArgs = listOf("-i", "-l", "-c", commandLine)
+        val finalArgs = listOf("-l", "-c", commandLine)
 
         return ProcessExecutor.startCommand(
             context = appContext,

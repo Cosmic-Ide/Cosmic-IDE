@@ -516,7 +516,12 @@ object LinuxProcessRunner {
     }
 
     private fun prepareGlibcRuntime(context: Context, setup: Boolean): GlibcRuntime {
-        val appDir = runtimeDir(context, setup)
+        val appDir = File(
+            runtimeDir(context, setup).absolutePath.replaceFirst(
+                "/data/user/0/",
+                "/data/data/"
+            )
+        )
         val homeDir = appDir.resolve("home").apply { mkdirs() }
         ensureBashStartupBridge(homeDir)
         val glibcRoot = appDir.resolve("usr")
@@ -796,9 +801,11 @@ object LinuxProcessRunner {
         put(
             "LIBRARY_PATH", runtime.linkLibraryDirs().joinToString(":") { it.absolutePath })
 
-        put("TMPDIR", runtime.appDir.resolve("tmp").absolutePath)
-        put("TEMP", runtime.appDir.resolve("tmp").absolutePath)
-        put("TMP", runtime.appDir.resolve("tmp").absolutePath)
+        val tmpDir = runtime.appDir.resolve("tmp").absolutePath
+
+        put("TMPDIR", tmpDir)
+        put("TEMP", tmpDir)
+        put("TMP", tmpDir)
     }
 
     fun getResidentMemoryKb(pid: Int): Long {

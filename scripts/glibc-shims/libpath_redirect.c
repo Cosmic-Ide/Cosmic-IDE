@@ -496,7 +496,16 @@ static const config_redirect_t config_redirects[] = {
 
 static const char* app_files_dir(void) {
     const char* value = getenv("APP_FILES_DIR");
-    return value != NULL && value[0] != '\0' ? value : APP_FILES_DIR_DEFAULT;
+    if (value != NULL && value[0] != '\0') {
+        // Canonicalize /data/user/0/ to /data/data/ to prevent path mismatches
+        static char canon_buf[PATH_MAX];
+        if (strncmp(value, "/data/user/0/", 13) == 0) {
+            snprintf(canon_buf, sizeof(canon_buf), "/data/data/%s", value + 13);
+            return canon_buf;
+        }
+        return value;
+    }
+    return APP_FILES_DIR_DEFAULT;
 }
 
 static const char* termux_runtime_prefix(char* buffer, size_t buffer_size) {
@@ -680,7 +689,7 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
     if (path == NULL || path[0] == '\0' || path[0] != '/') return path;
 
     /*
-     * Normalize /data/user/0/ to /data/data/ to prevent string mismatch
+     * Canonicalize /data/user/0/ to /data/data/ to prevent string mismatch
      * issues with physical path checks and prefix evaluations.
      */
     char canon_path_buf[1024];
@@ -688,12 +697,6 @@ static const char* redirect_path(const char* path, char* buffer, size_t buffer_s
 
     if (strncmp(path, "/data/user/0/", 13) == 0) {
         int len = snprintf(canon_path_buf, sizeof(canon_path_buf), "/data/data/%s", path + 13);
-        if (len > 0 && (size_t)len < sizeof(canon_path_buf)) {
-            check_path = canon_path_buf;
-        }
-    } else if (strncmp(path, "/data/data/", 11) == 0 && strncmp(app_files_dir(), "/data/user/0/", 13) == 0) {
-        // Handle reverse mapping if app_files_dir uses user/0 but input uses data
-        int len = snprintf(canon_path_buf, sizeof(canon_path_buf), "/data/user/0/%s", path + 11);
         if (len > 0 && (size_t)len < sizeof(canon_path_buf)) {
             check_path = canon_path_buf;
         }

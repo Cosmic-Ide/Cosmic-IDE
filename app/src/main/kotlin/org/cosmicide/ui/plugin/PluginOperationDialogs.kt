@@ -318,7 +318,12 @@ private fun PluginOperationDialog(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var operationJob by remember { mutableStateOf<Job?>(null) }
 
-    val isValid = fields.filter { it.required }.all { values[it.id].orEmpty().isNotBlank() }
+    val visibleFields = fields.filter { field ->
+        field.visible && field.visibleWhen.all { (dependentFieldId, requiredValue) ->
+            values[dependentFieldId].orEmpty() == requiredValue
+        }
+    }
+    val isValid = visibleFields.filter { it.required }.all { values[it.id].orEmpty().isNotBlank() }
 
     LaunchedEffect(output) {
         outputScrollState.scrollTo(outputScrollState.maxValue)
@@ -340,7 +345,7 @@ private fun PluginOperationDialog(
                     Text(description, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
 
-                fields.forEach { field ->
+                visibleFields.forEach { field ->
                     PluginField(
                         field = field,
                         value = values[field.id].orEmpty(),
@@ -527,4 +532,3 @@ private fun PluginField(
 }
 
 private const val MAX_VISIBLE_OUTPUT_CHARS = 32_000
-

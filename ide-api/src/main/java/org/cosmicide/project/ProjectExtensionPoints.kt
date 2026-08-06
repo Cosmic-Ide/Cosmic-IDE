@@ -19,13 +19,19 @@ data class PluginFormField(
     val placeholder: String = "",
     val defaultValue: String = "",
     val required: Boolean = false,
-    val options: List<PluginFormOption> = emptyList()
+    val options: List<PluginFormOption> = emptyList(),
+    val visible: Boolean = true,
+    /** Field id to required value mapping for conditional visibility. */
+    val visibleWhen: Map<String, String> = emptyMap()
 ) {
     init {
         require(id.isNotBlank()) { "Field id must not be blank" }
         require(label.isNotBlank()) { "Field label must not be blank" }
         require(type != PluginFormFieldType.CHOICE || options.isNotEmpty()) {
             "Choice field '$id' must provide at least one option"
+        }
+        require(visibleWhen.keys.all { it.isNotBlank() }) {
+            "Conditional visibility field ids must not be blank"
         }
     }
 }

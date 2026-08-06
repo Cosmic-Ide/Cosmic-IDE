@@ -46,19 +46,19 @@ remote from the terminal before retrying a private remote operation.
 
 All project-facing contracts live in `:ide-api` under `org.cosmicide.project`:
 
-| Contract                                    | Role                                                             |
-|---------------------------------------------|------------------------------------------------------------------|
-| `ProjectExtensionPoints.CREATION_PROVIDER`  | Adds a create/import choice to Projects                          |
-| `ProjectCreationProvider`                   | Describes a form and creates a project                           |
-| `ProjectExtensionPoints.ACTION_PROVIDER`    | Adds applicable operations to project menus                      |
-| `ProjectActionProvider`                     | Describes and executes project-scoped actions                    |
-| `ProjectExtensionPoints.COMMAND_PROVIDER`   | Adds build/run/utility commands to the editor                    |
-| `ProjectCommandProvider` / `ProjectCommand` | Selects commands for a project and classifies their role         |
-| `PluginFormField`                           | Text, password, boolean, or choice input without UI dependencies |
-| `OperationReporter` / `OperationUpdate`     | Streams status, output, warning/error, and optional 0–1 progress |
-| `PluginSetupAction`                         | Declares plugin-level setup through `CosmicPlugin.setupActions`  |
-| `IdeServices.COMMAND_EXECUTION`             | Looks up the host process service from `PluginContext.services`  |
-| `CommandExecutionService`                   | Runs finite commands in Cosmic's toolchain environment           |
+| Contract                                    | Role                                                                        |
+|---------------------------------------------|-----------------------------------------------------------------------------|
+| `ProjectExtensionPoints.CREATION_PROVIDER`  | Adds a create/import choice to Projects                                     |
+| `ProjectCreationProvider`                   | Describes a form and creates a project                                      |
+| `ProjectExtensionPoints.ACTION_PROVIDER`    | Adds applicable operations to project menus                                 |
+| `ProjectActionProvider`                     | Describes and executes project-scoped actions                               |
+| `ProjectExtensionPoints.COMMAND_PROVIDER`   | Adds build/run/utility commands to the editor                               |
+| `ProjectCommandProvider` / `ProjectCommand` | Selects commands for a project and classifies their role                    |
+| `PluginFormField`                           | Text, password, boolean, or choice input with static/conditional visibility |
+| `OperationReporter` / `OperationUpdate`     | Streams status, output, warning/error, and optional 0–1 progress            |
+| `PluginSetupAction`                         | Declares plugin-level setup through `CosmicPlugin.setupActions`             |
+| `IdeServices.COMMAND_EXECUTION`             | Looks up the host process service from `PluginContext.services`             |
+| `CommandExecutionService`                   | Runs finite commands in Cosmic's toolchain environment                      |
 
 Both provider types implement `ConfigurableExtension`. Their stable ids therefore appear under
 Settings > Extensions and can be enabled or disabled independently without unloading their owner

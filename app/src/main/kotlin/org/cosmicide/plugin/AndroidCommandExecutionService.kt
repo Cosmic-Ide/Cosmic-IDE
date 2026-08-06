@@ -90,16 +90,49 @@ internal class AndroidCommandExecutionService(context: Context) :
         require(request.workingDirectory.isDirectory) {
             "Working directory does not exist: ${request.workingDirectory.absolutePath}"
         }
+
+        // Wrap all commands in bash with -i (interactive) and -l (login) flags
+        // This ensures both .bash_profile (login) and .bashrc (interactive) are loaded
+        // Append " && exit" to ensure the shell terminates properly
+        val escapedCommand = escapeForBashDoubleQuotes(request.command)
+        val escapedArgs = if (request.arguments.isNotEmpty()) {
+            " " + request.arguments.joinToString(" ") { escapeForBashDoubleQuotes(it) }
+        } else {
+            ""
+        }
+        val commandLine = "$escapedCommand$escapedArgs && exit"
+        val finalCommand = "bash"
+        val finalArgs = listOf("-i", "-l", "-c", commandLine)
+
         return ProcessExecutor.startCommand(
             context = appContext,
-            command = request.command,
-            args = request.arguments,
+            command = finalCommand,
+            args = finalArgs,
             workingDir = request.workingDirectory,
             redirectErrorStream = redirectErrorStream,
             environmentOverrides = request.environment + mapOf(
                 APP_FILES_DIR_ENV to appContext.filesDir.resolve("arch").absolutePath
             )
         )
+    }
+
+    /**
+     * Escapes a string for use in a double-quoted bash -c command argument.
+     * Only escapes characters that would break the double-quoted string:
+     * - backslash (\\ -> \\\\)
+     * - double quote (" -> \\")
+     * - newline (\n -> \\n)
+     * - carriage return (\r -> \\r)
+     * 
+     * Note: We do NOT escape $, `, or other bash special characters because
+     * those should be interpreted by bash when executing the command.
+     */
+    private fun escapeForBashDoubleQuotes(s: String): String {
+        return s
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
     }
 
     private companion object {

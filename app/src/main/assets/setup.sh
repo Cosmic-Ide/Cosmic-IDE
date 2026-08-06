@@ -510,8 +510,6 @@ setup_pacman() {
     echo "Pacman-managed Arch root is ready at $arch_root."
 }
 
-update-ca-trust
-
 echo "Configure Cosmic IDE development tools:"
 echo
 

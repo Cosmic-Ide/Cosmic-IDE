@@ -33,6 +33,29 @@ class ProjectExtensionContractsTest {
     }
 
     @Test
+    fun `form fields default to visible but can be hidden`() {
+        assertTrue(PluginFormField("name", "Name").visible)
+        assertFalse(PluginFormField("name", "Name", visible = false).visible)
+    }
+
+    @Test
+    fun `form fields accept conditional visibility mappings`() {
+        val field = PluginFormField(
+            id = "command",
+            label = "Create command",
+            visibleWhen = mapOf("template" to "custom")
+        )
+        assertEquals("custom", field.visibleWhen.getValue("template"))
+        assertFails<IllegalArgumentException> {
+            PluginFormField(
+                id = "command",
+                label = "Create command",
+                visibleWhen = mapOf("" to "custom")
+            )
+        }
+    }
+
+    @Test
     fun `operation progress accepts inclusive normalized bounds`() {
         assertEquals(0f, OperationUpdate("start", 0f).progress)
         assertEquals(1f, OperationUpdate("done", 1f).progress)

@@ -15,6 +15,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import org.cosmicide.app.AppContainer
@@ -45,7 +46,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             CompositionLocalProvider(LocalAppContainer provides appContainer) {
                 IDETheme {
-                    loadEditorThemes(MaterialTheme.colorScheme, isDeviceInDarkTheme())
+                    val colorScheme = MaterialTheme.colorScheme
+                    val darkTheme = isDeviceInDarkTheme()
+                    LaunchedEffect(colorScheme, darkTheme) {
+                        loadEditorThemes(colorScheme, darkTheme)
+                    }
                     IDENavigation()
                 }
             }

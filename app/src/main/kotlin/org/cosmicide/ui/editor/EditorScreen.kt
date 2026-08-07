@@ -52,7 +52,11 @@ import org.cosmicide.editor.EditorPreviewPresentation
 import org.cosmicide.editor.lsp.LspLogStore
 import org.cosmicide.editor.lsp.disposeLspLanguage
 import org.cosmicide.editor.preview.EditorPreviews
+import org.cosmicide.editor.EditorAction
+import org.cosmicide.editor.EditorActionContext
+import org.cosmicide.editor.EditorExtensionPoints
 import org.cosmicide.model.EditorViewModel
+import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
 import org.cosmicide.project.ProjectTask
@@ -91,7 +95,8 @@ private fun createEditorTabSession(
 @Composable
 fun EditorScreen(
     project: Project,
-    viewModel: EditorViewModel = viewModel()
+    viewModel: EditorViewModel = viewModel(),
+    onNavigateToPluginScreen: (String, String, Map<String, String>) -> Unit
 ) {
     val context = LocalContext.current
     val projectSessionServices = LocalAppContainer.current.projectSessionServices
@@ -136,6 +141,31 @@ fun EditorScreen(
             }
         }
     val editor = activeEditorSession?.editor ?: fallbackEditor
+
+    val contributedActions = remember(project.root.absolutePath, activeFile) {
+        CosmicPluginHost.extensionRegistry.registrations(EditorExtensionPoints.EDITOR_ACTION_PROVIDER)
+            .filter { CosmicPluginHost.extensionSettings.isEnabled(it.extension) }
+            .flatMap { registration ->
+                val provider = registration.extension
+                val pluginId = registration.ownerPluginId
+                provider.actions(project, activeFile).map { action ->
+                    action to pluginId
+                }
+            }
+    }
+
+    val onRunEditorAction: (EditorAction) -> Unit = { action ->
+        val pluginId = contributedActions.first { it.first.id == action.id }.second
+        val actionContext = object : EditorActionContext {
+            override val project: Project = project
+            override val file: File? = activeFile
+            override fun navigateToPluginScreen(screenId: String, args: Map<String, String>) {
+                onNavigateToPluginScreen(pluginId, screenId, args)
+            }
+        }
+        action.onClick(actionContext)
+    }
+
     val currentEditorContent = {
         if (isPreviewOnly) null else editor.text.toString()
     }
@@ -239,6 +269,8 @@ fun EditorScreen(
                         onRunProjectCommand = runProjectCommand,
                         taskProviders = projectTaskProviders,
                         onRunProjectTask = runProjectTask,
+                        contributedActions = contributedActions.map { it.first },
+                        onRunEditorAction = onRunEditorAction,
                         onOpenTerminal = {
                             openTerminalSession("Terminal", "bash", listOf("-i"))
                         }

@@ -39,4 +39,9 @@ object EditorExtensionPoints {
         "org.cosmicide.editor.themeProvider",
         EditorThemeProvider::class.java
     )
+
+    val EDITOR_ACTION_PROVIDER = ExtensionPoint(
+        "org.cosmicide.editor.action",
+        EditorActionProvider::class.java
+    )
 }

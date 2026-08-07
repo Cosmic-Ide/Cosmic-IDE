@@ -49,3 +49,10 @@ data class TerminalSession(
     val command: String,
     val workingDirectory: String
 ) : Screen
+
+@Serializable
+data class PluginScreen(
+    val pluginId: String,
+    val screenId: String,
+    val args: Map<String, String> = emptyMap()
+) : Screen

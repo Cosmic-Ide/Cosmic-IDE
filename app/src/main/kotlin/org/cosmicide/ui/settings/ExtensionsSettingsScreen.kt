@@ -30,6 +30,7 @@ import org.cosmicide.ui.settings.extensions.CustomLspSettingsSection
 import org.cosmicide.ui.settings.extensions.CustomProjectTypesSettingsSection
 import org.cosmicide.ui.settings.extensions.ExtensionProvidersSection
 import org.cosmicide.ui.settings.extensions.PluginMarketplaceSection
+import org.cosmicide.ui.settings.extensions.PluginSettingsSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,6 +115,10 @@ fun ExtensionsSettingsScreen(
                         onRunSetupInTerminal = onRunSetupInTerminal
                     )
                 }
+
+                ExtensionsSettingsTab.SETTINGS -> {
+                    PluginSettingsSection()
+                }
             }
         }
     }
@@ -123,5 +128,6 @@ private enum class ExtensionsSettingsTab(val label: String) {
     PROVIDERS("Providers"),
     LANGUAGES("Languages"),
     PROJECTS("Projects"),
-    PLUGINS("Plugins")
+    PLUGINS("Plugins"),
+    SETTINGS("Settings")
 }

@@ -43,6 +43,7 @@ import org.cosmicide.project.ProjectCommand
 import org.cosmicide.project.ProjectCommandKind
 import org.cosmicide.project.ProjectTask
 import org.cosmicide.project.ProjectTaskProvider
+import org.cosmicide.editor.EditorAction
 import java.io.File
 
 @Composable
@@ -79,6 +80,8 @@ internal fun EditorToolbar(
     onRunProjectCommand: (ProjectCommand) -> Unit,
     taskProviders: List<ProjectTaskProvider>,
     onRunProjectTask: (ProjectTask) -> Unit,
+    contributedActions: List<EditorAction>,
+    onRunEditorAction: (EditorAction) -> Unit,
     onOpenTerminal: () -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -210,6 +213,17 @@ internal fun EditorToolbar(
                             )
                         }
                     })
+                }
+                if (contributedActions.isNotEmpty()) {
+                    contributedActions.forEach { action ->
+                        DropdownMenuItem(
+                            text = { Text(action.label) },
+                            onClick = {
+                                onRunEditorAction(action)
+                                showMenu = false
+                            }
+                        )
+                    }
                 }
                 DropdownMenuItem(text = { Text("Editor") }, children = {
                     DropdownMenuItem(text = { Text("Format") }, onClick = {

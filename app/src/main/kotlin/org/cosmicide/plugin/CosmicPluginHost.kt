@@ -21,6 +21,7 @@ import org.cosmicide.plugin.theme.SolarizedThemePlugin
 import org.cosmicide.plugin.runtime.AndroidPluginManager
 import org.cosmicide.project.IdeServices
 import org.cosmicide.project.ProjectExtensionPoints
+import org.cosmicide.ui.UiExtensionPoints
 import org.cosmicide.util.FileUtil
 
 object CosmicPluginHost {
@@ -103,6 +104,7 @@ object CosmicPluginHost {
             addRegistrations(ProjectExtensionPoints.ACTION_PROVIDER, "Project actions")
             addRegistrations(ProjectExtensionPoints.COMMAND_PROVIDER, "Project commands")
             addRegistrations(ProjectExtensionPoints.TASK_PROVIDER, "Project tasks")
+            addRegistrations(UiExtensionPoints.SETTINGS_UI, "Plugin settings")
         }.distinctBy { it.extension.id }
     }
 

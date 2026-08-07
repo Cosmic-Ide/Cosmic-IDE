@@ -7,6 +7,7 @@
 
 plugins {
     id("com.android.library")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -43,6 +44,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
@@ -50,5 +55,11 @@ dependencies {
     api(projects.common)
     api(projects.feature.project)
     api("org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0")
+
+    api(platform("androidx.compose:compose-bom:2026.06.01"))
+    api("androidx.compose.runtime:runtime")
+    api("androidx.compose.foundation:foundation")
+    api("androidx.compose.material3:material3")
+
     testImplementation("junit:junit:4.13.2")
 }

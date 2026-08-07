@@ -17,6 +17,7 @@ import org.cosmicide.plugin.api.DefaultServiceRegistry
 import org.cosmicide.plugin.api.MutableExtensionRegistry
 import org.cosmicide.plugin.customproject.CustomProjectTypePlugin
 import org.cosmicide.plugin.git.GitPlugin
+import org.cosmicide.plugin.theme.SolarizedThemePlugin
 import org.cosmicide.plugin.runtime.AndroidPluginManager
 import org.cosmicide.project.IdeServices
 import org.cosmicide.project.ProjectExtensionPoints
@@ -66,6 +67,14 @@ object CosmicPluginHost {
                             throwable
                         )
                     }
+                manager.loadBuiltin(SolarizedThemePlugin.descriptor, SolarizedThemePlugin())
+                    .onFailure { descriptorId, reason, throwable ->
+                        Log.w(
+                            TAG,
+                            "Failed to load built-in plugin $descriptorId: $reason",
+                            throwable
+                        )
+                    }
                 manager.loadInstalledPlugins().forEach { result ->
                     result.onFailure { descriptorId, reason, throwable ->
                         Log.w(TAG, "Failed to load plugin $descriptorId: $reason", throwable)
@@ -88,6 +97,7 @@ object CosmicPluginHost {
             addRegistrations(EditorExtensionPoints.LSP_SERVER_PROVIDER, "Language servers")
             addRegistrations(EditorExtensionPoints.FORMATTER_PROVIDER, "Formatters")
             addRegistrations(EditorExtensionPoints.PREVIEW_PROVIDER, "Editor previews")
+            addRegistrations(EditorExtensionPoints.THEME_PROVIDER, "Editor themes")
             addRegistrations(ProjectExtensionPoints.TYPE_PROVIDER, "Project types")
             addRegistrations(ProjectExtensionPoints.CREATION_PROVIDER, "Project creation")
             addRegistrations(ProjectExtensionPoints.ACTION_PROVIDER, "Project actions")

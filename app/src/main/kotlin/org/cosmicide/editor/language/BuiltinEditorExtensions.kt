@@ -10,12 +10,14 @@ import org.cosmicide.editor.lsp.CustomLspConfigurationStore
 import org.cosmicide.editor.lsp.CustomLspServerProvider
 import org.cosmicide.editor.lsp.LspEditorLanguageProvider
 import org.cosmicide.editor.preview.registerBuiltinPreviewExtensions
+import org.cosmicide.editor.theme.registerBuiltinThemeProviders
 import org.cosmicide.plugin.api.MutableExtensionRegistry
 import org.cosmicide.plugin.api.PluginIds
 
 fun registerBuiltinEditorExtensions(context: Context, registry: MutableExtensionRegistry) {
     registerBuiltinFormatterExtensions(registry)
     registerBuiltinPreviewExtensions(registry)
+    registerBuiltinThemeProviders(registry)
 
     registry.register(
         point = EditorExtensionPoints.LANGUAGE_PROVIDER,

@@ -12,6 +12,8 @@ The first supported extension surfaces are:
 - editor language providers;
 - Language Server Protocol (LSP) server providers;
 - editor formatter providers;
+- editor theme providers;
+- editor preview providers;
 - project creation providers;
 - project action providers.
 
@@ -40,6 +42,7 @@ This module defines IDE-facing extension contracts. It currently owns:
 - `EditorLanguageProvider` for advanced editor integrations;
 - `LspServerProvider` for standard LSP-based language support;
 - `EditorFormatterProvider` for document and range formatting;
+- `EditorThemeProvider` for TextMate editor themes;
 - request, result, connection, and server-definition data types;
 - `EditorExtensionPoints`, the canonical extension point identifiers;
 - declarative project forms, progress events, terminal setup actions, and command execution;
@@ -366,6 +369,31 @@ Register it at `EditorExtensionPoints.PREVIEW_PROVIDER`. Higher-priority provide
 `CODE_AND_PREVIEW`, `content` contains the current editor text; for `PREVIEW_ONLY`, it is `null` and
 Cosmic IDE never loads or saves the file through the text editor. Providers should release WebViews,
 decoders, or other owned resources in `releaseView`.
+
+## Editor theme providers
+
+Theme providers contribute TextMate themes to the Sora editor. Register them at
+`EditorExtensionPoints.THEME_PROVIDER`. Each provider builds a `ThemeModel` whose model name must
+exactly match the `name` field inside the TextMate theme JSON. Cosmic IDE keys themes by that name:
+a mismatch means the theme loads under one name but is selected under another.
+
+```kotlin
+class SolarizedDarkThemeProvider : EditorThemeProvider {
+    override val id = "com.example.theme.solarized-dark"
+    override val displayName = "Solarized Dark"
+    override val description = "A dark Solarized color scheme"
+    override val isDark = true
+
+    override fun createTheme(): ThemeModel = ThemeModel(
+        IThemeSource.fromString(IThemeSource.ContentType.JSON, themeJson),
+        "Solarized Dark"
+    )
+}
+```
+
+`isDark` tells Cosmic IDE which side of the automatic (match system) choice the theme belongs to.
+The editor applies the theme selected in Settings > Editor > Theme; the automatic option keeps the
+bundled darcula/Quiet Light pair. Themes are looked up by their model name, so it must stay stable.
 
 ## Project creation and action providers
 

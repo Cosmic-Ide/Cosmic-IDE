@@ -33,4 +33,10 @@ object EditorExtensionPoints {
         "org.cosmicide.editor.previewProvider",
         EditorPreviewProvider::class.java
     )
+
+    @JvmField
+    val THEME_PROVIDER = ExtensionPoint(
+        "org.cosmicide.editor.themeProvider",
+        EditorThemeProvider::class.java
+    )
 }

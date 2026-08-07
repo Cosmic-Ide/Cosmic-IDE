@@ -25,6 +25,8 @@ object PreferenceKeys {
     const val BRACKET_PAIR_AUTOCOMPLETE = "bracket_pair_autocomplete"
     const val QUICK_DELETE = "quick_delete"
     const val STICKY_SCROLL = "sticky_scroll"
+    const val EDITOR_THEME = "editor_theme"
+    const val EDITOR_THEME_AUTO = "auto"
 
     const val PLUGIN_REPOSITORY = "plugin_repository"
     const val CUSTOM_LSP_CONFIGURATIONS = "custom_lsp_configurations"

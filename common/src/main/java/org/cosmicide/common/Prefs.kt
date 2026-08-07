@@ -113,6 +113,9 @@ object Prefs {
     val editorFont: String
         get() = prefs.getString("editor_font", "") ?: ""
 
+    val editorTheme: String
+        get() = prefs.getString("editor_theme", "auto") ?: "auto"
+
     val repositories: String
         get() = prefs.getString("repos", "") ?: """
             Maven Central: https://repo1.maven.org/maven2

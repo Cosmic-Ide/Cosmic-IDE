@@ -30,13 +30,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.cosmicide.applyEditorThemeSelection
 import org.cosmicide.common.Prefs
+import org.cosmicide.editor.EditorExtensionPoints
+import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.ui.settings.components.PreferenceItem
+import org.cosmicide.ui.settings.components.SingleChoicePreference
 import org.cosmicide.ui.settings.components.SliderPreference
 import org.cosmicide.ui.settings.components.SwitchPreference
+import org.cosmicide.ui.theme.isDeviceInDarkTheme
 import org.cosmicide.util.PreferenceKeys
 import java.io.File
 import kotlin.math.roundToInt
@@ -104,6 +110,43 @@ fun EditorSettingsScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
         ) {
+            val themeThemes = remember {
+                CosmicPluginHost
+                    .enabledExtensions(EditorExtensionPoints.THEME_PROVIDER)
+                    .mapNotNull { provider ->
+                        val theme = runCatching { provider.createTheme() }.getOrNull()
+                        theme?.let { provider to it }
+                    }
+            }
+            val themeOptions = remember(themeThemes) {
+                listOf(PreferenceKeys.EDITOR_THEME_AUTO to "Auto (match system)") +
+                    themeThemes.map { (provider, theme) ->
+                        theme.name to provider.displayName
+                    }
+            }
+            val darkTheme = isDeviceInDarkTheme()
+            val currentTheme = Prefs.editorTheme
+            val currentThemeLabel = themeOptions
+                .firstOrNull { it.first == currentTheme }
+                ?.second
+                ?: currentTheme
+
+            SingleChoicePreference(
+                title = "Theme",
+                summary = currentThemeLabel,
+                selectedItem = currentTheme,
+                items = themeOptions,
+                onItemSelected = { value ->
+                    prefs.edit { putString(PreferenceKeys.EDITOR_THEME, value) }
+                    val registry = ThemeRegistry.getInstance()
+                    val theme = themeThemes.firstOrNull { it.second.name == value }?.second
+                    if (theme != null) {
+                        runCatching { registry.loadTheme(theme) }
+                    }
+                    applyEditorThemeSelection(registry, darkTheme)
+                }
+            )
+
             SliderPreference(
                 title = "Font size",
                 summary = "Set the font size for the editor",

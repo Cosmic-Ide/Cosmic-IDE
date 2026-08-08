@@ -2,6 +2,7 @@ package org.cosmicide.common
 
 import android.content.Context
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 object IndexManager {
 

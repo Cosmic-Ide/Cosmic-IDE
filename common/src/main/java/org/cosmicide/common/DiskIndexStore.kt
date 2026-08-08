@@ -7,7 +7,6 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicLong
 
 class DiskIndexStore(private val storeDir: File) {
 

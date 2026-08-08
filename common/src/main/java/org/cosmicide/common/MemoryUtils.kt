@@ -1,7 +1,5 @@
 package org.cosmicide.common
 
-import android.os.Build
-import android.os.Debug
 import java.lang.Runtime.getRuntime
 
 object MemoryUtils {

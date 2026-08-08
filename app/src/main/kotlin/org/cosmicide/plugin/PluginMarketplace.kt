@@ -10,6 +10,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.cosmicide.common.AppDispatchers
 import org.cosmicide.plugin.api.PluginDescriptor
 import org.cosmicide.plugin.api.PluginHandle
 import org.cosmicide.plugin.api.PluginLoadResult
@@ -51,13 +52,13 @@ class PluginMarketplace(
     private val appContext = context.applicationContext
 
     suspend fun fetch(repositoryUrl: String): List<PluginRepositoryEntry> =
-        withContext(Dispatchers.IO) {
+        withContext(AppDispatchers.IO) {
             val json = downloadText(repositoryUrl, MAX_INDEX_BYTES)
             parsePluginRepository(json)
         }
 
     suspend fun install(entry: PluginRepositoryEntry): PluginInstallResult =
-        withContext(Dispatchers.IO) {
+        withContext(AppDispatchers.IO) {
             val pluginManager = checkNotNull(manager()) { "Plugin runtime is not initialized" }
             val pluginRoot = FileUtil.pluginDir.apply { mkdirs() }
             val token = UUID.randomUUID().toString()
@@ -120,7 +121,7 @@ class PluginMarketplace(
             }
         }
 
-    suspend fun uninstall(pluginId: String) = withContext(Dispatchers.IO) {
+    suspend fun uninstall(pluginId: String) = withContext(AppDispatchers.IO) {
         val pluginManager = checkNotNull(manager()) { "Plugin runtime is not initialized" }
         val target = FileUtil.pluginDir.resolve(pluginId)
         require(target.isDirectory) {

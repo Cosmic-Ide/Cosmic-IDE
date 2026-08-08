@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.cosmicide.common.AppDispatchers
 import org.cosmicide.common.Prefs
 import org.cosmicide.exec.ProcessExecutor
 import org.cosmicide.exec.linux.LinuxProcessRunner
@@ -44,7 +45,7 @@ internal class AndroidCommandExecutionService(context: Context) :
     override suspend fun execute(
         request: CommandRequest,
         onOutput: (String) -> Unit
-    ): CommandResult = withContext(Dispatchers.IO) {
+    ): CommandResult = withContext(AppDispatchers.IO) {
         require(request.workingDirectory.isDirectory) {
             "Working directory does not exist: ${request.workingDirectory.absolutePath}"
         }
@@ -52,7 +53,7 @@ internal class AndroidCommandExecutionService(context: Context) :
         val process = start(request, redirectErrorStream = true)
         val captured = StringBuilder()
         val callerJob = currentCoroutineContext()[Job]
-        val cancellationWatcher = CoroutineScope(Dispatchers.IO).launch {
+        val cancellationWatcher = CoroutineScope(AppDispatchers.IO).launch {
             while (callerJob?.isActive == true) delay(CANCELLATION_POLL_MILLIS.milliseconds)
             if (callerJob?.isCancelled == true && process.isAlive) process.destroy()
         }

@@ -35,6 +35,9 @@ object CosmicPluginHost {
     @Volatile
     private var initialized = false
 
+    @Volatile
+    private var pluginsLoaded = false
+
     var pluginManager: AndroidPluginManager? = null
         private set
 
@@ -76,23 +79,33 @@ object CosmicPluginHost {
                             throwable
                         )
                     }
-                manager.loadInstalledPlugins().forEach { result ->
-                    result.onFailure { descriptorId, reason, throwable ->
-                        Log.w(TAG, "Failed to load plugin $descriptorId: $reason", throwable)
-                    }
-                }
             }
 
             initialized = true
         }
     }
 
+    private fun ensurePluginsLoaded() {
+        if (pluginsLoaded) return
+        synchronized(this) {
+            if (pluginsLoaded) return
+            pluginManager?.loadInstalledPlugins()?.forEach { result ->
+                result.onFailure { descriptorId, reason, throwable ->
+                    Log.w(TAG, "Failed to load plugin $descriptorId: $reason", throwable)
+                }
+            }
+            pluginsLoaded = true
+        }
+    }
+
     fun <T> enabledExtensions(point: org.cosmicide.plugin.api.ExtensionPoint<T>): List<T>
             where T : Any, T : ConfigurableExtension {
+        ensurePluginsLoaded()
         return extensionRegistry.extensions(point).filter(extensionSettings::isEnabled)
     }
 
     fun configurableExtensions(): List<ExtensionSettingsItem> {
+        ensurePluginsLoaded()
         return buildList {
             addRegistrations(EditorExtensionPoints.LANGUAGE_PROVIDER, "Editor languages")
             addRegistrations(EditorExtensionPoints.LSP_SERVER_PROVIDER, "Language servers")

@@ -16,9 +16,11 @@ package org.cosmicide.plugin.runtime.loading
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import dalvik.system.DexClassLoader
 import org.cosmicide.plugin.api.PluginDescriptor
 import java.io.File
+import java.security.MessageDigest
 
 /**
  * Creates an isolated class loader for each installed plugin.
@@ -64,6 +66,16 @@ class PluginClassLoaderFactory(
         }
 
         val optimizedDirectory = createOptimizedDirectory(descriptor)
+        val contentHash = computeContentHash(artifacts)
+        val hashFile = File(optimizedDirectory, ".content-hash")
+
+        if (hashFile.exists() && hashFile.readText() == contentHash) {
+            Log.d(TAG, "Plugin ${descriptor.id} unchanged, reusing cached DEX")
+        } else {
+            optimizedDirectory.listFiles()?.filter { it.extension == "dex" }?.forEach { it.delete() }
+            hashFile.writeText(contentHash)
+        }
+
         val dexPath = artifacts.joinToString(File.pathSeparator) {
             it.absolutePath
         }
@@ -74,6 +86,15 @@ class PluginClassLoaderFactory(
             resolveNativeLibraryPath(canonicalPluginDir),
             appClassLoader
         )
+    }
+
+    private fun computeContentHash(artifacts: List<File>): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        artifacts.sortedBy { it.absolutePath }.forEach { file ->
+            digest.update(file.name.toByteArray(Charsets.UTF_8))
+            digest.update(file.readBytes())
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
     }
 
     private fun createOptimizedDirectory(
@@ -119,6 +140,7 @@ class PluginClassLoaderFactory(
     }
 
     private companion object {
+        private const val TAG = "PluginClassLoader"
         val INVALID_CACHE_NAME_CHARACTERS = Regex("[^A-Za-z0-9._-]")
     }
 }

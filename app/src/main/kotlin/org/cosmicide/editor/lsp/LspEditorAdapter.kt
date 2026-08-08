@@ -31,6 +31,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.cosmicide.common.AppDispatchers
+import org.cosmicide.common.IndexManager
 import org.cosmicide.editor.LspServerConnection
 import org.cosmicide.editor.LspServerDefinition
 import org.cosmicide.editor.LspServerRequest
@@ -45,9 +47,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.URI
 import java.net.URL
-import java.nio.file.AtomicMoveNotSupportedException
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -65,7 +64,7 @@ fun CodeEditor.configureLspLanguage(
     val lspProject = LspProjects.forRoot(request.project.root.absolutePath)
     ensureRequestTimeouts()
 
-    CoroutineScope(Dispatchers.IO).launch {
+    CoroutineScope(AppDispatchers.IO).launch {
         ensureInitializationTimeout(definition.initializationTimeoutMillis)
         val fileExtensions = definition.fileExtensions.toList()
         val requestedFileExtension = fileExtensions.firstOrNull {
@@ -176,7 +175,7 @@ fun CodeEditor.configureLspLanguage(
 
 fun CodeEditor.disposeLspLanguage() {
     val lspEditors = LspProjects.editorsFor(this)
-    CoroutineScope(Dispatchers.IO).launch {
+    CoroutineScope(AppDispatchers.IO).launch {
         lspEditors.forEach(LspEditor::dispose)
     }
 }
@@ -448,23 +447,14 @@ private fun createTextMateLanguage(
         return createTextMateLanguage(definition, grammarText)
     }
 
-    val cacheFile = grammarCacheFile(context, grammarLink)
-    var cachedGrammarText: String? = null
-    if (cacheFile.isFile) {
-        cachedGrammarText = runCatching { cacheFile.inputStream().readGrammarText() }
-            .onFailure {
-                Log.w(TAG, "Discarding unreadable grammar cache ${cacheFile.name}", it)
-                cacheFile.delete()
-            }
-            .getOrNull()
-    }
+    var cachedGrammarText: String? = readGrammarViaIndexManager(grammarLink)
 
-    if (cachedGrammarText != null && isTextMateGrammarCacheFresh(cacheFile)) {
+    if (cachedGrammarText != null) {
         try {
             return createTextMateLanguage(definition, cachedGrammarText)
         } catch (e: Exception) {
-            Log.w(TAG, "Discarding invalid grammar cache ${cacheFile.name}", e)
-            cacheFile.delete()
+            Log.w(TAG, "Discarding invalid grammar cache for $grammarLink", e)
+            IndexManager.invalidateProject("grammar:$grammarLink")
             cachedGrammarText = null
         }
     }
@@ -479,7 +469,7 @@ private fun createTextMateLanguage(
 
     return try {
         createTextMateLanguage(definition, refreshedGrammarText).also {
-            runCatching { cacheGrammar(cacheFile, refreshedGrammarText) }
+            runCatching { cacheGrammarViaIndexManager(grammarLink, refreshedGrammarText) }
                 .onFailure { error ->
                     Log.w(TAG, "Unable to cache grammar from $grammarLink", error)
                 }
@@ -552,27 +542,20 @@ private fun grammarCacheFile(context: Context, grammarLink: String): File {
         .resolve("$cacheKey.grammar")
 }
 
-private fun cacheGrammar(cacheFile: File, grammarText: String) {
-    val temporaryFile = File.createTempFile(cacheFile.name, ".tmp", cacheFile.parentFile)
-    try {
-        temporaryFile.writeText(grammarText, Charsets.UTF_8)
-        try {
-            Files.move(
-                temporaryFile.toPath(),
-                cacheFile.toPath(),
-                StandardCopyOption.ATOMIC_MOVE,
-                StandardCopyOption.REPLACE_EXISTING
-            )
-        } catch (_: AtomicMoveNotSupportedException) {
-            Files.move(
-                temporaryFile.toPath(),
-                cacheFile.toPath(),
-                StandardCopyOption.REPLACE_EXISTING
-            )
+private fun cacheGrammarViaIndexManager(grammarLink: String, grammarText: String) {
+    val key = "grammar:${grammarLink}"
+    IndexManager.getOrBuildIndex(key, "text") { grammarText.toByteArray(Charsets.UTF_8) }
+}
+
+private fun readGrammarViaIndexManager(grammarLink: String): String? {
+    val key = "grammar:${grammarLink}"
+    return try {
+        val segment = IndexManager.getOrBuildIndex(key, "text") {
+            throw IllegalStateException("Grammar not cached: $grammarLink")
         }
-        cacheFile.setLastModified(System.currentTimeMillis())
-    } finally {
-        temporaryFile.delete()
+        String(segment.readBlock(0, segment.size.toInt()), Charsets.UTF_8)
+    } catch (e: Exception) {
+        null
     }
 }
 

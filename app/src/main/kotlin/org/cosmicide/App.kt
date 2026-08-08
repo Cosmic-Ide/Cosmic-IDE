@@ -26,6 +26,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.cosmicide.common.Analytics
+import org.cosmicide.common.IndexManager
+import org.cosmicide.common.MemoryMonitor
+import org.cosmicide.common.MemoryUtils
 import org.cosmicide.common.Prefs
 import org.cosmicide.editor.lsp.handleLspShowDocument
 import org.cosmicide.plugin.CosmicPluginHost
@@ -81,6 +84,8 @@ import java.util.TimeZone
 
 class App : Application() {
 
+    private lateinit var memoryMonitor: MemoryMonitor
+
     companion object {
 
         /**
@@ -117,6 +122,8 @@ class App : Application() {
         instance = WeakReference(this)
         HookManager.context = WeakReference(this)
 
+        IndexManager.init(this)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.addHiddenApiExemptions()
         }
@@ -125,6 +132,13 @@ class App : Application() {
 
         CosmicPluginHost.init(this)
 
+        memoryMonitor = MemoryMonitor(intervalMs = 5000L) { pressure ->
+            if (pressure == MemoryUtils.MemoryPressure.CRITICAL) {
+                android.util.Log.w("App", "Critical memory pressure: throttling LSP servers")
+            }
+        }
+        memoryMonitor.start()
+
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
         applyLSP4JHooks()
 
@@ -132,6 +146,10 @@ class App : Application() {
 
     override fun onTerminate() {
         super.onTerminate()
+        if (::memoryMonitor.isInitialized) {
+            memoryMonitor.stop()
+        }
+        IndexManager.shutdown()
     }
 
     fun loadTextmateTheme() {

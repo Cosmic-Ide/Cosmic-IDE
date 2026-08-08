@@ -278,6 +278,16 @@ public final class Main {
         return stringWriter.toString();
     }
 
+    private static int recommendedThreadCount() {
+        int cores = Runtime.getRuntime().availableProcessors();
+        long maxMb = Runtime.getRuntime().maxMemory() / (1024 * 1024);
+
+        if (maxMb < 128) return 1;
+        if (maxMb < 256) return Math.min(2, cores);
+        if (maxMb < 512) return Math.min(4, cores);
+        return Math.min(cores, 8);
+    }
+
     private static final class GradleToolingServer implements Closeable {
         private final ProtocolWriter writer;
         private final ExecutorService executor;
@@ -292,7 +302,7 @@ public final class Main {
             this.writer = writer;
             this.project = project;
             this.connector = connectorFor(project);
-            this.executor = Executors.newCachedThreadPool(runnable -> {
+            this.executor = Executors.newFixedThreadPool(recommendedThreadCount(), runnable -> {
                 Thread thread = new Thread(runnable, "cosmic-gradle-provider-worker");
                 thread.setDaemon(false);
                 return thread;

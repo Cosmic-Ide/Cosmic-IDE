@@ -5,6 +5,7 @@ import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectTypeProvider
 import org.cosmicide.util.FileUtil
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 interface ProjectRepository {
     fun projects(): List<Project>
@@ -17,13 +18,16 @@ internal class FileSystemProjectRepository(
     private val projectTypeProviders: () -> List<ProjectTypeProvider> = { emptyList() }
 ) : ProjectRepository {
     private val root = projectsDirectory.canonicalFile
+    private val languageCache = ConcurrentHashMap<String, Language>()
 
     override fun projects(): List<Project> = root
         .listFiles { file -> file.isDirectory }
         ?.sortedByDescending(File::lastModified)
         .orEmpty()
         .map { projectRoot ->
-            Project(projectRoot, detectLanguage(projectRoot))
+            Project(projectRoot, languageCache.getOrPut(projectRoot.absolutePath) {
+                detectLanguage(projectRoot)
+            })
         }
 
     override fun delete(project: Project) {
@@ -32,6 +36,7 @@ internal class FileSystemProjectRepository(
             "Projects can only be deleted from the configured projects directory"
         }
         require(target.isDirectory) { "Project no longer exists: ${project.name}" }
+        languageCache.remove(project.root.absolutePath)
         check(target.deleteRecursively()) { "Could not delete ${project.name}" }
     }
 

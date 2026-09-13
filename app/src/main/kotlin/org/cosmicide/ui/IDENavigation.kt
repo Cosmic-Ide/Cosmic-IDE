@@ -114,6 +114,9 @@ fun IDENavigation() {
                                     )
                                 )
                             },
+                            onNavigateToPluginScreen = { pluginId, screenId, args ->
+                                backStack.add(PluginScreen(pluginId, screenId, args))
+                            },
                             initialTab = key.initialTab?.let { name ->
                                 ExtensionsSettingsTab.entries.firstOrNull { it.name == name }
                             } ?: ExtensionsSettingsTab.PLUGINS

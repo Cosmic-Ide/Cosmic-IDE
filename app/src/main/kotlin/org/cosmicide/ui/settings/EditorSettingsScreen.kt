@@ -66,6 +66,7 @@ fun EditorSettingsScreen(
 
     var fontSize by remember { mutableFloatStateOf(Prefs.editorFontSize) }
     var tabSize by remember { mutableFloatStateOf(Prefs.tabSize.toFloat()) }
+    var editorTheme by remember { mutableStateOf(Prefs.editorTheme) }
     var editorFont by remember { mutableStateOf(Prefs.editorFont) }
     var fontSelectionError by remember { mutableStateOf<String?>(null) }
     var stickyScroll by remember { mutableStateOf(Prefs.stickyScroll) }
@@ -78,6 +79,7 @@ fun EditorSettingsScreen(
     var hwAccel by remember { mutableStateOf(Prefs.hardwareAcceleration) }
     var nonPrintable by remember { mutableStateOf(Prefs.nonPrintableCharacters) }
     var lineNumbers by remember { mutableStateOf(Prefs.lineNumbers) }
+    var minimap by remember { mutableStateOf(Prefs.minimap) }
 
     val fontPicker =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -124,7 +126,7 @@ fun EditorSettingsScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             item {
@@ -146,24 +148,24 @@ fun EditorSettingsScreen(
                             }
                     }
                     val themeOptions = remember(themeThemes) {
-                        listOf(PreferenceKeys.EDITOR_THEME_AUTO to "Auto (match system)") +
+                        listOf(PreferenceKeys.EDITOR_THEME_AUTO to "Auto (Match System)") +
                                 themeThemes.map { (provider, theme) ->
                                     theme.name to provider.displayName
                                 }
                     }
                     val darkTheme = isDeviceInDarkTheme()
-                    val currentTheme = Prefs.editorTheme
                     val currentThemeLabel = themeOptions
-                        .firstOrNull { it.first == currentTheme }
+                        .firstOrNull { it.first == editorTheme }
                         ?.second
-                        ?: currentTheme
+                        ?: editorTheme
 
                     SingleChoicePreference(
                         title = "Theme",
                         summary = currentThemeLabel,
-                        selectedItem = currentTheme,
+                        selectedItem = editorTheme,
                         items = themeOptions,
                         onItemSelected = { value ->
+                            editorTheme = value
                             prefs.edit { putString(PreferenceKeys.EDITOR_THEME, value) }
                             val registry = ThemeRegistry.getInstance()
                             val theme = themeThemes.firstOrNull { it.second.name == value }?.second
@@ -180,11 +182,17 @@ fun EditorSettingsScreen(
                         title = "Font size",
                         summary = "Set the font size for the editor",
                         value = fontSize,
-                        valueRange = 12f..32f,
-                        steps = 20,
+                        valueRange = 4f..32f,
+                        steps = 27,
                         onValueChange = {
-                            fontSize = it
-                            prefs.edit { putString(PreferenceKeys.EDITOR_FONT_SIZE, it.toString()) }
+                            val rounded = it.roundToInt().toFloat()
+                            fontSize = rounded
+                            prefs.edit {
+                                putString(
+                                    PreferenceKeys.EDITOR_FONT_SIZE,
+                                    rounded.toInt().toString()
+                                )
+                            }
                         },
                         index = 1,
                         count = 4
@@ -195,11 +203,12 @@ fun EditorSettingsScreen(
                         summary = "Set the tab size for the editor",
                         value = tabSize,
                         valueRange = 2f..14f,
-                        steps = 12,
+                        steps = 11,
                         onValueChange = {
-                            tabSize = it
+                            val rounded = it.roundToInt().toFloat()
+                            tabSize = rounded
                             prefs.edit {
-                                putInt(PreferenceKeys.EDITOR_TAB_SIZE, it.roundToInt())
+                                putInt(PreferenceKeys.EDITOR_TAB_SIZE, rounded.toInt())
                             }
                         },
                         index = 2,
@@ -209,7 +218,7 @@ fun EditorSettingsScreen(
                     PreferenceItem(
                         title = "Editor font",
                         summary = fontSelectionError ?: if (editorFont.isEmpty()) {
-                            "Bundled Noto Sans Mono • tap to choose a font file"
+                            "Tap to choose a font file"
                         } else {
                             "Custom font selected • tap to replace"
                         },
@@ -261,7 +270,7 @@ fun EditorSettingsScreen(
                             prefs.edit { putBoolean(PreferenceKeys.STICKY_SCROLL, it) }
                         },
                         index = 0,
-                        count = 6
+                        count = 7
                     )
 
                     SwitchPreference(
@@ -273,7 +282,7 @@ fun EditorSettingsScreen(
                             prefs.edit { putBoolean(PreferenceKeys.EDITOR_USE_SPACES, it) }
                         },
                         index = 1,
-                        count = 6
+                        count = 7
                     )
 
                     SwitchPreference(
@@ -285,7 +294,7 @@ fun EditorSettingsScreen(
                             prefs.edit { putBoolean(PreferenceKeys.EDITOR_LIGATURES_ENABLE, it) }
                         },
                         index = 2,
-                        count = 6
+                        count = 7
                     )
 
                     SwitchPreference(
@@ -297,7 +306,19 @@ fun EditorSettingsScreen(
                             prefs.edit { putBoolean(PreferenceKeys.EDITOR_WORDWRAP_ENABLE, it) }
                         },
                         index = 3,
-                        count = 6
+                        count = 7
+                    )
+
+                    SwitchPreference(
+                        title = "Show Minimap",
+                        summary = "Enable & disable Code Minimap",
+                        checked = ligatures,
+                        onCheckedChange = {
+                            ligatures = it
+                            prefs.edit { putBoolean(PreferenceKeys.SHOW_MINIMAP, it) }
+                        },
+                        index = 4,
+                        count = 7
                     )
 
                     SwitchPreference(
@@ -308,8 +329,8 @@ fun EditorSettingsScreen(
                             bracketAutocomplete = it
                             prefs.edit { putBoolean(PreferenceKeys.BRACKET_PAIR_AUTOCOMPLETE, it) }
                         },
-                        index = 4,
-                        count = 6
+                        index = 5,
+                        count = 7
                     )
 
                     SwitchPreference(
@@ -320,8 +341,8 @@ fun EditorSettingsScreen(
                             quickDelete = it
                             prefs.edit { putBoolean(PreferenceKeys.QUICK_DELETE, it) }
                         },
-                        index = 5,
-                        count = 6
+                        index = 6,
+                        count = 7
                     )
                 }
             }

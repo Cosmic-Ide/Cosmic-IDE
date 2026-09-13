@@ -1,13 +1,20 @@
 /*
  * This file is part of Cosmic IDE.
  * Cosmic IDE is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.cosmicide.plugin.git
 
+import androidx.compose.runtime.Composable
+import org.cosmicide.editor.EditorAction
+import org.cosmicide.editor.EditorActionProvider
+import org.cosmicide.editor.EditorExtensionPoints
 import org.cosmicide.plugin.api.CosmicPlugin
 import org.cosmicide.plugin.api.PluginContext
 import org.cosmicide.plugin.api.PluginDescriptor
+import org.cosmicide.plugin.git.ui.GitScreen
 import org.cosmicide.project.CommandExecutionService
 import org.cosmicide.project.CommandRequest
 import org.cosmicide.project.IdeServices
@@ -18,33 +25,40 @@ import org.cosmicide.project.OperationUpdate
 import org.cosmicide.project.PluginFormField
 import org.cosmicide.project.PluginFormFieldType
 import org.cosmicide.project.Project
-import org.cosmicide.project.ProjectAction
-import org.cosmicide.project.ProjectActionProvider
-import org.cosmicide.project.ProjectActionRequest
-import org.cosmicide.project.ProjectActionResult
 import org.cosmicide.project.ProjectCreationProvider
 import org.cosmicide.project.ProjectCreationRequest
 import org.cosmicide.project.ProjectCreationResult
 import org.cosmicide.project.ProjectExtensionPoints
+import org.cosmicide.ui.PluginScreenProvider
+import org.cosmicide.ui.UiExtensionPoints
 import java.io.File
 
 class GitPlugin : CosmicPlugin {
     override fun activate(context: PluginContext) {
         val commands = context.services.require(IdeServices.COMMAND_EXECUTION)
+        val gitService = GitService(commands)
         val owner = context.descriptor.id
 
         context.registerDisposable(
             context.extensions.register(
-                point = ProjectExtensionPoints.CREATION_PROVIDER,
-                extension = GitCloneProjectProvider(commands),
+                point = UiExtensionPoints.PLUGIN_SCREEN,
+                extension = GitScreenProvider(gitService),
                 ownerPluginId = owner,
                 priority = 300
             )
         )
         context.registerDisposable(
             context.extensions.register(
-                point = ProjectExtensionPoints.ACTION_PROVIDER,
-                extension = GitProjectActionProvider(commands),
+                point = EditorExtensionPoints.EDITOR_ACTION_PROVIDER,
+                extension = GitEditorActionProvider(),
+                ownerPluginId = owner,
+                priority = 300
+            )
+        )
+        context.registerDisposable(
+            context.extensions.register(
+                point = ProjectExtensionPoints.CREATION_PROVIDER,
+                extension = GitCloneProjectProvider(commands),
                 ownerPluginId = owner,
                 priority = 300
             )
@@ -57,11 +71,58 @@ class GitPlugin : CosmicPlugin {
         val descriptor = PluginDescriptor(
             id = PLUGIN_ID,
             name = "Git",
-            version = "1.0.0",
+            version = "2.0.0",
             entryClass = GitPlugin::class.java.name,
-            description = "Clone repositories and run Git operations using Cosmic's Linux environment.",
+            description = "Integrated Git version control with dedicated changes, branches, history, and settings tabs.",
             author = "Cosmic IDE",
-            capabilities = setOf("process.execute", "project.create", "project.actions")
+            capabilities = setOf(
+                "process.execute",
+                "project.create",
+                "ui.screen",
+                "ui.settings",
+                "editor.action"
+            )
+        )
+    }
+}
+
+private class GitScreenProvider(
+    private val gitService: GitService
+) : PluginScreenProvider {
+    override val id = "org.cosmicide.git.screen"
+    override val screenId = "git"
+    override val title = "Git"
+    override val displayName = "Git"
+    override val description = "Version control and Git management screen"
+
+    @Composable
+    override fun Content(args: Map<String, String>) {
+        GitScreen(gitService = gitService, args = args)
+    }
+
+    @Composable
+    override fun Content() {
+        GitScreen(gitService = gitService, args = emptyMap())
+    }
+}
+
+private class GitEditorActionProvider : EditorActionProvider {
+    override val id = "org.cosmicide.git.editorAction"
+    override val displayName = "Git"
+    override val description = "Open Git version control screen from the editor"
+
+    override fun actions(project: Project, file: File?): List<EditorAction> {
+        return listOf(
+            EditorAction(
+                id = "git",
+                label = "Git",
+                description = "Open Git version control for ${project.name}"
+            ) { context ->
+                context.navigateToPluginScreen(
+                    screenId = "git",
+                    args = mapOf("project_path" to context.project.root.absolutePath)
+                )
+            }
         )
     }
 }
@@ -153,108 +214,6 @@ private class GitCloneProjectProvider(
         const val FIELD_DIRECTORY = "directory"
         const val FIELD_BRANCH = "branch"
         const val FIELD_SHALLOW = "shallow"
-    }
-}
-
-private class GitProjectActionProvider(
-    private val commands: CommandExecutionService
-) : ProjectActionProvider {
-    override val id = "org.cosmicide.git.operations"
-    override val displayName = "Git operations"
-    override val description =
-        "Status, fetch, pull, push, stage, commit, branch and checkout actions."
-
-    override fun actions(project: Project): List<ProjectAction> {
-        if (!project.root.resolve(".git").exists()) {
-            return listOf(ProjectAction(ACTION_INIT, "Initialize Git repository"))
-        }
-
-        return listOf(
-            ProjectAction(ACTION_STATUS, "Git status"),
-            ProjectAction(ACTION_FETCH, "Fetch"),
-            ProjectAction(ACTION_PULL, "Pull"),
-            ProjectAction(ACTION_PUSH, "Push"),
-            ProjectAction(ACTION_STAGE_ALL, "Stage all changes"),
-            ProjectAction(
-                ACTION_COMMIT,
-                "Commit staged changes",
-                fields = listOf(
-                    PluginFormField(
-                        id = FIELD_MESSAGE,
-                        label = "Commit message",
-                        required = true
-                    )
-                )
-            ),
-            ProjectAction(ACTION_BRANCHES, "List branches"),
-            ProjectAction(
-                ACTION_CHECKOUT,
-                "Checkout branch or tag",
-                fields = listOf(
-                    PluginFormField(
-                        id = FIELD_REF,
-                        label = "Branch or tag",
-                        required = true
-                    )
-                )
-            )
-        )
-    }
-
-    override suspend fun execute(
-        request: ProjectActionRequest,
-        reporter: OperationReporter
-    ): ProjectActionResult {
-        val arguments = when (request.actionId) {
-            ACTION_INIT -> listOf("init")
-            ACTION_STATUS -> listOf("status", "--short", "--branch")
-            ACTION_FETCH -> listOf("fetch", "--all", "--prune", "--progress")
-            ACTION_PULL -> listOf("pull", "--progress")
-            ACTION_PUSH -> listOf("push", "--progress")
-            ACTION_STAGE_ALL -> listOf("add", "--all")
-            ACTION_COMMIT -> {
-                val message = request.values[FIELD_MESSAGE].orEmpty().trim()
-                require(message.isNotEmpty()) { "Commit message is required" }
-                listOf("commit", "-m", message)
-            }
-
-            ACTION_BRANCHES -> listOf("branch", "--all", "--verbose")
-            ACTION_CHECKOUT -> {
-                val ref = request.values[FIELD_REF].orEmpty().trim()
-                require(isSafeRef(ref)) { "Invalid branch or tag name" }
-                listOf("checkout", ref)
-            }
-
-            else -> error("Unknown Git action: ${request.actionId}")
-        }
-
-        reporter.report(OperationUpdate("Running git ${arguments.first()}…"))
-        val result = runGit(commands, request.project.root, arguments, reporter)
-        val message = result.output
-            .lineSequence()
-            .lastOrNull { it.isNotBlank() }
-            ?.trim()
-            ?: "Git operation completed"
-        return ProjectActionResult(
-            message = message,
-            refreshProject = request.actionId == ACTION_INIT ||
-                    request.actionId == ACTION_PULL ||
-                    request.actionId == ACTION_CHECKOUT
-        )
-    }
-
-    private companion object {
-        const val ACTION_INIT = "init"
-        const val ACTION_STATUS = "status"
-        const val ACTION_FETCH = "fetch"
-        const val ACTION_PULL = "pull"
-        const val ACTION_PUSH = "push"
-        const val ACTION_STAGE_ALL = "stageAll"
-        const val ACTION_COMMIT = "commit"
-        const val ACTION_BRANCHES = "branches"
-        const val ACTION_CHECKOUT = "checkout"
-        const val FIELD_MESSAGE = "message"
-        const val FIELD_REF = "ref"
     }
 }
 

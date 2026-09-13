@@ -32,7 +32,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -79,13 +78,12 @@ import org.cosmicide.plugin.PluginRepositoryEntry
 import org.cosmicide.plugin.api.PluginHandle
 import org.cosmicide.plugin.api.PluginSetupAction
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PluginMarketplaceSection(
     repository: ExtensionsSettingsRepository,
     refreshVersion: Int,
     onChanged: () -> Unit,
-    onRunSetupInTerminal: (String) -> Unit
+    onRunSetupInTerminal: (String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val installed = remember(refreshVersion) {
@@ -176,7 +174,10 @@ internal fun PluginMarketplaceSection(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 placeholder = { Text("Search extensions") },
-                colors = TextFieldDefaults.tonalColors(),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                    unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
+                ),
                 shape = RoundedCornerShape(50),
                 leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                 trailingIcon = {
@@ -337,7 +338,6 @@ internal fun PluginMarketplaceSection(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PluginMarketplaceCard(
     plugin: PluginRepositoryEntry,
@@ -407,7 +407,6 @@ private fun PluginMarketplaceCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PluginIcon(name: String) {
     Surface(
@@ -452,7 +451,7 @@ private fun PluginStatusLabel(text: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PluginDetailsSheet(
     plugin: PluginRepositoryEntry,
@@ -461,7 +460,8 @@ private fun PluginDetailsSheet(
     onDismiss: () -> Unit,
     onInstall: () -> Unit,
     onUninstall: () -> Unit,
-    onRunSetup: (() -> Unit)?
+    onRunSetup: (() -> Unit)?,
+    onOpenSettings: (() -> Unit)? = null
 ) {
     val uriHandler = LocalUriHandler.current
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
@@ -572,6 +572,21 @@ private fun PluginDetailsSheet(
                         shapes = ButtonDefaults.shapes(),
                     ) {
                         Text("Run setup")
+                    }
+                }
+                if (installedPlugin != null && onOpenSettings != null) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onOpenSettings,
+                        shapes = ButtonDefaults.shapes()
+                    ) {
+                        Icon(
+                            Icons.Rounded.Settings,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Open Settings")
                     }
                 }
             }

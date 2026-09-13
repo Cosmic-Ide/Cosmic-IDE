@@ -10,21 +10,13 @@
     <string name="action_settings">Settings</string>
 
     <string name="projects">Projects</string>
-    <string name="new_project">New Project</string>
 
-    <string name="create_project">Create project</string>
     <string name="analytics_permission_title">Cosmic IDE Analytics</string>
     <string name="analytics_permission_message">Help us improve Cosmic IDE by providing anonymous statistics. We only collect basic non-personally identifiable information about your device for analyzing the user base. The data is transferred securely and no data is shared with third-parties. You can turn it off anytime from settings.</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
     <string name="completion_type">Completion type</string>
 
-    <string name="rename">Rename</string>
-    <string name="create_file">Create File</string>
-    <string name="create_folder">Create folder</string>
-    <string name="create_java_class">Create java class</string>
-
-    <string name="terminal">Terminal</string>
     <string name="keep_alive_notification_text">Cosmic IDE is running in the background</string>
     <string name="lsp_diagnostic_copy">Copy</string>
     <string name="lsp_diagnostic_quick_fixes">Quick fixes</string>

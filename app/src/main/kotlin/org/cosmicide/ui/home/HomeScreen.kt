@@ -69,7 +69,7 @@ import java.io.File
 @Composable
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
-    onNavigateToEditor: (Project) -> Unit,
+    onNavigateToEditor: (Project) -> Unit
 ) {
     val context = LocalContext.current
     val container = LocalAppContainer.current

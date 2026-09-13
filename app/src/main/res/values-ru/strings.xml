@@ -10,15 +10,9 @@
     <string name="action_settings">Настройки</string>
 
     <string name="projects">Проекты</string>
-    <string name="new_project">Новый проект</string>
 
-    <string name="create_project">Создать проект</string>
     <string name="accept">Принять</string>
     <string name="decline">Отклонить</string>
     <string name="completion_type">Тип завершения</string>
-    <string name="rename">Переименовать</string>
-    <string name="create_file">Создать файл</string>
-    <string name="create_folder">Создать папку</string>
-    <string name="create_java_class">Создать класс Java</string>
 
 </resources>

@@ -41,4 +41,12 @@ interface PluginScreenProvider : PluginUiProvider {
      * The title to show in the app bar.
      */
     val title: String
+
+    /**
+     * Renders the screen content with contextual arguments.
+     */
+    @Composable
+    fun Content(args: Map<String, String>) {
+        Content()
+    }
 }

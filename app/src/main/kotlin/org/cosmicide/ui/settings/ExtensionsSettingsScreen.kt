@@ -32,6 +32,7 @@ import org.cosmicide.ui.settings.extensions.PluginMarketplaceSection
 fun ExtensionsSettingsScreen(
     onBack: () -> Unit,
     onRunSetupInTerminal: (String) -> Unit,
+    onNavigateToPluginScreen: ((String, String, Map<String, String>) -> Unit)? = null,
     initialTab: ExtensionsSettingsTab = ExtensionsSettingsTab.PLUGINS
 ) {
     val repository = LocalAppContainer.current.extensionsSettingsRepository

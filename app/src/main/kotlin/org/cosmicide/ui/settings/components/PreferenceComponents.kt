@@ -2,8 +2,12 @@ package org.cosmicide.ui.settings.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
@@ -42,7 +46,11 @@ fun PreferenceItem(
     index: Int = 0,
     count: Int = 1,
     shapes: ListItemShapes = ListItemDefaults.segmentedShapes(index, count),
-    colors: ListItemColors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surface),
+    colors: ListItemColors = ListItemDefaults.segmentedColors(
+        containerColor = MaterialTheme.colorScheme.surface.copy(
+            0.7f
+        )
+    ),
     onClick: () -> Unit = {},
 ) {
     SegmentedListItem(
@@ -120,7 +128,11 @@ fun SingleChoicePreference(
     index: Int = 0,
     count: Int = 1,
     shapes: ListItemShapes = ListItemDefaults.segmentedShapes(index, count),
-    colors: ListItemColors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surface)
+    colors: ListItemColors = ListItemDefaults.segmentedColors(
+        containerColor = MaterialTheme.colorScheme.surface.copy(
+            0.7f
+        )
+    )
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -144,7 +156,6 @@ fun SingleChoicePreference(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
                 )
             },
             text = {
@@ -171,7 +182,7 @@ fun SingleChoicePreference(
                             ) {
                                 Text(
                                     text = label,
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = if (value == selectedItem) FontWeight.SemiBold else FontWeight.Normal
                                 )
                             }
@@ -290,42 +301,61 @@ fun SliderPreference(
     index: Int = 0,
     count: Int = 1
 ) {
+    val sliderState = rememberSliderState(
+        value = value,
+        steps = steps,
+        trackRange = valueRange
+    )
+    sliderState.value = value
+
     SegmentedListItem(
         modifier = Modifier.fillMaxWidth(),
         shapes = ListItemDefaults.segmentedShapes(index, count),
-        colors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surface),
-        trailingContent = {
-            Text(
-                text = value.toInt().toString(),
-                style = MaterialTheme.typography.labelLargeEmphasized,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+        colors = ListItemDefaults.segmentedColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(
+                0.7f
             )
-        },
-        overlineContent = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Medium
-            )
-        },
-        supportingContent = {
-            Slider(
-                state = rememberSliderState(
-                    value = value,
-                    steps = steps,
-                    trackRange = valueRange
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = onValueChange
-            )
-        },
+        ),
         content = {
-            if (summary != null) {
-                Text(
-                    text = summary,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                        if (summary != null) {
+                            Text(
+                                text = summary,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier.widthIn(min = 36.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = value.toInt().toString(),
+                            style = MaterialTheme.typography.labelLargeEmphasized,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+
+                Slider(
+                    state = sliderState,
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = onValueChange
                 )
             }
         }

@@ -265,6 +265,7 @@ internal fun GoToLineDialog(lineCount: Int, onDismiss: () -> Unit, onConfirm: (I
         },
         text = {
             OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = text,
                 onValueChange = { text = it.filter { char -> char.isDigit() } },
                 label = { Text("Line number (1-$lineCount)") },

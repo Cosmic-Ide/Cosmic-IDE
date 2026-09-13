@@ -9,6 +9,4 @@
     <string name="app_name">Cosmic IDE</string>
     <string name="action_settings">Налаштування</string>
     <string name="projects">Проект</string>
-    <string name="new_project">Новий проект</string>
-    <string name="create_project">Створити проект</string>
 </resources>

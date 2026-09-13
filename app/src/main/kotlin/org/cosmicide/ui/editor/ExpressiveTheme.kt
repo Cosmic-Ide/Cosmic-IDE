@@ -18,22 +18,28 @@ fun resolveTheme(context: Context, colorScheme: ColorScheme, fileName: String): 
 fun applyAttributes(stream: InputStream, colorScheme: ColorScheme): InputStream {
     val contents = stream.bufferedReader().readText()
 
-    val json = gson.fromJson(contents, Map::class.java)
+    val json = gson.fromJson(contents, Map::class.java).toMutableMap()
 
     ((json["settings"]!! as List<Map<String, Any>>)[0]["settings"]!! as MutableMap<String, String>).let { settings ->
         settings["background"] =
-            colorScheme.surface.hexString()
+            colorScheme.surfaceContainer.hexString()
         settings["foreground"] =
             colorScheme.onSecondaryContainer.hexString()
         settings["blockLineColor"] =
             colorScheme.primary.hexString()
         settings["lineHighlight"] =
-            colorScheme.surfaceContainer.hexString()
-        settings["selection"] =
             colorScheme.primaryContainer.hexString()
+        settings["selection"] =
+            colorScheme.secondaryContainer.hexString()
         settings["caret"] =
             colorScheme.primary.hexString()
     }
+
+    json["colors"] = mapOf(
+        "minimap.background" to colorScheme.surfaceContainerHigh.hexString(),
+        "minimap.selectionHighlight" to colorScheme.primaryContainer.hexString(),
+        "minimap.errorHighlight" to colorScheme.error.hexString()
+    )
 
     return gson.toJson(json).byteInputStream()
 }

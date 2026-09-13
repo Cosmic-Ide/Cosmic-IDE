@@ -78,7 +78,6 @@ internal fun TextEditorContent(
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
         ) {

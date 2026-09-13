@@ -1,7 +1,6 @@
 package org.cosmicide.ui.editor
 
 import android.content.Context
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -236,7 +235,8 @@ fun EditorScreen(
     }
 
     ModalNavigationDrawer(
-        drawerState = drawerState, drawerContent = {
+        drawerState = drawerState,
+        drawerContent = {
             ModalDrawerSheet {
                 Text(
                     text = "Project Explorer",
@@ -252,7 +252,8 @@ fun EditorScreen(
                     scope.launch { drawerState.close() }
                 })
             }
-        }, gesturesEnabled = drawerState.isOpen
+        },
+        gesturesEnabled = drawerState.isOpen
     ) {
         Scaffold(
             topBar = {
@@ -281,7 +282,7 @@ fun EditorScreen(
                         PrimaryScrollableTabRow(
                             selectedTabIndex = openFiles.indexOf(activeFile).coerceAtLeast(0),
                             edgePadding = 2.dp,
-                            containerColor = MaterialTheme.colorScheme.surface,
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
                             divider = { HorizontalDivider() }) {
                             openFiles.forEach { file ->
                                 val isSelected = file == activeFile
@@ -290,8 +291,8 @@ fun EditorScreen(
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.padding(
-                                            start = 12.dp,
-                                            end = 12.dp,
+                                            start = 8.dp,
+                                            end = 8.dp,
                                             bottom = 8.dp
                                         )
                                     ) {
@@ -318,12 +319,13 @@ fun EditorScreen(
                         HorizontalDivider(thickness = 0.5.dp)
                     }
                 }
-            }) { innerPadding ->
+            },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ) { innerPadding ->
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 EditorToolWindowLayout(
                     project = project,

@@ -56,7 +56,7 @@ dependencies {
     api(projects.feature.project)
     api("org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0")
 
-    api(platform("androidx.compose:compose-bom:2026.06.01"))
+    api(platform("androidx.compose:compose-bom:2026.09.00"))
     api("androidx.compose.runtime:runtime")
     api("androidx.compose.foundation:foundation")
     api("androidx.compose.material3:material3")

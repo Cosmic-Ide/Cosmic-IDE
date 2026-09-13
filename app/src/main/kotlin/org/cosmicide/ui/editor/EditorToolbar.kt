@@ -3,8 +3,9 @@ package org.cosmicide.ui.editor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Redo
@@ -18,6 +19,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -31,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.rosemoe.sora.event.ContentChangeEvent
@@ -38,12 +42,12 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.subscribeAlways
 import me.saket.cascade.CascadeColumnScope
 import me.saket.cascade.CascadeDropdownMenu
+import org.cosmicide.editor.EditorAction
 import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
 import org.cosmicide.project.ProjectCommandKind
 import org.cosmicide.project.ProjectTask
 import org.cosmicide.project.ProjectTaskProvider
-import org.cosmicide.editor.EditorAction
 import java.io.File
 
 @Composable
@@ -56,16 +60,29 @@ internal fun EmptyWorkspaceState(onOpenDrawer: () -> Unit) {
         Icon(
             imageVector = Icons.Default.Code,
             contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            modifier = Modifier.size(80.dp),
+            tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = "No file open",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 16.dp, bottom = 24.dp)
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
         )
-        Button(onClick = onOpenDrawer, shapes = ButtonDefaults.shapes()) {
-            Text("Open Project Explorer")
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Select a file from the project explorer to begin editing.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = onOpenDrawer,
+            shapes = ButtonDefaults.shapes(),
+            modifier = Modifier.height(48.dp)
+        ) {
+            Text("Open Project Explorer", fontFamily = FontFamily.SansSerif)
         }
     }
 }
@@ -130,13 +147,16 @@ internal fun EditorToolbar(
 
     TopAppBar(title = {
         Text(
-            text = file?.name ?: "Cosmic IDE",
-            style = MaterialTheme.typography.titleMediumEmphasized,
+            text = file?.name ?: project.name,
+            style = MaterialTheme.typography.titleMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
     }, navigationIcon = {
-        IconButton(onClick = onOpenDrawer) {
+        IconButton(
+            onClick = onOpenDrawer,
+            shapes = IconButtonDefaults.shapes()
+        ) {
             Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
         }
     }, actions = {
@@ -144,7 +164,8 @@ internal fun EditorToolbar(
             enabled = contributedRunCommand != null,
             onClick = {
                 if (contributedRunCommand != null) onRunProjectCommand(contributedRunCommand)
-            }
+            },
+            shapes = IconButtonDefaults.shapes()
         ) {
             Icon(
                 Icons.Filled.PlayArrow,
@@ -152,20 +173,28 @@ internal fun EditorToolbar(
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
-        IconButton(onClick = {
-            editor.undo()
-            refreshHistoryState()
-        }, enabled = file != null) {
+        IconButton(
+            onClick = {
+                editor.undo()
+                refreshHistoryState()
+            },
+            enabled = file != null,
+            shapes = IconButtonDefaults.shapes()
+        ) {
             Icon(
                 Icons.AutoMirrored.Filled.Undo,
                 contentDescription = "Undo",
                 tint = if (canUndo) MaterialTheme.colorScheme.onSurface else Color.Gray
             )
         }
-        IconButton(onClick = {
-            editor.redo()
-            refreshHistoryState()
-        }, enabled = file != null) {
+        IconButton(
+            onClick = {
+                editor.redo()
+                refreshHistoryState()
+            },
+            enabled = file != null,
+            shapes = IconButtonDefaults.shapes()
+        ) {
             Icon(
                 Icons.AutoMirrored.Filled.Redo,
                 contentDescription = "Redo",
@@ -174,7 +203,10 @@ internal fun EditorToolbar(
         }
 
         Box {
-            IconButton(onClick = { showMenu = !showMenu }) {
+            IconButton(
+                onClick = { showMenu = !showMenu },
+                shapes = IconButtonDefaults.shapes()
+            ) {
                 Icon(Icons.Filled.MoreVert, contentDescription = "Editor Options")
             }
 

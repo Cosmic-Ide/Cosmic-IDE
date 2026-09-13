@@ -296,17 +296,31 @@ internal fun ProjectTreeView(
         is TreeDialogState.Delete -> {
             AlertDialog(
                 onDismissRequest = { activeDialog = null },
-                title = { Text("Delete") },
+                shape = MaterialTheme.shapes.extraLarge,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                title = {
+                    Text(
+                        "Delete",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    )
+                },
                 text = { Text("Are you sure you want to delete ${state.target.name}?") },
                 confirmButton = {
-                    TextButton(onClick = {
-                        runMutation(operation = {
-                            fileOperations.delete(state.target)
-                        })
-                    }) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+                    TextButton(
+                        onClick = {
+                            runMutation(operation = {
+                                fileOperations.delete(state.target)
+                            })
+                        },
+                        shapes = ButtonDefaults.shapes()
+                    ) { Text("Delete", color = MaterialTheme.colorScheme.error) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { activeDialog = null }) { Text("Cancel") }
+                    TextButton(
+                        onClick = { activeDialog = null },
+                        shapes = ButtonDefaults.shapes()
+                    ) { Text("Cancel") }
                 })
         }
 
@@ -316,10 +330,21 @@ internal fun ProjectTreeView(
     operationError?.let { message ->
         AlertDialog(
             onDismissRequest = { operationError = null },
-            title = { Text("Project operation failed") },
+            shape = MaterialTheme.shapes.extraLarge,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            title = {
+                Text(
+                    "Project operation failed",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+            },
             text = { Text(message) },
             confirmButton = {
-                TextButton(onClick = { operationError = null }) { Text("OK") }
+                TextButton(
+                    onClick = { operationError = null },
+                    shapes = ButtonDefaults.shapes()
+                ) { Text("OK") }
             }
         )
     }
@@ -335,23 +360,39 @@ internal fun TreeInputDialog(
 ) {
     var text by remember { mutableStateOf(initialValue) }
 
-    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { text = it },
-            label = { Text("Name") },
-            suffix = if (suffix.isNotEmpty()) {
-                { Text(suffix) }
-            } else null,
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth())
-    }, confirmButton = {
-        Button(
-            onClick = { if (text.isNotBlank()) onConfirm(text) },
-            enabled = text.isNotBlank(),
-            shapes = ButtonDefaults.shapes()
-        ) { Text("Confirm") }
-    }, dismissButton = {
-        TextButton(onClick = onDismiss) { Text("Cancel") }
-    })
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.extraLarge,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        title = {
+            Text(
+                title,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+            )
+        },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Name") },
+                shape = MaterialTheme.shapes.medium,
+                suffix = if (suffix.isNotEmpty()) {
+                    { Text(suffix) }
+                } else null,
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = { if (text.isNotBlank()) onConfirm(text) },
+                enabled = text.isNotBlank(),
+                shapes = ButtonDefaults.shapes()
+            ) { Text("Confirm") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, shapes = ButtonDefaults.shapes()) { Text("Cancel") }
+        }
+    )
 }

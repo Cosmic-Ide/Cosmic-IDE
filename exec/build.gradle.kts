@@ -6,7 +6,7 @@ android {
     namespace = "org.cosmicide.exec"
     compileSdk {
         version = release(37) {
-            minorApiLevel = 1
+            minorApiLevel = 2
         }
     }
 
@@ -24,7 +24,7 @@ android {
         }
     }
 
-    ndkVersion = "30.0.14904198"
+    ndkVersion = "30.0.16248370"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

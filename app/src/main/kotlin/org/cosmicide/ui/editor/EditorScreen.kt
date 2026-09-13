@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -48,13 +47,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.app.LocalAppContainer
-import org.cosmicide.editor.EditorPreviewPresentation
-import org.cosmicide.editor.lsp.LspLogStore
-import org.cosmicide.editor.lsp.disposeLspLanguage
-import org.cosmicide.editor.preview.EditorPreviews
 import org.cosmicide.editor.EditorAction
 import org.cosmicide.editor.EditorActionContext
 import org.cosmicide.editor.EditorExtensionPoints
+import org.cosmicide.editor.EditorPreviewPresentation
+import org.cosmicide.editor.lsp.disposeLspLanguage
+import org.cosmicide.editor.preview.EditorPreviews
 import org.cosmicide.model.EditorViewModel
 import org.cosmicide.plugin.CosmicPluginHost
 import org.cosmicide.project.Project
@@ -123,7 +121,6 @@ fun EditorScreen(
         (projectSyncCommand != null && toolWindowSessionState.isProjectSyncInProgress)
     val openFiles = viewModel.openFiles
     val activeFile = viewModel.activeFile
-    val lspLogs by LspLogStore.entries.collectAsStateWithLifecycle()
     val activePreviewProvider = activeFile?.let { EditorPreviews.providerFor(project, it) }
     val isPreviewOnly =
         activePreviewProvider?.presentation == EditorPreviewPresentation.PREVIEW_ONLY
@@ -283,7 +280,7 @@ fun EditorScreen(
                     if (openFiles.isNotEmpty()) {
                         PrimaryScrollableTabRow(
                             selectedTabIndex = openFiles.indexOf(activeFile).coerceAtLeast(0),
-                            edgePadding = 8.dp,
+                            edgePadding = 2.dp,
                             containerColor = MaterialTheme.colorScheme.surface,
                             divider = { HorizontalDivider() }) {
                             openFiles.forEach { file ->
@@ -293,7 +290,9 @@ fun EditorScreen(
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.padding(
-                                            horizontal = 12.dp, vertical = 10.dp
+                                            start = 12.dp,
+                                            end = 12.dp,
+                                            bottom = 8.dp
                                         )
                                     ) {
                                         Text(
@@ -316,7 +315,7 @@ fun EditorScreen(
                                 }
                             }
                         }
-                        HorizontalDivider(thickness = 1.dp)
+                        HorizontalDivider(thickness = 0.5.dp)
                     }
                 }
             }) { innerPadding ->
@@ -328,13 +327,12 @@ fun EditorScreen(
             ) {
                 EditorToolWindowLayout(
                     project = project,
-                    lspLogs = lspLogs.joinToString("\n", transform = { it.displayText() }),
                     projectSyncCommand = projectSyncCommand,
                     state = toolWindowSessionState,
                     heightDp = toolWindowHeightDp,
                     onStateChange = { toolWindowSessionState = it },
                     onHeightChange = { toolWindowHeightDp = it },
-                    editorContent = {
+                    editorContent = { additionalBottomPadding ->
                         if (activeFile != null) {
                             if (isPreviewOnly) {
                                 PreviewProviderContent(
@@ -342,14 +340,17 @@ fun EditorScreen(
                                     project = project,
                                     file = activeFile,
                                     content = null,
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(bottom = additionalBottomPadding.dp)
                                 )
                             } else {
                                 TextEditorContent(
                                     editor = editor,
                                     project = project,
                                     file = activeFile,
-                                    previewProvider = activePreviewProvider
+                                    previewProvider = activePreviewProvider,
+                                    additionalBottomPadding = additionalBottomPadding
                                 )
                             }
                         } else {

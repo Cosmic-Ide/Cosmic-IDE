@@ -13,7 +13,7 @@ object EditorExtensionPoints {
     @JvmField
     val LANGUAGE_PROVIDER = ExtensionPoint(
         "org.cosmicide.editor.languageProvider",
-        EditorLanguageProvider::class.java
+        EditorLanguageProvider::class.java,
     )
 
     @JvmField

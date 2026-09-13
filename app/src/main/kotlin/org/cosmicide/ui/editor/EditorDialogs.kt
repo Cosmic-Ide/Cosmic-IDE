@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -44,39 +45,53 @@ internal fun TasksDialog(
     onDismiss: () -> Unit,
     onTaskSelected: (String) -> Unit
 ) {
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Gradle Tasks") }, text = {
-        when {
-            isLoading -> {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.extraLarge,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        title = {
+            Text(
+                "Gradle Tasks",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            when {
+                isLoading -> {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
                 }
-            }
 
-            loadError != null -> {
-                Text(
-                    text = "Failed to fetch tasks: $loadError",
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
+                loadError != null -> {
+                    Text(
+                        text = "Failed to fetch tasks: $loadError",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
 
-            tasks.isEmpty() -> {
-                Text("No Gradle tasks found")
-            }
+                tasks.isEmpty() -> {
+                    Text("No Gradle tasks found")
+                }
 
-            else -> {
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(tasks) { task ->
-                        DropdownMenuItem(text = { Text(task) }, onClick = {
-                            onTaskSelected(task)
-                            onDismiss()
-                        })
+                else -> {
+                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                        items(tasks) { task ->
+                            DropdownMenuItem(text = { Text(task) }, onClick = {
+                                onTaskSelected(task)
+                                onDismiss()
+                            })
+                        }
                     }
                 }
             }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss, shapes = ButtonDefaults.shapes()) { Text("Close") }
         }
-    }, confirmButton = {}, dismissButton = {
-        TextButton(onClick = onDismiss) { Text("Close") }
-    })
+    )
 }
 
 @Composable
@@ -98,7 +113,7 @@ internal fun ProjectTasksDialog(
     var query by remember(provider.id, project.root.absolutePath) {
         mutableStateOf("")
     }
-    var refreshKey by remember { mutableStateOf(0) }
+    var refreshKey by remember { androidx.compose.runtime.mutableIntStateOf(0) }
 
     LaunchedEffect(provider.id, project.root.absolutePath, refreshKey) {
         isLoading = true
@@ -125,7 +140,15 @@ internal fun ProjectTasksDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(provider.displayName) },
+        shape = MaterialTheme.shapes.extraLarge,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        title = {
+            Text(
+                provider.displayName,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (provider.description.isNotBlank()) {
@@ -143,6 +166,7 @@ internal fun ProjectTasksDialog(
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
                     label = { Text("Filter tasks") },
+                    shape = MaterialTheme.shapes.medium,
                     singleLine = true
                 )
                 when {
@@ -184,7 +208,7 @@ internal fun ProjectTasksDialog(
                                     DropdownMenuItem(
                                         text = {
                                             Column {
-                                                Text(task.label)
+                                                Text(task.label, fontWeight = FontWeight.Medium)
                                                 if (task.description.isNotBlank()) {
                                                     Text(
                                                         text = task.description,
@@ -210,13 +234,14 @@ internal fun ProjectTasksDialog(
         confirmButton = {
             TextButton(
                 enabled = !isLoading,
-                onClick = { refreshKey += 1 }
+                onClick = { refreshKey += 1 },
+                shapes = ButtonDefaults.shapes()
             ) {
                 Text("Refresh")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Close") }
+            TextButton(onClick = onDismiss, shapes = ButtonDefaults.shapes()) { Text("Close") }
         }
     )
 }
@@ -226,36 +251,53 @@ internal fun GoToLineDialog(lineCount: Int, onDismiss: () -> Unit, onConfirm: (I
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Go to Line") }, text = {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { text = it.filter { char -> char.isDigit() } },
-            label = { Text("Line number") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-    }, confirmButton = {
-        Button(
-            onClick = {
-                val lineNumber = text.toIntOrNull()
-                if (lineNumber != null && lineNumber in 1..lineCount) {
-                    onConfirm(lineNumber)
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Invalid line number. Must be between 1 and $lineCount.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }, shapes = ButtonDefaults.shapes()
-        ) {
-            Text("Go")
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.extraLarge,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.fillMaxWidth(0.8f),
+        title = {
+            Text(
+                "Go to Line",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it.filter { char -> char.isDigit() } },
+                label = { Text("Line number (1-$lineCount)") },
+                singleLine = true,
+                shape = MaterialTheme.shapes.medium,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val lineNumber = text.toIntOrNull()
+                    if (lineNumber != null && lineNumber in 1..lineCount) {
+                        onConfirm(lineNumber)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Invalid line number. Must be between 1 and $lineCount.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                },
+                shapes = ButtonDefaults.shapes()
+            ) {
+                Text("Continue", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, shapes = ButtonDefaults.shapes()) {
+                Text("Cancel")
+            }
         }
-    }, dismissButton = {
-        TextButton(onClick = onDismiss) {
-            Text("Cancel")
-        }
-    })
+    )
 }
 
 @Composable
@@ -266,21 +308,51 @@ internal fun Statistics(content: Content, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
         modifier = Modifier.fillMaxWidth(0.8f),
-        title = { Text("Statistics") },
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        shape = MaterialTheme.shapes.extraLarge,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        title = {
+            Text(
+                "Editor Statistics",
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        },
         text = {
-            Column {
-                Text("Byte Count: $bytes")
-                Text("Character Count: $charCount")
-                Text("Word Count: ${content.split(" ").size}")
-                Text("Line Count: ${content.lineCount}")
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+            ) {
+                StatItem(label = "Byte Count", value = "$bytes")
+                StatItem(label = "Character Count", value = "$charCount")
+                StatItem(label = "Word Count", value = "${content.split(" ").size}")
+                StatItem(label = "Line Count", value = "${content.lineCount}")
             }
         },
         confirmButton = {
-            TextButton(onDismiss) {
+            TextButton(onClick = onDismiss, shapes = ButtonDefaults.shapes()) {
                 Text("Dismiss")
             }
         },
-        dismissButton = {},
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        dismissButton = {}
     )
+}
+
+@Composable
+private fun StatItem(label: String, value: String) {
+    androidx.compose.foundation.layout.Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold
+        )
+    }
 }

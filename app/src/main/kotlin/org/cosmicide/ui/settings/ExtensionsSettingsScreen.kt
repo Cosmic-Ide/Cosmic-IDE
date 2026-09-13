@@ -3,19 +3,17 @@ package org.cosmicide.ui.settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -24,32 +22,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.cosmicide.app.LocalAppContainer
 import org.cosmicide.ui.settings.extensions.CustomLspSettingsSection
 import org.cosmicide.ui.settings.extensions.CustomProjectTypesSettingsSection
 import org.cosmicide.ui.settings.extensions.ExtensionProvidersSection
 import org.cosmicide.ui.settings.extensions.PluginMarketplaceSection
-import org.cosmicide.ui.settings.extensions.PluginSettingsSection
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExtensionsSettingsScreen(
     onBack: () -> Unit,
-    onRunSetupInTerminal: (String) -> Unit
+    onRunSetupInTerminal: (String) -> Unit,
+    initialTab: ExtensionsSettingsTab = ExtensionsSettingsTab.PLUGINS
 ) {
     val repository = LocalAppContainer.current.extensionsSettingsRepository
     var refreshVersion by remember { mutableIntStateOf(0) }
     var selectedTabName by rememberSaveable {
-        mutableStateOf(ExtensionsSettingsTab.PROVIDERS.name)
+        mutableStateOf(initialTab.name)
     }
     val selectedTab = ExtensionsSettingsTab.entries
         .firstOrNull { it.name == selectedTabName }
-        ?: ExtensionsSettingsTab.PROVIDERS
-    val scrollStates = ExtensionsSettingsTab.entries.map { rememberScrollState() }
+        ?: ExtensionsSettingsTab.PLUGINS
     val notifyChanged: () -> Unit = { refreshVersion += 1 }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             Column {
                 TopAppBar(
@@ -58,12 +54,14 @@ fun ExtensionsSettingsScreen(
                         IconButton(onClick = onBack) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    )
                 )
-                PrimaryScrollableTabRow(
+                PrimaryTabRow(
                     selectedTabIndex = selectedTab.ordinal,
-                    edgePadding = 8.dp,
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     ExtensionsSettingsTab.entries.forEach { tab ->
                         Tab(
@@ -80,15 +78,17 @@ fun ExtensionsSettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .then(
-                    if (selectedTab == ExtensionsSettingsTab.PLUGINS) {
-                        Modifier
-                    } else {
-                        Modifier.verticalScroll(scrollStates[selectedTab.ordinal])
-                    }
-                )
         ) {
             when (selectedTab) {
+                ExtensionsSettingsTab.PLUGINS -> {
+                    PluginMarketplaceSection(
+                        repository = repository,
+                        refreshVersion = refreshVersion,
+                        onChanged = notifyChanged,
+                        onRunSetupInTerminal = onRunSetupInTerminal
+                    )
+                }
+
                 ExtensionsSettingsTab.PROVIDERS -> ExtensionProvidersSection(
                     repository = repository,
                     refreshVersion = refreshVersion,
@@ -106,28 +106,14 @@ fun ExtensionsSettingsScreen(
                     refreshVersion = refreshVersion,
                     onChanged = notifyChanged
                 )
-
-                ExtensionsSettingsTab.PLUGINS -> {
-                    PluginMarketplaceSection(
-                        repository = repository,
-                        refreshVersion = refreshVersion,
-                        onChanged = notifyChanged,
-                        onRunSetupInTerminal = onRunSetupInTerminal
-                    )
-                }
-
-                ExtensionsSettingsTab.SETTINGS -> {
-                    PluginSettingsSection()
-                }
             }
         }
     }
 }
 
-private enum class ExtensionsSettingsTab(val label: String) {
+enum class ExtensionsSettingsTab(val label: String) {
+    PLUGINS("Plugins"),
     PROVIDERS("Providers"),
     LANGUAGES("Languages"),
     PROJECTS("Projects"),
-    PLUGINS("Plugins"),
-    SETTINGS("Settings")
 }

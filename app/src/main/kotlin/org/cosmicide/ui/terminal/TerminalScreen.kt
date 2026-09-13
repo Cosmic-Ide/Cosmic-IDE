@@ -31,6 +31,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -311,7 +312,7 @@ private fun TerminalSessionSwitcher(
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },
-                    shape = MaterialTheme.shapes.small
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         TextButton(
@@ -320,6 +321,7 @@ private fun TerminalSessionSwitcher(
                                 .height(36.dp)
                                 .widthIn(min = 76.dp, max = 180.dp),
                             contentPadding = PaddingValues(horizontal = 10.dp),
+                            shapes = ButtonDefaults.shapes(),
                             colors = ButtonDefaults.textButtonColors(
                                 contentColor = if (selected) {
                                     MaterialTheme.colorScheme.onSecondaryContainer
@@ -338,6 +340,7 @@ private fun TerminalSessionSwitcher(
 
                         IconButton(
                             onClick = { onClose(session) },
+                            shapes = IconButtonDefaults.shapes(),
                             modifier = Modifier.size(32.dp)
                         ) {
                             Icon(
@@ -519,7 +522,7 @@ private fun RepeatableExtraKeyButton(
         } else {
             MaterialTheme.colorScheme.onSurface
         },
-        shape = MaterialTheme.shapes.small,
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .height(38.dp)
             .widthIn(min = 44.dp)

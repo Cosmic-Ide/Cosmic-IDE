@@ -18,7 +18,7 @@ import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import org.cosmicide.databinding.CompletionResultBinding
 
 class CustomCompletionItemAdapter(
-    private val colors: ColorScheme
+    private val colors: ColorScheme,
 ) : EditorCompletionAdapter() {
 
     override fun areAllItemsEnabled(): Boolean = true
@@ -31,7 +31,7 @@ class CustomCompletionItemAdapter(
         pos: Int,
         v: View?,
         parent: ViewGroup,
-        isCurrentCursorPosition: Boolean
+        isCurrentCursorPosition: Boolean,
     ): View {
         val binding = v?.let { CompletionResultBinding.bind(it) }
             ?: CompletionResultBinding.inflate(LayoutInflater.from(context), parent, false)
@@ -62,7 +62,7 @@ class CustomCompletionItemAdapter(
             setTextColor(kindColor)
             background = roundedBackground(
                 color = ColorUtils.setAlphaComponent(kindColor, 32),
-                radiusDp = 7f
+                radiusDp = 7f,
             )
             contentDescription = item.kind?.name ?: context.getString(
                 org.cosmicide.R.string.completion_type
@@ -110,7 +110,8 @@ class CustomCompletionItemAdapter(
         CompletionItemKind.Method,
         CompletionItemKind.Function,
         CompletionItemKind.Constructor,
-        CompletionItemKind.Operator -> colors.tertiaryFixedDim
+        CompletionItemKind.Operator ->
+            colors.tertiaryFixedDim
 
         CompletionItemKind.Class,
         CompletionItemKind.Interface,

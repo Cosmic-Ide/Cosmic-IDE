@@ -175,6 +175,31 @@ internal fun TerminalView.calculateGeometry(
     )
 }
 
+internal fun TerminalView.fallbackGeometry(
+    textSizeDp: Int,
+    typeface: Typeface
+): TerminalGeometry {
+    val textSizePx = context.dpToPx(textSizeDp.toFloat())
+
+    val paint = Paint().apply {
+        isAntiAlias = true
+        this.typeface = typeface
+        textSize = textSizePx
+    }
+
+    val cellWidth = paint.measureText("X").coerceAtLeast(1f)
+    val metrics = paint.fontMetricsInt
+    val cellHeight = (metrics.descent - metrics.ascent)
+        .coerceAtLeast(1)
+
+    return TerminalGeometry(
+        columns = 80,
+        rows = 24,
+        cellWidthPixels = cellWidth.toInt().coerceAtLeast(1),
+        cellHeightPixels = cellHeight + 4
+    )
+}
+
 internal fun applyTerminalColors(colorScheme: ColorScheme) {
     val colors = TerminalColors.COLOR_SCHEME.mDefaultColors
 

@@ -1,6 +1,5 @@
 package org.cosmicide.ui.settings.extensions
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,11 +32,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -193,11 +195,13 @@ internal fun PluginMarketplaceSection(
                 FilterChip(
                     selected = !showInstalledOnly,
                     onClick = { showInstalledOnly = false },
+                    shapes = FilterChipDefaults.shapes(),
                     label = { Text("Marketplace") }
                 )
                 FilterChip(
                     selected = showInstalledOnly,
                     onClick = { showInstalledOnly = true },
+                    shapes = FilterChipDefaults.shapes(),
                     label = {
                         Text(
                             "Installed (${
@@ -207,10 +211,17 @@ internal fun PluginMarketplaceSection(
                     }
                 )
                 Spacer(Modifier.weight(1f))
-                IconButton(onClick = { editRepository = true }) {
+                IconButton(
+                    onClick = { editRepository = true },
+                    shapes = IconButtonDefaults.shapes()
+                ) {
                     Icon(Icons.Rounded.Settings, contentDescription = "Marketplace repository")
                 }
-                IconButton(onClick = ::refresh, enabled = available != null) {
+                IconButton(
+                    onClick = ::refresh,
+                    enabled = available != null,
+                    shapes = IconButtonDefaults.shapes()
+                ) {
                     Icon(Icons.Rounded.Refresh, contentDescription = "Refresh marketplace")
                 }
             }
@@ -326,6 +337,7 @@ internal fun PluginMarketplaceSection(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PluginMarketplaceCard(
     plugin: PluginRepositoryEntry,
@@ -334,14 +346,15 @@ private fun PluginMarketplaceCard(
 ) {
     val hasUpdate = installedPlugin != null &&
             installedPlugin.descriptor.version != plugin.version
+    val cardShape = MaterialTheme.shapes.large
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(cardShape)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        tonalElevation = 1.dp
+        shape = cardShape,
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier.padding(14.dp),
@@ -394,21 +407,22 @@ private fun PluginMarketplaceCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PluginIcon(name: String) {
-    Box(
-        modifier = Modifier
-            .size(52.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer),
-        contentAlignment = Alignment.Center
+    Surface(
+        modifier = Modifier.size(52.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.primaryContainer
     ) {
-        Text(
-            text = name.trim().take(1).uppercase().ifBlank { "E" },
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = name.trim().take(1).uppercase().ifBlank { "E" },
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
     }
 }
 
@@ -438,7 +452,7 @@ private fun PluginStatusLabel(text: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PluginDetailsSheet(
     plugin: PluginRepositoryEntry,
@@ -457,6 +471,7 @@ private fun PluginDetailsSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.fillMaxSize()
     ) {
         Column(
@@ -531,7 +546,8 @@ private fun PluginDetailsSheet(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !operating,
-                        onClick = onInstall
+                        onClick = onInstall,
+                        shapes = ButtonDefaults.shapes()
                     ) {
                         OperationContent(
                             operating = operating,

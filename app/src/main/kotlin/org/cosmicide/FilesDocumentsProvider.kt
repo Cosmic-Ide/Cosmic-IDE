@@ -25,7 +25,7 @@ class FilesDocumentsProvider : DocumentsProvider() {
         DocumentsContract.Document.COLUMN_MIME_TYPE,
         DocumentsContract.Document.COLUMN_SIZE,
         DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-        DocumentsContract.Document.COLUMN_FLAGS
+        DocumentsContract.Document.COLUMN_FLAGS,
     )
 
     override fun onCreate(): Boolean = true
@@ -320,7 +320,7 @@ class FilesDocumentsProvider : DocumentsProvider() {
     }
 
     override fun isChildDocument(parentDocumentId: String?, documentId: String?): Boolean {
-        return if (parentDocumentId != null && documentId != null) {
+        return if ((parentDocumentId != null) && (documentId != null)) {
             val parent = getFileForDocumentId(parentDocumentId)
             val doc = getFileForDocumentId(documentId)
             doc.absolutePath.startsWith(parent.absolutePath)

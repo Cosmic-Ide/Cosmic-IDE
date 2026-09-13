@@ -15,12 +15,12 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import org.cosmicide.app.AppContainer
@@ -71,8 +71,11 @@ class MainActivity : ComponentActivity() {
             themeRegistry.loadTheme(
                 ThemeModel(
                     IThemeSource.fromInputStream(
-                        resolveTheme(this, colorScheme, name), name, null
-                    ), name.substringBefore('.')
+                        resolveTheme(this, colorScheme, name),
+                        name,
+                        null,
+                    ),
+                    name.substringBefore('.'),
                 ).apply {
                     isDark = name.substringBefore('.') == "darcula"
                 }
@@ -126,7 +129,8 @@ class MainActivity : ComponentActivity() {
  */
 internal fun applyEditorThemeSelection(themeRegistry: ThemeRegistry, darkTheme: Boolean) {
     val requested = Prefs.editorTheme
-    val applied = requested != PreferenceKeys.EDITOR_THEME_AUTO && themeRegistry.setTheme(requested)
+    val applied =
+        (requested != PreferenceKeys.EDITOR_THEME_AUTO) && themeRegistry.setTheme(requested)
     if (applied) return
     themeRegistry.setTheme(if (darkTheme) "darcula" else "QuietLight")
 }

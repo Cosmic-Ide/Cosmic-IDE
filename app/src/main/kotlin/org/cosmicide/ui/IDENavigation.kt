@@ -10,7 +10,6 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import org.cosmicide.app.LocalAppContainer
 import org.cosmicide.ui.editor.EditorScreen
 import org.cosmicide.ui.home.HomeScreen
 import org.cosmicide.ui.plugin.PluginScreenContent
@@ -20,6 +19,7 @@ import org.cosmicide.ui.settings.AboutSettingsScreen
 import org.cosmicide.ui.settings.CompilerSettingsScreen
 import org.cosmicide.ui.settings.EditorSettingsScreen
 import org.cosmicide.ui.settings.ExtensionsSettingsScreen
+import org.cosmicide.ui.settings.ExtensionsSettingsTab
 import org.cosmicide.ui.settings.SettingsScreen
 import org.cosmicide.ui.terminal.TerminalScreen
 import org.cosmicide.util.ResourceUtil
@@ -42,14 +42,13 @@ private fun commandWithExit(command: String): String {
 @Composable
 fun IDENavigation() {
     val context = LocalContext.current
-    val projectSessionServices = LocalAppContainer.current.projectSessionServices
     val initialScreen: Screen = when {
         ResourceUtil.isBootstrapIncomplete() -> InstallResourceScreen
         ResourceUtil.isEnvironmentIncomplete() -> TerminalSetupScreen
         else -> Home
     }
     val backStack = rememberNavBackStack(
-        initialScreen
+        initialScreen,
     )
 
     DisposableEffect(Unit) {
@@ -78,7 +77,8 @@ fun IDENavigation() {
                     onNavigateToEditor = { project ->
                         backStack.add(Editor(project))
                     },
-                    onNavigateToSettings = { backStack.add(Settings) })
+                    onNavigateToSettings = { backStack.add(Settings) }
+                )
             }
 
             is Editor -> NavEntry(key) {
@@ -113,7 +113,10 @@ fun IDENavigation() {
                                         workingDirectory = context.filesDir.absolutePath
                                     )
                                 )
-                            }
+                            },
+                            initialTab = key.initialTab?.let { name ->
+                                ExtensionsSettingsTab.entries.firstOrNull { it.name == name }
+                            } ?: ExtensionsSettingsTab.PLUGINS
                         )
 
                     SettingsDestination.TERMINAL ->
@@ -150,9 +153,14 @@ fun IDENavigation() {
                     workingDir = context.filesDir,
                     setup = true,
                     onProcessExit = { exitCode ->
-                        if (exitCode == 0 && !ResourceUtil.isEnvironmentIncomplete()) {
+                        if ((exitCode == 0) && !ResourceUtil.isEnvironmentIncomplete()) {
                             backStack.removeLastOrNull()
-                            backStack.add(Home)
+                            backStack.add(
+                                SettingsCategoryScreen(
+                                    destination = SettingsDestination.EXTENSIONS,
+                                    initialTab = ExtensionsSettingsTab.PLUGINS.name
+                                )
+                            )
                         }
                     }
                 )

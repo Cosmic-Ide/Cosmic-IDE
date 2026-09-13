@@ -13,7 +13,7 @@ android {
     namespace = "org.cosmicide.common"
     compileSdk {
         version = release(37) {
-            minorApiLevel = 1
+            minorApiLevel = 2
         }
     }
 

@@ -19,7 +19,7 @@ object EditorFormatters {
 
 private class RegistryBackedFormatter(
     private val project: Project,
-    private val file: File
+    private val file: File,
 ) : AsyncFormatter() {
 
     override fun formatAsync(text: Content, range: TextRange): TextRange? {
@@ -43,7 +43,7 @@ private class RegistryBackedFormatter(
                             it
                         )
                     }
-                    .getOrDefault(false)
+                    .getOrDefault(defaultValue = false)
             }
             .firstNotNullOfOrNull { provider ->
                 runCatching {

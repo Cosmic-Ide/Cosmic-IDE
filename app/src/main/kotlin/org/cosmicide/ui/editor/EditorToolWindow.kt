@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -56,6 +59,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -86,20 +90,33 @@ internal data class EditorBuildSession(
 @Composable
 internal fun EditorToolWindowLayout(
     project: Project,
-    lspLogs: String,
     projectSyncCommand: ProjectCommand?,
     state: EditorToolWindowSessionState,
     heightDp: Float,
     onStateChange: (EditorToolWindowSessionState) -> Unit,
     onHeightChange: (Float) -> Unit,
-    editorContent: @Composable () -> Unit
+    editorContent: @Composable (additionalBottomPadding: Float) -> Unit
 ) {
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+    val focusedView by rememberFocusedView()
+    val isTerminalFocused = focusedView is com.termux.view.TerminalView
+
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .then(if (isTerminalFocused) Modifier.imePadding() else Modifier)
+    ) {
         val density = LocalDensity.current
         val maxToolWindowHeight = maxHeight.value.coerceAtLeast(CollapsedEditorToolWindowHeightDp)
         val resolvedHeight = heightDp.coerceIn(
             CollapsedEditorToolWindowHeightDp, maxToolWindowHeight
         )
+        val imeBottom = WindowInsets.ime.getBottom(density)
+        val imeBottomDp = with(density) { imeBottom.toDp().value }
+        val additionalEditorPadding = if (!isTerminalFocused && imeBottomDp > resolvedHeight) {
+            imeBottomDp - resolvedHeight
+        } else {
+            0f
+        }
 
         Box(modifier = Modifier.fillMaxSize()) {
             Box(
@@ -107,12 +124,11 @@ internal fun EditorToolWindowLayout(
                     .fillMaxSize()
                     .padding(bottom = resolvedHeight.dp)
             ) {
-                editorContent()
+                editorContent(additionalEditorPadding)
             }
 
             EditorToolWindow(
                 project = project,
-                lspLogs = lspLogs,
                 projectSyncCommand = projectSyncCommand,
                 state = state,
                 heightDp = resolvedHeight,
@@ -153,7 +169,6 @@ internal fun EditorToolWindowLayout(
 @Composable
 private fun EditorToolWindow(
     project: Project,
-    lspLogs: String,
     projectSyncCommand: ProjectCommand?,
     state: EditorToolWindowSessionState,
     heightDp: Float,
@@ -314,9 +329,7 @@ private fun EditorToolWindow(
                     }
                 }
                 if (selectedTabId == LspLogsToolWindowTabId) {
-                    LspLogsTab(
-                        output = lspLogs, modifier = Modifier.fillMaxSize()
-                    )
+                    LspLogsTab(modifier = Modifier.fillMaxSize())
                 }
             }
         }
@@ -370,9 +383,13 @@ private const val SYNC_OUTPUT_TEXT_SIZE_SP = 14f
 
 @Composable
 private fun LspLogsTab(
-    output: String, modifier: Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val rawLogs by org.cosmicide.editor.lsp.LspLogStore.entries.collectAsStateWithLifecycle()
+    val output = remember(rawLogs) {
+        rawLogs.joinToString("\n") { it.displayText() }
+    }
 
     LaunchedEffect(output, scrollState.maxValue) {
         scrollState.scrollTo(scrollState.maxValue)

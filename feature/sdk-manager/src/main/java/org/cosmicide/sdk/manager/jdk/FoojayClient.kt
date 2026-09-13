@@ -79,7 +79,7 @@ class FoojayClient(private val httpClient: HttpClient = defaultClient) {
             LatestVersions(
                 vendor = rawLatest.apiString,
                 latestGa = rawLatest.latestGa,
-                latestEa = rawLatest.latestEa
+                latestEa = rawLatest.latestEa,
             )
         }
     }

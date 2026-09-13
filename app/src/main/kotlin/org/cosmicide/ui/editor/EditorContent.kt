@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Visibility
@@ -52,7 +53,8 @@ internal fun TextEditorContent(
     editor: CodeEditor,
     project: Project,
     file: File,
-    previewProvider: EditorPreviewProvider?
+    previewProvider: EditorPreviewProvider?,
+    additionalBottomPadding: Float = 0f
 ) {
     var charset by remember { mutableStateOf("UTF-8") }
     var position by remember { mutableStateOf("1:1") }
@@ -73,7 +75,7 @@ internal fun TextEditorContent(
         }
     }
 
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -101,7 +103,13 @@ internal fun TextEditorContent(
                 textAlign = TextAlign.End
             )
         }
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(bottom = additionalBottomPadding.dp)
+                .systemGestureExclusion()
+        ) {
             if (showingPreview && supportsPreview) {
                 PreviewProviderContent(
                     provider = previewProvider,

@@ -1,7 +1,6 @@
 package org.cosmicide.ui.editor
 
 import android.content.Context
-import android.view.ScaleGestureDetector
 import android.view.inputmethod.EditorInfo
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.getValue
@@ -24,8 +23,6 @@ import org.cosmicide.editor.language.configureLanguageFor
 import org.cosmicide.extension.setFont
 import org.cosmicide.project.Project
 import java.io.File
-import kotlin.math.max
-import kotlin.math.min
 
 data class CodeEditorState(
     var editor: CodeEditor? = null,
@@ -39,9 +36,7 @@ fun setCodeEditorFactory(
     state: CodeEditorState
 ): CodeEditor {
     val editor = CodeEditor(context)
-    editor.apply {
-        setText(state.content)
-    }
+    editor.setText(state.content)
     state.editor = editor
     return editor
 }
@@ -72,10 +67,8 @@ fun CodeEditor.applyEditorSettings(project: Project, file: File, theme: ColorSch
 
     setTextSize(Prefs.editorFontSize)
     tabWidth = Prefs.tabSize
-    setInterceptParentHorizontalScrollIfNeeded(true)
     isLigatureEnabled = Prefs.useLigatures
     isWordwrap = Prefs.wordWrap
-    setScrollBarEnabled(Prefs.scrollbarEnabled)
     isHardwareAcceleratedDrawAllowed = Prefs.hardwareAcceleration
     isLineNumberEnabled = Prefs.lineNumbers
     props.deleteEmptyLineFast = Prefs.quickDelete
@@ -87,7 +80,6 @@ fun CodeEditor.applyEditorSettings(project: Project, file: File, theme: ColorSch
     )
 
     configureLanguageFor(project, file)
-    enablePinchToZoom()
 }
 
 private fun CodeEditor.setTooltipImprovements(colorScheme: ColorScheme) {
@@ -96,35 +88,5 @@ private fun CodeEditor.setTooltipImprovements(colorScheme: ColorScheme) {
         parentView.setBackgroundColor(
             colorScheme.surface.toArgb()
         )
-    }
-}
-
-private const val MIN_TEXT_SIZE_SP = 8f
-private const val MAX_TEXT_SIZE_SP = 40f
-
-fun CodeEditor.enablePinchToZoom() {
-    val editor = this
-    var textSizeSp = Prefs.editorFontSize.toFloat()
-
-    val scaleDetector = ScaleGestureDetector(
-        context,
-        object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            override fun onScale(detector: ScaleGestureDetector): Boolean {
-                textSizeSp *= detector.scaleFactor
-                textSizeSp = max(MIN_TEXT_SIZE_SP, min(MAX_TEXT_SIZE_SP, textSizeSp))
-                editor.setTextSize(textSizeSp)
-                return true
-            }
-        }
-    )
-
-    setOnTouchListener { v, event ->
-        scaleDetector.onTouchEvent(event)
-        if (scaleDetector.isInProgress) {
-            true
-        } else {
-            v.performClick()
-            false
-        }
     }
 }

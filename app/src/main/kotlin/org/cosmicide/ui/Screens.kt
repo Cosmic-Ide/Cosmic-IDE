@@ -26,7 +26,10 @@ data class GradleTask(val project: Project, val task: String) : Screen
 data object Settings : Screen
 
 @Serializable
-data class SettingsCategoryScreen(val destination: SettingsDestination) : Screen
+data class SettingsCategoryScreen(
+    val destination: SettingsDestination,
+    val initialTab: String? = null,
+) : Screen
 
 @Serializable
 enum class SettingsDestination {

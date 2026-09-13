@@ -16,10 +16,10 @@ kotlin {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-    implementation("io.ktor:ktor-client-core:3.5.1")
-    implementation("io.ktor:ktor-client-content-negotiation:3.5.1")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.1")
-    implementation("io.ktor:ktor-client-cio:3.5.1")
+    implementation("io.ktor:ktor-client-core:3.5.2")
+    implementation("io.ktor:ktor-client-content-negotiation:3.5.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.2")
+    implementation("io.ktor:ktor-client-cio:3.5.2")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("io.ktor:ktor-client-mock:3.5.1")
+    testImplementation("io.ktor:ktor-client-mock:3.5.2")
 }

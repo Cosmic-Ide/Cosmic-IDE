@@ -11,7 +11,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -54,7 +53,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -118,7 +117,6 @@ data class TaskState(
     var message: String = "Waiting..."
 )
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun JdkSettingsPanel(
     onDismissRequested: () -> Unit,
@@ -310,79 +308,82 @@ fun JdkSettingsPanel(
         }
     }
 
-    Scaffold(topBar = {
-        LargeTopAppBar(
-            title = { Text("JDK Toolchains", fontWeight = FontWeight.Bold) },
-            navigationIcon = {
-                if (isProcessingScreenActive && isAllTasksComplete) {
-                    IconButton(onClick = { isProcessingScreenActive = false }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+    Scaffold(
+        topBar = {
+            LargeTopAppBar(
+                title = { Text("JDK Toolchains", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    if (isProcessingScreenActive && isAllTasksComplete) {
+                        IconButton(onClick = { isProcessingScreenActive = false }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        }
+                    } else if (!isProcessingScreenActive) {
+                        IconButton(onClick = onDismissRequested) {
+                            Icon(Icons.Default.Close, "Close")
+                        }
                     }
-                } else if (!isProcessingScreenActive) {
-                    IconButton(onClick = onDismissRequested) {
-                        Icon(Icons.Default.Close, "Close")
+                },
+                actions = {
+                    if (!isProcessingScreenActive) {
+                        IconButton(onClick = refreshInstalledRegistry) {
+                            Icon(Icons.Default.Refresh, "Refresh Sync")
+                        }
                     }
-                }
-            },
-            actions = {
-                if (!isProcessingScreenActive) {
-                    IconButton(onClick = refreshInstalledRegistry) {
-                        Icon(Icons.Default.Refresh, "Refresh Sync")
-                    }
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
             )
-        )
-    }, bottomBar = {
-        AnimatedVisibility(
-            visible = !isProcessingScreenActive && hasPendingChanges,
-            enter = slideInVertically { it } + fadeIn(),
-            exit = slideOutVertically { it } + fadeOut()) {
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                tonalElevation = 8.dp,
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .padding(horizontal = 24.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = !isProcessingScreenActive && hasPendingChanges,
+                enter = slideInVertically { it } + fadeIn(),
+                exit = slideOutVertically { it } + fadeOut()) {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    tonalElevation = 8.dp,
+                    shape = RoundedCornerShape(24.dp)
                 ) {
-                    Column {
-                        Text(
-                            "Pending Changes",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            "${pendingInstalls.size} to install, ${pendingUninstalls.size} to remove",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Button(
-                        onClick = { executeTaskQueue() },
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
-                        shapes = ButtonDefaults.shapes()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Default.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text("Apply")
+                        Column {
+                            Text(
+                                "Pending Changes",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                "${pendingInstalls.size} to install, ${pendingUninstalls.size} to remove",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Button(
+                            onClick = { executeTaskQueue() },
+                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                            shapes = ButtonDefaults.shapes()
+                        ) {
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text("Apply")
+                        }
                     }
                 }
             }
-        }
-    }) { innerPadding ->
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -412,7 +413,8 @@ fun JdkSettingsPanel(
                         targetVersions = targetVersions,
                         onTargetToggled = { version, isTargeted ->
                             targetVersions[version] = isTargeted
-                        })
+                        }
+                    )
                 }
             }
         }
@@ -421,7 +423,6 @@ fun JdkSettingsPanel(
 
 private const val AUTOMATIC_JDK_VENDOR = "zulu"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectionScreen(
     globalLoading: Boolean,
@@ -435,7 +436,6 @@ fun SelectionScreen(
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Vendor Selection
         Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
             ExposedDropdownMenuBox(
                 expanded = expanded,
@@ -478,7 +478,6 @@ fun SelectionScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // SDK List
         if (globalLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()

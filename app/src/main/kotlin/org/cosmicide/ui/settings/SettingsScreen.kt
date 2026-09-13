@@ -1,73 +1,116 @@
+/*
+ * Copyright (C) 2024 Pranav Purwar <purwarpranav80@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide.ui.settings
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Hardware
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Terminal
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.cosmicide.R
 import org.cosmicide.ui.SettingsDestination
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onBack: () -> Unit,
-    onNavigateToCategory: (SettingsCategory) -> Unit
+    onBack: () -> Unit, onNavigateToCategory: (SettingsCategory) -> Unit
 ) {
-    val categories = listOf(
-        SettingsCategory.Editor,
-        SettingsCategory.Compiler,
-        SettingsCategory.Extensions,
-        SettingsCategory.Terminal,
-        SettingsCategory.Toolchains,
-        SettingsCategory.About
-    )
+    val categories = remember {
+        listOf(
+            SettingsCategory.Editor,
+            SettingsCategory.Compiler,
+            SettingsCategory.Extensions,
+            SettingsCategory.Terminal,
+            SettingsCategory.Toolchains,
+            SettingsCategory.About
+        )
+    }
+
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             LargeTopAppBar(
-                title = { Text(stringResource(R.string.action_settings)) },
+                title = {
+                    Text(
+                        stringResource(R.string.action_settings),
+                        style = MaterialTheme.typography.headlineMediumEmphasized
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    IconButton(
+                        onClick = onBack, shapes = IconButtonDefaults.shapes()
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back"
+                        )
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
             )
-        }
-    ) { padding ->
+        }) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            items(categories) { category ->
-                SettingsCategoryItem(category) {
-                    onNavigateToCategory(category)
-                }
+            itemsIndexed(categories, key = { _, it -> it.destination.name }) { index, category ->
+                SettingsCategoryItem(
+                    category = category,
+                    index = index,
+                    count = categories.size,
+                    onClick = { onNavigateToCategory(category) })
             }
         }
     }
@@ -82,73 +125,84 @@ sealed class SettingsCategory(
     data object Editor : SettingsCategory(
         SettingsDestination.EDITOR,
         "Code editor",
-        "Customize editor settings",
+        "Customize theme, fonts, formatting, and rendering",
         Icons.Default.Code
     )
 
     data object Compiler : SettingsCategory(
         SettingsDestination.COMPILER,
         "Compiler",
-        "Configure compiler options and build process",
+        "Configure compiler options and build toolchains",
         Icons.Default.Build
     )
-    data object Extensions :
-        SettingsCategory(
-            SettingsDestination.EXTENSIONS,
-            "Extensions",
-            "Manage providers, plugins, and language servers",
-            Icons.Default.Hub
-        )
+
+    data object Extensions : SettingsCategory(
+        SettingsDestination.EXTENSIONS,
+        "Extensions",
+        "Manage providers, plugins, and language servers",
+        Icons.Default.Hub
+    )
+
     data object Terminal : SettingsCategory(
         SettingsDestination.TERMINAL,
         "Terminal",
-        "Run commands in the built-in terminal",
+        "Configure shell, fonts, and terminal behaviors",
         Icons.Default.Terminal
     )
-    data object Toolchains :
-        SettingsCategory(
-            SettingsDestination.TOOLCHAINS,
-            "Toolchains",
-            "Configure JDK Toolchain",
-            Icons.Default.Hardware
-        )
+
+    data object Toolchains : SettingsCategory(
+        SettingsDestination.TOOLCHAINS,
+        "Toolchains & SDKs",
+        "Manage installed JDKs and native toolchains",
+        Icons.Default.Hardware
+    )
 
     data object About : SettingsCategory(
-        SettingsDestination.ABOUT,
-        "About",
-        "Learn more about Cosmic IDE",
-        Icons.Default.Info
+        SettingsDestination.ABOUT, "About", "App info, license, and resources", Icons.Default.Info
     )
 }
 
 @Composable
 fun SettingsCategoryItem(
-    category: SettingsCategory,
-    onClick: () -> Unit
+    category: SettingsCategory, index: Int, count: Int, onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = category.icon,
-            contentDescription = null,
-            modifier = Modifier.padding(end = 16.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Column {
+    SegmentedListItem(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = ListItemDefaults.segmentedColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        shapes = ListItemDefaults.segmentedShapes(index, count),
+        content = {
             Text(
                 text = category.title,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMediumEmphasized,
+                color = MaterialTheme.colorScheme.onSurface
             )
+        },
+        supportingContent = {
             Text(
                 text = category.summary,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-        }
-    }
+        },
+        leadingContent = {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = category.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        trailingContent = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        })
 }

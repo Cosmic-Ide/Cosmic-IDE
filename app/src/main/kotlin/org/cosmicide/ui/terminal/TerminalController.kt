@@ -64,8 +64,12 @@ internal class TerminalController(
 
         terminalView.applyTerminalAppearance(textSizeDp, typeface)
 
-        val nextGeometry = terminalView.calculateGeometry(textSizeDp, typeface) ?: return
         val currentEmulator = emulator
+        val nextGeometry = terminalView.calculateGeometry(textSizeDp, typeface)
+            ?: if (currentEmulator == null) terminalView.fallbackGeometry(
+                textSizeDp,
+                typeface
+            ) else return
 
         if (currentEmulator == null) {
             val createdEmulator = TerminalEmulator(

@@ -10,19 +10,25 @@ package org.cosmicide.common
 import android.content.Context
 
 object Analytics {
-    fun init(context: Context) {
+    fun init(@Suppress("UNUSED_PARAMETER") context: Context) {
     }
 
     private var isAnalyticsCollectionEnabled = true
 
-    fun logEvent(event: String, value: Any) {
+    fun logEvent(
+        @Suppress("UNUSED_PARAMETER") event: String,
+        @Suppress("UNUSED_PARAMETER") value: Any
+    ) {
         if (!isAnalyticsCollectionEnabled) return
 
         // log event
     }
 
     @JvmStatic
-    fun logEvent(event: String, vararg pairs: Pair<String, String>) {
+    fun logEvent(
+        @Suppress("UNUSED_PARAMETER") event: String,
+        @Suppress("UNUSED_PARAMETER") vararg pairs: Pair<String, String>
+    ) {
         if (!isAnalyticsCollectionEnabled) return
 
         // log event

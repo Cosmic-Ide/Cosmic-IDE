@@ -15,7 +15,7 @@ interface ProjectRepository {
 
 internal class FileSystemProjectRepository(
     projectsDirectory: File = FileUtil.projectDir,
-    private val projectTypeProviders: () -> List<ProjectTypeProvider> = { emptyList() }
+    private val projectTypeProviders: () -> List<ProjectTypeProvider> = { emptyList() },
 ) : ProjectRepository {
     private val root = projectsDirectory.canonicalFile
     private val languageCache = ConcurrentHashMap<String, Language>()

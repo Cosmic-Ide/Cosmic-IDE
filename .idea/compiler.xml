@@ -58,6 +58,7 @@
       <module name="CosmicIDE.datadir" target="21" />
       <module name="CosmicIDE.feature.aliuhook" target="21" />
       <module name="CosmicIDE.feature.appwrite" target="21" />
+      <module name="CosmicIDE.feature.code-navigation" target="25" />
       <module name="CosmicIDE.feature.completion.java" target="26" />
       <module name="CosmicIDE.feature.completion.kotlin" target="26" />
       <module name="CosmicIDE.feature.formatter.google-java-format" target="21" />

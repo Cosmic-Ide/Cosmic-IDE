@@ -11,7 +11,15 @@ suspend fun main() {
     FoojayClient().apply {
         fetchMaintainedDistributions().onSuccess { distros ->
             println("Maintained distributions:")
-            distros.forEach { println("- ${it.name} (versions: ${it.versions.joinToString(", ")})") }
+            distros.forEach { (name, _, versions) ->
+                println(
+                    "- $name (versions: ${
+                        versions.joinToString(
+                            ", "
+                        )
+                    })"
+                )
+            }
         }.onFailure { println("Failed to fetch distributions: ${it.message}") }
 
         resolveLatestArtifact(
@@ -19,14 +27,14 @@ suspend fun main() {
             "27-ea+29",
             FoojayClient.OS.resolve(targetOs),
             FoojayClient.Arch.resolve(targetArch),
-            FoojayClient.LibCType.resolve(targetLibC)
+            FoojayClient.LibCType.resolve(targetLibC),
         ).onSuccess { artifact ->
             println("Resolved artifact: ${artifact.vendor} ${artifact.exactVersion} (${artifact.filename})")
             println("Download URL: ${artifact.binaryUrl}")
             println("Checksum: ${artifact.checksum}")
         }.onFailure { println("Failed to resolve artifact: ${it.message}") }
 
-        fetchLatestVersions("semeru", true).onSuccess { latest ->
+        fetchLatestVersions("semeru", includeEa = true).onSuccess { latest ->
             println("Latest versions for ${latest.vendor}: GA=${latest.latestGa}, EA=${latest.latestEa}")
         }.onFailure { println("Failed to fetch latest versions: ${it.message}") }
     }

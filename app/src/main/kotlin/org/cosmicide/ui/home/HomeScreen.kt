@@ -3,8 +3,6 @@ package org.cosmicide.ui.home
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,25 +12,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.HorizontalFloatingToolbar
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -43,11 +38,11 @@ import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.R
 import org.cosmicide.app.LocalAppContainer
@@ -67,11 +63,13 @@ import org.cosmicide.ui.donation.DonationPromptTracker
 import org.cosmicide.ui.donation.DonationSheet
 import org.cosmicide.ui.plugin.ProjectActionDialog
 import org.cosmicide.ui.plugin.ProjectCreationDialog
+import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToSettings: () -> Unit, onNavigateToEditor: (Project) -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToEditor: (Project) -> Unit,
 ) {
     val context = LocalContext.current
     val container = LocalAppContainer.current
@@ -82,7 +80,8 @@ fun HomeScreen(
     val extensionRepository = container.homeExtensionRepository
 
     var projectToDelete by remember { mutableStateOf<Project?>(null) }
-    var projectToBackup by remember { mutableStateOf<Project?>(null) }
+    var projectForIconPick by remember { mutableStateOf<Project?>(null) }
+    var iconUpdateTrigger by remember { mutableIntStateOf(0) }
     var showCreationProviders by remember { mutableStateOf(false) }
     var selectedCreationProvider by remember { mutableStateOf<ProjectCreationProvider?>(null) }
     var selectedProjectAction by remember { mutableStateOf<ProjectActionContribution?>(null) }
@@ -93,13 +92,54 @@ fun HomeScreen(
         extensionRepository.actionProviders()
     }
 
+    val listState = rememberLazyListState()
+
     val creationProviderSheetState = rememberBottomSheetState(
         initialValue = SheetValue.Hidden,
-        enabledValues = setOf(SheetValue.Hidden, SheetValue.PartiallyExpanded, SheetValue.Expanded)
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.PartiallyExpanded, SheetValue.Expanded),
     )
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    val iconPickerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent(),
+    ) { uri ->
+        val project = projectForIconPick
+        if ((uri != null) && (project != null)) {
+            scope.launch(Dispatchers.IO) {
+                runCatching {
+                    val cosmicDir = File(project.root, ".cosmic").apply { mkdirs() }
+                    val iconFile = File(cosmicDir, "icon.png")
+                    context.contentResolver.openInputStream(uri)?.use { input ->
+                        iconFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                }.onSuccess {
+                    iconUpdateTrigger++
+                    scope.launch { snackbarHostState.showSnackbar("Project icon updated") }
+                }.onFailure {
+                    scope.launch { snackbarHostState.showSnackbar("Failed to update project icon") }
+                }
+                projectForIconPick = null
+            }
+        }
+    }
+
+    val onChangeIcon: (Project) -> Unit = { project ->
+        projectForIconPick = project
+        iconPickerLauncher.launch("image/*")
+    }
+
+    val onResetIcon: (Project) -> Unit = { project ->
+        val iconFile = File(project.root, ".cosmic/icon.png")
+        if (iconFile.exists()) {
+            iconFile.delete()
+            iconUpdateTrigger++
+            scope.launch { snackbarHostState.showSnackbar("Project icon reset") }
+        }
+    }
 
     val openProjectCreation: () -> Unit = {
         if (creationProviders.isEmpty()) {
@@ -110,41 +150,6 @@ fun HomeScreen(
             }
         } else {
             showCreationProviders = true
-        }
-    }
-
-    val backupLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/zip")
-    ) { uri ->
-        val project = projectToBackup
-        if (uri != null && project != null) {
-            scope.launch {
-                runCatching { archiveRepository.backup(project, uri) }.onSuccess {
-                        snackbarHostState.showSnackbar("Project backed up successfully")
-                }.onFailure { error ->
-                        snackbarHostState.showSnackbar(
-                            error.message ?: "Project backup failed"
-                        )
-                    }
-                projectToBackup = null
-            }
-        }
-    }
-
-    val importLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri != null) {
-            scope.launch {
-                runCatching { archiveRepository.importArchive(uri) }.onSuccess {
-                        viewModel.loadProjects()
-                        snackbarHostState.showSnackbar("Project imported successfully")
-                }.onFailure { error ->
-                        snackbarHostState.showSnackbar(
-                            error.message ?: "Project import failed"
-                        )
-                    }
-            }
         }
     }
 
@@ -167,86 +172,94 @@ fun HomeScreen(
     }
 
     Scaffold(
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .background(MaterialTheme.colorScheme.surfaceContainer),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            LargeTopAppBar(title = {
-                Text(
-                    stringResource(R.string.projects),
-                    style = MaterialTheme.typography.headlineMediumEmphasized
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        stringResource(R.string.projects),
+                        style = MaterialTheme.typography.headlineMediumEmphasized,
+                    )
+                },
+                scrollBehavior = scrollBehavior,
+                actions = {
+                    IconButton(
+                        onClick = onNavigateToSettings,
+                        shapes = IconButtonDefaults.shapes(),
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
-            }, scrollBehavior = scrollBehavior, actions = {
-                IconButton(onClick = onNavigateToSettings) {
-                    Icon(Icons.Default.Settings, contentDescription = "Settings")
-                }
-            })
-        }) { contentPadding ->
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = openProjectCreation,
+                icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                text = { Text("New Project") },
+                expanded = !listState.canScrollBackward,
+            )
+        },
+    ) { contentPadding ->
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(contentPadding)
+                .fillMaxSize(),
         ) {
             if (projects.isEmpty() && !isLoading) {
-                EmptyProjectsState(onCreateClick = openProjectCreation)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(contentPadding),
+                ) {
+                    EmptyProjectsState(
+                        onCreateClick = openProjectCreation
+                    )
+                }
             } else {
                 PullToRefreshBox(
                     isRefreshing = isLoading,
                     onRefresh = { viewModel.loadProjects() },
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier
                             .fillMaxSize()
                             .nestedScroll(scrollBehavior.nestedScrollConnection),
                         contentPadding = PaddingValues(
-                            start = 24.dp, end = 24.dp, top = 16.dp, bottom = 112.dp
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = contentPadding.calculateTopPadding() + 8.dp,
+                            bottom = contentPadding.calculateBottomPadding() + 96.dp,
                         ),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
                     ) {
-                        items(projects, key = { it.root.absolutePath }) { project ->
+                        itemsIndexed(
+                            projects,
+                            key = { _, project -> project.root.absolutePath }) { index, project ->
                             ProjectCard(
                                 project = project,
+                                index = index,
+                                totalCount = projects.size,
                                 pluginActions = actionProviders.flatMap { provider ->
                                     provider.actions(project).map { action ->
                                         ProjectActionContribution(provider, action, project)
                                     }
                                 },
                                 onPluginAction = { selectedProjectAction = it },
+                                onChangeIcon = { onChangeIcon(project) },
+                                onResetIcon = { onResetIcon(project) },
+                                iconUpdateTrigger = iconUpdateTrigger,
                                 onClick = { onNavigateToEditor(project) },
-                                onBackup = {
-                                    projectToBackup = project
-                                    backupLauncher.launch("${project.name}.zip")
-                                },
-                                onDelete = { projectToDelete = project })
+                                onDelete = { projectToDelete = project },
+                            )
                         }
                     }
-                }
-            }
-
-            HorizontalFloatingToolbar(
-                expanded = true,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(bottom = 24.dp),
-                floatingActionButton = {
-                    FloatingToolbarDefaults.StandardFloatingActionButton(
-                        onClick = openProjectCreation, shape = MaterialTheme.shapes.large
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add, contentDescription = "New Project"
-                        )
-                    }
-                }) {
-                IconButton(onClick = { importLauncher.launch(arrayOf("application/zip")) }) {
-                    Icon(
-                        imageVector = Icons.Default.FileUpload,
-                        contentDescription = "Import ZIP",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
         }
@@ -255,49 +268,53 @@ fun HomeScreen(
     if (showCreationProviders) {
         ModalBottomSheet(
             onDismissRequest = { showCreationProviders = false },
-            sheetState = creationProviderSheetState
+            sheetState = creationProviderSheetState,
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = 24.dp),
             ) {
                 Text(
                     text = "Create project",
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
                 )
                 Text(
                     text = "Choose an installed plugin",
                     modifier = Modifier.padding(horizontal = 24.dp),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp)
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                     itemsIndexed(creationProviders) { index, provider ->
-                        ListItem(
-                            modifier = Modifier.clickable {
+                        SegmentedListItem(
+                            onClick = {
                                 showCreationProviders = false
                                 selectedCreationProvider = provider
                             },
+                            shapes = ListItemDefaults.segmentedShapes(
+                                index,
+                                creationProviders.size
+                            ),
+                            colors = ListItemDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                            ),
                             supportingContent = {
                                 if (provider.description.isNotBlank()) {
                                     Text(provider.description)
                                 }
-                            },
-                            elevation = ListItemDefaults.elevation(),
-                            content = { Text(provider.displayName) },
-                            shapes = ListItemDefaults.segmentedShapes(index, creationProviders.size)
-                        )
-                        if (index != creationProviders.lastIndex) {
-                            HorizontalDivider()
+                            }
+                        ) {
+                            Text(provider.displayName)
                         }
                     }
                 }
@@ -361,4 +378,3 @@ fun HomeScreen(
             })
     }
 }
-

@@ -25,6 +25,7 @@ object PreferenceKeys {
     const val BRACKET_PAIR_AUTOCOMPLETE = "bracket_pair_autocomplete"
     const val QUICK_DELETE = "quick_delete"
     const val STICKY_SCROLL = "sticky_scroll"
+    const val SHOW_MINIMAP = "minimap"
     const val EDITOR_THEME = "editor_theme"
     const val EDITOR_THEME_AUTO = "auto"
 

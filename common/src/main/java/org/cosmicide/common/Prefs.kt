@@ -28,14 +28,8 @@ object Prefs {
         migrateEditorPreferences()
     }
 
-    val isInitialized: Boolean
-        get() = Prefs::prefs.isInitialized
-
     val appTheme: String
         get() = prefs.getString("app_theme", "auto") ?: "auto"
-
-    val useFastJarFs: Boolean
-        get() = prefs.getBoolean("use_fastjarfs", true)
 
     val currentJDK: String
         get() = prefs.getString("current_jdk", "system") ?: "system"
@@ -52,20 +46,15 @@ object Prefs {
     val scrollbarEnabled: Boolean
         get() = prefs.getBoolean("scrollbar", true)
 
+    val minimap: Boolean
+        get() = prefs.getBoolean("minimap", false)
+
     val hardwareAcceleration: Boolean
         get() = prefs.getBoolean("hardware_acceleration", true)
 
     val nonPrintableCharacters: Boolean
         get() = prefs.getBoolean("non_printable_characters", false)
 
-    val ktfmtStyle: String
-        get() = prefs.getString("ktfmt_style", "google") ?: "google"
-
-    val googleJavaFormatOptions: Set<String>?
-        get() = prefs.getStringSet("google_java_formatter_options", setOf())
-
-    val googleJavaFormatStyle: String
-        get() = prefs.getString("google_java_formatter_style", "aosp") ?: "aosp"
     val lineNumbers: Boolean
         get() = prefs.getBoolean("line_numbers", true)
 
@@ -85,30 +74,8 @@ object Prefs {
     val quickDelete: Boolean
         get() = prefs.getBoolean("quick_delete", false)
 
-    val javacFlags: String
-        get() = prefs.getString("javac_flags", "") ?: ""
-
-    val compilerJavaVersion: Int
-        get() = parseIntPreference(prefs.getString("java_version", "21"), 21)
-
-    val kotlinVersion: String
-        get() = prefs.getString("kotlin_version", "2.1") ?: "2.1"
-
     val analyticsEnabled: Boolean
         get() = prefs.getBoolean("analytics_preference", true)
-
-    val gitUsername: String
-        get() = prefs.getString("git_username", "") ?: ""
-
-    val gitEmail: String
-        get() = prefs.getString("git_email", "") ?: ""
-
-    val gitApiKey: String
-        get() = prefs.getString("git_api_key", "") ?: ""
-
-    val experimentsEnabled: Boolean
-        get() = prefs.getBoolean("experiments_enabled", false)
-
 
     val editorFont: String
         get() = prefs.getString("editor_font", "") ?: ""
@@ -138,36 +105,8 @@ object Prefs {
                 is String -> stored.trim().toFloatOrNull()
                 else -> null
             }
-            return value?.takeIf(Float::isFinite)?.coerceIn(1f, 32f) ?: 12f
+            return value?.takeIf(Float::isFinite)?.coerceIn(4f, 32f) ?: 8f
         }
-
-    val geminiApiKey: String
-        get() = prefs.getString("gemini_api_key", "") ?: ""
-
-    val geminiModel: String
-        get() = prefs.getString("gemini_model", "gemini-2.0-flash") ?: "gemini-2.0-flash"
-
-    val temperature: Float
-        get() = parseBoundedFloatPreference(
-            prefs.getString("temperature", "0.9"),
-            default = 0.9f,
-            minimum = 0f,
-            maximum = 1f
-        )
-
-    val topP: Float
-        get() = parseBoundedFloatPreference(
-            prefs.getString("top_p", "1.0"),
-            default = 1f,
-            minimum = 0f,
-            maximum = 1f
-        )
-
-    val topK: Float
-        get() = prefs.getInt("top_k", 40).coerceIn(1, 100).toFloat()
-
-    val maxTokens: Int
-        get() = prefs.getInt("max_tokens", 1024).coerceIn(60, 2048)
 
     val clientName: String
         get() = prefs.getString("client_name", null)?.replace(" ", "") ?: Build.ID

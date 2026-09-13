@@ -13,7 +13,7 @@ android {
     namespace = "org.cosmicide.plugin.runtime"
     compileSdk {
         version = release(37) {
-            minorApiLevel = 1
+            minorApiLevel = 2
         }
     }
 

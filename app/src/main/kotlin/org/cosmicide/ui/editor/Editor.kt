@@ -74,6 +74,8 @@ fun CodeEditor.applyEditorSettings(project: Project, file: File, theme: ColorSch
     props.deleteEmptyLineFast = Prefs.quickDelete
     props.stickyScroll = Prefs.stickyScroll
     props.symbolPairAutoCompletion = Prefs.bracketPairAutocomplete
+    props.showMinimap = Prefs.minimap
+    props.formatPastedText = true
 
     colorScheme = TextMateColorScheme.create(
         ThemeRegistry.getInstance().currentThemeModel

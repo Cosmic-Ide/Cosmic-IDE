@@ -54,6 +54,9 @@ data class TerminalSession(
 ) : Screen
 
 @Serializable
+data class PluginSettingsScreen(val extensionId: String) : Screen
+
+@Serializable
 data class PluginScreen(
     val pluginId: String,
     val screenId: String,

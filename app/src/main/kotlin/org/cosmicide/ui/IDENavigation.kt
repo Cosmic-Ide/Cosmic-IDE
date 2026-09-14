@@ -1,5 +1,6 @@
 package org.cosmicide.ui
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -39,6 +40,7 @@ private fun commandWithExit(command: String): String {
     return "bash -i -c \"$escaped && exit\""
 }
 
+@ExperimentalMaterial3Api
 @Composable
 fun IDENavigation() {
     val context = LocalContext.current
@@ -92,7 +94,11 @@ fun IDENavigation() {
                     onBack = { backStack.removeLastOrNull() },
                     onNavigateToCategory = { category ->
                         backStack.add(SettingsCategoryScreen(category.destination))
-                    })
+                    },
+                    onNavigateToPluginSettings = { id ->
+                        backStack.add(PluginSettingsScreen(id))
+                    }
+                )
             }
 
             is SettingsCategoryScreen -> NavEntry(key) {
@@ -175,6 +181,18 @@ fun IDENavigation() {
                     initialCommand = key.command,
                     workingDir = File(key.workingDirectory)
                 )
+            }
+
+            is PluginSettingsScreen -> NavEntry(key) {
+                val extension = remember(key.extensionId) {
+                    org.cosmicide.plugin.CosmicPluginHost.enabledExtensions(UiExtensionPoints.SETTINGS_UI)
+                        .find { it.id == key.extensionId }
+                }
+                if (extension != null) {
+                    extension.Content()
+                } else {
+                    Text("Plugin settings not found")
+                }
             }
 
             is PluginScreen -> NavEntry(key) {

@@ -1,7 +1,6 @@
 package org.cosmicide.ui.resource
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,19 +11,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -47,7 +42,6 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.util.extractTarZstStream
 import org.cosmicide.util.restoreSymlinksFromManifest
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun InstallResourcesScreen(
     onMoveToJdkManager: () -> Unit
@@ -56,7 +50,7 @@ fun InstallResourcesScreen(
 
     var isRunning by remember { mutableStateOf(false) }
     var statusText by remember { mutableStateOf("Ready to configure environment assets.") }
-    var progressDetailsText by remember { mutableStateOf("Foundational resources will be deployed.") }
+    var progressDetailsText by remember { mutableStateOf("Required resources will be downloaded and installed.") }
     var currentProgress by remember { mutableFloatStateOf(0f) }
 
     val context = LocalContext.current
@@ -67,7 +61,7 @@ fun InstallResourcesScreen(
             val glibcTargetDir = context.filesDir.resolve("glibc")
             if (!glibcTargetDir.exists() || glibcTargetDir.listFiles()?.isEmpty() == true) {
                 glibcTargetDir.mkdirs()
-                statusText = "Deploying local runtime..."
+                statusText = "Setting up local runtime..."
                 currentProgress = -1f
                 progressDetailsText = "Extracting runtime..."
 
@@ -108,36 +102,29 @@ fun InstallResourcesScreen(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
                 .padding(innerPadding)
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Surface(
-                modifier = Modifier.size(80.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
+            Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(60.dp),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
-            }
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = statusText,
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -172,7 +159,6 @@ fun InstallResourcesScreen(
                 Text(
                     "Initialize Workspace Environment",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
                 )
             }
         }

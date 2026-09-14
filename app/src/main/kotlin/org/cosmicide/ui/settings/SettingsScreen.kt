@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.Hardware
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Info
@@ -58,7 +60,9 @@ import org.cosmicide.ui.SettingsDestination
 
 @Composable
 fun SettingsScreen(
-    onBack: () -> Unit, onNavigateToCategory: (SettingsCategory) -> Unit
+    onBack: () -> Unit,
+    onNavigateToCategory: (SettingsCategory) -> Unit,
+    onNavigateToPluginSettings: (String) -> Unit = {}
 ) {
     val categories = remember {
         listOf(
@@ -111,6 +115,55 @@ fun SettingsScreen(
                     index = index,
                     count = categories.size,
                     onClick = { onNavigateToCategory(category) })
+            }
+
+            val pluginSettings =
+                org.cosmicide.plugin.CosmicPluginHost.enabledExtensions(org.cosmicide.ui.UiExtensionPoints.SETTINGS_UI)
+            if (pluginSettings.isNotEmpty()) {
+                item {
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Plugins",
+                        style = MaterialTheme.typography.titleMediumEmphasized,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                }
+                itemsIndexed(pluginSettings, key = { _, it -> it.id }) { index, provider ->
+                    SegmentedListItem(
+                        onClick = { onNavigateToPluginSettings(provider.id) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ListItemDefaults.segmentedColors(
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        shapes = ListItemDefaults.segmentedShapes(index, pluginSettings.size),
+                        content = {
+                            Text(
+                                text = provider.label,
+                                style = MaterialTheme.typography.titleMediumEmphasized,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        },
+                        leadingContent = {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.Extension,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(30.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
+                        trailingContent = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    )
+                }
             }
         }
     }

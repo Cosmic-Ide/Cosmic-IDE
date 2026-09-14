@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -145,135 +146,141 @@ internal fun EditorToolbar(
         it.kind == ProjectCommandKind.SYNC
     }
 
-    TopAppBar(title = {
-        Text(
-            text = file?.name ?: project.name,
-            style = MaterialTheme.typography.titleMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }, navigationIcon = {
-        IconButton(
-            onClick = onOpenDrawer,
-            shapes = IconButtonDefaults.shapes()
-        ) {
-            Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
-        }
-    }, actions = {
-        IconButton(
-            enabled = contributedRunCommand != null,
-            onClick = {
-                if (contributedRunCommand != null) onRunProjectCommand(contributedRunCommand)
-            },
-            shapes = IconButtonDefaults.shapes()
-        ) {
-            Icon(
-                Icons.Filled.PlayArrow,
-                contentDescription = contributedRunCommand?.label,
-                tint = MaterialTheme.colorScheme.onSurface
+    TopAppBar(
+        title = {
+            Text(
+                text = file?.name ?: project.name,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-        }
-        IconButton(
-            onClick = {
-                editor.undo()
-                refreshHistoryState()
-            },
-            enabled = file != null,
-            shapes = IconButtonDefaults.shapes()
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.Undo,
-                contentDescription = "Undo",
-                tint = if (canUndo) MaterialTheme.colorScheme.onSurface else Color.Gray
-            )
-        }
-        IconButton(
-            onClick = {
-                editor.redo()
-                refreshHistoryState()
-            },
-            enabled = file != null,
-            shapes = IconButtonDefaults.shapes()
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.Redo,
-                contentDescription = "Redo",
-                tint = if (canRedo) MaterialTheme.colorScheme.onSurface else Color.Gray
-            )
-        }
-
-        Box {
+        },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        navigationIcon = {
             IconButton(
-                onClick = { showMenu = !showMenu },
+                onClick = onOpenDrawer,
                 shapes = IconButtonDefaults.shapes()
             ) {
-                Icon(Icons.Filled.MoreVert, contentDescription = "Editor Options")
+                Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
+            }
+        },
+        actions = {
+            IconButton(
+                enabled = contributedRunCommand != null,
+                onClick = {
+                    if (contributedRunCommand != null) onRunProjectCommand(contributedRunCommand)
+                },
+                shapes = IconButtonDefaults.shapes()
+            ) {
+                Icon(
+                    Icons.Filled.PlayArrow,
+                    contentDescription = contributedRunCommand?.label,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            IconButton(
+                onClick = {
+                    editor.undo()
+                    refreshHistoryState()
+                },
+                enabled = file != null,
+                shapes = IconButtonDefaults.shapes()
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.Undo,
+                    contentDescription = "Undo",
+                    tint = if (canUndo) MaterialTheme.colorScheme.onSurface else Color.Gray
+                )
+            }
+            IconButton(
+                onClick = {
+                    editor.redo()
+                    refreshHistoryState()
+                },
+                enabled = file != null,
+                shapes = IconButtonDefaults.shapes()
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.Redo,
+                    contentDescription = "Redo",
+                    tint = if (canRedo) MaterialTheme.colorScheme.onSurface else Color.Gray
+                )
             }
 
-            CascadeDropdownMenu(
-                expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                DropdownMenuItem(text = { Text("Execution") }, children = {
-                    DropdownMenuItem(text = { Text("Terminal") }, onClick = {
-                        onOpenTerminal()
-                        showMenu = false
-                    })
-                    if (contributedSyncCommand != null) {
-                        DropdownMenuItem(text = { Text(contributedSyncCommand.label) }, onClick = {
-                            onRunProjectCommand(contributedSyncCommand)
+            Box {
+                IconButton(
+                    onClick = { showMenu = !showMenu },
+                    shapes = IconButtonDefaults.shapes()
+                ) {
+                    Icon(Icons.Filled.MoreVert, contentDescription = "Editor Options")
+                }
+
+                CascadeDropdownMenu(
+                    expanded = showMenu, onDismissRequest = { showMenu = false }) {
+                    DropdownMenuItem(text = { Text("Execution") }, children = {
+                        DropdownMenuItem(text = { Text("Terminal") }, onClick = {
+                            onOpenTerminal()
                             showMenu = false
                         })
-                    }
-                })
-                if (projectCommands.isNotEmpty()) {
-                    DropdownMenuItem(text = { Text("Project Commands") }, children = {
-                        ProjectCommandMenuItems(
-                            commands = projectCommands,
-                            onRunProjectCommand = onRunProjectCommand,
-                            onDismissMenu = { showMenu = false }
-                        )
-                    })
-                }
-                if (taskProviders.isNotEmpty()) {
-                    DropdownMenuItem(text = { Text("Tasks") }, children = {
-                        taskProviders.forEach { provider ->
+                        if (contributedSyncCommand != null) {
                             DropdownMenuItem(
-                                text = { Text(provider.displayName) },
+                                text = { Text(contributedSyncCommand.label) },
                                 onClick = {
-                                    selectedTaskProvider = provider
+                                    onRunProjectCommand(contributedSyncCommand)
+                                    showMenu = false
+                                })
+                        }
+                    })
+                    if (projectCommands.isNotEmpty()) {
+                        DropdownMenuItem(text = { Text("Project Commands") }, children = {
+                            ProjectCommandMenuItems(
+                                commands = projectCommands,
+                                onRunProjectCommand = onRunProjectCommand,
+                                onDismissMenu = { showMenu = false }
+                            )
+                        })
+                    }
+                    if (taskProviders.isNotEmpty()) {
+                        DropdownMenuItem(text = { Text("Tasks") }, children = {
+                            taskProviders.forEach { provider ->
+                                DropdownMenuItem(
+                                    text = { Text(provider.displayName) },
+                                    onClick = {
+                                        selectedTaskProvider = provider
+                                        showMenu = false
+                                    }
+                                )
+                            }
+                        })
+                    }
+                    if (contributedActions.isNotEmpty()) {
+                        contributedActions.forEach { action ->
+                            DropdownMenuItem(
+                                text = { Text(action.label) },
+                                onClick = {
+                                    onRunEditorAction(action)
                                     showMenu = false
                                 }
                             )
                         }
-                    })
-                }
-                if (contributedActions.isNotEmpty()) {
-                    contributedActions.forEach { action ->
-                        DropdownMenuItem(
-                            text = { Text(action.label) },
-                            onClick = {
-                                onRunEditorAction(action)
-                                showMenu = false
-                            }
-                        )
                     }
+                    DropdownMenuItem(text = { Text("Editor") }, children = {
+                        DropdownMenuItem(text = { Text("Find & Replace") }, onClick = {
+                            editor.beginSearchMode()
+                            showMenu = false
+                        })
+                        DropdownMenuItem(text = { Text("Format") }, onClick = {
+                            editor.formatCodeAsync()
+                            showMenu = false
+                        })
+                        DropdownMenuItem(text = { Text("Go To Line") }, onClick = {
+                            showGoToLineDialog = true
+                            showMenu = false
+                        })
+                    })
                 }
-                DropdownMenuItem(text = { Text("Editor") }, children = {
-                    DropdownMenuItem(text = { Text("Find & Replace") }, onClick = {
-                        editor.beginSearchMode()
-                        showMenu = false
-                    })
-                    DropdownMenuItem(text = { Text("Format") }, onClick = {
-                        editor.formatCodeAsync()
-                        showMenu = false
-                    })
-                    DropdownMenuItem(text = { Text("Go To Line") }, onClick = {
-                        showGoToLineDialog = true
-                        showMenu = false
-                    })
-                })
             }
-        }
-    })
+        })
 
     selectedTaskProvider?.let { provider ->
         ProjectTasksDialog(

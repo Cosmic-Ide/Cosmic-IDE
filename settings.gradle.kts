@@ -32,7 +32,6 @@ rootProject.name = "CosmicIDE"
 include(":app")
 include(":common")
 include(":ide-api")
-include(":feature:project")
 include(":plugin-api")
 include(":plugin-runtime")
 include(":util")

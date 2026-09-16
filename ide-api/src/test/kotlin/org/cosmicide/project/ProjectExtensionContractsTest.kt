@@ -9,11 +9,11 @@ import java.io.File
 class ProjectExtensionContractsTest {
     @Test
     fun `choice fields require usable options`() {
-        assertFails<IllegalArgumentException> {
+        assertThrowsException<IllegalArgumentException> {
             PluginFormField("runtime", "Runtime", PluginFormFieldType.CHOICE)
         }
-        assertFails<IllegalArgumentException> { PluginFormOption("", "Default") }
-        assertFails<IllegalArgumentException> { PluginFormOption("default", " ") }
+        assertThrowsException<IllegalArgumentException> { PluginFormOption("", "Default") }
+        assertThrowsException<IllegalArgumentException> { PluginFormOption("default", " ") }
 
         val field = PluginFormField(
             id = "runtime",
@@ -26,8 +26,8 @@ class ProjectExtensionContractsTest {
 
     @Test
     fun `form fields reject blank identity and label`() {
-        assertFails<IllegalArgumentException> { PluginFormField("", "Name") }
-        assertFails<IllegalArgumentException> { PluginFormField("name", " ") }
+        assertThrowsException<IllegalArgumentException> { PluginFormField("", "Name") }
+        assertThrowsException<IllegalArgumentException> { PluginFormField("name", " ") }
     }
 
     @Test
@@ -44,7 +44,7 @@ class ProjectExtensionContractsTest {
             visibleWhen = mapOf("template" to "custom")
         )
         assertEquals("custom", field.visibleWhen.getValue("template"))
-        assertFails<IllegalArgumentException> {
+        assertThrowsException<IllegalArgumentException> {
             PluginFormField(
                 id = "command",
                 label = "Create command",
@@ -59,13 +59,13 @@ class ProjectExtensionContractsTest {
         assertEquals(1f, OperationUpdate("done", 1f).progress)
         assertEquals(null, OperationUpdate("working").progress)
         listOf(-0.01f, 1.01f, Float.POSITIVE_INFINITY).forEach { progress ->
-            assertFails<IllegalArgumentException> { OperationUpdate("bad", progress) }
+            assertThrowsException<IllegalArgumentException> { OperationUpdate("bad", progress) }
         }
     }
 
     @Test
     fun `project commands reject incomplete commands`() {
-        assertFails<IllegalArgumentException> { ProjectCommand("sync", "Sync", "") }
+        assertThrowsException<IllegalArgumentException> { ProjectCommand("sync", "Sync", "") }
 
         val command = ProjectCommand("sync", "Sync", "./sync", kind = ProjectCommandKind.SYNC)
         assertEquals(ProjectCommandKind.SYNC, command.kind)
@@ -77,13 +77,13 @@ class ProjectExtensionContractsTest {
         val group = ProjectCommand("build", "Build", children = listOf(build))
 
         assertEquals(build, group.children.single())
-        assertFails<IllegalArgumentException> {
+        assertThrowsException<IllegalArgumentException> {
             ProjectCommand("empty", "Empty", children = emptyList())
         }
-        assertFails<IllegalArgumentException> {
+        assertThrowsException<IllegalArgumentException> {
             ProjectCommand("ambiguous", "Ambiguous", "make", children = listOf(build))
         }
-        assertFails<IllegalArgumentException> {
+        assertThrowsException<IllegalArgumentException> {
             ProjectCommand(
                 "sync",
                 "Sync",
@@ -102,9 +102,9 @@ class ProjectExtensionContractsTest {
             group = "Lifecycle"
         )
         assertEquals("Lifecycle", task.group)
-        assertFails<IllegalArgumentException> { ProjectTask("", "Test", "mvn test") }
-        assertFails<IllegalArgumentException> { ProjectTask("test", " ", "mvn test") }
-        assertFails<IllegalArgumentException> { ProjectTask("test", "Test", " ") }
+        assertThrowsException<IllegalArgumentException> { ProjectTask("", "Test", "mvn test") }
+        assertThrowsException<IllegalArgumentException> { ProjectTask("test", " ", "mvn test") }
+        assertThrowsException<IllegalArgumentException> { ProjectTask("test", "Test", " ") }
     }
 
     @Test
@@ -116,13 +116,18 @@ class ProjectExtensionContractsTest {
 
     @Test
     fun `command request and project actions validate required identifiers`() {
-        assertFails<IllegalArgumentException> { CommandRequest(" ", workingDirectory = File(".")) }
-        assertFails<IllegalArgumentException> { ProjectAction("", "Build") }
-        assertFails<IllegalArgumentException> { ProjectAction("build", " ") }
+        assertThrowsException<IllegalArgumentException> {
+            CommandRequest(
+                " ",
+                workingDirectory = File(".")
+            )
+        }
+        assertThrowsException<IllegalArgumentException> { ProjectAction("", "Build") }
+        assertThrowsException<IllegalArgumentException> { ProjectAction("build", " ") }
     }
 }
 
-private inline fun <reified T : Throwable> assertFails(block: () -> Unit): T {
+private inline fun <reified T : Throwable> assertThrowsException(block: () -> Unit): T {
     try {
         block()
     } catch (error: Throwable) {

@@ -312,9 +312,9 @@ fun EditorSettingsScreen(
                     SwitchPreference(
                         title = "Show Minimap",
                         summary = "Enable & disable Code Minimap",
-                        checked = ligatures,
+                        checked = minimap,
                         onCheckedChange = {
-                            ligatures = it
+                            minimap = it
                             prefs.edit { putBoolean(PreferenceKeys.SHOW_MINIMAP, it) }
                         },
                         index = 4,

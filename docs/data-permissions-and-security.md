@@ -66,10 +66,9 @@ temporary files, and URL-linked TextMate grammars.
 
 HTTPS grammar cache entries live under `textmate-grammar-cache/`. The filename is a SHA-256 hash of
 the full URL rather than the URL itself. The full link remains persisted in the custom LSP
-preference
-JSON. A downloaded grammar is limited to 5 MB and becomes the cached copy only after successful
-TextMate parsing. Entries are considered fresh for seven days. Android or the user may clear cache
-at any time; the next editor configuration downloads the source again.
+preference JSON. A downloaded grammar is limited to 5 MB and becomes the cached copy only after
+successful TextMate parsing. Entries are considered fresh for seven days. Android or the user may
+clear cache at any time; the next editor configuration downloads the source again.
 
 ## Android DocumentsProvider
 
@@ -79,8 +78,8 @@ and recursive delete according to each document row.
 
 Document ids are resolved relative to the application data directory. Any change to this provider
 must retain canonical-path confinement; accepting traversal outside the root would turn a document
-id into arbitrary filesystem access. External applications receive access through Android's
-document permission model.
+id into arbitrary filesystem access. External applications receive access through Android's document
+permission model.
 
 The provider root is distinct from `FileUtil.dataDir`, which is app-specific external storage. Use
 the project ZIP flow for portable project backup rather than assuming the provider exposes every
@@ -98,15 +97,15 @@ Cosmic can contact:
 - user-supplied HTTP(S) TextMate grammar links;
 - community/source/donation links selected in the UI.
 
-The plugin marketplace fetches only HTTPS indexes and package URLs. Every entry must pin the
-package SHA-256; the installer verifies it before bounded, traversal-safe extraction. Project Gradle
+The plugin marketplace fetches only HTTPS indexes and package URLs. Every entry must pin the package
+SHA-256; the installer verifies it before bounded, traversal-safe extraction. Project Gradle
 configuration and terminal commands may contact arbitrary hosts.
 
 Remote TextMate content is data parsed by the grammar engine, not executed as a shell command, but
 it can still consume parser resources. The app applies a 5 MB limit, timeouts, isolated grammar
 registries, and validated cache replacement. Prefer HTTPS and a source under your control. A GitHub
-link should target raw content rather than an HTML page. Do not embed secrets in a grammar URL:
-the complete link is stored in preferences and can appear in diagnostic logs when refresh fails.
+link should target raw content rather than an HTML page. Do not embed secrets in a grammar URL: the
+complete link is stored in preferences and can appear in diagnostic logs when refresh fails.
 
 ## Executable trust boundaries
 
@@ -121,8 +120,8 @@ contents. Inspect unfamiliar projects before invoking Gradle.
 Custom project creation, build, run, and utility fields are trusted Bash code. Creation runs through
 `bash -lc` in a newly created directory; editor commands run through `bash -lc` in a bottom PTY tab.
 They inherit the Cosmic toolchain environment and the app's filesystem/network authority. Review
-every command before saving it. **Execution > Terminal** opens an interactive project shell with
-the same authority.
+every command before saving it. **Execution > Terminal** opens an interactive project shell with the
+same authority.
 
 ### Custom language-server starter code
 
@@ -151,8 +150,7 @@ confirmation and runs in a PTY only after the user accepts it.
 JDKs and language tools are native/JVM executables. The current JDK installer receives checksum
 metadata but does not enforce it. The setup script also consumes upstream archives and, for Android
 ARM build tools, remote installer logic. Pinning versions and verifying checksums are required
-before
-these flows can be considered reproducible or supply-chain hardened.
+before these flows can be considered reproducible or supply-chain hardened.
 
 ## Process and protocol isolation
 
@@ -171,8 +169,8 @@ The exact analytics backend is selected by the build flavor. Development and pro
 must both respect the same preference contract.
 
 Do not place secrets in analytics events, logs, custom LSP names/commands, project paths, or
-protocol
-traces. Incoming LSP tracing can include source text and should remain a diagnostic-only option.
+protocol traces. Incoming LSP tracing can include source text and should remain a diagnostic-only
+option.
 
 ## Backups and deletion
 

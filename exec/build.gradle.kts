@@ -5,26 +5,26 @@ plugins {
 android {
     namespace = "org.cosmicide.exec"
     compileSdk {
-        version = release(37) {
-            minorApiLevel = 2
+        version = release(libs.versions.compileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.compileSdkMinor.get().toInt()
         }
     }
 
     defaultConfig {
-        minSdk = 26
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     externalNativeBuild {
         cmake {
-            version = "4.1.2"
+            version = libs.versions.cmake.get()
 
             path = file("src/main/cpp/CMakeLists.txt")
         }
     }
 
-    ndkVersion = "30.0.16248370"
+    ndkVersion = libs.versions.ndk.get()
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -48,5 +48,5 @@ android {
 dependencies {
     implementation(projects.util)
     implementation(projects.common)
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 }

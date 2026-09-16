@@ -14,8 +14,8 @@ plugins {
 android {
     namespace = "org.cosmicide"
     compileSdk {
-        version = release(37) {
-            minorApiLevel = 2
+        version = release(libs.versions.compileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.compileSdkMinor.get().toInt()
         }
     }
 
@@ -23,10 +23,10 @@ android {
         val commit = getGitCommit()
 
         applicationId = "org.cosmicide"
-        minSdk = 26
-        targetSdk = 37
-        versionCode = 25
-        versionName = "3.0.0"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = libs.versions.ideVersionCode.get().toInt()
+        versionName = libs.versions.ideVersion.get()
 
         buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
     }
@@ -116,63 +116,62 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.14.0")
-    implementation("com.github.luben:zstd-jni:1.5.7-16@aar")
+    implementation(libs.gson)
+    implementation(libs.zstd.jni)
 
-    implementation("androidx.core:core-ktx:1.19.0")
-    implementation("androidx.documentfile:documentfile:1.1.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
-    implementation("androidx.startup:startup-runtime:1.2.0")
+    implementation(libs.core.ktx)
+    implementation(libs.documentfile)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.startup.runtime)
 
-    implementation(platform("io.github.rosemoe:editor-bom:0.24.6"))
-    implementation("io.github.rosemoe:editor")
-    implementation("io.github.rosemoe:language-textmate")
-    implementation("io.github.rosemoe:editor-lsp")
-    implementation("io.github.rosemoe:oniguruma-native")
+    implementation(platform(libs.rosemoe.editor.bom))
+    implementation(libs.rosemoe.editor)
+    implementation(libs.rosemoe.language.textmate)
+    implementation(libs.rosemoe.editor.lsp)
+    implementation(libs.rosemoe.oniguruma.native)
 
-    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0")
-
-    //noinspection Aligned16KB
-    implementation("com.github.termux.termux-app:terminal-emulator:v0.119.0-beta.3")
-    implementation("com.github.termux.termux-app:terminal-view:v0.119.0-beta.3")
-
-    implementation("com.mikepenz:multiplatform-markdown-renderer:0.45.0")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.45.0")
+    implementation(libs.lsp4j)
 
     //noinspection Aligned16KB
-    implementation("top.canyie.pine:core:0.3.0")
+    implementation(libs.termux.terminal.emulator)
+    implementation(libs.termux.terminal.view)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
-    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
-    implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
+    implementation(libs.markdown.renderer)
+    implementation(libs.markdown.renderer.m3)
+
+    //noinspection Aligned16KB
+    implementation(libs.pine.core)
+
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.hiddenapibypass)
+    implementation(libs.slf4j.simple)
 
     implementation(projects.common)
     implementation(projects.ideApi)
-    implementation(projects.feature.project)
     implementation(projects.feature.sdkManager)
     implementation(projects.pluginRuntime)
     implementation(projects.util)
     implementation(projects.exec)
 
-    implementation(platform("androidx.compose:compose-bom:2026.09.00"))
+    implementation(platform(libs.compose.bom))
 
-    implementation("androidx.compose.material3:material3:1.5.0-alpha28")
-    implementation("androidx.activity:activity-compose:1.13.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
-    implementation("androidx.compose.material:material-icons-core:1.7.8")
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
-    implementation("androidx.compose.material3.adaptive:adaptive-navigation:1.3.0")
-    implementation("androidx.navigation3:navigation3-runtime:1.2.0-rc01")
-    implementation("androidx.navigation3:navigation3-ui:1.2.0-rc01")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.11.0")
+    implementation(libs.compose.material3)
+    implementation(libs.compose.activity)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.compose.material.icons.core)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.adaptive.navigation)
+    implementation(libs.navigation3.runtime)
+    implementation(libs.navigation3.ui)
+    implementation(libs.lifecycle.viewmodel.navigation3)
 
-    implementation("me.saket.cascade:cascade-compose:2.3.0")
+    implementation(libs.cascade.compose)
 
-    implementation("io.ktor:ktor-client-core:3.5.2")
-    implementation("io.ktor:ktor-client-content-negotiation:3.5.2")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.2")
-    implementation("io.ktor:ktor-client-cio:3.5.2")
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.cio)
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 }

@@ -5,9 +5,8 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.plugin.runtime.hook
+package org.cosmicide.plugin.api.hook
 
-import org.cosmicide.plugin.runtime.loading.SharedPluginClassLoader
 import top.canyie.pine.Pine
 
 open class Hook(
@@ -20,12 +19,12 @@ open class Hook(
         methodName: String,
         vararg args: Class<*>,
         clazz: String,
-        useSharedPluginClassLoader: Boolean = false
+        classLoader: ClassLoader? = null
     ) : this(
         method = methodName,
         argTypes = args,
-        type = if (useSharedPluginClassLoader) {
-            SharedPluginClassLoader.loader.loadClass(clazz)
+        type = if (classLoader != null) {
+            classLoader.loadClass(clazz)
         } else {
             Class.forName(clazz)
         }

@@ -2,22 +2,25 @@
 
 ## Purpose
 
-Cosmic IDE uses typed extension points to let built-in features and third-party plugins contribute
-behavior without depending on app implementation classes. The architecture separates contracts,
+Cosmic IDE uses typed extension points for built-in features and third-party plugins to contribute
+behavior without relying on app implementation classes. The architecture separates contracts,
 runtime loading, application integration, and user configuration so each part can evolve without
 turning the plugin API into a collection of hooks.
 
-The first supported extension surfaces are:
+The supported extension surfaces are:
 
-- editor language providers;
-- Language Server Protocol (LSP) server providers;
-- editor formatter providers;
-- editor theme providers;
-- editor preview providers;
-- project creation providers;
-- project action providers.
+- editor language providers (`LspServerProvider`, `EditorLanguageProvider`);
+- editor formatter providers (`EditorFormatterProvider`);
+- editor theme providers (`EditorThemeProvider`);
+- editor preview providers (`EditorPreviewProvider`);
+- editor action providers (`EditorActionProvider`);
+- plugin screen providers (`PluginScreenProvider`);
+- settings UI providers (`SettingsUiProvider`);
+- project creation providers (`ProjectCreationProvider`);
+- project action providers (`ProjectActionProvider`);
+- project command providers (`ProjectCommandProvider`).
 
-Built-in providers use exactly the same registry and resolution rules as plugin contributions.
+Built-in providers use the same registry and resolution rules as plugin contributions.
 
 ## Module boundaries
 
@@ -49,14 +52,13 @@ This module defines IDE-facing extension contracts. It currently owns:
 - `ProjectExtensionPoints`, the canonical project contribution identifiers.
 
 An LSP plugin should normally use `LspServerProvider`. Direct `EditorLanguageProvider`
-implementations are intended for integrations that cannot be represented by the LSP adapter.
+implementations are for integrations that cannot be represented by the LSP adapter.
 
 ### `:plugin-runtime`
 
 The Android runtime owns discovery, manifest parsing, class loading, activation, unload, and
-cleanup.
-It also owns low-level runtime hooks. Hooks are an implementation mechanism, not a public extension
-model, and should not be used where a typed extension point can express the same behavior.
+cleanup. It also owns low-level runtime hooks. Hooks are an implementation mechanism, not a public
+extension model, and should not be used where a typed extension point can express the same behavior.
 
 ### `:app`
 
@@ -150,9 +152,9 @@ class MyPlugin : CosmicPlugin {
 }
 ```
 
-Always register the returned `Disposable` with `PluginContext`. The runtime also unregisters by
-owner id during unload, but explicit disposal keeps resource ownership clear and handles partial
-activation failures.
+Always register the returned `Disposable` with `PluginContext`. The runtime unregisters by owner id
+during unload, but explicit disposal keeps resource ownership clear and handles partial activation
+failures.
 
 Priority is a selection mechanism, not a load order. A provider should use the lowest priority that
 expresses its precedence:
@@ -180,8 +182,7 @@ file opened
 
 Provider exceptions are logged and treated as a failed attempt, allowing the next matching provider
 to run. `supports` should be fast, deterministic, and free of side effects. Expensive startup
-belongs
-in `configure` or in the connection factory used by an LSP definition.
+belongs in `configure` or in the connection factory used by an LSP definition.
 
 ## LSP architecture
 
@@ -201,9 +202,9 @@ EditorLanguageRequest
   -> server process stdin/stdout
 ```
 
-The session-owned adapter is responsible for editor mutability during connection, initialization
-timeouts, TextMate wrapper selection, capability overrides, configuration dispatch, inlay hints,
-signature help, and optional protocol tracing. Plugins do not depend on Sora's `LspEditor` classes.
+The session-owned adapter manages editor mutability during connection, initialization timeouts,
+TextMate wrapper selection, capability overrides, configuration dispatch, inlay hints, signature
+help, and optional protocol tracing. Plugins do not depend on Sora's `LspEditor` classes.
 
 ### Implementing an LSP provider
 
@@ -247,8 +248,8 @@ adapter keeps the connection alive until its final editor disconnects.
 Server diagnostics must go to stderr. Writing logs to stdout corrupts LSP framing.
 
 `LspServerDefinition` validates non-empty ids, file extensions, display names, and positive
-timeouts.
-Optional initialization settings are deliberately data-oriented so plugins do not need app classes.
+timeouts. Optional initialization settings are deliberately data-oriented so plugins do not need app
+classes.
 
 ## Custom language servers
 
@@ -267,8 +268,7 @@ rust-analyzer
 ```
 
 Starter code runs through `bash -c` with the project root as its working directory. The process
-receives
-Cosmic IDE's toolchain environment and these additional variables:
+receives Cosmic IDE's toolchain environment and these additional variables:
 
 | Variable              | Value                                            |
 |-----------------------|--------------------------------------------------|
@@ -278,7 +278,7 @@ Cosmic IDE's toolchain environment and these additional variables:
 | `APP_FILES_DIR`       | Cosmic's app-private Arch runtime root           |
 
 The server must speak LSP over stdin/stdout and must remain attached to the shell process. For a
-multi-step script, use `exec` for the final server command so closing the editor connection also
+multi-step script, use `exec` for the final server command so closing the editor connection
 terminates the server cleanly:
 
 ```sh
@@ -288,22 +288,21 @@ exec rust-analyzer
 
 Custom entries have their own enabled switch. The Custom language servers provider also has a global
 switch. Both must be enabled for an entry to match. Entries are persisted as JSON in application
-preferences and are read on each routing request, so add, edit, delete, and enable operations do not
+preferences and are read on each routing request. Add, edit, delete, and enable operations do not
 require an app restart.
 
 The custom provider has priority `500`. A custom entry for `java`, for example, takes precedence
-over
-the bundled Java provider while that entry is enabled. Disable the entry to restore bundled routing.
-Only one custom entry can be enabled for a file extension. Saving or enabling another entry with an
-overlapping normalized extension disables its peers. This rule applies to custom entries; the normal
-priority router chooses the single runtime winner among custom, bundled, and plugin providers.
+over the bundled Java provider while that entry is enabled. Disable the entry to restore bundled
+routing. Only one custom entry can be enabled for a file extension. Saving or enabling another entry
+with an overlapping normalized extension disables its peers. This rule applies to custom entries;
+the normal priority router chooses the single runtime winner among custom, bundled, and plugin
+providers.
 
 Linked grammars do not change LSP semantics; they provide TextMate syntax highlighting and editing
 pairs around the LSP-backed editor. HTTPS grammar content is limited to 5 MB, cached by full URL,
 refreshed after seven days, and replaced only after successful parsing. When refresh fails, the last
 valid stale cache is used. `content://` permissions selected through the Android picker are
-retained;
-local sources are read directly on subsequent editor configuration.
+retained; local sources are read directly on subsequent editor configuration.
 
 Starter code is executable user configuration. It has the same filesystem and process permissions as
 Cosmic IDE. Remote plugin repositories must never populate or execute custom starter code without an
@@ -331,9 +330,8 @@ class RustfmtProvider : EditorFormatterProvider {
 ```
 
 The formatter router filters disabled providers, calls matching providers by priority, logs
-failures,
-and uses the first successful result. A result can replace the whole document or a specific
-`TextRange`.
+failures, and uses the first successful result. A result can replace the whole document or a
+specific `TextRange`.
 
 An LSP plugin may also register a formatter provider, but that provider should be a separate class
 and registration. Keeping formatting separate prevents a local formatter from accidentally coupling
@@ -395,12 +393,83 @@ class SolarizedDarkThemeProvider : EditorThemeProvider {
 The editor applies the theme selected in Settings > Editor > Theme; the automatic option keeps the
 bundled darcula/Quiet Light pair. Themes are looked up by their model name, so it must stay stable.
 
+## Editor action providers
+
+Editor action providers contribute custom action items to the editor toolbar options menu. Register
+them at `EditorExtensionPoints.EDITOR_ACTION_PROVIDER`.
+
+```kotlin
+class GitEditorActionProvider : EditorActionProvider {
+    override val id = "org.cosmicide.git.editorAction"
+    override val displayName = "Git"
+    override val description = "Open Git version control screen from the editor"
+
+    override fun actions(project: Project, file: File?): List<EditorAction> {
+        return listOf(
+            EditorAction(
+                id = "git",
+                label = "Git",
+                description = "Open Git version control for ${project.name}",
+                onClick = { /* navigate to Git screen */ }
+            )
+        )
+    }
+}
+```
+
+## Plugin screen providers
+
+Plugin screen providers allow plugins to render entire full-screen Compose UI surfaces (e.g. Git
+Screen). Register them at `UiExtensionPoints.PLUGIN_SCREEN`.
+
+```kotlin
+class GitScreenProvider(
+    private val gitService: GitService
+) : PluginScreenProvider {
+    override val id = "org.cosmicide.git.screen"
+    override val screenId = "git"
+    override val title = "Git"
+    override val displayName = "Git"
+    override val description = "Version control and Git management screen"
+
+    @Composable
+    override fun Content(args: Map<String, String>) {
+        GitScreen(gitService = gitService, args = args)
+    }
+
+    @Composable
+    override fun Content() {
+        GitScreen(gitService = gitService, args = emptyMap())
+    }
+}
+```
+
+## Settings UI providers
+
+Settings UI providers contribute custom settings sections to Settings > Extensions > Plugin
+Settings. Register them at `UiExtensionPoints.SETTINGS_UI`.
+
+```kotlin
+class GitSettingsUiProvider(
+    private val gitService: GitService
+) : SettingsUiProvider {
+    override val id = "org.cosmicide.git.settings"
+    override val label = "Git"
+    override val displayName = "Git Settings"
+    override val description = "Configure Git user identity, safe directories, and defaults"
+
+    @Composable
+    override fun Content() {
+        GitScreen(gitService = gitService, args = mapOf("initial_tab" to "settings"))
+    }
+}
+```
+
 ## Project creation and action providers
 
-Project UI extensions are declarative. `ProjectCreationProvider.fields` and
-`ProjectAction.fields` contain text, password, boolean, or choice `PluginFormField` values. Cosmic
-renders
-the form, validates required values, owns coroutine cancellation, caps visible output, and displays
+Project UI extensions are declarative. `ProjectCreationProvider.fields` and `ProjectAction.fields`
+contain text, password, boolean, or choice `PluginFormField` values. Cosmic renders the form,
+validates required values, owns coroutine cancellation, caps visible output, and displays
 determinate progress when the provider reports a normalized value. Providers receive a string map
 and an `OperationReporter`; they never depend on Compose classes.
 
@@ -428,8 +497,8 @@ returns `ProjectCreationResult` only after usable project content exists. An act
 `actions(project)` should be fast and side-effect free; return an empty list when it does not apply.
 Execution belongs in the suspending `create` or `execute` method.
 
-Finite tools run through `CommandExecutionService`. Pass the executable and arguments separately;
-do not concatenate user values into a shell command. Output callbacks may arrive from a background
+Finite tools run through `CommandExecutionService`. Pass the executable and arguments separately; do
+not concatenate user values into a shell command. Output callbacks may arrive from a background
 thread. Check `CommandResult.exitCode` and treat non-zero exit as failure. Commands use Cosmic's
 selected JDK, glibc runtime, and app-private Arch tool paths.
 
@@ -449,20 +518,20 @@ only a newly created partial clone when clone fails.
 
 `ProjectCommandProvider` is the editor-facing command surface. Its `commands(project)` method is
 side-effect free and returns a tree of `ProjectCommand` values for matching projects. A leaf
-provides shell command text and can be classified as sync, build, run, or other. A branch leaves
-the command text blank and provides `children`, which the editor renders as a nested submenu.
-The editor gives a contributed run command precedence over the Gradle `run` fallback and opens all
-contributed commands in bottom PTY tabs. Command text is intentionally shell code and is passed as
-an exact argument to `bash -lc`; providers must never place untrusted values into it.
+provides shell command text and can be classified as sync, build, run, or other. A branch leaves the
+command text blank and provides `children`, which the editor renders as a nested submenu. The editor
+gives a contributed run command precedence over the Gradle `run` fallback and opens all contributed
+commands in bottom PTY tabs. Command text is intentionally shell code and is passed as an exact
+argument to `bash -lc`; providers must never place untrusted values into it.
 
 The fixed Sync tab has an additional ownership rule: `gradlew` takes precedence for Gradle sync. If
 the wrapper is absent, the first enabled `SYNC` command replaces Gradle in that tab. In both cases,
 sync is executed as a command in a PTY terminal.
 
 The bundled `CustomProjectTypePlugin` is a user-configurable implementation. It contributes one
-dynamic project creator plus a command provider backed by application preferences. Configuration
-can associate existing projects through relative marker paths, while created projects persist the
-type id in `.cosmic/project-type`.
+dynamic project creator plus a command provider backed by application preferences. Configuration can
+associate existing projects through relative marker paths, while created projects persist the type
+id in `.cosmic/project-type`.
 
 Installed language plugins should also register `ProjectExtensionPoints.TYPE_PROVIDER`.
 `ProjectTypeProvider.supports` recognizes a project root, while `languageName` and `fileExtension`
@@ -489,9 +558,9 @@ Manifest `enabledByDefault` controls initial plugin activation. It is separate f
 `ConfigurableExtension.enabledByDefault`, which controls an individual contribution after the plugin
 has activated.
 
-Plugin activation is atomic with respect to owned registrations. If activation fails, the runtime
-disposes collected resources and unregisters the owner. Unload calls `deactivate`, disposes plugin
-resources, and unregisters all contributions owned by the plugin id.
+Plugin activation is atomic regarding owned registrations. If activation fails, the runtime disposes
+collected resources and unregisters the owner. Unload calls `deactivate`, disposes plugin resources,
+and unregisters all contributions owned by the plugin id.
 
 ## Plugin repository and installation
 
@@ -510,19 +579,18 @@ array or an object containing a `plugins` array. Every installable entry must de
 }
 ```
 
-`description` is plain text for marketplace cards, while `detailedDescription` supports Markdown
-in the full-screen details sheet. Older indexes using `shortDescription`, or only `description`,
-remain compatible. `author` and the HTTPS `source` link are optional display metadata. The
-downloaded ZIP is capped at 25 MB and its SHA-256 must match before extraction. Extraction rejects
-traversal paths, more than 256 entries, and more than 50 MB of expanded data. The package is staged
-under the plugin root, its manifest id/version and loadable artifact are verified, and its APK, DEX,
-or JAR artifacts are made read-only before Android's dynamic class loader sees them. Only then is it
-swapped into place. An update preserves the previous directory and restores/reactivates it if the
-new plugin fails.
+`description` is plain text for marketplace cards. `detailedDescription` supports Markdown in the
+full details sheet. Older indexes using `shortDescription`, or only `description`, remain
+compatible. `author` and the HTTPS `source` link are optional metadata. The downloaded ZIP is capped
+at 25 MB and its SHA-256 must match before extraction. Extraction rejects traversal paths, more than
+256 entries, and more than 50 MB of expanded data. The package is staged under the plugin root, its
+manifest and loadable artifact are verified, and its APK, DEX, or JAR artifacts are made read-only
+before Android's dynamic class loader sees them. Only then is it swapped into place. An update
+preserves the previous directory and restores/reactivates it if the new plugin fails.
 
 Plugins declare environment setup commands on their main `CosmicPlugin` implementation through
 `setupActions`. These actions belong to the plugin lifecycle, not to project creation or project
-actions. Cosmic never runs them in the background: after a fresh install it shows the exact
+actions. Cosmic never runs them in the background. After a fresh install, it shows the exact
 commands and requires a choice before opening an interactive terminal. The marketplace retains a
 manual **Run setup** action in the plugin details sheet.
 
@@ -532,11 +600,9 @@ manual **Run setup** action in the plugin details sheet.
 - A checksum, extraction, manifest, or activation failure does not replace a working installed
   plugin.
 - A provider throwing from `supports`, `configure`, or `format` is logged; routing continues where
-  the
-  caller can safely try another provider.
+  the caller can safely try another provider.
 - An LSP process that cannot start causes connection failure and leaves the editor adapter
-  responsible
-  for reporting and recovery.
+  responsible for reporting and recovery.
 - Malformed custom LSP JSON is ignored and logged instead of crashing settings or editor startup.
 - Invalid custom names, file extensions, and empty starter code are rejected before persistence.
 - Disabling a provider affects future requests. It does not kill existing process connections.
@@ -567,7 +633,7 @@ Extension tests should cover:
 - malformed custom configuration persistence;
 - custom LSP precedence over bundled providers.
 
-The app compilation task used for integration verification is:
+The app compilation task for integration verification is:
 
 ```sh
 ./gradlew :app:compileDevDebugKotlin
@@ -581,8 +647,7 @@ permission model. Those costs are not justified until the typed in-process API s
 
 Typed extension points were chosen over arbitrary method hooks. Hooks remain in `:plugin-runtime`
 for app-owned compatibility work, but are not a supported plugin contract because they couple
-plugins
-to implementation details and cannot provide reliable compatibility or cleanup.
+plugins to implementation details and cannot provide reliable compatibility or cleanup.
 
 Enablement is a resolution policy instead of registry mutation. This preserves plugin ownership,
 makes settings reversible, avoids reactivation for a single contribution, and keeps registry

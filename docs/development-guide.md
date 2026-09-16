@@ -30,13 +30,13 @@ Native/runtime regeneration additionally needs:
 
 - Zig for the aarch64 glibc preload library;
 - `tar` and `zstd`;
-- `jq` when downloading/rebuilding the glibc package tree;
+- `jq` to download or rebuild the glibc package tree;
 - `curl` or `wget`;
 - Android NDK 30 and CMake 4.1.2 for the `:exec` native build.
 
 `gradle.properties` disables Java installation auto-detection and auto-download. Ensure the Gradle
-launcher itself uses the intended JDK and provide explicit installation paths if a task requests a
-Gradle Java toolchain.
+launcher uses the intended JDK and provide explicit installation paths if a task requests a Gradle
+Java toolchain.
 
 ## Checkout and first build
 
@@ -53,32 +53,34 @@ For a faster source check:
 ./gradlew :app:compileProdDebugKotlin
 ```
 
-The output APKs are written below `app/build/outputs/apk/prod/debug`. ABI splitting is enabled and a
-universal artifact may also be produced by the Android plugin.
+The output APKs are written below `app/build/outputs/apk/prod/debug`. ABI splitting is enabled, and
+the Android plugin may also produce a universal artifact.
 
-The `dev` and `prod` product flavors select different analytics implementations in `:common`.
-At the time of writing, the dev implementation imports Firebase Analytics while its dependency is
-commented out in `common/build.gradle.kts`; `compileDevDebugKotlin` therefore requires restoring the
-matching dependency/configuration. The prod flavor builds without that Firebase dependency.
+The `dev` and `prod` product flavors select different analytics implementations in `:common`. The
+dev implementation imports Firebase Analytics, but its dependency is currently commented out in
+`common/build.gradle.kts`. Running `compileDevDebugKotlin` requires restoring the matching
+dependency and configuration. The prod flavor builds without that Firebase dependency.
 
 ## Module map
 
-| Module                     | Type            | Responsibility                                                   |
-|----------------------------|-----------------|------------------------------------------------------------------|
-| `:app`                     | Android app     | Compose UI, navigation, editor, built-in providers, setup        |
-| `:common`                  | Android library | Shared preferences, analytics flavor boundary, editor data types |
-| `:util`                    | Android library | Persistent data roots and archive/filesystem helpers             |
-| `:exec`                    | Android/native  | glibc command runner, plain process facade, PTY JNI transport    |
-| `:feature:project`         | JVM library     | Serializable project and language model                          |
-| `:feature:sdk-manager`     | JVM library     | Foojay JDK metadata/download client                              |
-| `:feature:code-navigation` | Android library | Compiler-backed code-navigation support                          |
-| `:plugin-api`              | JVM library     | Plugin descriptors, lifecycle, registries, services              |
-| `:plugin-runtime`          | Android library | Plugin discovery, dex loading, activation, and cleanup           |
-| `:ide-api`                 | Android library | Editor-language, LSP, and formatter extension contracts          |
+| Module                 | Type            | Responsibility                                                   |
+|------------------------|-----------------|------------------------------------------------------------------|
+| `:app`                 | Android app     | Compose UI, navigation, editor, built-in providers, setup        |
+| `:common`              | Android library | Shared preferences, analytics flavor boundary, editor data types |
+| `:util`                | Android library | Persistent data roots and archive/filesystem helpers             |
+| `:exec`                | Android/native  | glibc command runner, plain process facade, PTY JNI transport    |
+| `:feature:project`     | JVM library     | Serializable project and language model                          |
+| `:feature:sdk-manager` | JVM library     | Foojay JDK metadata/download client                              |
+| `:plugin-api`          | JVM library     | Plugin descriptors, lifecycle, registries, services              |
+| `:plugin-runtime`      | Android library | Plugin discovery, dex loading, activation, and cleanup           |
+| `:ide-api`             | Android library | Editor-language, LSP, and formatter extension contracts          |
 
 Dependencies exposed to plugin authors belong in `:plugin-api` or `:ide-api`. Application and Sora
-implementation types should remain in `:app`. External Linux tools must be launched through
-`:exec`, never a bare `ProcessBuilder` in feature code.
+implementation types stay in `:app`. Launch external Linux tools through `:exec`, never a bare
+`ProcessBuilder` in feature code.
+
+`:app` is being reduced to the application composition root. Target dependency rules and the
+extraction sequence are tracked in [App module refactoring](app-module-refactoring.md).
 
 ## Useful Gradle commands
 
@@ -92,9 +94,8 @@ implementation types should remain in `:app`. External Linux tools must be launc
 # Run every host-testable production variant
 ./gradlew :app:testProdDebugUnitTest :common:testProdDebugUnitTest \
   :exec:testProdDebugUnitTest :ide-api:testProdDebugUnitTest \
-  :plugin-runtime:testDebugUnitTest :util:testDebugUnitTest \
-  :plugin-api:test :feature:project:test :feature:sdk-manager:test \
-  :feature:code-navigation:testDebugUnitTest
+  :plugin-runtime:testProdDebugUnitTest :util:testDebugUnitTest \
+  :plugin-api:test :feature:project:test :feature:sdk-manager:test
 
 # Run app production unit tests only
 ./gradlew :app:testProdDebugUnitTest
@@ -104,15 +105,15 @@ implementation types should remain in `:app`. External Linux tools must be launc
 ```
 
 The CI Android workflow currently requests `assembleDevDebug`, builds the glibc asset first, and
-uploads ABI-specific plus universal APKs. Keep workflow flavor assumptions synchronized with the
+uploads ABI-specific and universal APKs. Keep workflow flavor assumptions synchronized with the
 analytics dependencies.
 
 ## Generated and packaged artifacts
 
 ### glibc runtime
 
-The full runtime build downloads/extracts packages, builds the preload shim, records safe symlinks,
-and creates `app/src/main/assets/glibc.tar.zst`:
+The full runtime build downloads and extracts packages, builds the preload shim, records safe
+symlinks, and creates `app/src/main/assets/glibc.tar.zst`:
 
 ```sh
 ./scripts/build-glibc.sh
@@ -124,9 +125,9 @@ To rebuild the archive and shim using an existing `./glibc` tree:
 ./scripts/build-glibc.sh --reuse-glibc
 ```
 
-This flow requires network access unless the package tree and cache are already populated. Review
-[glibc runtime and compatibility shims](glibc-runtime-and-shims.md) before changing package layout,
-loader paths, redirects, or symlink handling.
+This flow requires network access unless the package tree and cache are already populated.
+Review [glibc runtime and compatibility shims](glibc-runtime-and-shims.md) before changing package
+layout, loader paths, redirects, or symlink handling.
 
 ### Preload shim only
 
@@ -138,17 +139,17 @@ With Zig installed:
 
 This compiles the redirect, DNS, exec, fake-root, and syscall-compatibility sources into
 `app/src/main/jniLibs/arm64-v8a/libpath_redirect.so`. Rebuilding only the `.so` does not update the
-copy inside an existing glibc archive if that archive also carries it; verify both packaging paths.
+copy inside an existing glibc archive. Verify both packaging paths.
 
 ### PTY native library
 
-The `:exec` module builds JNI code through its configured CMake and NDK versions. Android Gradle
-tasks invoke CMake as needed. Test process launch, interactive input, Ctrl+C, resize, termination,
+The `:exec` module builds JNI code using its configured CMake and NDK versions. Android Gradle tasks
+invoke CMake as needed. Test process launch, interactive input, Ctrl+C, resize, termination,
 reaping, and repeated open/close after native changes.
 
 ## Source layout and ownership
 
-Important application entry points are:
+Important application entry points:
 
 | Source area                                         | Ownership                                      |
 |-----------------------------------------------------|------------------------------------------------|
@@ -160,8 +161,8 @@ Important application entry points are:
 | `editor/language`, `editor/lsp`, `editor/formatter` | built-in extension implementations             |
 | `plugin/` and `plugin-runtime/`                     | extension host and installed-plugin runtime    |
 
-When working in a dirty checkout, preserve unrelated modifications. Many runtime artifacts are
-large or generated; verify whether they are intentionally tracked before replacing them.
+When working in a dirty checkout, preserve unrelated modifications. Many runtime artifacts are large
+or generated. Verify whether they are intentionally tracked before replacing them.
 
 ## Testing strategy
 
@@ -180,8 +181,8 @@ Run verification in proportion to the changed boundary:
 | Runtime/shims              | packaged APK on arm64 hardware, subprocess descendants, DNS                         |
 
 Android local unit tests cannot prove glibc, loader, PTY, or DocumentsProvider behavior. Those need
-an emulator/device where applicable, and glibc/aarch64 behavior ultimately needs compatible arm64
-hardware or virtualization.
+an emulator/device. Ultimately, glibc/aarch64 behavior needs compatible arm64 hardware or
+virtualization.
 
 ### Current automated coverage
 
@@ -197,15 +198,15 @@ Tests live with the module that owns the behavior:
 | `:feature:sdk-manager` | Foojay platform aliases, request parameters, response filtering/mapping, failures, downloads, and progress contract using a mock HTTP engine                                                                                                                                |
 | `:ide-api`             | Validation and semantics of plugin forms, commands, progress, actions, and LSP definitions                                                                                                                                                                                  |
 
-`:feature:code-navigation` remains an integration boundary around Kotlin/Java compiler PSI. Its
-meaningful tests require a compiler analysis environment and representative parsed source; testing
+`:feature:code-navigation` remains an integration boundary around Kotlin/Java compiler PSI.
+Meaningful tests require a compiler analysis environment and representative parsed source; testing
 only its navigation data classes would mirror constructors without protecting behavior. `:common`
 editor widgets and `:plugin-runtime` dex/hook adapters similarly require Android/Sora or runtime
 integration tests beyond the host suites above.
 
 ## Documentation and compatibility
 
-Update documentation in the same change when modifying:
+Update documentation when modifying:
 
 - a visible workflow or settings category;
 - storage or Android permission behavior;
@@ -216,7 +217,7 @@ Update documentation in the same change when modifying:
 
 Public plugin contracts require stable ids and data-oriented types. If an incompatible API change is
 necessary, document the migration in [Plugin architecture](plugin-architecture.md) and update sample
-code. Keep README claims limited to behavior present on the documented branch.
+code. Limit README claims to behavior present on the documented branch.
 
 ## Pull requests
 

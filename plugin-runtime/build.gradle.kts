@@ -12,13 +12,13 @@ plugins {
 android {
     namespace = "org.cosmicide.plugin.runtime"
     compileSdk {
-        version = release(37) {
-            minorApiLevel = 2
+        version = release(libs.versions.compileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.compileSdkMinor.get().toInt()
         }
     }
 
     defaultConfig {
-        minSdk = 26
+        minSdk = libs.versions.minSdk.get().toInt()
     }
 
     buildTypes {
@@ -48,7 +48,7 @@ android {
 dependencies {
     api(projects.pluginApi)
     compileOnly(projects.ideApi)
-    implementation("top.canyie.pine:core:0.3.0")
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.json:json:20260814")
+    implementation(libs.pine.core)
+    testImplementation(libs.junit)
+    testImplementation(libs.json)
 }

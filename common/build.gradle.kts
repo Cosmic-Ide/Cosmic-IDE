@@ -12,13 +12,13 @@ plugins {
 android {
     namespace = "org.cosmicide.common"
     compileSdk {
-        version = release(37) {
-            minorApiLevel = 2
+        version = release(libs.versions.compileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.compileSdkMinor.get().toInt()
         }
     }
 
     defaultConfig {
-        minSdk = 26
+        minSdk = libs.versions.minSdk.get().toInt()
     }
 
     buildTypes {
@@ -49,7 +49,7 @@ dependencies {
 //    "prodImplementation"("io.appwrite:sdk-for-android:25.0.0")
 //    "devImplementation"("com.google.firebase:firebase-analytics-ktx:22.5.0")
 
-    api("io.github.rosemoe:editor:0.24.6")
-    api("io.github.rosemoe:language-textmate:0.24.6")
-    testImplementation("junit:junit:4.13.2")
+    api(libs.rosemoe.editor)
+    api(libs.rosemoe.language.textmate)
+    testImplementation(libs.junit)
 }

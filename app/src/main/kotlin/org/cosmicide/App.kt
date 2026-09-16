@@ -32,8 +32,8 @@ import org.cosmicide.common.MemoryUtils
 import org.cosmicide.common.Prefs
 import org.cosmicide.editor.lsp.handleLspShowDocument
 import org.cosmicide.plugin.CosmicPluginHost
-import org.cosmicide.plugin.runtime.hook.Hook
-import org.cosmicide.plugin.runtime.hook.HookManager
+import org.cosmicide.plugin.api.hook.Hook
+import org.cosmicide.plugin.api.hook.HookManager
 import org.cosmicide.util.FileUtil
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams
 import org.eclipse.lsp4j.ClientCapabilities

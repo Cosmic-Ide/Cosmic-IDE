@@ -16,25 +16,24 @@ subprocesses.
 
 ## Module boundaries
 
-| Module                     | Owns                                                                                         |
-|----------------------------|----------------------------------------------------------------------------------------------|
-| `:app`                     | Compose UI, editor composition, built-in extensions, toolchain setup, and the Gradle client. |
-| `:exec`                    | The only supported way to launch GNU/Linux tools, with plain-process and PTY transports.     |
-| `:plugin-api`              | Stable plugin lifecycle, registry, service, and descriptor contracts.                        |
-| `:ide-api`                 | Editor, formatter, and LSP extension contracts.                                              |
-| `:plugin-runtime`          | Android plugin discovery, dex loading, activation, and cleanup.                              |
-| `:feature:project`         | Serializable project/language model and templates.                                           |
-| `:feature:sdk-manager`     | JDK artifact discovery and download metadata.                                                |
-| `:feature:code-navigation` | Compiler-backed code-navigation support.                                                     |
-| `:common`, `:util`         | Shared preferences/data types and low-level filesystem/archive helpers.                      |
+| Module                 | Owns                                                                                          |
+|------------------------|-----------------------------------------------------------------------------------------------|
+| `:app`                 | Material 3 Expressive Compose UI, editor, built-in extensions, toolchain setup, Gradle client |
+| `:exec`                | The only supported way to launch GNU/Linux tools, with plain-process and PTY transports       |
+| `:plugin-api`          | Stable plugin lifecycle, registry, service, and descriptor contracts                          |
+| `:ide-api`             | Editor, theme, preview, action, plugin screen, settings UI, formatter, and LSP contracts      |
+| `:plugin-runtime`      | Android plugin discovery, dex loading, activation, and cleanup                                |
+| `:feature:project`     | Serializable project/language model and templates                                             |
+| `:feature:sdk-manager` | JDK artifact discovery and download metadata                                                  |
+| `:common`, `:util`     | Shared preferences/data types and low-level filesystem/archive helpers                        |
 
-Plugin-facing code must depend on `:plugin-api` and `:ide-api`, not `:app` or
-`:plugin-runtime`. External-process callers must use `:exec`; direct `ProcessBuilder` calls omit the
-glibc compatibility environment.
+Plugin-facing code must depend on `:plugin-api` and `:ide-api`, not `:app` or `:plugin-runtime`.
+External-process callers must use `:exec`; direct `ProcessBuilder` calls omit the glibc
+compatibility environment.
 
 `:app` is being reduced to the application composition root through buildable, behavior-preserving
-steps. The target dependency rules and extraction sequence are tracked in
-[App module refactoring](app-module-refactoring.md).
+steps. The target dependency rules and extraction sequence are tracked
+in [App module refactoring](app-module-refactoring.md).
 
 ## Startup
 
@@ -56,19 +55,19 @@ Leaving all project-related screens cleans up project-scoped resources.
 
 ## Storage ownership
 
-| Location                                         | Contents                                                                                                             |
-|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `files/glibc`                                    | Deployed glibc runtime and its home directory.                                                                       |
-| `files/jdks`                                     | Installed JDK distributions.                                                                                         |
-| `files/kotlin-lsp`, `files/jdtls`, `files/scala` | Language-server installations.                                                                                       |
-| `files/Android/sdk`                              | Optional Android SDK.                                                                                                |
-| `cacheDir`                                       | Resolver files, language-server workspaces, downloads, Java temp files, and validated HTTPS TextMate grammar copies. |
-| app-specific external files                      | User projects, plugins, and persistent IDE data managed by `FileUtil`.                                               |
+| Location                                         | Contents                                                                                                            |
+|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| `files/glibc`                                    | Deployed glibc runtime and its home directory                                                                       |
+| `files/jdks`                                     | Installed JDK distributions                                                                                         |
+| `files/kotlin-lsp`, `files/jdtls`, `files/scala` | Language-server installations                                                                                       |
+| `files/Android/sdk`                              | Optional Android SDK                                                                                                |
+| `cacheDir`                                       | Resolver files, language-server workspaces, downloads, Java temp files, and validated HTTPS TextMate grammar copies |
+| app-specific external files                      | User projects, plugins, and persistent IDE data managed by `FileUtil`                                               |
 
 ## Main ownership rules
 
-- `EditorViewModel` owns open documents and saves; editor providers own language configuration;
-  LSP providers own server creation.
+- `EditorViewModel` owns open documents and saves; editor providers own language configuration; LSP
+  providers own server creation.
 - `CosmicPluginHost` owns the extension registry; registrations are owned and removed by plugin id.
 - `LinuxProcessRunner` owns the glibc environment and command wrapping for every external tool.
 - Project screens request command contributions and cleanup through `ProjectSessionServices`.
@@ -81,10 +80,10 @@ Leaving all project-related screens cleans up project-scoped resources.
 The sources alone do not determine runtime behavior. Changes must regenerate the relevant packaged
 artifact:
 
-| Artifact                                | Producer                                  |
-|-----------------------------------------|-------------------------------------------|
-| `assets/glibc.tar.zst`                  | `scripts/build-glibc.sh`                  |
-| `jniLibs/arm64-v8a/libpath_redirect.so` | `scripts/build-shims.sh`                  |
+| Artifact                                | Producer                 |
+|-----------------------------------------|--------------------------|
+| `assets/glibc.tar.zst`                  | `scripts/build-glibc.sh` |
+| `jniLibs/arm64-v8a/libpath_redirect.so` | `scripts/build-shims.sh` |
 
 ## Detailed references
 

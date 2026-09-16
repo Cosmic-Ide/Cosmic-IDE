@@ -5,7 +5,7 @@
  * You should have received a copy of the GNU General Public License along with Cosmic IDE. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.plugin.runtime.hook
+package org.cosmicide.plugin.api.hook
 
 import android.content.Context
 import top.canyie.pine.Pine

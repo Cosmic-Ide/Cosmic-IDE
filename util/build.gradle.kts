@@ -11,13 +11,13 @@ plugins {
 android {
     namespace = "org.cosmicide.rewrite.util"
     compileSdk {
-        version = release(37) {
-            minorApiLevel = 2
+        version = release(libs.versions.compileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.compileSdkMinor.get().toInt()
         }
     }
 
     defaultConfig {
-        minSdk = 26
+        minSdk = libs.versions.minSdk.get().toInt()
     }
 
     buildTypes {
@@ -33,6 +33,6 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.19.0")
-    testImplementation("junit:junit:4.13.2")
+    implementation(libs.core.ktx)
+    testImplementation(libs.junit)
 }

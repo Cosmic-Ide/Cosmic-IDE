@@ -36,8 +36,8 @@ Creation receives:
 | `COSMIC_PROJECT_TYPE` | Configured type name           |
 
 After success, Cosmic writes `.cosmic/project-type` containing the stable configuration id. A
-non-zero exit or cancellation removes only the newly created partial directory. Existing targets
-are rejected before execution.
+non-zero exit or cancellation removes only the newly created partial directory. Existing targets are
+rejected before execution.
 
 ## Matching existing projects
 
@@ -59,9 +59,8 @@ command is used by the toolbar Run button.
 Project commands appear in the editor's **Project Commands** submenu. Providers can group them into
 further nested submenus with `ProjectCommand.children`. Each leaf launch creates a resizable bottom
 PTY tab with status, rerun, close, normal terminal colors, interactive input, and Ctrl+C support.
-**Execution > Terminal** creates an interactive `bash -i` tab in the same panel.
-The PTY runner supplies login startup as well, so `.bash_profile` bridges to `.profile` and
-`.bashrc`.
+**Execution > Terminal** creates an interactive `bash -i` tab in the same panel. The PTY runner
+supplies login startup as well, so `.bash_profile` bridges to `.profile` and `.bashrc`.
 
 When `gradlew` exists, the fixed **Sync** tab remains owned by Gradle model synchronization. When it
 does not exist and a matching project type supplies Sync code, the fixed tab instead runs that code

@@ -4,44 +4,45 @@
 
 Settings is opened from the Projects screen. The current category list is:
 
-| Category    | Current destination                                                              |
+| Category    | Destination                                                                      |
 |-------------|----------------------------------------------------------------------------------|
 | Code editor | Editor appearance and interaction controls                                       |
 | Compiler    | Active installed JDK selector                                                    |
 | Extensions  | Provider switches, custom LSP/project entries, installed plugins, repository URL |
-| Terminal    | Interactive terminal session, not a preference form                              |
+| Terminal    | Interactive terminal session                                                     |
 | Toolchains  | Foojay distribution/version browser and JDK install/uninstall queue              |
 | About       | Version, setup, source, storage permission, donation, analytics                  |
 
-Changes are stored in the app's default named `SharedPreferences` unless noted otherwise. Most
-changes affect newly configured editors or future process launches; an existing LSP session is not
-forcibly restarted when its provider switch changes.
+Changes use the app's default `SharedPreferences` unless noted otherwise. Most apply to newly
+configured editors or future process launches. Existing LSP sessions do not forcibly restart when
+their provider switch changes.
 
 ## Code editor
 
-| Control                      | Intended effect                                         |
-|------------------------------|---------------------------------------------------------|
-| Font size                    | Sora editor text size                                   |
-| Tab size                     | Visual tab width                                        |
-| JDT LS                       | Historical/experimental Java language-server preference |
-| Editor font                  | Font file selected through Android's document picker    |
-| Sticky scroll                | Keep structural context visible at the top              |
-| Use spaces instead of tabs   | Indentation behavior                                    |
-| Font ligatures               | Typeface ligature rendering                             |
-| Word wrap                    | Wrap long visual lines                                  |
-| Bracket pair auto-completion | Insert matching bracket/quote pairs                     |
-| Scrollbar                    | Show editor scrollbars                                  |
-| Fast delete blank lines      | Sora fast-delete behavior                               |
-| Hardware acceleration        | Allow accelerated editor drawing                        |
-| Non-printable characters     | Paint whitespace/control markers                        |
-| Line numbers                 | Show the line-number gutter                             |
+| Control                      | Intended effect                                      |
+|------------------------------|------------------------------------------------------|
+| Editor theme                 | Select syntax theme (Auto, Darcula, Solarized, etc.) |
+| Font size                    | Sora editor text size                                |
+| Tab size                     | Visual tab width                                     |
+| Minimap                      | Show editor code minimap preview                     |
+| Editor font                  | Font file selected through Android's document picker |
+| Sticky scroll                | Keep structural context visible at the top           |
+| Use spaces instead of tabs   | Indentation behavior                                 |
+| Font ligatures               | Typeface ligature rendering                          |
+| Word wrap                    | Wrap long visual lines                               |
+| Bracket pair auto-completion | Insert matching bracket/quote pairs                  |
+| Scrollbar                    | Show editor scrollbars                               |
+| Quick delete                 | Sora quick delete behavior                           |
+| Hardware acceleration        | Allow accelerated editor drawing                     |
+| Non-printable characters     | Paint whitespace/control markers                     |
+| Line numbers                 | Show the line-number gutter                          |
 
-Provider selection is controlled under Extensions. In particular, disabling or enabling the Java
-language-server provider there is the authoritative routing operation; the separate JDT LS toggle
-is currently stored but is not consulted by the provider router.
+Provider selection is controlled under Extensions. Specifically, disabling or enabling the Java
+language-server provider there is the authoritative routing operation. A separate JDT LS toggle is
+stored but not consulted by the provider router.
 
-Legacy editor preference aliases and numeric value types are migrated to the canonical schema when
-preferences initialize. Editor changes apply the next time a file editor is configured.
+Legacy editor preferences migrate to the canonical schema on initialization. Editor changes apply
+the next time a file editor is configured.
 
 ## Compiler
 
@@ -54,10 +55,10 @@ uninstalling the selected JDK while a build, terminal, or language server is run
 
 ## Extensions
 
-The Extensions screen is divided into four tabs so unrelated configuration does not share one
-long settings page:
+The Extensions screen is divided into four tabs so unrelated configuration does not share one long
+page:
 
-- **Providers** enables or disables registered editor and project extension providers.
+- **Providers** toggles registered editor and project extension providers.
 - **Languages** manages custom language servers and linked TextMate grammars.
 - **Projects** manages user-defined project types and their commands.
 - **Plugins** lists installed plugins and configures the plugin index repository.
@@ -65,13 +66,12 @@ long settings page:
 ### Extension providers
 
 Configurable contributions are grouped as editor languages, language servers, formatters, project
-creation, project actions, and project commands.
-Switching one contribution persists `extension_enabled.<extension-id>`. A missing value uses that
-extension's `enabledByDefault` value.
+creation, project actions, and project commands. Switching one contribution persists
+`extension_enabled.<extension-id>`. A missing value uses that extension's `enabledByDefault` value.
 
-The switch filters future routing requests. It does not unload the owning plugin or stop an already
-running process immediately. Core routing and plain-text fallback providers that declare
-`canDisable = false` do not appear here.
+The switch filters future routing requests. It does not unload the plugin or stop an already running
+process. Core routing and plain-text fallback providers that declare `canDisable = false` do not
+appear here.
 
 ### Custom language servers
 
@@ -86,21 +86,20 @@ The editor accepts:
 - an optional HTTP(S), `content://`, or `file://` grammar link, or an absolute path.
 
 The file picker retains read access to the selected Android document URI. Only one custom entry is
-active per extension; enabling or saving another entry for that normalized extension disables the
+active per extension. Enabling or saving another entry for that normalized extension disables the
 others. Disabling the sole entry leaves that extension available to lower-priority built-in or
 plugin providers.
 
-HTTPS grammars are limited to 5 MB, cached by full URL after successful parsing, refreshed after
-seven days, and served stale when refresh fails. See
-[User guide: Linked TextMate grammars](user-guide.md#linked-textmate-grammars).
+HTTPS grammars are limited to 5 MB, cached by full URL after parsing, refreshed after seven days,
+and served stale when refresh fails.
+See [User guide: Linked TextMate grammars](user-guide.md#linked-textmate-grammars).
 
 ### Custom project types
 
 Each entry defines a name, zero or more relative marker paths, optional creation/sync/build/run
-shell
-code, and additional commands written as `Label :: shell code`. A type can be disabled, edited, or
-deleted independently. Any configured marker can match an existing project; projects created from a
-type also retain its id in `.cosmic/project-type`.
+shell code, and additional commands written as `Label :: shell code`. You can disable, edit, or
+delete a type independently. Configured markers match existing projects; projects created from a
+type retain its id in `.cosmic/project-type`.
 
 Creation code runs in the new project directory. Build, run, and additional commands appear in the
 editor's Project Commands menu and open in bottom PTY tabs. These fields are trusted executable
@@ -109,17 +108,17 @@ configuration, not escaped literal arguments.
 ### Plugin marketplace
 
 The Plugins tab provides search plus Marketplace and Installed filters. Extension cards use
-user-facing Installed or Update labels instead of exposing internal runtime states. Tapping a card
-opens a full-screen details sheet with Markdown documentation and install, update, setup, or
-uninstall actions.
+user-facing Installed or Update labels instead of exposing internal runtime states. Tap a card to
+open its full details sheet with Markdown documentation and install, update, setup, or uninstall
+actions.
 
 The settings button beside the filters edits the HTTPS plugin-index URL. Saving a repository URL
 refreshes the marketplace immediately.
 
 ## Terminal
 
-Selecting Terminal opens an interactive `bash -i` PTY rooted in app-private files. Its controls are
-session controls rather than persisted settings:
+Selecting Terminal opens an interactive `bash -i` PTY rooted in app-private files. Its controls
+manage the session rather than persisted settings:
 
 - Back leaves the screen and releases its controller;
 - Close terminates the session process;
@@ -130,14 +129,13 @@ The session uses the active JDK and Cosmic toolchain environment.
 
 ## Toolchains
 
-Toolchains queries Foojay for maintained JDK distributions compatible with Linux/aarch64/glibc.
-Select a distribution, mark desired versions, then apply the install/uninstall queue. Installed
-archives live below `files/jdks` and are accepted only when `bin/java` is executable.
+Toolchains queries Foojay for JDK distributions compatible with Linux/aarch64/glibc. Select a
+distribution, mark desired versions, and apply the queue. Installed archives live below `files/jdks`
+and are accepted only when `bin/java` is executable.
 
-Installing a JDK does not automatically make it active in every code path. Confirm the selection in
-Compiler after installation. Checksum verification is not currently enforced by the installer; the
-integrity implications are documented in
-[Environment and toolchain bootstrap](environment-and-toolchain-bootstrap.md).
+Installing a JDK does not make it active in every code path. Confirm the selection in Compiler after
+installation. Checksum verification is not currently enforced by the installer. For integrity
+implications, see [Environment and toolchain bootstrap](environment-and-toolchain-bootstrap.md).
 
 ## About
 
@@ -151,13 +149,13 @@ integrity implications are documented in
 | Manage storage permission | Opens Android's all-files-access settings for this app |
 | Analytics                 | Enables or disables analytics collection preference    |
 
-All-files access is broader than Cosmic's normal app-owned project and toolchain directories.
-Grant it only for workflows that need arbitrary shared-storage paths.
+All-files access is broader than Cosmic's normal app-owned project and toolchain directories. Grant
+it only for workflows requiring arbitrary shared-storage paths.
 
 ## Settings ownership for developers
 
 New settings should use one constant in `PreferenceKeys`, one value type, and one default shared by
 the UI and `Prefs`. Document whether a change affects existing sessions or only future routing. For
 extension switches, keep enablement separate from plugin activation. For executable values such as
-custom LSP starter code, preserve explicit user confirmation and never populate them silently from
-a remote source.
+custom LSP starter code, preserve explicit user confirmation and never populate them silently from a
+remote source.

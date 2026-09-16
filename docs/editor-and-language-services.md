@@ -2,9 +2,9 @@
 
 ## Purpose
 
-The editor has one routing layer for built-in and plugin-provided language behavior. The UI does
-not select Java, Kotlin, Scala, or custom servers itself; it asks registered providers to configure
-the current file.
+The editor has one routing layer for built-in and plugin-provided language behavior. The UI does not
+select Java, Kotlin, Scala, or custom servers itself; it asks registered providers to configure the
+current file.
 
 ```text
 file -> EditorLanguageRouter -> EditorLanguageProvider
@@ -15,8 +15,8 @@ file -> EditorLanguageRouter -> EditorLanguageProvider
 format request -> EditorFormatterProvider
 ```
 
-The contracts live in `:ide-api`. Sora and the process implementation remain app details. See
-[Plugin architecture](plugin-architecture.md) for registration and enablement.
+The contracts live in `:ide-api`. Sora and the process implementation remain app details.
+See [Plugin architecture](plugin-architecture.md) for registration and enablement.
 
 ## Routing contracts
 
@@ -26,9 +26,9 @@ The contracts live in `:ide-api`. Sora and the process implementation remain app
 | `LspServerProvider`       | Supplies a data-only server definition and connection factory. This is the normal language integration point. |
 | `EditorFormatterProvider` | Returns replacement text for a document or range. Formatting is independent of language-provider selection.   |
 
-Providers are evaluated by descending priority. A failed provider is logged and skipped; the
-router stops at the first successful provider. The built-in generic LSP provider delegates to the
-first matching LSP server provider, and the final provider installs `EmptyLanguage`.
+Providers are evaluated by descending priority. A failed provider is logged and skipped; the router
+stops at the first successful provider. The built-in generic LSP provider delegates to the first
+matching LSP server provider, and the final provider installs `EmptyLanguage`.
 
 `supports` is called during routing, so it must be fast and side-effect free. Start processes only
 from the connection factory.
@@ -39,14 +39,13 @@ from the connection factory.
 optional bundled TextMate scope or linked TextMate grammar, initialization data, feature switches,
 and timeout. It intentionally does not expose Sora classes.
 
-The connection exposes server stdin, server stdout, startup, close, and liveness. Stderr is not
-part of the LSP stream and must be drained separately by the provider. Anything written to stdout
-other than `Content-Length`-framed LSP messages corrupts the session.
+The connection exposes server stdin, server stdout, startup, close, and liveness. Stderr is not part
+of the LSP stream and must be drained separately by the provider. Anything written to stdout other
+than `Content-Length`-framed LSP messages corrupts the session.
 
 The app adapter owns the `LspProject`/`LspEditor`, attaches the `CodeEditor` for the current
-session, connects on an
-IO coroutine, and sends post-initialization configuration. Incoming-frame tracing can include
-source text and should be enabled only for diagnostics.
+session, connects on an IO coroutine, and sends post-initialization configuration. Incoming-frame
+tracing can include source text and should be enabled only for diagnostics.
 
 ## Built-in servers
 
@@ -56,7 +55,7 @@ source text and should be enabled only for diagnostics.
 | `.kt`                            | `files/kotlin-lsp/bin/intellij-server`  |
 | `.scala`, `.sc`, `.sbt`, `.mill` | `files/scala/bin/metals`                |
 
-All launches use `ProcessExecutor`, so they inherit the canonical glibc/JDK environment described
+All launches use `ProcessExecutor`, inheriting the canonical glibc/JDK environment described
 in [Process execution and terminal](process-execution-and-terminal.md).
 
 The app adapter owns one language-server wrapper per provider and project. Every matching document,
@@ -65,8 +64,8 @@ wrapper. The wrapper starts one process on the first connection, keeps it alive 
 attached, and closes it after the final editor disconnects. Providers must return a fresh connection
 from their factory rather than caching processes themselves.
 
-Each open text tab retains its own `CodeEditor` and LSP document session. Tab switches only exchange
-the visible session; they do not replace its text or disconnect it. This preserves cursor,
+Each open text tab retains its own `CodeEditor` and LSP document session. Tab switches exchange the
+visible session without replacing text or disconnecting the server. This preserves cursor,
 selection, scroll, folding, and undo history while keeping all documents attached to the shared
 server.
 
@@ -80,14 +79,14 @@ bash -c <starter code>
 
 The working directory is the project root, with `COSMIC_PROJECT_ROOT`, `COSMIC_FILE`, and `BASH_ENV`
 set. `BASH_ENV` points to Cosmic's non-interactive Bash environment file. Starter code is executable
-configuration with the app's permissions. It must be reviewed before importing it from a project or
-third party. Use `exec` for the final server command so closing the connection terminates the real
-process rather than only its shell parent.
+configuration with the app's permissions. Review it before importing from a project or third party.
+Use `exec` for the final server command so closing the connection terminates the real process rather
+than its shell parent.
 
-Each entry may also carry one TextMate grammar link. Accepted sources are direct HTTP(S) URLs,
-Android `content://` document URIs, `file://` URIs, and absolute paths. JSON, XML/plist, and YAML
-grammars are detected from their content; the grammar's own `scopeName` is used, so users do not
-enter it separately. The source is limited to 5 MB and is loaded on the IO dispatcher.
+Each entry may also carry one TextMate grammar link. Accepted sources: direct HTTP (S) URLs, Android
+`content://` document URIs, `file://` URIs, and absolute paths. JSON, XML/plist, and YAML grammars
+are detected from content; the grammar's own `scopeName` is used. The source is limited to 5 MB and
+loaded on the IO dispatcher.
 
 HTTPS sources use a URL-keyed cache under `cacheDir/textmate-grammar-cache`. A valid cached grammar
 is reused for seven days. On expiry, the app downloads a candidate and replaces the cache atomically
@@ -95,31 +94,32 @@ only after TextMate accepts it. Network errors or invalid refreshed content fall
 valid stale copy. Changing the link selects a different cache key immediately. Local files and
 document URIs are read directly so edits are visible the next time the language is configured.
 
-The configuration store permits at most one enabled custom server per normalized file extension.
-Enabling or saving an entry disables other custom entries for that extension. Legacy preference
-data containing duplicates is normalized when read. The generic LSP router still selects only the
-highest-priority matching provider across built-in and plugin providers.
+The store permits at most one enabled custom server per normalized file extension. Enabling or
+saving an entry disables other custom entries for that extension. Legacy preference data containing
+duplicates is normalized when read. The generic LSP router still selects only the highest-priority
+matching provider across built-in and plugin providers.
 
 ## Editor session behavior
 
 `EditorViewModel` caches each open document and writes active edits to disk immediately; this is an
 autosave model, not a long-lived dirty buffer model.
 
-Each open tab owns its `EditorTabSession`, which manages its own `CodeEditor` instance and LSP
-document session. This ensures that diagnostics and state are confined to the relevant file.
+Each open tab owns its `EditorTabSession`, which manages its `CodeEditor` instance and LSP document
+session. Diagnostics and state remain confined to the relevant file.
 
 Bundled TextMate language metadata comes from `assets/textmate/languages.json`. A server may request
 a packaged grammar scope or provide a linked grammar. If neither is present, or a linked grammar
-cannot be loaded and has no valid cache, its wrapper uses plain highlighting while the LSP is still
-allowed to connect.
+fails to load without a valid cache, its wrapper uses plain highlighting while allowing the LSP to
+connect.
 
 ## Formatting status
 
-The formatter router tries enabled providers by priority and applies the first successful result.
-Provider results are text values; providers should not mutate or retain the editor.
+The formatter router filters disabled providers, calls matching providers by priority, logs
+failures, and applies the first successful result. Provider results are text values; providers
+should not mutate or retain the editor.
 
-Built-in Java and Kotlin formatters have been removed from the registry. Formatting support must be
-contributed by plugins.
+Built-in Java and Kotlin formatters have been removed from the core registry. Formatting support
+must be contributed by plugins.
 
 ## Adding language support
 
@@ -130,10 +130,36 @@ For a stdio server:
 3. Keep stdout protocol-only and drain stderr continuously.
 4. Close streams and the process through the connection lifecycle.
 5. Add a TextMate scope when the grammar is packaged, or a `textMateGrammarLink` when the source is
-   intentionally external.
+   external.
 6. Test two files at once, project switching, disable/enable, startup failure, and timeout.
 
 Use `EditorLanguageProvider` directly only when the standard LSP adapter is insufficient.
+
+## Editor Features
+
+### Code Minimap
+
+The editor supports a visual code minimap sidebar rendered alongside the main Sora editor viewport.
+Toggle it in **Settings > Code Editor > Show Minimap** (stored as the `minimap` boolean preference).
+
+### Theme System
+
+Editor syntax themes are provided via `EditorThemeProvider` implementations registered at
+`EditorExtensionPoints.THEME_PROVIDER`. Core prebuilt themes include One Dark, Nord, Dracula, and
+Monokai (with Solarized Dark/Light available via plugin). Users can choose a specific theme or set
+`Auto` to follow system dark mode in **Settings > Code Editor > Theme**.
+
+### Find & Replace
+
+An inline Find & Replace bar can be toggled from the editor toolbar options menu or keyboard
+shortcut. It supports string matching, match navigation, case sensitivity, and single or batch
+replacement directly within the active document cache.
+
+### Background Process Protection
+
+Long-running background LSP operations and terminal tasks are protected from OS process termination
+by `KeepAliveService`, a foreground service that maintains application runtime state while Cosmic
+IDE is minimized or performing heavy background processing.
 
 ## Failure clues
 
@@ -146,4 +172,4 @@ Use `EditorLanguageProvider` directly only when the standard LSP adapter is insu
 | Custom server survives close      | starter did not `exec` its final command                                                           |
 | Linked grammar is not highlighted | URL is not a raw file, document permission expired, file exceeds 5 MB, or grammar is malformed     |
 | HTTPS grammar does not update yet | valid cache is younger than seven days; change the URL or clear app cache for an immediate refetch |
-| Format command changes nothing    | the selected provider may not be configured for the current file extension                         |
+| Format command changes nothing    | selected provider may not be configured for the current file extension                             |

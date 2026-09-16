@@ -2,9 +2,9 @@
 
 <div align="center">
 
-### Desktop-class development on Android
+### Complete Software Development on Android
 
-A modular development environment for Android. Edit, build, and run projects, an integrated terminal, and a plugin-based architecture.
+Write, build, and run real applications directly on your Android phone, tablet, or desktop setup.
 
 [![Android CI](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml/badge.svg)](https://github.com/Cosmic-Ide/Cosmic-IDE/actions/workflows/android.yml)
 [![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-IDE)](LICENSE)
@@ -25,7 +25,7 @@ A modular development environment for Android. Edit, build, and run projects, an
     </td>
     <td align="center" width="50%">
       <a href="docs/images/scala-gradle-build.jpeg">
-        <img src="docs/images/scala-gradle-build.jpeg" width="220" alt="A successful Scala Gradle build in the Cosmic IDE terminal">
+        <img src="docs/images/scala-gradle-build.jpeg" width="220" alt="A successful build in the Cosmic IDE terminal">
       </a>
       <br>
       <sub><strong>Integrated build output and task execution</strong></sub>
@@ -41,7 +41,7 @@ A modular development environment for Android. Edit, build, and run projects, an
     </td>
     <td align="center" width="50%">
       <a href="docs/images/java-code-completion.jpeg">
-        <img src="docs/images/java-code-completion.jpeg" width="220" alt="Java code completion in Cosmic IDE while a Gradle application is running">
+        <img src="docs/images/java-code-completion.jpeg" width="220" alt="Java code completion in Cosmic IDE while an application is running">
       </a>
       <br>
       <sub><strong>Java completion backed by JDT LS</strong></sub>
@@ -57,7 +57,7 @@ A modular development environment for Android. Edit, build, and run projects, an
     </td>
     <td align="center" width="50%">
       <a href="docs/images/project-explorer.jpeg">
-        <img src="docs/images/project-explorer.jpeg" width="220" alt="A Java repository open in the Cosmic IDE project explorer">
+        <img src="docs/images/project-explorer.jpeg" width="220" alt="A repository open in the Cosmic IDE project explorer">
       </a>
       <br>
       <sub><strong>Touch-friendly project explorer</strong></sub>
@@ -65,76 +65,84 @@ A modular development environment for Android. Edit, build, and run projects, an
   </tr>
 </table>
 
-## Core architecture
+## What You Can Do
 
-Cosmic IDE provides a complete Linux-based development environment inside an Android app. It isn't
-just a text editor; it's a runtime that hosts genuine compilers, build systems, and language
-servers.
+Cosmic IDE turns your Android device into a complete development environment. It combines an
+intelligent editor, real compilers and build tools, full Git integration, and an interactive
+terminal.
 
-- **Intelligent Workspace**: Multi-tab editor with LSP support, inline diagnostics, and Material 3
-  design.
-- **Linux Environment**: Run compilers and shells within an app-private environment compatible with
-  Arch Linux ARM.
-- **Integrated Terminal**: A full-featured PTY terminal. Install and run tools from the official
-  Arch Linux ARM repositories using `pacman`.
-- **Responsive UI**: Optimized for touch, keyboard, and Android desktop environments like Samsung
-  DeX.
+### Code Intelligence
+
+- **Autocomplete & Diagnostics**: Real-time error checking, type inspection, and signature help via
+  Language Server Protocol (LSP) integrations.
+- **Modern Code Editor**: Multi-tab editing, sticky scroll, Code Minimap, inline Find & Replace,
+  bracket auto-completion, and custom font support.
+- **Themes & Styling**: Built-in syntax themes (One Dark, Nord, Dracula, Monokai, Solarized) with
+  support for custom TextMate themes and grammars.
+- **Side-by-Side Previews**: Live visual previews for Markdown, HTML, and images alongside your
+  source code.
+
+### Build & Run
+
+- **Plugin-Driven Build System**: Automatic project sync, task runner, and streaming build logs in
+  bottom tool-windows for installed build plugins and project templates.
+- **Custom Project Workflows**: Support for Gradle, Cargo, CMake, Maven, npm, and custom shell-based
+  project creation, sync, build, and run commands.
+- **JDK Management**: Download and switch between Java Development Kits directly in settings via
+  Foojay.
+- **Background Task Protection**: Runs builds, long-running processes, and background servers safely
+  without OS process termination.
+
+### Full Version Control & Terminal
+
+- **Dedicated Git Interface**: Manage changes, stage files, review commit history, switch branches,
+  and push/pull from remotes.
+- **Built-in Linux Terminal**: Interactive terminal shell with job control and `pacman` package
+  manager to install compilers and tools.
 
 ---
 
-## Language & Tooling Ecosystem
+## Supported Languages & Build Systems
 
-The IDE is built on a modular plugin system, allowing support for various languages and build tools
-to be added or updated independently.
+Cosmic IDE supports languages and build tools through language servers and installable marketplace
+plugins:
 
-|                  |                                                                     |
-|------------------|---------------------------------------------------------------------|
-| **JVM Stack**    | Java, Kotlin, Scala, Gradle, Maven                                  |
-| **System & Web** | Rust (`rust-analyzer`), C/C++ (`clangd`), Go, Gleam                 |
-| **Scripting**    | Python, Lua (`LuaLS`)                                               |
-| **Workflows**    | Git integration, custom project templates, and shell-based commands |
-
-*Manage and install language support directly from the in-app **Plugin Marketplace**.*
-
----
-
-## Features
-
-- **Editor**: Syntax highlighting, auto-completion, navigation, and customizable themes via
-  TextMate.
-- **Build System**: Execute tasks (Gradle, Cargo, Maven, etc.) with real-time output in integrated
-  tool windows.
-- **Package Management**: Use `pacman` to install CLI tools, compilers, and utilities from Arch
-  Linux ARM.
-- **Git Workflows**: Built-in support for cloning, branching, committing, and syncing repositories.
-- **Local Control**: Your projects remain in app-private storage or shared storage via Android's
-  Document Picker.
-- **Extensible**: Add custom language servers, TextMate grammars, and project templates without
-  modifying the app's source.
+| Category                    | Languages & Tools Supported                               |
+|-----------------------------|-----------------------------------------------------------|
+| **JVM Stack**               | Java (JDT LS), Kotlin (Kotlin LS), Scala (Metals)         |
+| **System & Native**         | Rust (`rust-analyzer`), C/C++ (`clangd`), Go, Gleam       |
+| **Scripting & Web**         | Python (`pyright`), Lua (`LuaLS`), HTML, Markdown         |
+| **Build Tools**             | Gradle, Maven, Cargo, CMake, npm, custom project types    |
+| **Custom Language Support** | Add any stdio Language Server with custom starter scripts |
 
 ---
 
 ## Quick Start
 
-1. **Install**: Download
-   the [latest nightly APK](https://nightly.link/aload0/Cosmic-IDE/workflows/android/main/app-arm64-v8a.zip).
-2. **Bootstrap**: Follow the guided setup to install a JDK and the base Linux environment.
-3. **Coding**: Create a new project or clone a repository.
+1. **Download**: Get
+   the [latest nightly APK](https://nightly.link/Cosmic-Ide/Cosmic-IDE/workflows/android/main/app-arm64-v8a.zip).
+2. **Setup**: Follow the quick initial setup to install a JDK and language toolchain.
+3. **Start Coding**: Create a new project, clone a Git repository, or open local files.
 
-Detailed documentation is available in the [User Guide](docs/user-guide.md).
+For detailed instructions and tips, check the [User Guide](docs/user-guide.md).
 
 ---
 
 ## Documentation
 
-- **[User Guide](docs/user-guide.md)**: Projects, builds, Git, and terminal workflows.
-- **[Settings Reference](docs/settings-reference.md)**: Personalizing the workspace.
-- **[Plugin Architecture](docs/plugin-architecture.md)**: Building and contributing extensions.
+- **[User Guide](docs/user-guide.md)**: Workspace overview, Git workflows, and build systems.
+- **[Settings Reference](docs/settings-reference.md)**: Personalizing themes, fonts, and controls.
+- **[Plugin Development Guide](docs/plugin-development-guide.md)**: Creating and publishing plugins.
+- **[Codebase Architecture](docs/codebase-architecture.md)**: Technical details for contributors
+  (glibc layer, process execution, runtime shims).
 - **[Development Guide](docs/development-guide.md)**: Building Cosmic IDE from source.
 
-## Support the project
+---
 
-Cosmic IDE is free and open source. If you find it useful, consider supporting its development.
+## Support the Project
+
+Cosmic IDE is free and open source under GPLv3. If you find it useful, consider supporting its
+development.
 
 <p align="center">
   <a href="https://opencollective.com/invokevirtual">

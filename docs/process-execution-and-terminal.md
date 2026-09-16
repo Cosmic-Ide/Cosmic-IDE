@@ -26,8 +26,8 @@ the project root; each command or terminal receives its own closable/rerunnable 
 
 ## Launch flow
 
-`resolveExecutable` accepts an absolute path, a working-directory-relative path containing `/`, or
-a command found in the toolchain PATH. `LinuxProcessRunner` then accepts only:
+`resolveExecutable` accepts an absolute path, a working-directory-relative path containing `/`, or a
+command found in the toolchain PATH. `LinuxProcessRunner` then accepts only:
 
 - a readable ELF, loaded by `libld_linux.so`;
 - a shell script with a supported `sh`/`bash`-family shebang, passed to a relocated shell.
@@ -83,9 +83,9 @@ SIGTERM -> optional grace period -> SIGKILL if needed -> waitFor -> close PTY
 
 ## Bash startup files
 
-PTY Bash launches default to login and interactive mode. The runner creates a `.bash_profile`
-bridge only when the user has not supplied `.bash_profile` or `.bash_login`; the bridge sources
-`.profile` and `.bashrc`. Non-Bash and non-PTY processes do not receive shell startup behavior.
+PTY Bash launches default to login and interactive mode. The runner creates a `.bash_profile` bridge
+only when the user has not supplied `.bash_profile` or `.bash_login`; the bridge sources `.profile`
+and `.bashrc`. Non-Bash and non-PTY processes do not receive shell startup behavior.
 
 ## Terminal UI bridge
 

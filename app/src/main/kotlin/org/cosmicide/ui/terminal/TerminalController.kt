@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.exec.linux.LinuxProcessRunner
 import org.cosmicide.exec.linux.PtyProcess
-import org.cosmicide.plugin.runtime.hook.Hook
-import org.cosmicide.plugin.runtime.hook.HookManager
+import org.cosmicide.plugin.api.hook.Hook
+import org.cosmicide.plugin.api.hook.HookManager
 import top.canyie.pine.Pine
 import java.io.File
 import java.io.OutputStream

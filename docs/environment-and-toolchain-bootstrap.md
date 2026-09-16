@@ -17,11 +17,11 @@ restores validated symlinks recorded in the archive. That directory contains the
 libraries, base commands, and preload shims; it is not a package-managed Linux installation.
 
 The readiness check currently tests for `files/glibc`. If deployment becomes updatable or
-recoverable in place, use a version/completion marker and an atomic temporary-directory rename so
-an interrupted extraction cannot appear ready.
+recoverable in place, use a version/completion marker and an atomic temporary-directory rename so an
+interrupted extraction cannot appear ready.
 
-Runtime production and the meaning of each shim are documented in
-[glibc runtime and compatibility shims](glibc-runtime-and-shims.md).
+Runtime production and the meaning of each shim are documented
+in [glibc runtime and compatibility shims](glibc-runtime-and-shims.md).
 
 ## JDK installation
 
@@ -32,9 +32,9 @@ compatibility constraints. Archives are installed below:
 files/jdks/<distribution>-<version>
 ```
 
-The archive's leading directory is removed, executable permissions are repaired, and an
-installation is accepted only when `bin/java` is executable. `Prefs.currentJDK` stores the chosen
-directory name; `LinuxProcessRunner` derives `JAVA_HOME` from it for normal child processes.
+The archive's leading directory is removed, executable permissions are repaired, and an installation
+is accepted only when `bin/java` is executable. `Prefs.currentJDK` stores the chosen directory name;
+`LinuxProcessRunner` derives `JAVA_HOME` from it for normal child processes.
 
 Foojay metadata includes checksums, but the current installer does not verify them. Checksum
 verification and stricter canonical-path/link validation are the main integrity gaps in this path.
@@ -45,7 +45,7 @@ verification and stricter canonical-path/link validation are the main integrity 
 it interactively in the terminal:
 
 ```text
-bash <files>/setup.sh <filesDir> <cacheDir>
+bash files/setup.sh filesDir cacheDir
 ```
 
 The script downloads and installs tools directly into `filesDir`; it does not create or enter a
@@ -62,16 +62,16 @@ Kotlin and JDT LS are extracted from upstream archives. Coursier installs the Sc
 Metals. Android setup selects the latest stable platform and build tools, then uses the external
 Android ARM build-tools installer and writes the `aapt2` override to the user's Gradle properties.
 
-The setup prompts are optional, while `isLanguageServerSetupIncomplete` currently requires all
-three bundled language servers. Declining one therefore leaves the setup navigation incomplete.
-If optional installation is the intended product behavior, readiness should follow enabled
-capabilities rather than require every launcher.
+The setup prompts are optional, while `isLanguageServerSetupIncomplete` currently requires all three
+bundled language servers. Declining one therefore leaves the setup navigation incomplete. If
+optional installation is the intended product behavior, readiness should follow enabled capabilities
+rather than require every launcher.
 
 ## Consumption
 
-Language servers and SDK commands must run through `ProcessExecutor` or `PtyProcessExecutor`.
-Those facades supply the selected JDK and glibc environment; successfully downloading a launcher
-does not prove it can be started correctly.
+Language servers and SDK commands must run through `ProcessExecutor` or `PtyProcessExecutor`. Those
+facades supply the selected JDK and glibc environment; successfully downloading a launcher does not
+prove it can be started correctly.
 
 Language-server stdout is reserved for LSP framing. Providers drain stderr separately. Details of
 the provider lifecycle are in [Editor and language services](editor-and-language-services.md).

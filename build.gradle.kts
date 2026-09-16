@@ -6,10 +6,43 @@
  */
 
 // Top-level build file where you can add configuration options common to all subprojects/modules.
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlinx.serialization) apply false
+    alias(libs.plugins.nmcp) apply false
+    alias(libs.plugins.nmcpAggregation)
 }
+
+fun getLocalProperty(key: String): String? {
+    val file = rootProject.file("local.properties")
+    if (!file.exists()) return null
+    val properties = Properties()
+    file.inputStream().use { properties.load(it) }
+    return properties.getProperty(key)?.trim('"')
+}
+
+nmcpAggregation {
+    centralPortal {
+        username.set(
+            providers.environmentVariable("NMCP_USERNAME")
+                .orElse(providers.environmentVariable("MAVEN_CENTRAL_USERNAME"))
+                .orElse(provider { getLocalProperty("MAVEN_CENTRAL_USERNAME") })
+        )
+        password.set(
+            providers.environmentVariable("NMCP_PASSWORD")
+                .orElse(providers.environmentVariable("MAVEN_CENTRAL_PASSWORD"))
+                .orElse(provider { getLocalProperty("MAVEN_CENTRAL_PASSWORD") })
+        )
+    }
+}
+
+dependencies {
+    nmcpAggregation(projects.pluginApi)
+    nmcpAggregation(projects.ideApi)
+}
+

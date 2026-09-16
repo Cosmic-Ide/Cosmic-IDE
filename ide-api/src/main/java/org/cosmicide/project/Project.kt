@@ -26,7 +26,7 @@ import java.io.File
 data class Project(
     @Serializable(with = FileSerializer::class) val root: File,
     val language: Language
-): java.io.Serializable {
+) : java.io.Serializable {
 
     /**
      * The name of the project, derived from the root directory.

@@ -4,8 +4,8 @@
 
 This page describes the Android-side product flow: initialization gates, Navigation 3 routes,
 project discovery and creation, workspace state, editor/file ownership, Gradle UI, settings, and
-Android document integration. It complements the subsystem pages rather than repeating their
-process internals.
+Android document integration. It complements the subsystem pages rather than repeating their process
+internals.
 
 ## Application startup
 
@@ -16,8 +16,7 @@ AndroidX Startup runs `PreferencesInitializer` before `App.onCreate`. The initia
 3. initializes the shared `Prefs` facade.
 
 `App.onCreate` then initializes analytics, hidden-API/runtime hooks, bundled TextMate assets, and
-the
-plugin host. If `FileUtil` is unavailable, application initialization returns early; later code
+the plugin host. If `FileUtil` is unavailable, application initialization returns early; later code
 assumes these roots exist.
 
 `MainActivity` installs the current theme and hosts `IDENavigation`.
@@ -42,24 +41,6 @@ directory or launcher disappears, a later launch returns to the corresponding se
 Project session ownership is inferred from whether the back stack contains `Editor`. When none
 remain, `ProjectSessionServices` cleans up project-scoped resources. A `DisposableEffect` repeats
 cleanup when navigation leaves composition.
-
-### Current route status
-
-| Route                | Status                  |
-|----------------------|-------------------------|
-| Home                 | active                  |
-| NewProject           | active                  |
-| Editor               | active                  |
-| GradleTask           | legacy/unhandled        |
-| Settings             | active                  |
-| Code editor settings | active                  |
-| Compiler settings    | active                  |
-| Extensions settings  | active                  |
-| Terminal category    | opens terminal directly |
-| Toolchains           | active                  |
-| About                | active                  |
-
-Do not document a route as user-reachable merely because its `Screen` type and composable exist.
 
 ## Project discovery and home state
 
@@ -118,10 +99,10 @@ Java/Scala source layouts, falling back to Kotlin metadata consistently with pro
 `EditorScreen` coordinates state owners while delegating rendering to focused package-internal
 components:
 
-| Owner                    | State                                                         |
-|--------------------------|---------------------------------------------------------------|
-| `EditorViewModel`        | open file order, active file, cached document content, saving |
-| Compose screen state     | drawer/dialogs, tool-window size/tab, build-session tabs      |
+| Owner                | State                                                         |
+|----------------------|---------------------------------------------------------------|
+| `EditorViewModel`    | open file order, active file, cached document content, saving |
+| Compose screen state | drawer/dialogs, tool-window size/tab, build-session tabs      |
 
 `ProjectTree`, `EditorToolbar`, `EditorDialogs`, `EditorContent`, and `EditorToolWindow` own their
 respective UI surfaces. This keeps the route-level coordinator focused on project/session wiring and
@@ -139,9 +120,8 @@ separate global current-project holder.
 ### Files and tabs
 
 Each open text tab retains its own `CodeEditor` and LSP document session. Opening a file focuses its
-tab, loads cached or disk text, and routes language configuration for the new
-request. Content change events update the active `EditorDocument` and immediately call
-`File.writeText`.
+tab, loads cached or disk text, and routes language configuration for the new request. Content
+change events update the active `EditorDocument` and immediately call `File.writeText`.
 
 `EditorDocument.savedContentHash` records whether the current cache matches the last write, but the
 normal editing path autosaves each update. Closing a tab saves it once more, removes its cached
@@ -169,7 +149,7 @@ They are project-local generated state rather than global preferences.
 
 Editor Terminal and contributed project commands create bottom tool-window PTY sessions. Interactive
 Terminal uses `bash -i`; declarative project commands pass shell code as an exact `bash -lc`
-argument instead of reparsing it as a command line.
+argument instead of re-parsing it as a command line.
 
 ## Gradle workspace UI
 
@@ -178,8 +158,8 @@ build, and run commands execute in PTY terminals within the editor tool window.
 
 `EditorToolWindow` is a vertically resizable bottom surface. Its fixed Sync tab shows the output of
 the project sync command; each task or project-command launch creates an `EditorBuildSession` with
-its own embedded terminal,
-status, rerun counter, and close action. Closing a tab releases its composed terminal/controller.
+its own embedded terminal, status, rerun counter, and close action. Closing a tab releases its
+composed terminal/controller.
 
 Sync ownership is selected from project structure. A root `gradlew` takes precedence. Without that
 wrapper, the first enabled plugin `SYNC` command replaces the fixed tab with a PTY session. A
@@ -218,9 +198,8 @@ paths. Custom TextMate grammar selection uses `OpenDocument` and retains read pe
 
 `FilesDocumentsProvider` separately publishes an internal-data document root. It maps document ids
 to files and supports create, open, rename, copy, move, and delete. Its root differs from the
-external
-`FileUtil.dataDir` used for projects. Keep path resolution confined to the provider root and test
-with the system DocumentsUI after changing flags, MIME types, or file operations.
+external `FileUtil.dataDir` used for projects. Keep path resolution confined to the provider root
+and test with the system DocumentsUI after changing flags, MIME types, or file operations.
 
 ## Lifecycle checks for UI changes
 

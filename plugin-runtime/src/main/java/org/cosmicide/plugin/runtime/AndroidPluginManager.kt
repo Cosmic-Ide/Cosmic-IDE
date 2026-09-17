@@ -42,27 +42,67 @@ class AndroidPluginManager(
         serviceRegistry.register(AndroidPluginServices.APPLICATION_CONTEXT, appContext)
     }
 
+    /**
+     * Metadata-first scan: every visible package directory is read, incompatible packages get a
+     * FAILED handle, and one malformed package does not abort discovery of the remaining ones.
+     * Validation here still executes no plugin code; only load() activates classes.
+     */
     fun loadInstalledPlugins(): List<PluginLoadResult> {
-        return pluginRoot
-            .listFiles { file -> file.isDirectory && !file.name.startsWith(".") }
-            ?.sortedBy { it.name }
-            .orEmpty()
-            .mapNotNull { pluginDir ->
-                val descriptor = PluginManifestReader.read(pluginDir)
-                if (descriptor == null) {
-                    Log.w(
-                        TAG,
-                        "Skipping ${pluginDir.name}: missing ${PluginManifestReader.MANIFEST_FILE}"
+        return PluginDiscovery.discover(pluginRoot).map { result ->
+            when (result) {
+                is PluginDiscoveryResult.Valid -> {
+                    // Incompatible declared ranges fail here with a specific reason and no
+                    // class loader is created, so no plugin code executes.
+                    val compatibilityError =
+                        runCatching { result.metadata.requireCompatible() }.exceptionOrNull()
+                    if (compatibilityError == null) {
+                        load(result.metadata.descriptor, result.directory)
+                    } else {
+                        updateHandle(
+                            result.metadata.descriptor,
+                            PluginState.FAILED,
+                            compatibilityError.message
+                        )
+                        PluginLoadResult.Failed(
+                            result.metadata.descriptor,
+                            compatibilityError.message ?: "incompatible plugin API",
+                            compatibilityError
+                        )
+                    }
+                }
+                is PluginDiscoveryResult.Invalid -> {
+                    Log.w(TAG, "Skipping ${result.directory.name}: ${result.reason}", result.cause)
+                    // The descriptor is a diagnostic-only handle; the raw directory name is
+                    // sanitized to the plugin id grammar.
+                    val invalidId = result.directory.name
+                        .map { if (it.isLetterOrDigit() || it in "._-") it else '_' }
+                        .joinToString("")
+                    PluginLoadResult.Failed(
+                        PluginDescriptor(
+                            id = "org.cosmicide.invalid.$invalidId",
+                            name = result.directory.name,
+                            version = "0.0.0",
+                            entryClass = "unknown",
+                            source = "invalid"
+                        ),
+                        reason = result.reason,
+                        cause = result.cause
                     )
-                    null
-                } else {
-                    load(descriptor, pluginDir)
                 }
             }
+        }
     }
 
     override fun load(descriptor: PluginDescriptor): PluginLoadResult {
-        return load(descriptor, pluginRoot.resolve(descriptor.id))
+        // Confine the id-derived directory and re-read the persisted manifest before trusting
+        // the caller-provided descriptor.
+        val metadata = try {
+            validateInstalledPlugin(pluginRoot, descriptor)
+        } catch (error: IllegalArgumentException) {
+            updateHandle(descriptor, PluginState.FAILED, error.message)
+            return PluginLoadResult.Failed(descriptor, error.message ?: "invalid installed plugin", error)
+        }
+        return load(metadata.descriptor, installedPluginDirectory(pluginRoot, metadata.descriptor.id))
     }
 
     /** Activates an app-bundled plugin through the same context and lifecycle as installed plugins. */

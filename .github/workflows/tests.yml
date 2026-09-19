@@ -10,26 +10,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4.1.0
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Give permission to executable
-        run: chmod +x gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Run tests
-        uses: gradle/gradle-build-action@v3.1.0
-        with:
-          gradle-version: current
-          arguments: test --continue
+        run:
+          ./gradlew test --continue
 
       - name: Upload test reports
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports
           path: '**/build/reports/tests/*'

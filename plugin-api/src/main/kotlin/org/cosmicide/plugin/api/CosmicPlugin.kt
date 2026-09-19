@@ -29,3 +29,18 @@ data class PluginSetupAction(
         require(command.isNotBlank()) { "Plugin setup command must not be blank" }
     }
 }
+
+/**
+ * Creates a [CosmicPlugin] instance with optional setup actions and activation callback.
+ */
+fun plugin(
+    id: String,
+    setupActions: List<PluginSetupAction> = emptyList(),
+    configure: PluginContext.() -> Unit = {}
+): CosmicPlugin = object : CosmicPlugin {
+    override val setupActions: List<PluginSetupAction> = setupActions
+
+    override fun activate(context: PluginContext) {
+        context.configure()
+    }
+}

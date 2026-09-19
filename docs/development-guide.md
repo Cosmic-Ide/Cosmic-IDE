@@ -22,7 +22,7 @@ its explicit producer command before the APK represents the new source.
 For a standard application build, install:
 
 - a JDK 17 Gradle runtime;
-- Android SDK components matching the repository's compile SDK (currently API 37.1);
+- Android SDK components matching the repository's compile SDK (currently API 37, minor 2);
 - the Android build tools accepted by AGP;
 - Git and a network connection for Gradle dependencies.
 
@@ -53,8 +53,8 @@ For a faster source check:
 ./gradlew :app:compileProdDebugKotlin
 ```
 
-The output APKs are written below `app/build/outputs/apk/prod/debug`. ABI splitting is enabled, and
-the Android plugin may also produce a universal artifact.
+The output APKs are written below `app/build/outputs/apk/prod/debug`. ABI splitting is enabled for
+`arm64-v8a` only, and the universal APK is disabled.
 
 The `dev` and `prod` product flavors select different analytics implementations in `:common`. The
 dev implementation imports Firebase Analytics, but its dependency is currently commented out in
@@ -69,15 +69,29 @@ dependency and configuration. The prod flavor builds without that Firebase depen
 | `:common`              | Android library | Shared preferences, analytics flavor boundary, editor data types |
 | `:util`                | Android library | Persistent data roots and archive/filesystem helpers             |
 | `:exec`                | Android/native  | glibc command runner, plain process facade, PTY JNI transport    |
-| `:feature:project`     | JVM library     | Serializable project and language model                          |
 | `:feature:sdk-manager` | JVM library     | Foojay JDK metadata/download client                              |
-| `:plugin-api`          | JVM library     | Plugin descriptors, lifecycle, registries, services              |
+| `:plugin-api`          | Android library | Plugin descriptors, lifecycle, registries, services              |
 | `:plugin-runtime`      | Android library | Plugin discovery, dex loading, activation, and cleanup           |
 | `:ide-api`             | Android library | Editor-language, LSP, and formatter extension contracts          |
 
 Dependencies exposed to plugin authors belong in `:plugin-api` or `:ide-api`. Application and Sora
 implementation types stay in `:app`. Launch external Linux tools through `:exec`, never a bare
 `ProcessBuilder` in feature code.
+
+## Plugin API baseline (Phase 1)
+
+Plugin-facing contracts are versioned independently of the app release version. The initial host
+contract baseline is `1.0.0` for both `pluginApi` (`org.cosmicide.plugin.api`) and `ideApi` (IDE
+extension contracts), tracked in `PluginCompatibility`. Versioned manifests (`"schemaVersion": 1`)
+declare the half-open host ranges they support, and the runtime validates its actual contract
+versions against those ranges before any plugin code loads — during installed discovery, direct
+load, and marketplace staging alike. Manifests without `schemaVersion` keep the documented legacy
+unchecked mode and are not range-validated.
+
+`PluginDescriptor`'s canonical constructor, `copy`, and property getters are pinned by a unit test
+so legacy compiled plugins stay linkable. Full jar-level binary compatibility against older
+published artifacts is not yet proven; adding a binary-compatibility validator remains open work, so
+treat this as a signature pin rather than a compatibility guarantee.
 
 `:app` is being reduced to the application composition root. Target dependency rules and the
 extraction sequence are tracked in [App module refactoring](app-module-refactoring.md).
@@ -95,10 +109,13 @@ extraction sequence are tracked in [App module refactoring](app-module-refactori
 ./gradlew :app:testProdDebugUnitTest :common:testProdDebugUnitTest \
   :exec:testProdDebugUnitTest :ide-api:testProdDebugUnitTest \
   :plugin-runtime:testProdDebugUnitTest :util:testDebugUnitTest \
-  :plugin-api:test :feature:project:test :feature:sdk-manager:test
+  :plugin-api:testDebugUnitTest :feature:sdk-manager:test
 
 # Run app production unit tests only
 ./gradlew :app:testProdDebugUnitTest
+
+# Publish snapshot artifacts for API modules to Maven repository
+./gradlew publishSnapshots
 
 # Inspect available tasks
 ./gradlew tasks
@@ -203,6 +220,25 @@ Meaningful tests require a compiler analysis environment and representative pars
 only its navigation data classes would mirror constructors without protecting behavior. `:common`
 editor widgets and `:plugin-runtime` dex/hook adapters similarly require Android/Sora or runtime
 integration tests beyond the host suites above.
+
+### Plugin lifecycle host gates
+
+The plugin runtime host tests cover deterministic dependency planning, rollback, synchronous and
+asynchronous serialization/reentry, immutable diagnostic snapshots, queued versus admitted request
+cancellation, supervised context jobs, late resource disposal, and cooperative finalizer draining.
+The optional scope service uses the existing coroutines catalog dependency; no version upgrade is
+required. Existing public interface members and synchronous callback threads remain unchanged.
+
+```sh
+./gradlew :plugin-api:testDebugUnitTest :plugin-runtime:testProdDebugUnitTest
+./gradlew :app:compileProdDebugKotlin
+./gradlew :app:assembleProdDebug
+```
+
+Run these sequentially. Async cleanup proof covers cooperative child jobs and tracked disposables,
+not arbitrary blocking callbacks, detached work, provider-session leases, or native/process cleanup.
+Editor/project owner-aware leases remain deferred and require real session-boundary integration.
+Device/arm64 validation remains necessary for ART loading and provider-backed editor resources.
 
 ## Documentation and compatibility
 

@@ -111,6 +111,9 @@ object Prefs {
     val clientName: String
         get() = prefs.getString("client_name", null)?.replace(" ", "") ?: Build.ID
 
+    val backupToFs: Boolean
+        get() = prefs.getBoolean("backup_to_fs", false)
+
     private fun migrateEditorPreferences() {
         val aliases = mapOf(
             "ligatures_enable" to "font_ligatures",

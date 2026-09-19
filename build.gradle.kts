@@ -29,13 +29,11 @@ fun getLocalProperty(key: String): String? {
 nmcpAggregation {
     centralPortal {
         username.set(
-            providers.environmentVariable("NMCP_USERNAME")
-                .orElse(providers.environmentVariable("MAVEN_CENTRAL_USERNAME"))
+            providers.environmentVariable("MAVEN_CENTRAL_USERNAME")
                 .orElse(provider { getLocalProperty("MAVEN_CENTRAL_USERNAME") })
         )
         password.set(
-            providers.environmentVariable("NMCP_PASSWORD")
-                .orElse(providers.environmentVariable("MAVEN_CENTRAL_PASSWORD"))
+            providers.environmentVariable("MAVEN_CENTRAL_PASSWORD")
                 .orElse(provider { getLocalProperty("MAVEN_CENTRAL_PASSWORD") })
         )
     }
@@ -46,3 +44,9 @@ dependencies {
     nmcpAggregation(projects.ideApi)
 }
 
+tasks.register("publishSnapshots") {
+    group = "publishing"
+    description = "Publishes snapshot artifacts for API modules to Maven repository."
+    dependsOn(":plugin-api:publishReleasePublicationToSonatypeSnapshotsRepository")
+    dependsOn(":ide-api:publishReleasePublicationToSonatypeSnapshotsRepository")
+}

@@ -23,6 +23,41 @@ import java.nio.file.Files
 class PluginManifestLoadingGateTest {
 
     @Test
+    fun `invalid unicode directory produces an ASCII diagnostic descriptor`() {
+        val descriptor = invalidPluginDescriptor(java.io.File("插件-é"))
+        assertTrue(descriptor.id.matches(Regex("[A-Za-z0-9_.-]+")))
+        assertEquals("插件-é", descriptor.name)
+    }
+
+    @Test
+    fun `missing and malformed manifests are exceptions handled by the direct load boundary`() {
+        val root = Files.createTempDirectory("cosmic-load-failure").toFile()
+        val descriptor =
+            org.cosmicide.plugin.api.PluginDescriptor("example", "Example", "1", "Plugin")
+        val runtime = PluginRuntimeController(org.cosmicide.plugin.api.DefaultExtensionRegistry())
+        try {
+            val directory = root.resolve("example").apply { mkdirs() }
+            listOf<String?>(null, "not json").forEach { json ->
+                if (json != null) directory.resolve("plugin.json").writeText(json)
+                val error = try {
+                    validateInstalledPlugin(root, descriptor)
+                    throw AssertionError("Expected validation failure")
+                } catch (error: Exception) {
+                    error
+                }
+                val result = runtime.recordFailure(descriptor, error)
+                assertEquals(error, result.cause)
+                assertEquals(
+                    org.cosmicide.plugin.api.PluginState.FAILED,
+                    runtime.plugins.single().state
+                )
+            }
+        } finally {
+            root.deleteRecursively()
+        }
+    }
+
+    @Test
     fun `legacy read gate accepts supported manifests and rejects oversized or unsupported ones`() {
         val root = Files.createTempDirectory("cosmic-plugin-loading-gate").toFile()
         try {

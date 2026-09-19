@@ -11,7 +11,6 @@ plugins {
     id("com.android.library")
     id("maven-publish")
     id("signing")
-    alias(libs.plugins.nmcp)
 }
 
 android {
@@ -41,6 +40,7 @@ android {
 
 dependencies {
     api(libs.pine.core)
+    api(libs.kotlinx.coroutines.android)
     testImplementation(libs.junit)
 }
 
@@ -52,30 +52,46 @@ fun getLocalProperty(key: String): String? {
     return properties.getProperty(key)?.trim('"')
 }
 
-@Suppress("DEPRECATION")
-nmcp {
-    publishAllPublicationsToCentralPortal {
-        username.set(
-            providers.environmentVariable("NMCP_USERNAME")
-                .orElse(providers.environmentVariable("MAVEN_CENTRAL_USERNAME"))
-                .orElse(provider { getLocalProperty("MAVEN_CENTRAL_USERNAME") })
-        )
-        password.set(
-            providers.environmentVariable("NMCP_PASSWORD")
-                .orElse(providers.environmentVariable("MAVEN_CENTRAL_PASSWORD"))
-                .orElse(provider { getLocalProperty("MAVEN_CENTRAL_PASSWORD") })
-        )
-    }
-}
+val publishVersion = providers.environmentVariable("PUBLISH_VERSION")
+    .orElse(
+        providers.gradleProperty("version")
+            .flatMap { provider { if (it != "unspecified") it else null } })
+    .orElse(provider {
+        val baseVersion = libs.versions.ideVersion.get()
+        val isSnapshot = providers.environmentVariable("IS_SNAPSHOT").map { it.toBoolean() }
+            .orElse(providers.gradleProperty("isSnapshot").map { it.toBoolean() })
+            .orElse(provider { true })
+            .get()
+        if (isSnapshot && !baseVersion.endsWith("-SNAPSHOT")) "$baseVersion-SNAPSHOT" else baseVersion
+    })
+    .get()
 
 afterEvaluate {
     configure<PublishingExtension> {
+        repositories {
+            maven {
+                name = "sonatypeSnapshots"
+                url = uri(
+                    providers.environmentVariable("MAVEN_SNAPSHOTS_URL")
+                        .orElse("https://central.sonatype.com/repository/maven-snapshots/")
+                        .get()
+                )
+                credentials {
+                    username = providers.environmentVariable("MAVEN_CENTRAL_USERNAME")
+                        .orElse(provider { getLocalProperty("MAVEN_CENTRAL_USERNAME") })
+                        .orNull
+                    password = providers.environmentVariable("MAVEN_CENTRAL_PASSWORD")
+                        .orElse(provider { getLocalProperty("MAVEN_CENTRAL_PASSWORD") })
+                        .orNull
+                }
+            }
+        }
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
                 groupId = "org.invokevirtual.cosmicide"
                 artifactId = "plugin-api"
-                version = libs.versions.ideVersion.get()
+                version = publishVersion
 
                 pom {
                     name.set("Cosmic IDE Plugin API")

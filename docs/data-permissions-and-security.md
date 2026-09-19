@@ -174,6 +174,11 @@ option.
 
 ## Backups and deletion
 
+- Android Auto Backup and device transfer rules (`backup_rules.xml` and `data_extraction_rules.xml`)
+  back up user projects, plugins, and shared preferences while excluding heavy downloaded
+  toolchains/runtimes.
+- Manual and filesystem backup ("Backup to File System" setting in Settings > About) exports
+  projects, plugins, and shared preferences as a ZIP archive to external storage.
 - Project backup creates a ZIP through Android's document picker.
 - Project delete recursively removes the project directory and is not an undoable trash operation.
 - Toolchain uninstall removes the selected JDK installation.

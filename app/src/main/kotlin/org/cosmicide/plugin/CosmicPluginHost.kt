@@ -9,6 +9,8 @@ package org.cosmicide.plugin
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.cosmicide.editor.EditorExtensionPoints
 import org.cosmicide.editor.language.registerBuiltinEditorExtensions
 import org.cosmicide.plugin.api.ConfigurableExtension
@@ -57,35 +59,28 @@ object CosmicPluginHost {
                 pluginRoot = FileUtil.pluginDir,
                 serviceRegistry = serviceRegistry
             ).also { manager ->
-                manager.loadBuiltin(
-                    CustomProjectTypePlugin.descriptor,
-                    CustomProjectTypePlugin()
-                ).onFailure { descriptorId, reason, throwable ->
-                    Log.w(TAG, "Failed to load built-in plugin $descriptorId: $reason", throwable)
+                manager.loadBuiltins(
+                    listOf(
+                        CustomProjectTypePlugin.descriptor to CustomProjectTypePlugin(),
+                        GitPlugin.descriptor to GitPlugin(),
+                        SolarizedThemePlugin.descriptor to SolarizedThemePlugin()
+                    )
+                ).forEach { result ->
+                    result.onFailure { descriptorId, reason, throwable ->
+                        Log.w(
+                            TAG,
+                            "Failed to load built-in plugin $descriptorId: $reason",
+                            throwable
+                        )
+                    }
                 }
-                manager.loadBuiltin(GitPlugin.descriptor, GitPlugin())
-                    .onFailure { descriptorId, reason, throwable ->
-                        Log.w(
-                            TAG,
-                            "Failed to load built-in plugin $descriptorId: $reason",
-                            throwable
-                        )
-                    }
-                manager.loadBuiltin(SolarizedThemePlugin.descriptor, SolarizedThemePlugin())
-                    .onFailure { descriptorId, reason, throwable ->
-                        Log.w(
-                            TAG,
-                            "Failed to load built-in plugin $descriptorId: $reason",
-                            throwable
-                        )
-                    }
             }
 
             initialized = true
         }
     }
 
-    private fun ensurePluginsLoaded() {
+    fun ensurePluginsLoaded() {
         if (pluginsLoaded) return
         synchronized(this) {
             if (pluginsLoaded) return
@@ -102,6 +97,14 @@ object CosmicPluginHost {
             where T : Any, T : ConfigurableExtension {
         ensurePluginsLoaded()
         return extensionRegistry.extensions(point).filter(extensionSettings::isEnabled)
+    }
+
+    fun <T> observeEnabledExtensions(point: org.cosmicide.plugin.api.ExtensionPoint<T>): Flow<List<T>>
+            where T : Any, T : ConfigurableExtension {
+        ensurePluginsLoaded()
+        return extensionRegistry.observe(point).map { list ->
+            list.filter(extensionSettings::isEnabled)
+        }
     }
 
     fun configurableExtensions(): List<ExtensionSettingsItem> {

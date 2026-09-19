@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Handyman
@@ -54,12 +57,26 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.core.content.edit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.cosmicide.util.FileUtil
+import org.cosmicide.util.PreferenceKeys
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -217,6 +234,179 @@ fun AboutSettingsScreen(
                 ) {
                     Text(
                         text = "Storage Access",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            item {
+                HorizontalDivider()
+            }
+
+            item {
+                Text(
+                    "Backup & Storage",
+                    style = MaterialTheme.typography.titleMediumEmphasized,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                val preferences = remember(context) {
+                    context.getSharedPreferences(
+                        context.packageName + "_preferences",
+                        Context.MODE_PRIVATE
+                    )
+                }
+                var backupToFs by remember {
+                    mutableStateOf(
+                        preferences.getBoolean(
+                            PreferenceKeys.BACKUP_TO_FS,
+                            false
+                        )
+                    )
+                }
+                val coroutineScope = rememberCoroutineScope()
+
+                SegmentedListItem(
+                    onClick = {
+                        val newValue = !backupToFs
+                        backupToFs = newValue
+                        preferences.edit { putBoolean(PreferenceKeys.BACKUP_TO_FS, newValue) }
+                        if (newValue) {
+                            coroutineScope.launch {
+                                runCatching {
+                                    val backupFile = performFsBackup(context)
+                                    Toast.makeText(
+                                        context,
+                                        "Backup created: ${backupFile.name}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }.onFailure { error ->
+                                    Toast.makeText(
+                                        context,
+                                        "Backup failed: ${error.localizedMessage}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                    },
+                    shapes = ListItemDefaults.segmentedShapes(0, 2),
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(
+                            0.7f
+                        )
+                    ),
+                    supportingContent = {
+                        Text(
+                            text = "Back up projects and shared preferences to external storage",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    leadingContent = {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.Backup,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = backupToFs,
+                            onCheckedChange = { newValue ->
+                                backupToFs = newValue
+                                preferences.edit {
+                                    putBoolean(PreferenceKeys.BACKUP_TO_FS, newValue)
+                                }
+                                if (newValue) {
+                                    coroutineScope.launch {
+                                        runCatching {
+                                            val backupFile = performFsBackup(context)
+                                            Toast.makeText(
+                                                context,
+                                                "Backup created: ${backupFile.name}",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }.onFailure { error ->
+                                            Toast.makeText(
+                                                context,
+                                                "Backup failed: ${error.localizedMessage}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                }
+                            }
+                        )
+                    }
+                ) {
+                    Text(
+                        text = "Backup to File System",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                SegmentedListItem(
+                    onClick = {
+                        coroutineScope.launch {
+                            runCatching {
+                                val backupFile = performFsBackup(context)
+                                Toast.makeText(
+                                    context,
+                                    "Backup created: ${backupFile.name}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }.onFailure { error ->
+                                Toast.makeText(
+                                    context,
+                                    "Backup failed: ${error.localizedMessage}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    },
+                    shapes = ListItemDefaults.segmentedShapes(1, 2),
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(
+                            0.7f
+                        )
+                    ),
+                    supportingContent = {
+                        Text(
+                            text = "Manually export projects and preferences now",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    leadingContent = {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.CloudUpload,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    },
+                    trailingContent = {
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
+                    }
+                ) {
+                    Text(
+                        text = "Perform Manual Backup",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium
                     )
@@ -435,4 +625,57 @@ private fun Context.openStorageSettings() {
             )
         )
     }
+}
+
+internal suspend fun performFsBackup(context: Context): File = withContext(Dispatchers.IO) {
+    val targetDir = context.getExternalFilesDir("backups")
+        ?: FileUtil.dataDir.resolve("backups")
+    targetDir.mkdirs()
+
+    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+    val backupFile = targetDir.resolve("cosmic_backup_$timestamp.zip")
+
+    backupFile.outputStream().use { fos ->
+        ZipOutputStream(fos.buffered()).use { zipOut ->
+            if (FileUtil.isInitialized && FileUtil.projectDir.exists()) {
+                FileUtil.projectDir.walk().forEach { file ->
+                    if (file.isFile) {
+                        val relativePath =
+                            file.toRelativeString(FileUtil.projectDir).replace('\\', '/')
+                        zipOut.putNextEntry(ZipEntry("projects/$relativePath"))
+                        file.inputStream().use { it.copyTo(zipOut) }
+                        zipOut.closeEntry()
+                    }
+                }
+            }
+
+            if (FileUtil.isInitialized && FileUtil.pluginDir.exists()) {
+                FileUtil.pluginDir.walk().forEach { file ->
+                    if (file.isFile) {
+                        val relativePath =
+                            file.toRelativeString(FileUtil.pluginDir).replace('\\', '/')
+                        zipOut.putNextEntry(ZipEntry("plugins/$relativePath"))
+                        file.inputStream().use { it.copyTo(zipOut) }
+                        zipOut.closeEntry()
+                    }
+                }
+            }
+
+            val prefs = context.getSharedPreferences(
+                context.packageName + "_preferences",
+                Context.MODE_PRIVATE
+            )
+            val prefsContent = prefs.all.entries.joinToString(",\n", "{\n", "\n}") { (key, value) ->
+                val escapedValue = value?.toString()
+                    ?.replace("\\", "\\\\")
+                    ?.replace("\"", "\\\"")
+                    ?.replace("\n", "\\n") ?: ""
+                "  \"$key\": \"$escapedValue\""
+            }
+            zipOut.putNextEntry(ZipEntry("shared_prefs/preferences.json"))
+            zipOut.write(prefsContent.toByteArray(Charsets.UTF_8))
+            zipOut.closeEntry()
+        }
+    }
+    backupFile
 }

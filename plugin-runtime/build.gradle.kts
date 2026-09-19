@@ -48,6 +48,7 @@ android {
 dependencies {
     api(projects.pluginApi)
     compileOnly(projects.ideApi)
+    testImplementation(projects.ideApi)
     implementation(libs.pine.core)
     testImplementation(libs.junit)
     testImplementation(libs.json)

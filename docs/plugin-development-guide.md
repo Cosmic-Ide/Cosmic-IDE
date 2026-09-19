@@ -30,7 +30,7 @@ A plugin can contribute:
 
 ## 1. Project Setup
 
-A Cosmic IDE plugin is packaged as a `.zip` archive containing a `manifest.json` descriptor and an
+A Cosmic IDE plugin is packaged as a `.zip` archive containing a `plugin.json` descriptor and an
 `.apk` or `.jar` compiled artifact.
 
 ### Gradle Configuration (`build.gradle.kts`)
@@ -76,12 +76,13 @@ dependencies {
 
 ---
 
-## 2. Plugin Manifest (`manifest.json`)
+## 2. Plugin Manifest (`plugin.json`)
 
-Place `manifest.json` at the root of your plugin directory or ZIP package:
+Place `plugin.json` at the root of your plugin directory or ZIP package:
 
 ```json
 {
+  "schemaVersion": 1,
   "id": "com.example.myplugin",
   "name": "Sample Extension",
   "version": "1.0.0",
@@ -89,6 +90,10 @@ Place `manifest.json` at the root of your plugin directory or ZIP package:
   "author": "Developer Name",
   "entryClass": "com.example.myplugin.MyPlugin",
   "classPath": ["plugin.apk"],
+  "compatibility": {
+    "pluginApi": { "minInclusive": "1.0.0", "maxExclusive": "2.0.0" },
+    "ideApi": { "minInclusive": "1.0.0", "maxExclusive": "2.0.0" }
+  },
   "capabilities": [
     "editor.lsp",
     "editor.formatter",
@@ -103,13 +108,102 @@ Place `manifest.json` at the root of your plugin directory or ZIP package:
 
 ### Manifest Fields
 
-- `id`: Permanent, reverse-domain identifier (e.g. `com.example.myplugin`).
+- `schemaVersion`: Manifest envelope version. The only supported value is `1`; manifests without
+  this field run in the legacy unchecked mode described below.
+- `id`: Permanent, reverse-domain identifier (e.g. `com.example.myplugin`). It must match the
+  installation directory name.
 - `name`: User-facing name shown in the Plugin Marketplace.
-- `version`: Semantic version string.
+- `version`: Your plugin's own display version. The host accepts any non-empty string; API
+  compatibility is declared through `compatibility`, not through this field.
 - `entryClass`: Fully-qualified class name implementing `CosmicPlugin`.
-- `classPath`: Array containing the compiled DEX/APK/JAR artifact filenames.
-- `capabilities`: Array of capability strings declared by your plugin.
+- `classPath`: Compiled DEX/APK/JAR artifact filenames. `classPath`, `classpath`, and `artifact`
+  are combined, with at most 64 entries counted before de-duplication.
+- `compatibility`: Optional declaration of the host API ranges your plugin supports. Each entry is a
+  half-open interval `[minInclusive, maxExclusive)` over strict `major.minor.patch` versions (no
+  prerelease suffixes, operators, or wildcards). `pluginApi` covers
+  `org.cosmicide.plugin.api`; `ideApi` covers the IDE extension contracts. The host checks its
+  actual contract versions against these ranges before any of your code runs; a range that excludes
+  the current host fails activation with an explicit reason.
+- `capabilities`: Array of capability strings declared by your plugin (128 entries maximum).
 - `enabledByDefault`: Whether the plugin activates upon initial installation.
+
+### Dependencies and lifecycle threading
+
+Declare dependencies as legacy id strings or objects, for example:
+
+```json
+"dependencies": [
+  "com.example.legacy",
+  { "id": "com.example.tools", "minVersion": "1.2.0-rc.1" },
+  { "id": "com.example.extra", "minVersion": "2.0.0", "optional": true }
+]
+```
+
+Unconstrained edges preserve arbitrary legacy version strings. With `minVersion`, both the minimum
+and provider version must be strict SemVer 2.0 (`major.minor.patch`, optional prerelease/build
+suffixes). Prereleases precede the corresponding release; numeric prerelease identifiers compare
+numerically and reject leading zeros; build metadata is ignored. This dependency rule is separate
+from the simpler host API compatibility bounds above.
+
+Required missing, disabled, version-mismatched, duplicate, cyclic, or failed providers block your
+activation before dependent code runs. Compatible dependencies start first in deterministic id
+order. Optional edges are best effort; missing/incompatible/cyclic optional subtrees or activation
+failures do not block you. Check availability yourself. The host neither downloads dependencies nor
+shares implementation classes between plugin loaders.
+
+Lifecycle callbacks remain synchronous on the requesting thread, serialized by a dedicated gate. Do
+not call load/unload/install recursively from activation, deactivation, or cleanup callbacks:
+these mutations fail explicitly. Do not block waiting for another thread's lifecycle request.
+Concurrent successful loads activate once; a failed request can be explicitly retried. Unloading a
+provider with active required dependents throws before deactivation or package mutation; unload the
+dependents first. Optional dependents must tolerate the provider disappearing.
+
+Register all resources with `PluginContext`. Close runs in reverse registration order; registration
+after close immediately disposes the supplied resource. Contributions through `context.extensions`
+are also tracked and reject registration after close. Manual disposable tracking remains supported.
+Owned rollback cannot undo arbitrary external effects, untracked hooks, or detached jobs. For
+cooperative background work, new hosts expose an optional typed service without changing
+`PluginContext`:
+
+```kotlin
+val lifecycle = context.services.get(PluginCoroutineScope.KEY)
+lifecycle?.scope?.launch {
+    // Use cancellable APIs; release coroutine-owned resources in finally.
+}
+```
+
+Import `org.cosmicide.plugin.api.PluginCoroutineScope` and `kotlinx.coroutines.launch`. The scope
+uses
+`Dispatchers.Default` plus a `SupervisorJob`: one failed child is logged without cancelling
+siblings. Do not replace its Job or detach work if you need host cancellation. On close the host
+withdraws this service, cancels the scope, and disposes registered resources in reverse order. New
+launches on a retained scope are cancelled; finalizers must tolerate resources already being
+disposed.
+
+Hosts can opt into `AndroidPluginManager`'s suspending load/bulk-load/unload methods and observe its
+immutable `states` flow. Those callbacks execute on `Dispatchers.IO`, not the requesting UI thread;
+legacy synchronous calls remain unchanged. Async failure/unload waits for cooperative child cleanup,
+whereas synchronous unload cancels without joining. A queued cancelled request does not mutate; once
+admitted it finishes its transaction even if cancelled, and a successful load may remain ACTIVE. Do
+not await lifecycle operations from callbacks or job finalizers. Blocking or non-cooperative code
+cannot be forcibly interrupted and may prevent completion. These APIs do not migrate existing UI
+callers or make lazy activation available. The owned-service API below supplies inter-plugin service
+leases; automatic release of open editor/project sessions remains deferred. Close those sessions
+before unloading their providers.
+
+### Manifest limits and legacy mode
+
+Manifest parsing is bounded: 64 KiB of text, at most 64 classpath entries (counted across the
+aliases before de-duplication), and at most 128 dependency and capability entries. Unsupported
+`schemaVersion` values and malformed compatibility ranges are rejected before your code loads.
+
+Manifests without `schemaVersion` run in the **legacy unchecked mode**: unknown fields are ignored
+and no API-range validation happens, so plugins built for older hosts keep loading. That also means
+they get no protection against host API changes. Declare `schemaVersion` and
+`compatibility` to opt into checked compatibility.
+
+During discovery, one malformed or incompatible package is isolated and skipped; it does not stop
+other plugins from loading.
 
 ---
 
@@ -122,33 +216,91 @@ package com.example.myplugin
 
 import org.cosmicide.plugin.api.CosmicPlugin
 import org.cosmicide.plugin.api.PluginContext
-import org.cosmicide.plugin.api.PluginDescriptor
+import org.cosmicide.plugin.api.launch
+import org.cosmicide.plugin.api.onDispose
+import org.cosmicide.plugin.api.register
 
 class MyPlugin : CosmicPlugin {
 
     override fun activate(context: PluginContext) {
-        val owner = context.descriptor.id
-
-        // 1. Access core IDE services
-        val commands = context.services.require(IdeServices.COMMAND_EXECUTION)
-
-        // 2. Register extensions
-        val lspRegistration = context.extensions.register(
+        context.register(
             point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
             extension = MyLspProvider(),
-            ownerPluginId = owner,
             priority = 300
         )
-        context.registerDisposable(lspRegistration)
-    }
-
-    override fun deactivate(context: PluginContext) {
-        // Cleanup performed automatically via registered Disposables
+        context.onDispose { context.logger.info("MyPlugin resources released") }
+        context.launch {
+            // Do cooperative background work; release coroutine-owned resources in finally.
+            context.logger.debug("MyPlugin background work started")
+        }
     }
 }
 ```
 
+`MyLspProvider` is your implementation and `EditorExtensionPoints` comes from the IDE SDK. The
+Kotlin `register` helper supplies `context.descriptor.id` and tracks the registration, including on
+contexts without the runtime's scoped registry facade. Priority defaults to zero. Both `register`
+and `onDispose` return a `Disposable` for early removal/cleanup. `onDispose` is synchronous and uses
+the host's cleanup policy; keep it short and non-blocking.
+
+`context.launch` returns a `Job` and uses the existing `PluginCoroutineScope` service; it creates no
+new scope and inherits the host's dispatcher and cancellation. It throws `IllegalStateException` if
+the service is absent (older hosts or a closed context). For optional support, use the nullable
+service lookup shown above instead. Current hosts use `Dispatchers.Default` with supervised
+children; use `withContext(Dispatchers.IO)` for blocking I/O, but cancellation is still cooperative.
+On close, resources may be disposed before coroutine finalizers finish. Synchronous unload does not
+join jobs; the suspending unload path waits for cooperative cleanup. No detached fallback or
+automatic UI thread switching is provided.
+
 ---
+
+### Owned registration and service lifetimes (Phase 3)
+
+`context.extensions.register(point, value)` now assigns your plugin id automatically: the legacy
+CORE default maps to `context.descriptor.id`. Explicit own ids still work; foreign owner
+registration or `unregisterOwner` throws. `unregisterOwner(CORE)` removes only your contributions.
+Registrations are tracked automatically, so manual wrapping remains valid but is unnecessary for
+this facade. Equal-valued duplicates are independent registrations; disposing an old token cannot
+remove a newer one. Snapshot ordering is priority descending, owner ascending, then insertion order
+for ties.
+
+Host services are live: each `context.services.get` observes the latest host replacement/removal,
+with runtime locals such as plugin directory overriding the host. Do not retain a lookup expecting
+it to track replacements automatically. Legacy host-map mutation is not observable through a flow.
+
+New hosts also expose `org.cosmicide.plugin.api.OwnedServices.KEY`. This optional API is separate
+from legacy host lookup and publication. For a public interface/key already shared by the host SDK:
+
+```kotlin
+val owned = context.services.get(OwnedServices.KEY) // null on older hosts
+val publication = owned?.publish(SHARED_SERVICE_KEY, implementation)
+// Publication is context-tracked; dispose early to withdraw. Duplicate live keys throw.
+
+val lease = owned?.lease(SHARED_SERVICE_KEY)
+val value = lease?.get() // null after withdrawal; old leases never bind to replacements
+
+context.services.get(PluginCoroutineScope.KEY)?.scope?.launch {
+    owned?.observe(SHARED_SERVICE_KEY)?.collect { current ->
+        // Reacquire from current?.get(); tolerate absence and missed intermediate states.
+    }
+}
+```
+
+The sample's `SHARED_SERVICE_KEY` and `implementation` stand for a shared SDK interface and your
+implementation; they are not built-in service names. Use `compileOnly` shared contracts with public
+API/data types in their method signatures. Concrete-class keys and plugin-loader-only interfaces are
+rejected. No sibling-loader linking or arbitrary shared-contract installation is provided.
+
+You can see your own publications and those of direct declared dependencies with matching version
+constraints. Optional providers may arrive/disappear; transitive dependencies are not visible.
+Declare every provider you consume. Publication keys are globally unique, even across invisible
+owners, and are separate from legacy host-map keys. Observe owned services through this API, not
+`context.services.get(SHARED_SERVICE_KEY)`. Collection is cold and conflated and should use your
+lifecycle scope; requester close ends collection, while provider withdrawal reports absence. Close
+invalidates all leases and publications before tracked resources drain in reverse order. A retained
+raw instance or already-running call cannot be revoked: reacquire before use and arrange safe
+cancellation/coordination in the shared contract. No automatic editor-session cleanup is implied.
+Direct hooks remain supported with unchanged APIs and their existing manual cleanup obligations.
 
 ## 4. Extension Point Examples
 
@@ -301,10 +453,10 @@ class PythonFormatterProvider : EditorFormatterProvider {
    Run `./gradlew assembleRelease` to compile your plugin module into an `.apk` file.
 
 2. **Assemble the ZIP package**:
-   Create a ZIP archive containing `manifest.json` and your compiled `.apk`:
+   Create a ZIP archive containing `plugin.json` and your compiled `.apk`:
    ```text
    my-plugin-1.0.0.zip
-   ├── manifest.json
+   ├── plugin.json
    └── plugin.apk
    ```
 
@@ -316,7 +468,7 @@ To test your plugin on a device or emulator without setting up a remote reposito
 
 1. Locate Cosmic IDE's internal plugin directory on the target device:
    `/data/data/org.cosmicide/files/plugins/<your-plugin-id>/`
-2. Extract `manifest.json` and `plugin.apk` into that directory.
+2. Extract `plugin.json` and `plugin.apk` into that directory.
 3. Restart Cosmic IDE. The plugin will be discovered, verified, and activated automatically.
 
 ---

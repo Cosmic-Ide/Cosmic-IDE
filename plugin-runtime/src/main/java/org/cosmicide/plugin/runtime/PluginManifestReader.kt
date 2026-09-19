@@ -16,7 +16,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
-/** Additive envelope; existing PluginDescriptor and PluginContext JVM signatures stay unchanged. */
+/** Parsed manifest metadata. */
 data class PluginManifestMetadata(
     val descriptor: PluginDescriptor,
     val schemaVersion: Int?,

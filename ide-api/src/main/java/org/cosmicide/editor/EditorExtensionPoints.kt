@@ -40,8 +40,27 @@ object EditorExtensionPoints {
         EditorThemeProvider::class.java
     )
 
+    @JvmField
     val EDITOR_ACTION_PROVIDER = ExtensionPoint(
         "org.cosmicide.editor.action",
         EditorActionProvider::class.java
+    )
+
+    @JvmField
+    val CONTEXT_MENU_PROVIDER = ExtensionPoint(
+        "org.cosmicide.editor.contextMenu",
+        EditorContextMenuProvider::class.java
+    )
+
+    @JvmField
+    val TEXT_ACTION_PROVIDER = ExtensionPoint(
+        "org.cosmicide.editor.textAction",
+        EditorTextActionProvider::class.java
+    )
+
+    @JvmField
+    val EVENT_SUBSCRIBER = ExtensionPoint(
+        "org.cosmicide.editor.eventSubscriber",
+        EditorEventSubscriber::class.java
     )
 }

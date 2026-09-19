@@ -26,7 +26,7 @@ fun installedPluginDirectory(root: File, id: String): File {
     return target
 }
 
-/** Re-read on every load, including the legacy descriptor-only facade; never trust lost metadata. */
+/** Re-reads and validates the on-disk package manifest. */
 internal fun validateInstalledPlugin(root: File, descriptor: PluginDescriptor): PluginManifestMetadata {
     val directory = installedPluginDirectory(root, descriptor.id)
     val metadata = PluginManifestReader.readMetadata(directory)

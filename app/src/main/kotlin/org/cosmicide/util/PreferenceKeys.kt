@@ -35,4 +35,6 @@ object PreferenceKeys {
 
     const val EXTENSION_ENABLED_PREFIX = "extension_enabled."
 
+    const val BACKUP_TO_FS = "backup_to_fs"
+
 }

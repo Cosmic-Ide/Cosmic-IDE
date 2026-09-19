@@ -8,6 +8,7 @@
 package org.cosmicide.plugin.api.hook
 
 import android.content.Context
+import org.cosmicide.plugin.api.Disposable
 import top.canyie.pine.Pine
 import top.canyie.pine.callback.MethodHook
 import java.lang.ref.WeakReference
@@ -19,8 +20,8 @@ object HookManager {
     lateinit var context: WeakReference<Context>
 
     @JvmStatic
-    fun registerHook(hook: Hook) =
-        Pine.hook(
+    fun registerHook(hook: Hook): Disposable {
+        val record = Pine.hook(
             hook.type.getDeclaredMethod(hook.method, *hook.argTypes),
             object : MethodHook() {
                 override fun beforeCall(callFrame: Pine.CallFrame) {
@@ -32,13 +33,15 @@ object HookManager {
                 }
             }
         )
+        return Disposable { record.unhook() }
+    }
 
     @JvmStatic
     fun invokeOriginal(method: Member, obj: Any?, vararg args: Any) =
         Pine.invokeOriginalMethod(method, obj, *args)
 
     @JvmStatic
-    fun isHooked(method: Member) = Pine.isHooked(method)
+    fun isHooked(method: Member): Boolean = Pine.isHooked(method)
 
     fun disableHiddenApiRestrictions() = Pine.disableHiddenApiPolicy(true, true)
 

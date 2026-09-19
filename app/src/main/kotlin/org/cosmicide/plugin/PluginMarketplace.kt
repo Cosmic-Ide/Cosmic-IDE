@@ -123,30 +123,32 @@ class PluginMarketplace(
 
     suspend fun uninstall(pluginId: String) = withContext(AppDispatchers.IO) {
         val pluginManager = checkNotNull(manager()) { "Plugin runtime is not initialized" }
-        val target = FileUtil.pluginDir.resolve(pluginId)
-        require(target.isDirectory) {
-            "Bundled plugin $pluginId cannot be uninstalled"
-        }
-
-        val descriptor = PluginManifestReader.read(target)
-            ?: error("Installed plugin $pluginId has no valid manifest")
-        require(descriptor.id == pluginId) { "Installed plugin id does not match its directory" }
-
-        val token = UUID.randomUUID().toString()
-        val removing = FileUtil.pluginDir.resolve(".remove-$pluginId-$token")
-        pluginManager.unload(pluginId)
-        try {
-            check(target.renameTo(removing)) { "Could not prepare $pluginId for removal" }
-            check(removing.deleteRecursively()) { "Could not remove $pluginId" }
-            pluginManager.forget(pluginId)
-        } catch (error: Throwable) {
-            if (removing.exists() && !target.exists()) {
-                removing.renameTo(target)
+        pluginManager.withPackageTransaction {
+            val target =
+                org.cosmicide.plugin.runtime.installedPluginDirectory(FileUtil.pluginDir, pluginId)
+            require(target.isDirectory) {
+                "Bundled plugin $pluginId cannot be uninstalled"
             }
-            if (target.isDirectory) {
-                pluginManager.load(descriptor)
+            val descriptor = PluginManifestReader.read(target)
+                ?: error("Installed plugin $pluginId has no valid manifest")
+            require(descriptor.id == pluginId) { "Installed plugin id does not match its directory" }
+
+            val token = UUID.randomUUID().toString()
+            val removing = FileUtil.pluginDir.resolve(".remove-$pluginId-$token")
+            pluginManager.unload(pluginId)
+            try {
+                check(target.renameTo(removing)) { "Could not prepare $pluginId for removal" }
+                check(removing.deleteRecursively()) { "Could not remove $pluginId" }
+                pluginManager.forget(pluginId)
+            } catch (error: Throwable) {
+                if (removing.exists() && !target.exists()) {
+                    removing.renameTo(target)
+                }
+                if (target.isDirectory) {
+                    pluginManager.load(descriptor)
+                }
+                throw error
             }
-            throw error
         }
     }
 
@@ -156,15 +158,17 @@ class PluginMarketplace(
         staging: File,
         target: File,
         backup: File
-    ) {
+    ) = manager.withPackageTransaction {
         val replacing = target.isDirectory
         if (target.exists() && !replacing) {
             error("Plugin install target is not a directory")
         }
 
-        if (replacing) {
-            manager.unload(descriptor.id)
-            check(target.renameTo(backup)) { "Could not preserve the installed plugin" }
+        // Refusal must occur outside rollback and before any installed-package mutation.
+        manager.unload(descriptor.id)
+        if (replacing && !target.renameTo(backup)) {
+            PluginManifestReader.read(target)?.let(manager::load)
+            error("Could not preserve the installed plugin")
         }
 
         try {

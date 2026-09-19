@@ -68,7 +68,17 @@ Leaving all project-related screens cleans up project-scoped resources.
 
 - `EditorViewModel` owns open documents and saves; editor providers own language configuration; LSP
   providers own server creation.
-- `CosmicPluginHost` owns the extension registry; registrations are owned and removed by plugin id.
+- `CosmicPluginHost` owns the extension registry. Context facades map legacy CORE ownership to the
+  plugin, reject foreign mutations, and track identity-token registrations. The default registry
+  indexes by point id and caches immutable type-filtered ordered snapshots; mutations expose an
+  optional revision without changing legacy interfaces.
+- `:plugin-runtime` owns the per-runtime owned-service hub and context-local live host overlays.
+  Installed contexts no longer copy host service maps. Optional `OwnedServices` contracts in
+  `:plugin-api` expose duplicate-rejecting publication and withdrawal-aware leases/flows. Visibility
+  covers self and direct version-compatible declared dependencies, not transitive dependencies or
+  implementation classes. Context close invalidates owned services before resource disposal; raw
+  instances and legacy extension sessions are not revocable. The legacy public host map remains
+  mutable and uncached, with no observation guarantee.
 - `LinuxProcessRunner` owns the glibc environment and command wrapping for every external tool.
 - Project screens request command contributions and cleanup through `ProjectSessionServices`.
 - HTTPS TextMate grammar cache entries are URL-keyed, parser-validated before replacement, and

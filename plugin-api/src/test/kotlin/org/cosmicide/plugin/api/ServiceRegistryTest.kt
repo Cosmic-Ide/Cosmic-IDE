@@ -52,5 +52,33 @@ class ServiceRegistryTest {
         }
     }
 
+    @Test
+    fun `equal and same instance replacements survive stale disposal`() {
+        val registry = DefaultServiceRegistry()
+        val instance = Clock(1)
+        val first = registry.register(key, instance)
+        val second = registry.register(key, instance)
+        first.dispose()
+        assertSame(instance, registry.get(key))
+        val equal = Clock(1)
+        registry.register(key, equal)
+        second.dispose()
+        assertSame(equal, registry.get(key))
+    }
+
+    @Test
+    fun `public map and copy retain legacy direct mutation semantics`() {
+        val registry = DefaultServiceRegistry()
+        val old = registry.register(key, Clock(1))
+        val replacement = Clock(1)
+        registry.services[key] = replacement
+        old.dispose()
+        assertSame(replacement, registry.get(key))
+        val copy = registry.copy()
+        registry.services.clear()
+        assertNull(registry.get(key))
+        assertSame(replacement, copy.get(key))
+    }
+
     private data class Clock(val tick: Int)
 }

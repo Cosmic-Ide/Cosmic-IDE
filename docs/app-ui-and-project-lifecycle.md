@@ -21,6 +21,37 @@ assumes these roots exist.
 
 `MainActivity` installs the current theme and hosts `IDENavigation`.
 
+### Plugin startup and package changes
+
+`CosmicPluginHost` registers bundled plugin candidates as a batch and activates them through the
+same dependency/lifecycle core used by installed packages. Installed metadata is scanned before
+planning; installed bulk activation still occurs on first extension lookup, not as a new
+lazy-activation policy. A bundled dependency can cause a required installed provider to start
+earlier. Missing, disabled, version-incompatible, cyclic, or failed required dependencies prevent
+dependent activation. Optional edges are best effort. No dependency download or automatic uninstall
+cascade occurs.
+
+Legacy manager calls run callbacks on their caller's thread. Loads, unloads, and marketplace package
+swaps are serialized; recursive lifecycle calls from callbacks are rejected. Callbacks must not wait
+for lifecycle work on another thread. Marketplace replacement/removal refuses active required
+dependents before changing the installed package and retains failed-update restoration. Only newly
+started, unneeded dependencies are rolled back after activation failure, never unrelated active
+ones. Context close rejects new contributions and immediately disposes late resource registrations.
+
+The host does not yet acquire provider-session leases or automatically release open editor/LSP,
+preview, project, or Compose resources before provider disposal. Close those sessions before
+unloading providers. The manager now provides opt-in suspending load/bulk-load/unload operations on
+`Dispatchers.IO` plus immutable observable `states`. Existing host/UI callers are not migrated:
+reactive UI refresh and lazy activation remain later work. Context-local `PluginCoroutineScope`
+services supervise cooperative jobs and cancel on close. Async failure/unload joins child finalizers
+after disposing tracked resources; synchronous unload cancels without joining to preserve legacy
+threading. Cancellation skips queued async requests, but an admitted transaction finishes and may
+leave a successfully loaded plugin active. Neither API forcibly interrupts arbitrary callback/native
+code. Do not await lifecycle work from plugin callbacks or finalizers. Mixing synchronous package
+replacement with async cleanup has no job-drain barrier. Owner-aware project/editor session routing
+must be integrated before leases can safely gate provider disposal; no placeholder leases are added.
+Host unit tests do not substitute for arm64/ART lifecycle validation.
+
 ## Navigation graph
 
 Navigation uses typed `Screen` keys and a saveable Navigation 3 back stack.

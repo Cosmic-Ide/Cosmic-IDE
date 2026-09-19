@@ -38,19 +38,33 @@ interface MutableServiceRegistry : ServiceRegistry {
 class DefaultServiceRegistry : MutableServiceRegistry {
 
     val services = ConcurrentHashMap<ServiceKey<*>, Any>()
+    private val lock = Any()
+    private val tokens = mutableMapOf<ServiceKey<*>, Any>()
 
     override fun <T : Any> register(key: ServiceKey<T>, instance: T): Disposable {
         require(key.type.isInstance(instance)) {
             "Service ${instance::class.java.name} does not implement ${key.type.name}"
         }
-        services[key] = instance
+        val token = Any()
+        synchronized(lock) {
+            tokens[key] = token
+            services[key] = instance
+        }
         return Disposable {
-            services.remove(key, instance)
+            synchronized(lock) {
+                if (tokens[key] === token) {
+                    tokens.remove(key)
+                    services.computeIfPresent(key) { _, current -> if (current === instance) null else current }
+                }
+            }
         }
     }
 
     override fun unregister(key: ServiceKey<*>) {
-        services.remove(key)
+        synchronized(lock) {
+            tokens.remove(key)
+            services.remove(key)
+        }
     }
 
     override fun <T : Any> get(key: ServiceKey<T>): T? {

@@ -26,7 +26,8 @@ Built-in providers use the same registry and resolution rules as plugin contribu
 
 ### `:plugin-api`
 
-This is the stable, platform-neutral plugin contract. It owns:
+This is the stable plugin contract. The module is an Android library (it also re-exports the Pine
+agent API), so plugins build against Android, not a plain JVM target. It owns:
 
 - `CosmicPlugin` activation and deactivation;
 - `PluginDescriptor` and dependency metadata;
@@ -136,7 +137,13 @@ sessions and already-running server processes are not forcefully terminated.
 ## Registration and ordering
 
 Registrations are synchronous and in-memory. The registry orders them by descending priority, then
-by owner plugin id for deterministic ties.
+by owner plugin id, preserving insertion order for equal ties and allowing duplicate values. Each
+registration has an identity token: a stale disposable cannot remove an equal-valued replacement.
+`DefaultExtensionRegistry` indexes by point id and caches immutable ordered snapshots by requested
+runtime type. Mutating an unrelated point does not invalidate another point's snapshot. Lookup keeps
+legacy id-plus-`isInstance` matching, including values registered through a broader point type. The
+additive `ExtensionRegistryRevision` exposes a mutation stamp; the existing registry interfaces and
+method signatures are unchanged. Old snapshots remain stable after mutations.
 
 ```kotlin
 class MyPlugin : CosmicPlugin {
@@ -152,9 +159,11 @@ class MyPlugin : CosmicPlugin {
 }
 ```
 
-Always register the returned `Disposable` with `PluginContext`. The runtime unregisters by owner id
-during unload, but explicit disposal keeps resource ownership clear and handles partial activation
-failures.
+The context facade automatically tracks returned registrations. Explicit `registerDisposable` calls
+remain supported and idempotent. Omitted ownership (legacy `PluginIds.CORE`) maps to the actual
+context plugin, including for `unregisterOwner(CORE)`. Explicit foreign-owner registration/removal
+throws; removal after context close also throws. The host's raw registry retains global mutation for
+host cleanup. These supported-API boundaries are not a sandbox for trusted in-process code.
 
 Priority is a selection mechanism, not a load order. A provider should use the lowest priority that
 expresses its precedence:
@@ -544,11 +553,16 @@ Installed plugins live in their own directory under the app plugin root and incl
 
 ```json
 {
+  "schemaVersion": 1,
   "id": "com.example.cosmic.rust",
   "name": "Rust Support",
   "version": "1.0.0",
   "entryClass": "com.example.rust.RustPlugin",
   "classPath": ["plugin.apk"],
+  "compatibility": {
+    "pluginApi": { "minInclusive": "1.0.0", "maxExclusive": "2.0.0" },
+    "ideApi": { "minInclusive": "1.0.0", "maxExclusive": "2.0.0" }
+  },
   "capabilities": ["editor.lsp", "editor.formatter"],
   "enabledByDefault": true
 }
@@ -558,9 +572,134 @@ Manifest `enabledByDefault` controls initial plugin activation. It is separate f
 `ConfigurableExtension.enabledByDefault`, which controls an individual contribution after the plugin
 has activated.
 
-Plugin activation is atomic regarding owned registrations. If activation fails, the runtime disposes
-collected resources and unregisters the owner. Unload calls `deactivate`, disposes plugin resources,
-and unregisters all contributions owned by the plugin id.
+A manifest may declare `"schemaVersion": 1` with a `compatibility` envelope. Each entry is a
+half-open host range (`pluginApi` for `org.cosmicide.plugin.api`, `ideApi` for the IDE extension
+contracts) written as strict `major.minor.patch` bounds. The host validates its actual contract
+versions against these ranges before creating class loaders or running plugin code — during
+installed discovery, direct load, and marketplace staging alike. Manifests without a schema version
+keep the legacy unchecked mode: they parse and load exactly as before, without API validation.
+Manifest parsing is bounded (64 KiB text, 64 classpath entries, 128 dependency and capability
+entries), and a malformed or incompatible package is isolated during discovery instead of preventing
+the remaining plugins from loading.
+
+### Dependency planning and lifecycle (Phase 2 core)
+
+Built-in and installed plugins use one Android-free lifecycle core. Installed metadata is discovered
+before planning; bundled plugins are registered as a batch. Activation follows deterministic,
+dependency-first order (dependency ids break ties). Required missing, disabled,
+incompatible-version, duplicate-id, cyclic, and failed dependencies block dependent code with
+distinct structured causes. There is one installed version per id, with no automatic downloads or
+uninstall cascades.
+
+`dependencies` accepts legacy id strings and objects with `id`, `minVersion`, and `optional`. An
+unconstrained edge accepts any nonblank legacy provider version. A constrained edge requires both
+versions to be strict SemVer 2.0, including prerelease precedence; build metadata does not change
+precedence. Numeric components have no machine-integer size limit. Optional dependencies are best
+effort: unavailable/incompatible subtrees and cycle-forming edges are skipped, and an optional
+activation failure does not block the requester. Required edges take priority. Dependencies order
+lifecycle and now restrict the optional owned-service surface described below; implementation
+classes are not shared between plugin loaders.
+
+The synchronous manager preserves caller-thread callbacks. A dedicated transition gate serializes
+loads, unloads, and package transactions; no registry lock is held for lifecycle callbacks.
+Concurrent successful loads reuse the same active instance. Snapshot reads are nonblocking and show
+the last published handle. Callback-triggered lifecycle mutations are explicitly rejected with a
+`REENTRANT` cause. Callbacks must not synchronously wait for another thread's lifecycle operation,
+which waits for the current callback. Failed requests may be retried by later calls.
+
+Failed activation closes the context and removes owned registrations. Rollback stops only plugins
+newly started by that transaction and not reachable from its successful root or previously active
+plugins. Previously active dependencies are never unwound by an unrelated failure. Unload refuses
+while active required dependents exist; optional dependents do not prevent unload. Marketplace
+replacement/removal uses the same gate and checks refusal before mutating the installed package.
+Failed replacement still restores/reactivates the previous directory; failure to prepare its backup
+also attempts reactivation. This does not undo arbitrary plugin side effects or journal process
+death.
+
+Context close atomically seals disposable/contribution registration, disposes tracked resources in
+reverse order, and immediately disposes late registrations exactly once. Contributions made through
+`context.extensions` are owner-scoped, tracked automatically, and rejected after close. Raw registry
+references and untracked services, jobs, listeners, and hooks remain the author's cleanup
+responsibility.
+
+`AndroidPluginManager` also offers opt-in suspending `loadAsync`, `loadInstalledPluginsAsync`,
+`loadBuiltinsAsync`, and `unloadAsync` entry points. These run the same core on `Dispatchers.IO`;
+the synchronous APIs retain their caller-thread callbacks. `states` is a conflated `StateFlow` of
+immutable diagnostic snapshots (id, version, stable state, error text, structured failure kind, and
+optional ACTIVATING/DEACTIVATING transition). It contains no plugin instances or mutable descriptor
+collections. It reflects synchronous operations too; it is current state, not a durable event log.
+
+Async requests serialize through a coroutine mutex and the existing transition gate. Cancellation
+while queued skips mutation. Once admitted, a transaction completes even if its requester cancels;
+an activated plugin may remain ACTIVE, so inspect `states` and explicitly unload if required.
+Successful duplicate loads reuse the active instance; failed requests remain retryable. Direct
+same-thread async callback reentry is rejected before dispatch. Callbacks and plugin job finalizers
+must never await another lifecycle request, including by launching work on another thread.
+
+Each context supplies the optional typed `PluginCoroutineScope.KEY` service through a local overlay,
+without adding `PluginContext` members or publishing the scope to the host registry. Its
+`SupervisorJob` and `Dispatchers.Default` scope isolate ordinary child failures and log them.
+Context close seals registration, withdraws scope lookup, cancels the scope, then drains disposables
+in reverse order. Existing scope references remain cancelled. Async failure/unload additionally
+joins cooperative child finalizers outside the synchronous transition gate before returning or
+admitting the next async request. Resources may already be disposed while finalizers run; finalizers
+must tolerate that ordering. Synchronous unload requests cancellation and disposes synchronously,
+but deliberately does not join jobs or change legacy blocking/thread semantics. Mixing synchronous
+reload/package operations with async cleanup does not provide a job-drain barrier.
+
+There is no forced interruption or timeout for arbitrary blocking callbacks, detached jobs,
+non-cooperative finalizers, or native code. Such work can prevent async completion. Raw host service
+publication and untracked resources still require explicit disposal. Provider-session leases and
+automatic editor/project-resource release before provider disposal remain deferred: project routing
+currently returns bare providers/commands without owner-aware session lifetimes. Close
+provider-backed sessions before unload. Phase 2 is not fully complete; host tests do not prove ART
+loading or device resource cleanup.
+
+## Owned services and live host lookup (Phase 3)
+
+`AndroidPluginManager` supplies installed contexts with runtime-local overrides (such as plugin
+directory) above a live read-through host service view, not `serviceRegistry.copy()`. Built-ins also
+read the live host. Host replacement, removal, and direct mutation of
+`DefaultServiceRegistry.services`
+are visible on the next lookup. Context close withdraws its service view. Legacy `register` still
+replaces, `copy()` still produces a detached snapshot, and the public mutable map is unchanged.
+Registration tokens protect replacements, including equal/same-instance re-registration through the
+API. Direct remove/reinsert of the exact same object cannot be distinguished as a new lifetime.
+There is deliberately no host-map revision, observation, or cache-coherence guarantee.
+
+The additive `OwnedServices.KEY` service provides `publish`, `lease`, and `observe`; it adds no
+mandatory `PluginContext` or registry members. One private hub per runtime is shared by built-in and
+installed contexts. Publication is separate from legacy `context.services.get(key)` lookup. A key
+may have only one live owned publication globally; duplicates throw, never silently replace. Tokens
+and subscriptions cannot remove another publisher. Publication disposables are automatically
+tracked.
+
+Keys must name public interfaces resolved to the identical class by the host API class loader. Use
+shared public SDK contracts (`compileOnly`), never private plugin classes or copied API classes. The
+runtime does not link sibling loaders or install arbitrary shared-contract packages. Contract
+methods must themselves use shared public data/API types; the runtime does not recursively validate
+method signatures or sandbox returned objects.
+
+A session sees its own publications and direct declared dependencies only, including optional edges
+whose `minVersion` matches the provider. Visibility is not transitive. Publications become visible
+when published during activation; failed activation withdraws them. Compatible optional providers
+may appear later or disappear without stopping consumers. Required-provider unload still refuses
+while required dependents remain active. The runtime rechecks version visibility against the actual
+publishing session, including after reload.
+
+`ServiceLease.get()` returns null after withdrawal or requester close. Old leases never rebind to a
+new publication. Withdrawal drops the hub's instance reference; it cannot revoke an object already
+returned or cancel an in-flight call. Reacquire before use and arrange application-level
+coordination for long operations. `observe` is a cold, conflated current-state flow (initial absence
+included), not an event bus or durable log; it may emit unchanged availability after unrelated
+publication changes. Collect in `PluginCoroutineScope` and keep collectors cooperative. Provider
+withdrawal notifies live collectors; requester close ends collection, without guaranteeing delivery
+of a final null. All owned leases/publications are invalidated before reverse-order resource
+disposal begins. This does not introduce leases for legacy extension providers or automatically
+close editor/project sessions.
+
+Existing direct hooks remain supported and untouched; their untracked registrations still require
+explicit cleanup and implementation-target compatibility checks.
 
 ## Plugin repository and installation
 
@@ -636,7 +775,7 @@ Extension tests should cover:
 The app compilation task for integration verification is:
 
 ```sh
-./gradlew :app:compileDevDebugKotlin
+./gradlew :app:compileProdDebugKotlin
 ```
 
 ## Architectural decisions
@@ -645,9 +784,9 @@ Cosmic IDE uses a modular monolith. Separate extension-host processes would prov
 isolation, but require IPC, process supervision, API serialization, compatibility negotiation, and a
 permission model. Those costs are not justified until the typed in-process API stabilizes.
 
-Typed extension points were chosen over arbitrary method hooks. Hooks remain in `:plugin-runtime`
-for app-owned compatibility work, but are not a supported plugin contract because they couple
-plugins to implementation details and cannot provide reliable compatibility or cleanup.
+Typed extension points are the primary plugin contract. Hooks remain supported in `:plugin-runtime`
+as a trusted escape hatch for app-owned compatibility work, but they are version-sensitive, provide
+no compatibility guarantees or automatic cleanup, and are not sandboxed.
 
 Enablement is a resolution policy instead of registry mutation. This preserves plugin ownership,
 makes settings reversible, avoids reactivation for a single contribution, and keeps registry
@@ -663,7 +802,11 @@ enablement, failure handling, and connection lifecycle one implementation path.
 - Add explicit rollback controls to the marketplace UI.
 - Add explicit plugin-level persisted enable/disable and reload controls in addition to contribution
   switches.
-- Add dependency and host API compatibility checks before plugin activation.
+- Host API compatibility checks before activation are implemented: versioned manifests declare
+  supported host ranges, validated against the host contract baselines; legacy unchecked mode
+  remains documented. Plugin dependency planning and synchronous lifecycle serialization are
+  implemented, with opt-in asynchronous state observation and context-owned cooperative
+  cancellation. Provider-session leases and automatic editor/project release remain future work.
 - Introduce process-group ownership so custom shell scripts with child processes are always stopped.
 - Add typed extension points for general commands, diagnostics, custom terminal panels, and settings
   pages. Project creation/actions and terminal setup requests are now typed.

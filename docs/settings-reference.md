@@ -147,6 +147,8 @@ implications, see [Environment and toolchain bootstrap](environment-and-toolchai
 | Setup                     | Reopens the language-server/tool setup terminal        |
 | Source code               | Opens the Cosmic IDE repository                        |
 | Manage storage permission | Opens Android's all-files-access settings for this app |
+| Backup to File System     | Toggles backing up projects and preferences to storage |
+| Perform Manual Backup     | Immediately exports projects and settings to storage   |
 | Analytics                 | Enables or disables analytics collection preference    |
 
 All-files access is broader than Cosmic's normal app-owned project and toolchain directories. Grant

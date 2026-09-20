@@ -18,6 +18,11 @@
     <string name="completion_type">Completion type</string>
 
     <string name="keep_alive_notification_text">Cosmic IDE is running in the background</string>
+    <string name="keep_alive_notification_channel">Foreground service</string>
+    <string name="keep_alive_notification_channel_description">Keeps the IDE process alive while running in the background</string>
+    <string name="notification_action_wake_lock">Acquire wake lock</string>
+    <string name="notification_action_wake_unlock">Release wake lock</string>
+    <string name="notification_action_stop">Stop</string>
     <string name="lsp_diagnostic_copy">Copy</string>
     <string name="lsp_diagnostic_quick_fixes">Quick fixes</string>
 </resources>

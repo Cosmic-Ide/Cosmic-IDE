@@ -117,8 +117,8 @@ configurations.all {
 
 dependencies {
     implementation(libs.gson)
-    implementation(libs.zstd.jni)
-
+    //implementation(libs.zstd.jni)
+implementation("com.github.luben:zstd-jni:1.5.7-16@aar")
     implementation(libs.core.ktx)
     implementation(libs.documentfile)
     implementation(libs.lifecycle.runtime.ktx)

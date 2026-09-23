@@ -42,12 +42,13 @@ object PluginDiscovery {
         .listFiles { it.isDirectory && !it.name.startsWith(".") }
         ?.sortedBy { it.name }.orEmpty().map { directory ->
             try {
-                installedPluginDirectory(pluginRoot, directory.name)
-                val metadata = PluginManifestReader.readMetadata(directory)
+                // 关键点：用 target 接收规范化后的目录
+                val target = installedPluginDirectory(pluginRoot, directory.name)
+                val metadata = PluginManifestReader.readMetadata(target)
                     ?: error("Missing ${PluginManifestReader.MANIFEST_FILE}")
                 require(metadata.descriptor.id == directory.name) { "Installed plugin id does not match its directory" }
-                // Keep incompatible, parseable metadata so the manager can return a Failed handle.
-                PluginDiscoveryResult.Valid(metadata, directory)
+                // 传出 target 而不是 directory
+                PluginDiscoveryResult.Valid(metadata, target)
             } catch (error: Exception) {
                 PluginDiscoveryResult.Invalid(directory, error.message ?: "Invalid plugin manifest", error)
             }

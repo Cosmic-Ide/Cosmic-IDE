@@ -124,6 +124,7 @@ internal fun PluginMarketplaceSection(
                     onChanged()
                 }
                 .onFailure {
+                    it.printStackTrace()
                     errorMessage = it.message ?: "Could not install ${plugin.name}"
                 }
             operatingPluginId = null

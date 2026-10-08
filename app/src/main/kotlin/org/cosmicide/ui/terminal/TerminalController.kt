@@ -354,10 +354,12 @@ internal class TerminalController(
             val clipboard =
                 context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-            val text = clipboard.primaryClip
-                ?.getItemAt(0)
-                ?.coerceToText(context)
-                ?.toString()
+            val clip = clipboard.primaryClip
+            val text = if (clip != null && clip.itemCount > 0) {
+                clip.getItemAt(0)?.coerceToText(context)?.toString()
+            } else {
+                null
+            }
 
             if (!text.isNullOrEmpty()) {
                 write(text)

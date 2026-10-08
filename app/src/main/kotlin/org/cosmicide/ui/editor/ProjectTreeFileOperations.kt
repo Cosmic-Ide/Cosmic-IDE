@@ -1,6 +1,7 @@
 package org.cosmicide.ui.editor
 
 import java.io.File
+import java.nio.file.Files
 
 /** Owns validated filesystem mutations initiated by the project tree. */
 internal class ProjectTreeFileOperations(rootDirectory: File) {
@@ -28,7 +29,10 @@ internal class ProjectTreeFileOperations(rootDirectory: File) {
         val parent = target.parentFile ?: error("The project root cannot be renamed")
         val renamed = resolveChild(parent, validatedName(newName))
         require(!renamed.exists()) { "${renamed.name} already exists" }
-        check(target.renameTo(renamed)) { "Could not rename ${target.name}" }
+        val success = target.renameTo(renamed) || runCatching {
+            Files.move(target.toPath(), renamed.toPath()).toFile().exists()
+        }.getOrDefault(false)
+        check(success) { "Could not rename ${target.name}" }
         return renamed
     }
 

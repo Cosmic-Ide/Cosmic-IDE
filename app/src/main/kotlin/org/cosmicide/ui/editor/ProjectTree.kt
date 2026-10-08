@@ -104,8 +104,11 @@ internal fun ProjectTreeView(
             while (true) {
                 val kids = current.listFiles()
                 if (kids != null && kids.size == 1 && kids[0].isDirectory) {
-                    current = kids[0]
-                    toExpand.add(current)
+                    val nextDir = kids[0]
+                    if (!toExpand.add(nextDir)) {
+                        break
+                    }
+                    current = nextDir
                 } else {
                     break
                 }
@@ -217,7 +220,7 @@ internal fun ProjectTreeView(
                             DropdownMenuItem(text = { Text("Open External") }, onClick = {
                                 try {
                                     val mimeType = MimeTypeMap.getSingleton()
-                                        .getMimeTypeFromExtension(file.extension)
+                                        .getMimeTypeFromExtension(file.extension) ?: "*/*"
                                     val uri = FileProvider.getUriForFile(
                                         context, "${context.packageName}.fileprovider", file
                                     )
@@ -225,7 +228,10 @@ internal fun ProjectTreeView(
                                         setDataAndType(uri, mimeType)
                                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     }
-                                    context.startActivity(Intent.createChooser(intent, "Open with"))
+                                    val chooser = Intent.createChooser(intent, "Open with").apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    context.startActivity(chooser)
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                 }

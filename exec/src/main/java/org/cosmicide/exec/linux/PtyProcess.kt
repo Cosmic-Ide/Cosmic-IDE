@@ -115,20 +115,18 @@ class PtyProcess(
      * Returns: exit code (0 for success, non-zero for failure/signal)
      */
     fun waitFor(): Int {
-        exitCode?.let { return it }
+        synchronized(this) {
+            exitCode?.let { return it }
 
-        if (!waited.compareAndSet(false, true)) {
-            return exitCode ?: -1
+            val pid = getChildPid()
+            val code = if (pid > 0) {
+                nativeWaitPid(pid)
+            } else {
+                -1
+            }
+            exitCode = code
+            return code
         }
-
-        val pid = getChildPid()
-        val code = if (pid > 0) {
-            nativeWaitPid(pid)
-        } else {
-            -1
-        }
-        exitCode = code
-        return code
     }
 
     /**

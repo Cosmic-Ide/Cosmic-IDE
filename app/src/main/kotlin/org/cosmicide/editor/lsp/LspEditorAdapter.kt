@@ -180,10 +180,11 @@ fun CodeEditor.disposeLspLanguage() {
     val lspEditors = LspProjects.editorsFor(this)
     CoroutineScope(AppDispatchers.IO).launch {
         lspEditors.forEach(LspEditor::dispose)
+        LspProjects.cleanEmptyProjects()
     }
 }
 
-private object LspProjects {
+internal object LspProjects {
     private val projects = ConcurrentHashMap<String, LspProject>()
 
     fun forRoot(projectRoot: String): LspProject {
@@ -198,6 +199,12 @@ private object LspProjects {
     fun editorFor(uri: FileUri): LspEditor? {
         return projects.values.firstNotNullOfOrNull { project ->
             project.getEditor(uri)
+        }
+    }
+
+    fun cleanEmptyProjects() {
+        projects.entries.removeIf { (_, project) ->
+            project.getEditors().isEmpty()
         }
     }
 }
@@ -217,6 +224,9 @@ internal fun handleLspShowDocument(
 
     CoroutineScope(Dispatchers.Main.immediate).launch {
         val success = runCatching {
+            if (request.takeFocus == true) {
+                editor.requestFocus()
+            }
             request.selection?.let { selection ->
                 val content = editor.text
                 val startLine = selection.start.line.coerceIn(0, content.lineCount - 1)
@@ -232,9 +242,6 @@ internal fun handleLspShowDocument(
                 val cursorAnimationEnabled = editor.isCursorAnimationEnabled
                 editor.isCursorAnimationEnabled = false
                 try {
-                    if (request.takeFocus == true) {
-                        editor.requestFocus()
-                    }
                     if (startLine == endLine && startColumn == endColumn) {
                         editor.setSelection(endLine, endColumn)
                     } else {

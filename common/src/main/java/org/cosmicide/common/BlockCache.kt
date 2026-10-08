@@ -28,6 +28,17 @@ class BlockCache(private val maxBlocks: Int = 256) {
         }
     }
 
+    fun invalidatePrefix(prefix: String) {
+        synchronized(cache) {
+            val iterator = cache.keys.iterator()
+            while (iterator.hasNext()) {
+                if (iterator.next().startsWith(prefix)) {
+                    iterator.remove()
+                }
+            }
+        }
+    }
+
     fun clear() {
         synchronized(cache) {
             cache.clear()

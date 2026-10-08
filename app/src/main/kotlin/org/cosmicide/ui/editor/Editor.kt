@@ -1,6 +1,7 @@
 package org.cosmicide.ui.editor
 
 import android.content.Context
+import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.inputmethod.EditorInfo
 import androidx.compose.material3.ColorScheme
@@ -123,7 +124,9 @@ fun CodeEditor.enablePinchToZoom() {
         if (scaleDetector.isInProgress) {
             true
         } else {
-            v.performClick()
+            if (event.action == MotionEvent.ACTION_UP) {
+                v.performClick()
+            }
             false
         }
     }

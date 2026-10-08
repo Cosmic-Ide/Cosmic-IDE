@@ -40,6 +40,7 @@ class KeepAliveService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.v(TAG, "onCreate")
+        runStartForeground()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -56,9 +57,11 @@ class KeepAliveService : Service() {
             ACTION_RELEASE_WAKE_LOCK -> {
                 actionReleaseWakeLock()
             }
+            else -> {
+                runStartForeground()
+            }
         }
 
-        runStartForeground()
         return START_STICKY
     }
 

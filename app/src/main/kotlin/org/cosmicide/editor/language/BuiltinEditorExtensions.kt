@@ -36,6 +36,18 @@ fun registerBuiltinEditorExtensions(context: Context, registry: MutableExtension
         priority = customLspProvider.priority
     )
     registry.register(
+        point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
+        extension = KotlinEditorLanguageProvider,
+        ownerPluginId = PluginIds.CORE,
+        priority = KotlinEditorLanguageProvider.priority
+    )
+    registry.register(
+        point = EditorExtensionPoints.LSP_SERVER_PROVIDER,
+        extension = GradleGroovyEditorLanguageProvider,
+        ownerPluginId = PluginIds.CORE,
+        priority = GradleGroovyEditorLanguageProvider.priority
+    )
+    registry.register(
         point = EditorExtensionPoints.LANGUAGE_PROVIDER,
         extension = EmptyEditorLanguageProvider,
         ownerPluginId = PluginIds.CORE,

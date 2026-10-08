@@ -5,6 +5,9 @@ import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
 
@@ -45,7 +48,16 @@ class DiskIndexStore(private val storeDir: File) {
         val temp = File.createTempFile(file.name, ".tmp", file.parentFile)
         try {
             temp.writeBytes(data)
-            temp.renameTo(file)
+            try {
+                Files.move(
+                    temp.toPath(),
+                    file.toPath(),
+                    StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING
+                )
+            } catch (e: AtomicMoveNotSupportedException) {
+                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
         } finally {
             if (temp.exists()) temp.delete()
         }
@@ -90,8 +102,8 @@ class DiskIndexSegment(
         synchronized(this) {
             mappedBuffer?.force()
             mappedBuffer = null
-            channel.close()
-            raf.close()
+            runCatching { channel.close() }
+            runCatching { raf.close() }
         }
     }
 }

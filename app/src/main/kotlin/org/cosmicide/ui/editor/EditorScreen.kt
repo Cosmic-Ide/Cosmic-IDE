@@ -57,6 +57,7 @@ import org.cosmicide.editor.EditorActionContext
 import org.cosmicide.editor.EditorExtensionPoints
 import org.cosmicide.model.EditorViewModel
 import org.cosmicide.plugin.CosmicPluginHost
+import org.cosmicide.plugin.api.PluginIds
 import org.cosmicide.project.Project
 import org.cosmicide.project.ProjectCommand
 import org.cosmicide.project.ProjectTask
@@ -155,7 +156,7 @@ fun EditorScreen(
     }
 
     val onRunEditorAction: (EditorAction) -> Unit = { action ->
-        val pluginId = contributedActions.first { it.first.id == action.id }.second
+        val pluginId = contributedActions.firstOrNull { it.first.id == action.id }?.second ?: PluginIds.CORE
         val actionContext = object : EditorActionContext {
             override val project: Project = project
             override val file: File? = activeFile
@@ -216,7 +217,9 @@ fun EditorScreen(
             val session = activeEditorSession ?: return@let
             if (session.initialized) return@let
             val content = viewModel.cachedContent(file)
-                ?: withContext(Dispatchers.IO) { file.readText() }
+                ?: withContext(Dispatchers.IO) {
+                    runCatching { file.readText() }.getOrDefault("")
+                }
             viewModel.ensureDocument(file, content)
 
             session.isApplyingInitialContent = true

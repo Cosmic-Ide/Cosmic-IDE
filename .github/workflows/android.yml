@@ -9,8 +9,11 @@ on:
 
 jobs:
   build:
-
     runs-on: macos-latest
+
+    strategy:
+      matrix:
+        abi: [armeabi-v7a, arm64-v8a, x86_64]
 
     steps:
       - name: Checkout repository
@@ -46,5 +49,5 @@ jobs:
       - name: Upload debug apks
         uses: actions/upload-artifact@v4
         with:
-          name: app-arm64-v8a
-          path: app/build/outputs/apk/prod/debug/app-prod-arm64-v8a-debug.apk
+          name: app-${{ matrix.abi }}
+          path: app/build/outputs/apk/prod/debug/app-prod-${{ matrix.abi }}-debug.apk

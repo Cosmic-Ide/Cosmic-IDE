@@ -78,13 +78,12 @@ object KtNavigationProvider {
         for (declaration in psiFile.declarations) {
             when (declaration) {
                 is KtClass -> {
-                    val superClass = declaration.superTypeListEntries
-                        .filterIsInstance<KtSuperTypeEntry>()
+                    val superEntries = declaration.superTypeListEntries
+                    val superClass = superEntries
                         .firstOrNull()
                         ?.typeAsUserType?.referencedName
 
-                    val interfaces = declaration.superTypeListEntries
-                        .filterIsInstance<KtSuperTypeEntry>()
+                    val interfaces = superEntries
                         .drop(1)
                         .mapNotNull { it.typeAsUserType?.referencedName }
                         .joinToString(", ")

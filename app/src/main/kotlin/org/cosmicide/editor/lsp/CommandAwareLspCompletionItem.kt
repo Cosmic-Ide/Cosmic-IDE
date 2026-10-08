@@ -65,7 +65,9 @@ internal class CommandAwareLspCompletionItem(
         line: Int,
         column: Int
     ) {
-        delegate.performCompletion(editor, text, line, column)
+        if (!hasEmptyCommandPlaceholderEdit()) {
+            delegate.performCompletion(editor, text, line, column)
+        }
         executeCompletionCommand()
     }
 

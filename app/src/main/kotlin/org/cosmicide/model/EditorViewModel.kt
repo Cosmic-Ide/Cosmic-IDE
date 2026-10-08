@@ -1,5 +1,6 @@
 package org.cosmicide.model
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -95,10 +96,16 @@ class EditorViewModel : ViewModel() {
 
     private fun saveDocument(file: File) {
         val document = documents[file] ?: return
-        file.writeText(document.content)
-        documents[file] = document.markSaved()
+        runCatching {
+            file.writeText(document.content)
+            documents[file] = document.markSaved()
+        }.onFailure { error ->
+            Log.e(TAG, "Failed to save document ${file.name}", error)
+        }
     }
 }
+
+private const val TAG = "EditorViewModel"
 
 private fun String.editorContentHash(): Int {
     return toByteArray(Charsets.UTF_8).contentHashCode()

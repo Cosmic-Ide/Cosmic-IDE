@@ -20,6 +20,7 @@ object IndexManager {
         indexType: String,
         builder: () -> ByteArray
     ): DiskIndexSegment {
+        check(::store.isInitialized) { "IndexManager must be initialized before use" }
         val key = "$projectKey:$indexType"
 
         activeSegments[key]?.let { return it }
@@ -42,15 +43,20 @@ object IndexManager {
         activeSegments.keys.filter { it.startsWith(prefix) }.forEach { key ->
             activeSegments[key]?.close()
             activeSegments.remove(key)
-            store.invalidate(key)
+            if (::store.isInitialized) {
+                store.invalidate(key)
+            }
         }
+        cache.invalidatePrefix(prefix)
     }
 
     fun invalidateAll() {
         activeSegments.values.forEach { it.close() }
         activeSegments.clear()
         cache.clear()
-        store.clear()
+        if (::store.isInitialized) {
+            store.clear()
+        }
     }
 
     fun shutdown() {

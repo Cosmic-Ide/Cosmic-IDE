@@ -21,6 +21,7 @@ import org.cosmicide.plugin.api.PluginState
 import org.cosmicide.plugin.runtime.loading.PluginClassLoaderFactory
 import org.cosmicide.plugins.AndroidPluginServices
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 class AndroidPluginManager(
     context: Context,
@@ -31,7 +32,7 @@ class AndroidPluginManager(
 
     private val appContext = context.applicationContext
     private val classLoaderFactory = PluginClassLoaderFactory(appContext)
-    private val activePlugins = LinkedHashMap<String, ActivePlugin>()
+    private val activePlugins = ConcurrentHashMap<String, ActivePlugin>()
     private val handles = LinkedHashMap<String, PluginHandle>()
 
     override val plugins: List<PluginHandle>

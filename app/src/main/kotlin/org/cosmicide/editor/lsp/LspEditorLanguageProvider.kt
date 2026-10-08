@@ -2,6 +2,7 @@ package org.cosmicide.editor.lsp
 
 import android.util.Log
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
 import org.cosmicide.editor.EditorExtensionPoints
 import org.cosmicide.editor.EditorLanguageProvider
 import org.cosmicide.editor.EditorLanguageRequest
@@ -15,7 +16,7 @@ object LspEditorLanguageProvider : EditorLanguageProvider {
     override val description = "Connects editor documents to registered language servers"
     override val canDisable = false
     override val priority = 200
-    private lateinit var colors: ColorScheme
+    private var colors: ColorScheme? = null
 
     fun updateColors(colorScheme: ColorScheme) {
         colors = colorScheme
@@ -39,8 +40,9 @@ object LspEditorLanguageProvider : EditorLanguageProvider {
             .onFailure {
                 LspLogStore.error(provider.displayName, "Failed to create server definition", it)
             }
-            .getOrThrow()
-        return request.editor.configureLspLanguage(lspRequest, definition, colors)
+            .getOrNull() ?: return false
+        val effectiveColors = colors ?: darkColorScheme()
+        return request.editor.configureLspLanguage(lspRequest, definition, effectiveColors)
     }
 
     private fun EditorLanguageRequest.matchingLspProviders(): Sequence<LspServerProvider> {

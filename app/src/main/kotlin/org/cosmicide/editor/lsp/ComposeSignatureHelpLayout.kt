@@ -519,21 +519,23 @@ private fun SignatureInformation.annotatedLabel(
 }
 
 private fun ParameterInformation.labelRange(signatureLabel: String): IntRange? {
-    if (label.isRight) {
-        val range = label.right ?: return null
+    val lbl = label ?: return null
+    if (lbl.isRight) {
+        val range = lbl.right ?: return null
         val start = range.first.coerceIn(0, signatureLabel.length)
         val end = range.second.coerceIn(start, signatureLabel.length)
         return start until end
     }
 
-    val text = label.left?.takeIf(String::isNotEmpty) ?: return null
+    val text = lbl.left?.takeIf(String::isNotEmpty) ?: return null
     val start = signatureLabel.indexOf(text)
     return if (start >= 0) start until (start + text.length) else null
 }
 
 private fun ParameterInformation.displayLabel(signatureLabel: String): String {
-    if (label.isLeft) {
-        return label.left.orEmpty()
+    val lbl = label ?: return "Parameter"
+    if (lbl.isLeft) {
+        return lbl.left.orEmpty().ifEmpty { "Parameter" }
     }
     val range = labelRange(signatureLabel) ?: return "Parameter"
     return signatureLabel.substring(range)

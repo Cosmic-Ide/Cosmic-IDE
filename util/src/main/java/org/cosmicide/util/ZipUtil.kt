@@ -172,7 +172,7 @@ fun InputStream.unzip(outputStream: OutputStream) {
 
             try {
                 if (!ze.isDirectory) {
-                    outputStream.write(zipIn.readBytes())
+                    zipIn.copyTo(outputStream)
                 }
             } finally {
                 try {
@@ -188,7 +188,8 @@ fun File.compressToZip(outputStream: OutputStream) {
     ZipOutputStream(outputStream.buffered()).use { zipOut ->
         walk().forEach { file ->
             if (file.isFile) {
-                val zipEntry = ZipEntry(file.toRelativeString(this))
+                val entryName = file.toRelativeString(this).replace(File.separatorChar, '/')
+                val zipEntry = ZipEntry(entryName)
                 zipOut.putNextEntry(zipEntry)
 
                 file.inputStream().use { input ->

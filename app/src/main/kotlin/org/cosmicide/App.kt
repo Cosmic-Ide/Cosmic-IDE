@@ -98,6 +98,10 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        if (!BuildConfig.DEBUG) {
+            filesDir.resolve("glibc-deploy-error.log").delete()
+        }
+
         if (FileUtil.isInitialized.not()) return
 
         Analytics.init(this@App)

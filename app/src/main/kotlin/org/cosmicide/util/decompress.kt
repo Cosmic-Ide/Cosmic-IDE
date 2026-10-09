@@ -16,7 +16,7 @@ fun extractTarZstStream(
     targetDir: File,
     filterPrefix: String?,
     longMax: Int = 30
-): Boolean {
+): Result<Boolean> {
     return runCatching {
         ZstdInputStream(inputStream.buffered()).use { zstdIn ->
             zstdIn.setLongMax(longMax)
@@ -29,9 +29,7 @@ fun extractTarZstStream(
         }
 
         true
-    }.onFailure {
-        it.printStackTrace()
-    }.getOrDefault(false)
+    }
 }
 
 private fun extractTarStream(
@@ -367,7 +365,7 @@ private fun InputStream.skipFullyStrict(size: Long) {
 fun restoreSymlinksFromManifest(
     targetDir: File,
     manifestName: String = ".symlinks"
-): Boolean {
+): Result<Boolean> {
     return runCatching {
         val manifest = File(targetDir, manifestName)
         if (!manifest.isFile) {
@@ -432,9 +430,7 @@ fun restoreSymlinksFromManifest(
         }
 
         true
-    }.onFailure {
-        it.printStackTrace()
-    }.getOrDefault(false)
+    }
 }
 
 private fun File.isSymlink(): Boolean {

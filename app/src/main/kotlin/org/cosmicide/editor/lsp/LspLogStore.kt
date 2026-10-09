@@ -1,5 +1,6 @@
 package org.cosmicide.editor.lsp
 
+import org.cosmicide.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,8 +56,10 @@ internal object LspLogStore {
     ) {
         val fullMessage = if (throwable == null) {
             message
-        } else {
+        } else if (BuildConfig.DEBUG) {
             "$message\n${throwable.stackTraceToString()}"
+        } else {
+            "$message: ${throwable.javaClass.simpleName}"
         }
         val entry = LspLogEntry(
             timestampMillis = System.currentTimeMillis(),

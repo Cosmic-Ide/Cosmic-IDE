@@ -39,10 +39,16 @@ jobs:
 
       - name: Build with gradle
         run:
-          ./gradlew :app:assembleProdDebug
+          ./gradlew :app:assembleProdDebug :app:assembleProdRelease
 
       - name: Upload debug apks
         uses: actions/upload-artifact@v7
         with:
           name: app-arm64-v8a
           path: app/build/outputs/apk/prod/debug/app-prod-arm64-v8a-debug.apk
+
+      - name: Upload release apk
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-release-arm64-v8a
+          path: app/build/outputs/apk/prod/release/app-prod-arm64-v8a-release.apk

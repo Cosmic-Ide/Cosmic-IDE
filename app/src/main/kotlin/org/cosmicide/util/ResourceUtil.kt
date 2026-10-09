@@ -14,7 +14,13 @@ object ResourceUtil {
 
     fun isRuntimeMissing(): Boolean {
         val context = App.instance.get()
-        return !context!!.filesDir.resolve("glibc").exists()
+        return !isRuntimeReady(context!!.filesDir.resolve("glibc"))
+    }
+
+    fun isRuntimeReady(directory: File): Boolean {
+        return directory.resolve(".installed").isFile &&
+            directory.resolve("usr/bin/bash").canExecute() &&
+            directory.resolve("usr/lib/libc.so.6").isFile
     }
 
     fun isBootstrapIncomplete(): Boolean {
@@ -27,10 +33,12 @@ object ResourceUtil {
         context.assets.open("setup.sh").use { input ->
             script.outputStream().use { output -> input.copyTo(output) }
         }
+        val packageInstaller = context.filesDir.resolve("alarm-pkg")
         context.assets.open("alarm-pkg").use { input ->
-            context.filesDir.resolve("alarm-pkg").outputStream().use { input.copyTo(it) }
+            packageInstaller.outputStream().use { input.copyTo(it) }
         }
-        script.setExecutable(true)
+        check(packageInstaller.setExecutable(true)) { "Cannot make package installer executable." }
+        check(script.setExecutable(true)) { "Cannot make setup script executable." }
         return script
     }
 
@@ -39,6 +47,10 @@ object ResourceUtil {
      * is missing, signifying that setup is required.
      */
     fun isEnvironmentIncomplete(): Boolean {
-        return isBootstrapIncomplete()
+        val directory = checkNotNull(App.instance.get()).filesDir.resolve("arch")
+        return isBootstrapIncomplete() ||
+            !listOf("bash", "git", "pacman", "java").all {
+                directory.resolve("usr/bin/$it").canExecute()
+            }
     }
 }

@@ -39,6 +39,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
+import org.cosmicide.BuildConfig
+import org.cosmicide.util.ResourceUtil
 import org.cosmicide.util.extractTarZstStream
 import org.cosmicide.util.restoreSymlinksFromManifest
 
@@ -59,22 +62,57 @@ fun InstallResourcesScreen(
         isRunning = true
         scope.launch {
             val glibcTargetDir = context.filesDir.resolve("glibc")
-            if (!glibcTargetDir.exists() || glibcTargetDir.listFiles()?.isEmpty() == true) {
-                glibcTargetDir.mkdirs()
+            if (!ResourceUtil.isRuntimeReady(glibcTargetDir)) {
                 statusText = "Setting up local runtime..."
                 currentProgress = -1f
                 progressDetailsText = "Extracting runtime..."
 
-                val extractionSuccessGl = withContext(Dispatchers.IO) {
+                val extractionResult = withContext(Dispatchers.IO) {
                     runCatching {
+                        val stagingDir = context.filesDir.resolve("glibc.staging")
+                        check(stagingDir.deleteRecursively()) { "Cannot clear runtime staging directory." }
+                        check(stagingDir.mkdirs()) { "Cannot create runtime staging directory." }
                         context.assets.open("glibc.tar.zst").use { assetIn ->
-                            extractTarZstStream(assetIn, glibcTargetDir, "glibc/", longMax = 30)
-                        } && restoreSymlinksFromManifest(glibcTargetDir)
-                    }.getOrDefault(false)
+                            extractTarZstStream(assetIn, stagingDir, "glibc/", longMax = 30)
+                                .getOrThrow()
+                        }
+                        restoreSymlinksFromManifest(stagingDir).getOrThrow()
+                        stagingDir.resolve(".installed").writeText("1\n")
+                        check(ResourceUtil.isRuntimeReady(stagingDir)) { "Runtime archive is incomplete." }
+
+                        val backupDir = context.filesDir.resolve("glibc.backup")
+                        check(backupDir.deleteRecursively()) { "Cannot clear runtime backup." }
+                        if (glibcTargetDir.exists()) {
+                            check(glibcTargetDir.renameTo(backupDir)) { "Cannot back up runtime." }
+                        }
+                        if (!stagingDir.renameTo(glibcTargetDir)) {
+                            backupDir.renameTo(glibcTargetDir)
+                            error("Cannot install runtime.")
+                        }
+                        backupDir.deleteRecursively()
+                        context.filesDir.resolve("glibc-deploy-error.log").delete()
+                    }.onFailure { error ->
+                        if (error is CancellationException) throw error
+                        if (BuildConfig.DEBUG) {
+                            android.util.Log.e("RuntimeSetup", "Runtime deployment failed", error)
+                            runCatching {
+                                context.filesDir.resolve("glibc-deploy-error.log")
+                                    .writeText(error.stackTraceToString())
+                            }
+                        } else {
+                            android.util.Log.e("RuntimeSetup", "Runtime deployment failed: ${error.javaClass.simpleName}")
+                        }
+                    }
                 }
 
-                if (!extractionSuccessGl) {
+                val error = extractionResult.exceptionOrNull()
+                if (error != null) {
                     statusText = "Failed to deploy glibc runtime."
+                    progressDetailsText = when (error) {
+                        is UnsatisfiedLinkError -> "Cannot load the zstd native library. Please update the app."
+                        is OutOfMemoryError -> "Not enough memory to extract the runtime. Close other apps and retry."
+                        else -> error.message ?: error.javaClass.simpleName
+                    }
                     isRunning = false
                     return@launch
                 }
